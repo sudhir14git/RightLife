@@ -658,7 +658,7 @@
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/merriweather_bold"
                     android:text="Class in Session"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:textColor="@color/txt_color_header"
                     android:textSize="@dimen/textsize_extralarge" />
 
@@ -674,16 +674,17 @@
                     android:text="Live interactive sessions and events to enhance \nyour well-being."
                     android:textColor="@color/txt_color_header"
                     android:textSize="@dimen/textsize_medium"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:textStyle="normal" />
 
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/liveclasscardview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
                     app:cardCornerRadius="16dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:cardElevation="4dp">
 
                     <LinearLayout
@@ -734,7 +735,7 @@
                                 android:background="@drawable/bg_calender">
 
                                 <TextView
-                                    android:id="@+id/month"
+                                    android:id="@+id/lvclass_month"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentTop="true"
@@ -747,10 +748,10 @@
                                     android:textSize="@dimen/textsize_extrasmall" />
 
                                 <TextView
-                                    android:id="@+id/date"
+                                    android:id="@+id/lvclass_date"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/month"
+                                    android:layout_below="@+id/lvclass_month"
                                     android:layout_centerHorizontal="true"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:text="12"
@@ -761,12 +762,13 @@
                         </RelativeLayout>
 
                         <TextView
+                            android:id="@+id/tv_title_liveclass"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
                             android:fontFamily="@font/merriweather_bold"
                             android:text="Live Interactive Sessions And Events To"
-                            android:textAlignment="center"
+
                             android:textColor="#0B1215"
                             android:textSize="@dimen/textsize_large" />
 
@@ -798,11 +800,12 @@
                                         android:src="@drawable/imgliveclass" />
 
                                     <TextView
+                                        android:id="@+id/txt_lvclass_host"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_centerVertical="true"
-                                        android:layout_marginStart="@dimen/textsize_medium"
-                                        android:layout_toRightOf="@+id/img_lvclass_host"
+                                        android:layout_marginStart="55dp"
+
                                         android:fontFamily="@font/dmsans_bold"
                                         android:text="Rodi Saravan"
                                         android:textColor="#0B1215"
@@ -810,23 +813,23 @@
 
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
                                         android:layout_centerVertical="true"
-                                        android:layout_marginRight="20dp"
+                                        android:layout_marginRight="10dp"
                                         android:layout_toLeftOf="@+id/tv_classrating"
                                         android:src="@drawable/ic_star" />
 
                                     <TextView
                                         android:id="@+id/tv_classrating"
-                                        android:layout_width="wrap_content"
+                                        android:layout_width="40dp"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentEnd="true"
                                         android:layout_centerVertical="true"
-                                        android:layout_marginEnd="10dp"
                                         android:fontFamily="@font/dmsans_bold"
-                                        android:text="4.5"
-                                        android:textSize="@dimen/textsize_medium" />
+                                        android:text="5"
+                                        android:textColor="#0B1215"
+                                        android:textSize="@dimen/textsize_small" />
 
                                 </RelativeLayout>
 
@@ -876,33 +879,46 @@
                                         android:visibility="visible" />
 
                                     <TextView
+                                        android:id="@+id/tv_classtime"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_centerVertical="true"
-                                        android:layout_marginStart="@dimen/textsize_medium"
-                                        android:layout_toRightOf="@+id/img_lvclass_date"
+                                        android:layout_marginStart="55dp"
+
                                         android:fontFamily="@font/dmsans_bold"
                                         android:text="7.30 AM"
                                         android:textColor="#0B1215"
-                                        android:textSize="@dimen/textsize_large" />
+                                        android:textSize="@dimen/textsize_medium" />
 
 
                                     <ImageView
-                                        android:layout_width="45dp"
-                                        android:layout_height="45dp"
+                                        android:id="@+id/img_attending_filled"
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
                                         android:layout_centerVertical="true"
                                         android:layout_marginRight="10dp"
-                                        android:layout_toLeftOf="@+id/tv_classrating1"
-                                        android:src="@drawable/img_filled" />
+                                        android:layout_toLeftOf="@+id/tv_classattending"
+                                        android:src="@drawable/attending" />
 
                                     <TextView
-                                        android:id="@+id/tv_classrating1"
-                                        android:layout_width="wrap_content"
+                                        android:id="@+id/tv_classattending"
+                                        android:layout_width="40dp"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentEnd="true"
                                         android:layout_centerVertical="true"
                                         android:fontFamily="@font/dmsans_bold"
                                         android:text="Filled"
+                                        android:textColor="#0B1215"
+                                        android:textSize="@dimen/textsize_small" />
+                                    <TextView
+                                        android:id="@+id/tv_classattending_text"
+                                        android:layout_width="45dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_marginTop="10dp"
+                                        android:fontFamily="@font/dmsans_regular"
+                                        android:text="Attending"
+                                        android:layout_below="@+id/tv_classattending"
                                         android:textColor="#0B1215"
                                         android:textSize="@dimen/textsize_extrasmall" />
 

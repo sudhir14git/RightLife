@@ -114,11 +114,22 @@ public interface ApiService {
 
     // Live Event List  -
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("liveEvent") // Assume the API endpoint is /login
+    @GET("event") // Assume the API endpoint is /login
     Call<JsonElement> getLiveEvent(
-            @Header("Authorization") String authToken // Dynamic Authorization Header
+            @Header("Authorization") String authToken,
+            @Query("pageType") String pageType
     );
 
+
+    // Live Event List  -
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("event") // Assume the API endpoint is /login
+    Call<JsonElement> getUpcomingLiveEvent(
+            @Header("Authorization") String authToken,
+            @Query("eventType") String eventType,
+            @Query("status") String status,
+            @Query("pageType") String pageType
+    );
     // Curated List
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -129,7 +140,7 @@ public interface ApiService {
 
     // Module List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("module") // Assume the API endpoint is /login
+    @GET("app/module") // Assume the API endpoint is /login
     Call<JsonElement> getmodule(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );

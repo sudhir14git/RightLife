@@ -1,0 +1,22 @@
+{
+    "think_right_card": [
+        {
+            "id": 2,
+            "title": "Voice Scan",
+            "iconUrl": "assets/new_theme/icons/audio_think_card.svg",
+            "bgUrl": "assets/new_theme/icons/audio_service.svg"
+        },
+        {
+            "id": 3,
+            "title": "Journaling",
+            "iconUrl": "assets/new_theme/icons/module_category/journal.svg",
+            "bgUrl": "assets/new_theme/icons/journalling_service.svg"
+        },
+        {
+            "id": 4,
+            "title": "Affirmations",
+            "iconUrl": "assets/new_theme/icons/module_category/affirmation.svg",
+            "bgUrl": "assets/new_theme/icons/affirmations_service.svg"
+        }
+    ]
+}
