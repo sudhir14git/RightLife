@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view_age_selector"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="-12dp"
+        android:elevation="8dp"
+        app:cardCornerRadius="25dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_gift"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/icon_gift"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_gift" />
+
+                <TextView
+                    android:id="@+id/tv_gift_for_you"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="We Have A Gift For You"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center"
+                android:text="Your one time offer"
+                android:textColor="@color/txt_color_header"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btn_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:backgroundTint="@color/red"
+                android:drawableLeft="@drawable/icon_material_timer"
+                android:text="60sec"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="8dp"/>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dummy2"
+                android:layout_gravity="center_horizontal">
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center"
+                android:text="Once you close this one time offer, Its gone"
+                android:textColor="@color/txt_color_header"
+                android:textSize="14sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/dummy1"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="56dp"
+                android:layout_marginEnd="56dp"
+                android:layout_marginTop="8dp">
+
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center"
+                android:text="Cancel anytime, hassle-free."
+                android:textColor="@color/txt_color_header"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+
+            <Button
+                android:id="@+id/btn_unlock"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/color_green"
+                android:text="Unlock Wellness Now"
+                android:layout_marginStart="60dp"
+                android:layout_marginEnd="60dp"
+                android:layout_marginTop="16dp"
+                android:drawableLeft="@drawable/iconlock"
+                android:gravity="center"/>
+
+
+            <TextView
+                android:id="@+id/tv_no_thanks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center"
+                android:text="No Thanks"
+                android:textColor="@color/txt_color_header"
+                android:textSize="18sp"
+                android:padding="8dp"
+                android:layout_marginTop="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center"
+                android:text="Terms of service &amp; Privacy policy"
+                android:textColor="#707070"
+                android:textSize="10sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"/>
+
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</ScrollView>
