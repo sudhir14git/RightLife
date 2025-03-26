@@ -42,6 +42,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.ai_package.ui.MainAIActivity;
 import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.apimodel.affirmations.AffirmationResponse;
 import com.example.rlapp.apimodel.liveevents.LiveEventResponse;
@@ -59,7 +60,6 @@ import com.example.rlapp.newdashboard.HomeDashboardActivity;
 import com.example.rlapp.ui.Articles.ArticlesDetailActivity;
 import com.example.rlapp.ui.NewSleepSounds.NewSleepSoundActivity;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
-import com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity;
 import com.example.rlapp.ui.affirmation.TodaysAffirmationActivity;
 import com.example.rlapp.ui.breathwork.BreathworkActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
@@ -67,7 +67,6 @@ import com.example.rlapp.ui.drawermenu.PreferencesLayer1Activity;
 import com.example.rlapp.ui.drawermenu.PurchaseHistoryTypesActivity;
 import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
 import com.example.rlapp.ui.exploremodule.ExploreModuleListActivity;
-import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthcam.NewHealthCamReportActivity;
@@ -76,8 +75,6 @@ import com.example.rlapp.ui.jounal.new_journal.JournalListActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.profile_new.ProfileSettingsActivity;
-import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity;
-import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity;
 import com.example.rlapp.ui.settings.SettingsNewActivity;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.example.rlapp.ui.utility.DateTimeUtils;
@@ -1398,7 +1395,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, QuestionnaireEatRightActivity.class));
+            startActivity(new Intent(this, MainAIActivity.class));
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here

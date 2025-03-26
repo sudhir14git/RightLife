@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="73dp"
+        android:background="@color/header_background"
+        app:layout_constraintTop_toTopOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/back"
+            android:layout_marginStart="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Workout Analysis"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/text_color"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/gradient_color_background_workout"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/functional_strength_icon"
+                android:layout_width="30dp"
+                android:layout_height="50dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/workout_function_icon"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/functional_strength_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Functional Strength Training"
+                android:textSize="18dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                app:layout_constraintStart_toEndOf="@+id/functional_strength_icon"
+                app:layout_constraintTop_toTopOf="@+id/functional_strength_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="6:00 AM to 7:00PM"
+                app:layout_constraintStart_toEndOf="@+id/functional_strength_icon"
+                app:layout_constraintTop_toBottomOf="@+id/functional_strength_text" />
+
+            <TextView
+                android:id="@+id/your_heart_rate_analysis_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/black"
+                android:textSize="16dp"
+                android:text="Your Heart Rate Analysis"
+                android:layout_marginTop="80dp"
+                android:layout_marginStart="20dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/workout_layout"
+                android:layout_width="match_parent"
+                android:layout_height="485dp"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/your_heart_rate_analysis_heading"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.example.rlapp.ai_package.ui.moveright.CustomHeartRateGraph
+                        android:id="@+id/heartRateGraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp"
+                        android:layout_margin="20dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/total_duration_Layout"
+                        android:layout_width="110dp"
+                        android:layout_height="54dp"
+                        app:cardBackgroundColor="@color/border_line"
+                        app:cardCornerRadius="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="3dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="1 hr 03 mins"
+                                android:textSize="19sp"
+                                android:textColor="@color/workout_textcolor"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <ImageView
+                                android:layout_width="5dp"
+                                android:layout_height="5dp"
+                                android:src="@drawable/awesome"
+                                app:layout_constraintTop_toTopOf="@+id/today_duration"
+                                app:layout_constraintBottom_toBottomOf="@+id/today_duration"
+                                app:layout_constraintEnd_toStartOf="@+id/today_duration" />
+
+                            <TextView
+                                android:id="@+id/today_duration"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="35dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="Total Duration"
+                                android:textSize="8sp"
+                                android:textColor="@color/workout_textcolor"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/calorie_burned_Layout"
+                        android:layout_width="110dp"
+                        android:layout_height="54dp"
+                        app:cardBackgroundColor="@color/border_line"
+                        app:cardCornerRadius="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="3dp"
+                        app:layout_constraintStart_toEndOf="@+id/total_duration_Layout"
+                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="514 cal"
+                                android:textSize="19sp"
+                                android:textColor="@color/workout_textcolor"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <ImageView
+                                android:layout_width="6dp"
+                                android:layout_height="7dp"
+                                android:src="@drawable/calorie_burned_icon"
+                                app:layout_constraintBottom_toBottomOf="@+id/calorie_burned"
+                                app:layout_constraintTop_toTopOf="@+id/calorie_burned"
+                                app:layout_constraintEnd_toStartOf="@+id/calorie_burned" />
+
+                            <TextView
+                                android:id="@+id/calorie_burned"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="35dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="Calorie Burned"
+                                android:textSize="8sp"
+                                android:textColor="@color/workout_textcolor"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/avg_heartrate_Layout"
+                        android:layout_width="110dp"
+                        android:layout_height="54dp"
+                        app:cardBackgroundColor="@color/border_line"
+                        app:cardCornerRadius="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="3dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/calorie_burned_Layout"
+                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="514 cal"
+                                android:textSize="19sp"
+                                android:textColor="@color/workout_textcolor"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <ImageView
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:src="@drawable/avg_heart_rate"
+                                app:layout_constraintBottom_toBottomOf="@+id/avr_heart_rate_text"
+                                app:layout_constraintTop_toTopOf="@+id/avr_heart_rate_text"
+                                app:layout_constraintEnd_toStartOf="@+id/avr_heart_rate_text" />
+
+                            <TextView
+                                android:id="@+id/avr_heart_rate_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="35dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:text="Avg heart rate"
+                                android:textSize="8sp"
+                                android:textColor="@color/workout_textcolor"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/your_heart_rate_zones_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/black"
+                android:textSize="18dp"
+                android:text="Your Heart Rate Zones"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/workout_layout"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/awesome_progressbaricon"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/workout_layout"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/peak_text_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Peak"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/your_heart_rate_zones_heading" />
+
+            <TextView
+                android:id="@+id/peak_bpm_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="155-175 Bpm"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/peak_text_heading"
+                app:layout_constraintTop_toTopOf="@+id/peak_text_heading"
+                app:layout_constraintBottom_toBottomOf="@+id/peak_text_heading" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/black"
+                android:layout_marginTop="10dp"
+                android:text="00:13:00"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/your_heart_rate_zones_heading" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/customProgressBarPeakLayout"
+                android:layout_width="250dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/rounded_constarint_layout"
+                android:clipToOutline="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/peak_text_heading">
+
+                <com.example.rlapp.ai_package.ui.moveright.customProgressBar.StripedProgressBar
+                    android:id="@+id/customProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <View
+                    android:id="@+id/transparentOverlay"
+                    android:layout_width="30dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/border_black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/customProgressBar"
+                    app:layout_constraintBottom_toBottomOf="@id/customProgressBar" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="50%"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/peak_text_heading"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/customProgressBarPeakLayout" />
+
+            <TextView
+                android:id="@+id/cardio_text_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cardio"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarPeakLayout" />
+
+            <TextView
+                android:id="@+id/cardio_bpm_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="155-175 Bpm"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/cardio_text_heading"
+                app:layout_constraintTop_toTopOf="@+id/cardio_text_heading"
+                app:layout_constraintBottom_toBottomOf="@+id/cardio_text_heading" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/black"
+                android:layout_marginTop="10dp"
+                android:text="00:13:00"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarPeakLayout" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/customProgressBarCardioLayout"
+                android:layout_width="250dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/rounded_constarint_layout"
+                android:clipToOutline="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardio_text_heading">
+
+                <com.example.rlapp.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
+                    android:id="@+id/customProgressBarCardio"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <View
+                    android:id="@+id/transparentOverlayCardio"
+                    android:layout_width="30dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/border_black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/customProgressBarCardio"
+                    app:layout_constraintBottom_toBottomOf="@id/customProgressBarCardio" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="50%"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/cardio_text_heading"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/customProgressBarCardioLayout" />
+
+            <TextView
+                android:id="@+id/fat_burn_text_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fat Burn"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarCardioLayout" />
+
+            <TextView
+                android:id="@+id/fat_burn_bpm_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="155-175 Bpm"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/fat_burn_text_heading"
+                app:layout_constraintTop_toTopOf="@+id/fat_burn_text_heading"
+                app:layout_constraintBottom_toBottomOf="@+id/fat_burn_text_heading" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/black"
+                android:text="00:13:00"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarCardioLayout" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/customProgressBarFatBurnLayout"
+                android:layout_width="250dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/rounded_constarint_layout"
+                android:clipToOutline="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fat_burn_text_heading">
+
+                <com.example.rlapp.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
+                    android:id="@+id/customProgressBarFatBurn"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <View
+                    android:id="@+id/transparentOverlayFatBurn"
+                    android:layout_width="30dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/border_black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/customProgressBarFatBurn"
+                    app:layout_constraintBottom_toBottomOf="@id/customProgressBarFatBurn" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="50%"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/fat_burn_text_heading"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/customProgressBarFatBurnLayout" />
+
+            <TextView
+                android:id="@+id/light_text_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Light"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurnLayout" />
+
+            <TextView
+                android:id="@+id/light_bpm_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="155-175 Bpm"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/light_text_heading"
+                app:layout_constraintTop_toTopOf="@+id/light_text_heading"
+                app:layout_constraintBottom_toBottomOf="@+id/light_text_heading" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/black"
+                android:text="00:13:00"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurnLayout" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/customProgressBarLightLayout"
+                android:layout_width="250dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/rounded_constarint_layout"
+                android:clipToOutline="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/light_text_heading">
+
+                <com.example.rlapp.ai_package.ui.moveright.customProgressBar.LightStrippedprogressBar
+                    android:id="@+id/customProgressBarLight"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <View
+                    android:id="@+id/transparentOverlayLight"
+                    android:layout_width="30dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/border_black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/customProgressBarLight"
+                    app:layout_constraintBottom_toBottomOf="@id/customProgressBarLight" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="50%"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/light_text_heading"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/customProgressBarLightLayout" />
+
+            <TextView
+                android:id="@+id/cardio_efficiency_heading"
+                android:layout_width="248dp"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Cardio Efficiency Improving Fine Tune Your Pacing"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarLightLayout" />
+
+            <TextView
+                android:id="@+id/cardio_efficiency_sub_heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:text="Your heart rate showed steady aerobic endurance, indicating improved cardiovascular efficiency. However, slight fluctuations suggest pacing inconsistencies. To optimize, aim for a smoother heart rate curve by adjusting intensity gradually and focusing on controlled breathing."
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardio_efficiency_heading"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

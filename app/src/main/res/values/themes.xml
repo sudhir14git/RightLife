@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color. -->
@@ -75,6 +75,84 @@
         <item name="android:inputType">number</item>
         <item name="android:maxLength">1</item>
         <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="LoggedBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/LoggedBottomSheetStyle</item>
+    </style>
+    <style name="LoggedBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_dialog</item>
+    </style>
+    <style name="TimePickerStyle" parent="Theme.MaterialComponents.Light">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="TabItemStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/tab_unselected_bg</item>
+        <item name="android:padding">8dp</item>
+
+    </style>
+
+    <style name="TabItemStyle_Selected">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/tab_selected_bg</item>
+        <item name="android:padding">8dp</item>
+
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+
+    <!-- Default Theme -->
+    <style name="Theme.Imagine.Base" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">@color/color_primary_dark</item>
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorSecondaryVariant">@color/color_secondary_dark</item>
+        <item name="colorOnSecondary">@color/color_on_secondary</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/color_on_primary</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="toolbarStyle">@style/Theme.Imagine.Toolbar</item>
+        <item name="android:navigationBarColor">@color/background_material_light</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <!-- Customize your theme here. -->
+        <item name="drawerArrowStyle">@style/Theme.Imagine.Toolbar.DrawerArrowToggle</item>
+
+    </style>
+
+    <!-- Toolbar -->
+    <style name="Theme.Imagine.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="titleTextColor">@color/color_on_background</item>
+        <item name="colorOnPrimary">@color/color_on_background</item>
+        <item name="colorControlNormal">@color/color_on_background</item>
+        <item name="colorButtonNormal">@color/color_on_background</item>
+        <item name="android:background">@color/color_secondary</item>
+    </style>
+
+    <style name="Theme.Imagine.Toolbar.DrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/color_on_background</item>
+    </style>
+    <style name="MyCustomTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
     </style>
 
 

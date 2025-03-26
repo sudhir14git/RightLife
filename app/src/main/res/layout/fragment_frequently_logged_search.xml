@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_my_meals_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layout_btn_log_meal"
+        android:layout_width="350dp"
+        android:layout_height="56dp"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:layout_marginTop="36dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerview_my_meals_item"
+        android:background="@drawable/add_cart_button_background"
+        android:gravity="center"
+        android:layout_marginBottom="30dp">
+
+        <ImageView
+            android:id="@+id/icon_plus_one"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_feather_plus"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_log_meal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="3dp"
+            android:layout_gravity="center"
+            android:textSize="24sp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Create A Work Routine" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

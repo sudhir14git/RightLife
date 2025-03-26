@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:background="@drawable/bottomsheet_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lyt_top_title"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/red_close"
+            android:id="@+id/img_close"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_target_wake_time"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/black_no_meals"
+            android:text="Enter Your Target Wake Up Time"
+            android:fontFamily="@font/merriweather_bold"
+            android:textSize="24sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/wakeup_time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:background="@color/white"
+        app:cardCornerRadius="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/lyt_top_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/caret_left_icon"
+                app:layout_constraintBottom_toBottomOf="@+id/wake_time_picker_layout"
+                app:layout_constraintTop_toTopOf="@+id/wake_time_picker_layout"
+                app:layout_constraintEnd_toStartOf="@+id/wake_time_picker_layout" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/caret_right_icon"
+                app:layout_constraintBottom_toBottomOf="@+id/wake_time_picker_layout"
+                app:layout_constraintTop_toTopOf="@+id/wake_time_picker_layout"
+                app:layout_constraintStart_toEndOf="@+id/wake_time_picker_layout" />
+
+            <LinearLayout
+                android:id="@+id/wake_time_picker_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <NumberPicker
+                    android:id="@+id/hourPickerWake"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <NumberPicker
+                    android:id="@+id/minutePickerWake"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <NumberPicker
+                    android:id="@+id/amPmPickerWake"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lyt_default_target"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/wakeup_time_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/tv_default_wake_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/black_no_meals"
+            android:text="Make this my default target wakeup time"
+            android:fontFamily="@font/dmsans_regular"
+            android:textSize="14sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/green_square_check"
+            android:id="@+id/img_green_check"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:id="@+id/btn_confirm"
+        android:layout_marginStart="35dp"
+        android:layout_marginEnd="35dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/lyt_default_target"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/blue_curved_bg"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Confirm"
+            android:textSize="18sp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

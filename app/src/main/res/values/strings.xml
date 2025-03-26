@@ -248,4 +248,15 @@ Please hold still"</string>
 
     <string name="verified_member_text">To become a verified member,\n <b>Complete Your Profile.</b></string>
 
+    <!-- for AI code  -->
+
+    <string name="message_no_network_connected_str">No network connected!</string>
+    <string name="message_something_went_wrong_str">Something went wrong!</string>
+
+    <string-array name="am_pm_array">
+        <item>AM</item>
+        <item>PM</item>
+    </string-array>
+
+
 </resources>

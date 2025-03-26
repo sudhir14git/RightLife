@@ -1,0 +1,11 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tabText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/search_tab_background"
+    android:paddingHorizontal="15dp"
+    android:paddingVertical="5dp"
+    android:textSize="12sp"
+    android:fontFamily="@font/dmsans_regular"
+    android:textColor="@color/search_tablayout_color_selector"
+    android:gravity="center" />

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:src="@drawable/ic_cal"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Calories"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/border_green" />
+</LinearLayout>

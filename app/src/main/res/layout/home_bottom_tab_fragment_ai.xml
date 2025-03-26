@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/nestedScrollView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/tabContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:background="@drawable/eatright_main_tab">
+
+        <LinearLayout
+            android:id="@+id/tabThink"
+            style="@style/TabItemStyle">
+
+            <ImageView
+                android:id="@+id/icThink"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_think" />
+
+            <TextView
+                android:id="@+id/tvThink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Think"
+                android:visibility="gone"
+                android:textSize="14sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/thinkright_text_color"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tabMove"
+            android:layout_marginStart="8dp"
+            style="@style/TabItemStyle">
+
+            <ImageView
+                android:id="@+id/icMove"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_move" />
+
+            <TextView
+                android:id="@+id/tvMove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Move"
+                android:visibility="gone"
+                android:textSize="14sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tabEat"
+            android:layout_marginStart="8dp"
+            style="@style/TabItemStyle_Selected">
+
+            <ImageView
+                android:id="@+id/icEat"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_eat" />
+
+            <TextView
+                android:id="@+id/tvEat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Eat"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tabSleep"
+            android:layout_marginStart="8dp"
+            style="@style/TabItemStyle">
+
+            <ImageView
+                android:id="@+id/icSleep"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_sleep" />
+
+            <TextView
+                android:id="@+id/tvSleep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sleep"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="228dp"
+    android:paddingBottom="20dp"
+    style="@style/LoggedBottomSheetStyle">
+
+    <TextView
+        android:id="@+id/tv_select_meal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Meal Type"
+        android:textColor="@color/black_no_meals"
+        android:textSize="20sp"
+        android:fontFamily="@font/merriweather_bold"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layout_select_meal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_select_meal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutBreakfast"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/icBreakfast"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_breakfast" />
+
+            <TextView
+                android:id="@+id/tvBreakfast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="Breakfast" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutMorningSnack"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/icMorningSnack"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_morning_snack" />
+
+            <TextView
+                android:id="@+id/tvMorningSnack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
+                android:maxLines="2"
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="Morning Snack" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutLunch"
+            android:layout_width="47dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/icLunch"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_lunch" />
+
+            <TextView
+                android:id="@+id/tvLunch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="Lunch" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutEveningSnacks"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/icEveningSnacks"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_evening_snack" />
+
+            <TextView
+                android:id="@+id/tvEveningSnacks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
+                android:maxLines="2"
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="Evening Snacks" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutDinner"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/icDinner"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_dinner" />
+
+            <TextView
+                android:id="@+id/tvDinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="Dinner" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

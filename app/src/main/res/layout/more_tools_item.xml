@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="120dp"
+    android:layout_height="120dp"
+    android:layout_margin="5dp"
+    android:padding="5dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@drawable/white_meal_date_bg">
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/breathwork_icon"
+        android:id="@+id/img_tool_item" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dmsans_medium"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/sleep_duration_blue"
+        android:text="Breathwork"
+        android:textSize="14sp"
+        android:id="@+id/tv_title_item" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="12sp"
+        android:textAlignment="center"
+        android:text="Breathe, focus, recharge"
+        android:textColor="@color/eatright_text_color"
+        android:id="@+id/tv_subtitle_item" />
+</androidx.appcompat.widget.LinearLayoutCompat>

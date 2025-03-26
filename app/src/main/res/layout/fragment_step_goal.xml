@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/back_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/back_button" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="18sp"
+        android:textColor="@color/maroon_color"
+        android:fontFamily="@font/merriweather_bold"
+        android:layout_marginTop="20dp"
+        android:id="@+id/tv_set_step_goal_title"
+        android:text="Set Your Step Goal" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back_button"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="7dp"
+                app:cardUseCompatPadding="true">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="20dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/left_layout"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="13sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/tv_average"
+                            android:text="Average" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="20sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:layout_marginTop="5dp"
+                            android:id="@+id/tv_step_count"
+                            android:text="7,665 Steps" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:drawableStart="@drawable/caret_down"
+                            android:drawablePadding="3dp"
+                            android:textSize="12sp"
+                            android:textColor="@color/green_text"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:layout_marginTop="5dp"
+                            android:id="@+id/tv_past_week"
+                            android:text="50% Past Week" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/progessbar_bg"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="20dp"
+                        android:id="@+id/right_layout"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="30dp"
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:background="@drawable/light_orange_bg"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:id="@+id/tv_week"
+                            android:text="W" />
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="10dp"
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:id="@+id/tv_month"
+                            android:text="M" />
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="10dp"
+                            android:gravity="center"
+                            android:textSize="14sp"
+                            android:textColor="@color/black"
+                            android:layout_marginEnd="10dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:id="@+id/tv_six_month"
+                            android:text="6M" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:weightSum="7"
+                        android:layout_below="@+id/left_layout"
+                        android:layout_marginEnd="10dp"
+                        android:id="@+id/lyt_left_right_btn"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:src="@drawable/left_arrow"
+                            android:id="@+id/img_left_arrow"
+                            android:text="W" />
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="5"
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:id="@+id/tv_dateSelected"
+                            android:text="3Feb-9Feb 2025" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:src="@drawable/right_arrow"
+                            android:id="@+id/img_right_arrow" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="5dp"
+                        android:scrollbars="vertical"
+                        android:layout_below="@+id/lyt_left_right_btn" />
+
+                    <TextView
+                        android:layout_width="300dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/light_orange_bg"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="15dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="15sp"
+                        android:id="@+id/tv_set_target"
+                        android:layout_alignParentBottom="true"
+                        android:layout_below="@id/recyclerView"
+                        android:text="Set Up A Step Goal" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="5dp"
+                android:id="@+id/tv_lorem_title"
+                android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="5dp"
+                android:id="@+id/tv_lorem_desc"
+                android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged." />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardview1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="7dp"
+                    app:cardUseCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="5dp"
+                            android:id="@+id/tv_steps_title"
+                            android:text="You’ve been walking less on average this week compared to your steps last week." />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="20dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:layout_marginTop="15dp"
+                                android:id="@+id/tv_steps1"
+                                android:text="78665 steps/day" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="10dp"
+                                android:textSize="16sp"
+                                android:layout_alignParentEnd="true"
+                                android:textColor="@color/black"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:layout_marginTop="15dp"
+                                android:id="@+id/tv_steps2"
+                                android:text="Current Week" />
+
+                            <RelativeLayout
+                                android:id="@+id/progressBarLayout_step"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginEnd="20dp"
+                                android:layout_below="@+id/tv_steps2"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent">
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar_step"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="22dp"
+                                    android:progressDrawable="@drawable/progress_bar"
+                                    android:max="2500"
+                                    android:progress="1285" />
+                                <!-- Circle Indicator -->
+                                <View
+                                    android:id="@+id/circleIndicator_step"
+                                    android:layout_width="16dp"
+                                    android:layout_height="20dp"
+                                    android:background="@drawable/circle_background"
+                                    android:layout_marginTop="1dp" /> <!-- Adjust margin to center vertically -->
+                            </RelativeLayout>
+
+                            <ProgressBar
+                                android:id="@+id/progressBarCurrentWeek"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_height="30dp"
+                                android:visibility="gone"
+                                android:background="@drawable/progessbar_bg"
+                                android:layout_below="@id/tv_steps1"
+                                android:layout_marginTop="10dp"
+                                android:transformPivotX="90dp"
+                                tools:layout_editor_absoluteX="101dp"
+                                tools:layout_editor_absoluteY="187dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"
+                                android:layout_below="@id/progressBarLayout_step"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:layout_marginTop="15dp"
+                                android:id="@+id/tv_step3"
+                                android:text="10233 steps/day" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"
+                                android:layout_alignParentEnd="true"
+                                android:layout_below="@id/progressBarLayout_step"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:layout_marginTop="15dp"
+                                android:id="@+id/tv_step4"
+                                android:text="Previous Week" />
+
+                            <RelativeLayout
+                                android:id="@+id/progressBarLayout_steps"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginEnd="20dp"
+                                android:layout_below="@+id/tv_step4"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent">
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar_steps"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="22dp"
+                                    android:progressDrawable="@drawable/progress_bar"
+                                    android:max="2500"
+                                    android:progress="1285" />
+                                <!-- Circle Indicator -->
+                                <View
+                                    android:id="@+id/circleIndicator_steps"
+                                    android:layout_width="16dp"
+                                    android:layout_height="20dp"
+                                    android:background="@drawable/circle_background"
+                                    android:layout_marginTop="1dp" /> <!-- Adjust margin to center vertically -->
+                            </RelativeLayout>
+
+                            <ProgressBar
+                                android:id="@+id/progressBarPreviousWeek"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="30dp"
+                                android:layout_marginStart="10dp"
+                                android:visibility="gone"
+                                android:layout_marginEnd="10dp"
+                                android:layout_below="@id/tv_step4"
+                                android:background="@drawable/progessbar_bg"
+                                android:layout_marginTop="10dp"
+                                android:transformPivotX="90dp"
+                                tools:layout_editor_absoluteX="101dp"
+                                tools:layout_editor_absoluteY="187dp" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="15dp"
+                android:id="@+id/tv_recom_you"
+                android:text="Recommended For You" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:id="@+id/my_recycler_view"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:layout_height="150dp" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview3"
+                android:layout_width="match_parent"
+                android:background="@drawable/extreme_light_orange"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="7dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="20dp">
+
+                        <ImageView
+                            android:layout_width="130dp"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="10dp"
+                            android:src="@drawable/health_icon"
+                            android:id="@+id/img_health" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:layout_toRightOf="@id/img_health"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_health"
+                            android:text="5 best exercises to streng then arthritic knees with physical therapy physical therapy physical theraaa" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp"
+                        android:weightSum="3"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_name"
+                            android:text="Aishwarya" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_date"
+                            android:text="12 sept 2024" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textAlignment="center"
+                            android:layout_weight="1"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_time"
+                            android:text="5 min read" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview2"
+                android:layout_width="match_parent"
+                android:background="@drawable/extreme_light_orange"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="7dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="20dp">
+
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/exercise_icon"
+                            android:layout_marginEnd="10dp"
+                            android:id="@+id/img_exercise" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:layout_toLeftOf="@id/img_exercise"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_exercise"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="12sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:drawableStart="@drawable/awesome_tag"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/tv_pos"
+                            android:text="Positivity" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="12sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:drawablePadding="5dp"
+                            android:drawableStart="@drawable/ionic_eye"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/tv_count"
+                            android:text="243" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview4"
+                android:layout_width="match_parent"
+                android:background="@drawable/extreme_light_orange"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="7dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="20dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="170dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/scan_face"
+                            android:layout_marginEnd="10dp"
+                            android:id="@+id/img_scan" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:layout_below="@id/img_scan"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_scan"
+                            android:text="Get detailed health vitals with a 30-second face scan……." />
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

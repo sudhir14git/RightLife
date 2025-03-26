@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/sleep_stages_bg"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:id="@+id/img_back"
+            android:src="@drawable/sleep_back_icon"
+            android:layout_marginStart="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sleep Stages"
+            android:textSize="20dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/sleep_text_color"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingBottom="100dp"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="20dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF"
+                    android:padding="10dp">
+
+                    <!-- Header Section -->
+                    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:background="@color/white"
+                        tools:context=".MainActivity">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sleepSound"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:id="@+id/tv_total_sleep"
+                                android:text="Total Sleep"
+                                android:textSize="14sp"
+                                android:textColor="#082654"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:layout_weight="3"
+                                android:paddingStart="8dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="8hr 30min"
+                                android:textSize="14sp"
+                                android:textColor="#082654"
+                                app:layout_constraintStart_toEndOf="@id/tv_total_sleep"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="8dp" />
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:src="@drawable/apple_icon" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <com.example.rlapp.ai_package.ui.sleepright.fragment.SleepChartView
+                            android:id="@+id/sleepChart"
+                            android:layout_marginTop="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="300dp" />
+
+                        <!-- Time Labels -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="10"
+                            android:layout_marginTop="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableStart="@drawable/sleep_bed_mini_icon"
+                                android:layout_weight="1"
+                                android:text=" 9:00 pm"
+                                android:textSize="14sp" />
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_weight="8" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableStart="@drawable/yellow_timer"
+                                android:layout_weight="1"
+                                android:text=" 5:30 am"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- Legend -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="12dp"
+                            android:weightSum="8"
+                            android:gravity="center">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/awake_icon" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:text=" Awake"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="12sp"
+                                android:layout_marginEnd="12dp" />
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/rem_icon" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:text=" Rem"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="12sp"
+                                android:layout_marginEnd="12dp" />
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/core_icon" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text=" Core"
+                                android:layout_weight="2"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="12sp"
+                                android:layout_marginEnd="12dp" />
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/deep_icon" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:layout_weight="2"
+                                android:text=" Deep"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="10"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/titleText"
+                    android:layout_width="0dp"
+                    android:layout_weight="9"
+                    android:layout_height="wrap_content"
+                    android:text="Sleep Stages"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/sleep_text_color" />
+
+                <ImageView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/info_sleep_icon" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/peak_text_heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Awake"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/peak_bpm_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="155-175 Bpm"
+                    android:textSize="16sp"
+                    android:layout_marginStart="5dp"
+                    app:layout_constraintStart_toEndOf="@+id/peak_text_heading"
+                    app:layout_constraintTop_toTopOf="@+id/peak_text_heading"
+                    app:layout_constraintBottom_toBottomOf="@+id/peak_text_heading" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/black"
+                    android:layout_marginTop="10dp"
+                    android:text="00:13:00"
+                    android:layout_marginEnd="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/customProgressBarPeakLayout"
+                    android:layout_width="250dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/rounded_constarint_layout"
+                    android:clipToOutline="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/peak_text_heading">
+
+                    <com.example.rlapp.ai_package.ui.moveright.customProgressBar.StripedProgressBar
+                        android:id="@+id/customProgressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <View
+                        android:id="@+id/transparentOverlay"
+                        android:layout_width="30dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/border_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/customProgressBar"
+                        app:layout_constraintBottom_toBottomOf="@id/customProgressBar" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50%"
+                    android:textSize="16sp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/peak_text_heading"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/customProgressBarPeakLayout" />
+
+                <TextView
+                    android:id="@+id/cardio_text_heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rem"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customProgressBarPeakLayout" />
+
+                <TextView
+                    android:id="@+id/cardio_bpm_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="155-175 Bpm"
+                    android:textSize="16sp"
+                    android:layout_marginStart="5dp"
+                    app:layout_constraintStart_toEndOf="@+id/cardio_text_heading"
+                    app:layout_constraintTop_toTopOf="@+id/cardio_text_heading"
+                    app:layout_constraintBottom_toBottomOf="@+id/cardio_text_heading" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/black"
+                    android:layout_marginTop="10dp"
+                    android:text="00:13:00"
+                    android:layout_marginEnd="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customProgressBarPeakLayout" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/customProgressBarCardioLayout"
+                    android:layout_width="250dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/rounded_constarint_layout"
+                    android:clipToOutline="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cardio_text_heading">
+
+                    <com.example.rlapp.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
+                        android:id="@+id/customProgressBarCardio"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <View
+                        android:id="@+id/transparentOverlayCardio"
+                        android:layout_width="30dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/border_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/customProgressBarCardio"
+                        app:layout_constraintBottom_toBottomOf="@id/customProgressBarCardio" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50%"
+                    android:textSize="16sp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/cardio_text_heading"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/customProgressBarCardioLayout" />
+
+                <TextView
+                    android:id="@+id/fat_burn_text_heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Core"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customProgressBarCardioLayout" />
+
+                <TextView
+                    android:id="@+id/fat_burn_bpm_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="155-175 Bpm"
+                    android:textSize="16sp"
+                    android:layout_marginStart="5dp"
+                    app:layout_constraintStart_toEndOf="@+id/fat_burn_text_heading"
+                    app:layout_constraintTop_toTopOf="@+id/fat_burn_text_heading"
+                    app:layout_constraintBottom_toBottomOf="@+id/fat_burn_text_heading" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/black"
+                    android:text="00:13:00"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customProgressBarCardioLayout" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/customProgressBarFatBurnLayout"
+                    android:layout_width="250dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/rounded_constarint_layout"
+                    android:clipToOutline="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/fat_burn_text_heading">
+
+                    <com.example.rlapp.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
+                        android:id="@+id/customProgressBarFatBurn"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <View
+                        android:id="@+id/transparentOverlayFatBurn"
+                        android:layout_width="30dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/border_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/customProgressBarFatBurn"
+                        app:layout_constraintBottom_toBottomOf="@id/customProgressBarFatBurn" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50%"
+                    android:textSize="16sp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/fat_burn_text_heading"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/customProgressBarFatBurnLayout" />
+
+                <TextView
+                    android:id="@+id/light_text_heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Deep"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurnLayout" />
+
+                <TextView
+                    android:id="@+id/light_bpm_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="155-175 Bpm"
+                    android:textSize="16sp"
+                    android:layout_marginStart="5dp"
+                    app:layout_constraintStart_toEndOf="@+id/light_text_heading"
+                    app:layout_constraintTop_toTopOf="@+id/light_text_heading"
+                    app:layout_constraintBottom_toBottomOf="@+id/light_text_heading" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/black"
+                    android:text="00:13:00"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurnLayout" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/customProgressBarLightLayout"
+                    android:layout_width="250dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/rounded_constarint_layout"
+                    android:clipToOutline="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/light_text_heading">
+
+                    <com.example.rlapp.ai_package.ui.moveright.customProgressBar.LightStrippedprogressBar
+                        android:id="@+id/customProgressBarLight"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <View
+                        android:id="@+id/transparentOverlayLight"
+                        android:layout_width="30dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/border_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/customProgressBarLight"
+                        app:layout_constraintBottom_toBottomOf="@id/customProgressBarLight" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50%"
+                    android:textSize="16sp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/light_text_heading"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/customProgressBarLightLayout" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:textColor="@color/on_track_color"
+                android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
+                android:textSize="16sp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
