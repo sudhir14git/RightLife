@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentExercisePreferenceBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionOne
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class ExercisePreferenceFragment : Fragment() {
@@ -51,10 +52,20 @@ class ExercisePreferenceFragment : Fragment() {
             if (times.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter value", Toast.LENGTH_SHORT).show()
             } else {
-                QuestionnaireEatRightActivity.navigateToNextPage()
+                //QuestionnaireEatRightActivity.navigateToNextPage()
+                submit(times)
             }
         }
 
+    }
+
+    private fun submit(answer: String) {
+        val questionOne = MRQuestionOne()
+        questionOne.answer = answer
+        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionOne = questionOne
+        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
+            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

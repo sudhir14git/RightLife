@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentOverthiningYourselfBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionFive
 
 class OverthinkingYourselfFragment : Fragment() {
 
@@ -44,8 +45,18 @@ class OverthinkingYourselfFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.btnContinue.setOnClickListener {
-            QuestionnaireThinkRightActivity.navigateToNextPage()
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit("")
         }
+    }
+
+    private fun submit(answer: String) {
+        val questionFive = TRQuestionFive()
+        questionFive.answer = answer
+        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionFive = questionFive
+        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
+            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

@@ -305,12 +305,6 @@ class ImageSliderActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
-
-                    /*Toast.makeText(
-                        this@ImageSliderActivity,
-                        apiResponse?.accessToken,
-                        Toast.LENGTH_SHORT
-                    ).show()*/
                     SharedPreferenceManager.getInstance(this@ImageSliderActivity)
                         .saveAccessToken(apiResponse?.accessToken)
                     saveAccessToken(apiResponse?.accessToken!!)
@@ -322,27 +316,33 @@ class ImageSliderActivity : AppCompatActivity() {
                                 loggedInUser = user
                             }
                         }
-                        if (loggedInUser?.isOnboardingComplete == true) {
-                            val intent = Intent(this@ImageSliderActivity, HomeActivity::class.java)
-                            startActivity(intent)
+                        if (apiResponse.isNewUser == false || loggedInUser?.isOnboardingComplete == true) {
+                            val loggedInUser = LoggedInUser(email = mEmail, isOnboardingComplete = true)
+                            sharedPreferenceManager.setLoggedInUsers(arrayListOf(loggedInUser))
+                            startActivity(
+                                Intent(
+                                    this@ImageSliderActivity,
+                                    HomeActivity::class.java
+                                )
+                            )
                         } else {
-                            if (apiResponse.isNewUser == true){
-                                //Toast.makeText(this@ImageSliderActivity, "New User", Toast.LENGTH_SHORT).show()
-
                             val intent =
-                                Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
-                            intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
-                            intent.putExtra("EMAIL", mEmail)
+                                Intent(
+                                    this@ImageSliderActivity,
+                                    CreateUsernameActivity::class.java
+                                ).apply {
+                                    putExtra(
+                                        "USERNAME_KEY",
+                                        displayName
+                                    ) // Add the username as an extra
+                                    putExtra("EMAIL", mEmail)
+                                }
                             val loggedInUsers = sharedPreferenceManager.loggedUserList
                             loggedInUsers.add(LoggedInUser(email = mEmail))
                             sharedPreferenceManager.setLoggedInUsers(loggedInUsers)
                             sharedPreferenceManager.email = mEmail
                             sharedPreferenceManager.displayName = displayName
                             startActivity(intent)
-                            }else{
-                                val intent = Intent(this@ImageSliderActivity, HomeActivity::class.java)
-                                startActivity(intent)
-                            }
                         }
                         finishAffinity()
 

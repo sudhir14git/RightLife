@@ -12,6 +12,8 @@ import com.example.rlapp.databinding.FragmentShakeOffBadDayBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ShakeOffBadDayAdapter
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionOne
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionTwo
 
 class ShakeOffBadDayFragment : Fragment() {
 
@@ -55,13 +57,23 @@ class ShakeOffBadDayFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ShakeOffBadDayAdapter(shakeOffOptions) {
-            Handler(Looper.getMainLooper()).postDelayed({
+        val adapter = ShakeOffBadDayAdapter(shakeOffOptions) { shakeOffOption->
+            submit(shakeOffOption)
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireThinkRightActivity.navigateToNextPage()
-            }, 500)
+            }, 500)*/
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun submit(answer: String) {
+        val questionTwo = TRQuestionTwo()
+        questionTwo.answer = answer
+        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionTwo = questionTwo
+        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
+            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

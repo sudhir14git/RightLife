@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -15,9 +16,77 @@
         android:layout_marginBottom="16dp"
         android:textColor="@color/menu_icon_color_unselected" />
 
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="40dp"
+        app:cardCornerRadius="20dp"
+        android:background="@drawable/chaotic_bg_card"
+        app:cardElevation="8dp"
+        android:layout_centerInParent="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center_horizontal">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chaotic"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
+
+            <!-- White Box -->
+
+            <FrameLayout
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
+
+                android:background="@android:color/white" />
+
+            <!-- SeekBar -->
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:max="4"
+                android:progress="0"
+                android:thumbTint="@android:color/white"
+                android:progressTint="@android:color/white"
+                android:background="@drawable/seekbar_bg_tr_q1"
+                android:backgroundTint="@color/red"
+                android:thumb="@drawable/custom_thumb"
+                android:splitTrack="false" />
+
+            <!-- Instruction Text -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Slide the scale to select level."
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/red"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="10dp">
 
         <Button
@@ -33,4 +102,4 @@
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="16dp">
+
+    <TextView
+        android:id="@+id/txtDateHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="7 Mar, 2025"
+        android:textSize="16sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/txt_color_header" />
+</LinearLayout>

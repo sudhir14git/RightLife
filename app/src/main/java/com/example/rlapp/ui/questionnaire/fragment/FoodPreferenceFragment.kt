@@ -2,8 +2,6 @@ package com.example.rlapp.ui.questionnaire.fragment
 
 import FoodOptionAdapter
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentFoodPreferenceBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.ERQuestionOne
 import com.example.rlapp.ui.questionnaire.pojo.FoodOption
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
@@ -61,13 +60,23 @@ class FoodPreferenceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val adapter = FoodOptionAdapter(foodOptions) { selectedOption ->
-            Handler(Looper.getMainLooper()).postDelayed({
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)
+            }, 500)*/
+            submit(selectedOption.title)
         }
 
         binding.rvFoodOptions.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvFoodOptions.adapter = adapter
+    }
+
+    private fun submit(answer: String) {
+        val questionOne = ERQuestionOne()
+        questionOne.answer = answer
+        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionOne = questionOne
+        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
+            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

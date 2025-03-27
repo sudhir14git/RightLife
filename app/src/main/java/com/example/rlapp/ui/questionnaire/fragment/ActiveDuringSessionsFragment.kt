@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentActiveDuringSessionBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionOne
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionTwo
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.shawnlin.numberpicker.NumberPicker
 import java.util.Locale
@@ -78,9 +80,19 @@ class ActiveDuringSessionsFragment : Fragment() {
         }
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireEatRightActivity.navigateToNextPage()
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            submit(selectedActiveTime)
         }
 
+    }
+
+    private fun submit(answer: String) {
+        val questionTwo = MRQuestionTwo()
+        questionTwo.answer = answer
+        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionTwo = questionTwo
+        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
+            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

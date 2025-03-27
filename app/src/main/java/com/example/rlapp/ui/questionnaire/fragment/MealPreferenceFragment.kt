@@ -1,8 +1,6 @@
 package com.example.rlapp.ui.questionnaire.fragment
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +10,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentMealPreferenceBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.MealOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.ERQuestionTwo
 import com.example.rlapp.ui.questionnaire.pojo.MealOption
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
@@ -57,12 +56,22 @@ class MealPreferenceFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = MealOptionAdapter(mealOptions) { selectedOption ->
-            Handler(Looper.getMainLooper()).postDelayed({
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)
+            }, 500)*/
+            submit(selectedOption.title)
         }
         binding.rvMealOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvMealOptions.adapter = adapter
+    }
+
+    private fun submit(answer: String) {
+        val questionTwo = ERQuestionTwo()
+        questionTwo.answer = answer
+        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionTwo = questionTwo
+        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
+            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

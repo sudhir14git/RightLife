@@ -17,6 +17,8 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.BottomsheetPhysicalActivityBinding
 import com.example.rlapp.databinding.FragmentPhysicalActivitiesBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionThree
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionTwo
 import com.example.rlapp.ui.questionnaire.pojo.PhysicalActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -235,9 +237,19 @@ class PhysicalActivitiesFragment : Fragment() {
 
         dialogBinding.btnSetNow.setOnClickListener {
             bottomSheetDialog.dismiss()
-            QuestionnaireEatRightActivity.navigateToNextPage()
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            submit(selectedActivities)
         }
 
         bottomSheetDialog.show()
+    }
+
+    private fun submit(answer: List<String>) {
+        val questionThree = MRQuestionThree()
+        questionThree.answer = answer
+        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionThree = questionThree
+        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
+            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        )
     }
 }

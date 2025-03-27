@@ -3,7 +3,6 @@ package com.example.rlapp.ui.profile_new
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,11 +23,12 @@ class ProfileSettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileSettingsBinding
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
-    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            setUserData()
+    private val activityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                setUserData()
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         setupUserRecyclerView()
         setupPersonalizationRecyclerView()
 
-        binding.llProfile.setOnClickListener{
+        binding.llProfile.setOnClickListener {
             activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
         }
         binding.settingsButton.setOnClickListener {
@@ -85,12 +85,12 @@ class ProfileSettingsActivity : AppCompatActivity() {
             when (item.title) {
                 "Goals" ->
                     startActivity(Intent(this, WellnessFocusActivity::class.java).apply {
-                        putExtra("FROM","ProfileSetting")
+                        putExtra("FROM", "ProfileSetting")
                     })
 
                 "Interests" ->
                     startActivity(Intent(this, YourInterestActivity::class.java).apply {
-                        putExtra("FROM","ProfileSetting")
+                        putExtra("FROM", "ProfileSetting")
                     })
 
                 "Meal Customisations" ->

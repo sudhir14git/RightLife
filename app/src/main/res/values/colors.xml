@@ -248,6 +248,11 @@
     <color name="sky_blue_bar">#62D5FF</color>
     <color name="dark_purple_bar">#5E5CE7</color>
     <color name="quantum_grey">#9e9e9e</color>
+    <color name="water_light_color">#E6F0FE</color>
+    <color name="coffee_light_color">#F1ECEC</color>
+    <color name="water_dark_color">#1292E5</color>
+    <color name="coffee_dark_color">#6C4D3F</color>
+    <color name="steps_dark_color">#FF4836</color>
 
 
 </resources>

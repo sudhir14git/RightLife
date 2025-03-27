@@ -27,6 +27,7 @@ import com.example.rlapp.databinding.FragmentSchedulePreferenceBinding
 import com.example.rlapp.ui.affirmation.ReminderReceiver
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.ERQuestionThree
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -81,7 +82,7 @@ class SchedulePreferenceFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = ScheduleOptionAdapter(scheduleOptions) { selectedOption ->
-            showReminderBottomSheet()
+            showReminderBottomSheet(selectedOption.title)
         }
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter
@@ -92,7 +93,16 @@ class SchedulePreferenceFragment : Fragment() {
         _binding = null
     }
 
-    private fun showReminderBottomSheet() {
+    private fun submit(answer: String) {
+        val questionThree = ERQuestionThree()
+        questionThree.answer = answer
+        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionThree = questionThree
+        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
+            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        )
+    }
+
+    private fun showReminderBottomSheet(answer: String) {
         // Create and configure BottomSheetDialog
         val reminderBottomSheetDialog = BottomSheetDialog(requireContext())
 
@@ -112,7 +122,8 @@ class SchedulePreferenceFragment : Fragment() {
 
         dialogBinding.ivDialogClose.setOnClickListener {
             reminderBottomSheetDialog.dismiss()
-            QuestionnaireEatRightActivity.navigateToNextPage()
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            submit(answer)
         }
 
         dialogBinding.llBreakFastTime.setOnClickListener {
@@ -148,7 +159,6 @@ class SchedulePreferenceFragment : Fragment() {
 
         reminderBottomSheetDialog.show()
     }
-
 
     private fun showTimePickerDialog(textView: TextView, type: Int) {
         val currentTime: Calendar = Calendar.getInstance()

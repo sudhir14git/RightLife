@@ -7,6 +7,8 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.rlapp.databinding.ActivityQuestionnaireBinding
 import com.example.rlapp.ui.questionnaire.adapter.QuestionnaireThinkRightPagerAdapter
+import com.example.rlapp.ui.questionnaire.pojo.SleepRightAnswerRequest
+import com.example.rlapp.ui.questionnaire.pojo.ThinkRightAnswerRequest
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class QuestionnaireThinkRightActivity : AppCompatActivity() {
@@ -19,6 +21,7 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
         binding = ActivityQuestionnaireBinding.inflate(layoutInflater)
         setContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        instance = this
         //binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
         viewPager = binding.viewPagerQuestionnaire
@@ -81,6 +84,9 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
 
         private lateinit var viewPager: ViewPager2
         private lateinit var questionnairePagerAdapter: QuestionnaireThinkRightPagerAdapter
+        private var instance: QuestionnaireThinkRightActivity? = null // Store Activity reference
+        val thinkRightAnswerRequest: ThinkRightAnswerRequest = ThinkRightAnswerRequest()
+        val sleepRightAnswerRequest: SleepRightAnswerRequest = SleepRightAnswerRequest()
 
         fun navigateToPreviousPage() {
             if (viewPager.currentItem > 0) {
@@ -93,5 +99,25 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
                 viewPager.currentItem += 1
             }
         }
+
+        fun submitThinkRightRightAnswerRequest(thinkRightAnswerRequest: ThinkRightAnswerRequest) {
+            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+                instance?.finish() // Finish activity safely
+            else
+                navigateToNextPage()
+        }
+
+        fun submitSleepRightAnswerRequest(sleepRightAnswerRequest: SleepRightAnswerRequest) {
+            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+                instance?.finish() // Finish activity safely
+            else
+                navigateToNextPage()
+        }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        instance = null
+    }
+
 }

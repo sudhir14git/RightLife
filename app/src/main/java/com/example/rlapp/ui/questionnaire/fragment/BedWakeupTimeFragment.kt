@@ -11,7 +11,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentBedWakeupTimeBinding
+import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.SRQuestionThree
+import com.example.rlapp.ui.questionnaire.pojo.SRQuestionTwo
+import com.example.rlapp.ui.questionnaire.pojo.SleepTimeAnswer
 import java.time.Duration
 import java.time.LocalTime
 
@@ -69,7 +73,11 @@ class BedWakeupTimeFragment : Fragment() {
         binding.timePickerWakeTime.setOnTimeChangedListener { _, _, _ -> updateSleepDuration() }
 
         binding.btnContinue.setOnClickListener {
-            Toast.makeText(requireContext(), "Continue Clicked!", Toast.LENGTH_SHORT).show()
+            val sleepTimeAnswer = SleepTimeAnswer()
+            sleepTimeAnswer.bedTime = getSelectedTimeFromTimePicker(binding.timePickerBedtime)
+            sleepTimeAnswer.wakeTime = getSelectedTimeFromTimePicker(binding.timePickerWakeTime)
+            sleepTimeAnswer.sleepDuration = binding.tvSleepDuration.text.toString()
+            submit(sleepTimeAnswer)
         }
     }
 
@@ -92,10 +100,34 @@ class BedWakeupTimeFragment : Fragment() {
         binding.tvSleepDuration.text = "Sleep duration: ${hours} hrs ${minutes} mins"
     }
 
+    private fun getSelectedTimeFromTimePicker(timePicker: TimePicker): String {
+        val hour = timePicker.hour
+
+        val minute = timePicker.minute
+
+        val amPm = if (hour >= 12) "PM" else "AM"
+
+        // Convert to 12-hour format
+        val formattedHour = if (hour % 12 == 0) 12 else hour % 12
+
+        // Ensure two-digit format
+        return String.format("%02d:%02d %s", formattedHour, minute, amPm)
+    }
+
+
     private fun getSelectedTime(timePicker: TimePicker): Pair<Int, Int> {
         val hour = timePicker.hour
         val minute = timePicker.minute
         return Pair(hour, minute)
+    }
+
+    private fun submit(answer: SleepTimeAnswer) {
+        val questionThree = SRQuestionThree()
+        questionThree.answer = answer
+        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionThree = questionThree
+        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
+            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        )
     }
 
 

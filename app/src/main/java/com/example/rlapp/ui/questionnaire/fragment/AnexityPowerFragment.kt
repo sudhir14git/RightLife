@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentAnexityPowerBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionFour
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionThree
 
 class AnexityPowerFragment : Fragment() {
 
@@ -45,8 +47,18 @@ class AnexityPowerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.btnContinue.setOnClickListener {
-            QuestionnaireThinkRightActivity.navigateToNextPage()
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit("")
         }
+    }
+
+    private fun submit(answer: String) {
+        val questionFour = TRQuestionFour()
+        questionFour.answer = answer
+        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionFour = questionFour
+        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
+            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

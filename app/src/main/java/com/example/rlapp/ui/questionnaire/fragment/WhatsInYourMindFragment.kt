@@ -17,6 +17,8 @@ import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.StressReasonAdapter
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.StressReason
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionThree
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionTwo
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class WhatsInYourMindFragment : Fragment() {
@@ -113,14 +115,24 @@ class WhatsInYourMindFragment : Fragment() {
 
         dialogBinding.btnNO.setOnClickListener {
             bottomSheetDialog.dismiss()
-            QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit(selectedList[0].title)
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
         }
 
         dialogBinding.btnYes.setOnClickListener {
-            //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
-            QuestionnaireThinkRightActivity.navigateToNextPage()
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit(selectedList[0].title)
         }
         bottomSheetDialog.show()
+    }
+
+    private fun submit(answer: String) {
+        val questionThree = TRQuestionThree()
+        questionThree.answer = answer
+        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionThree = questionThree
+        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
+            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        )
     }
 }

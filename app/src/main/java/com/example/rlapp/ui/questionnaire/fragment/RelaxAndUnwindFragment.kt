@@ -13,6 +13,8 @@ import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.RelaxAndWindAdapter
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.StressReason
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionSeven
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionSix
 
 class RelaxAndUnwindFragment : Fragment() {
 
@@ -77,11 +79,21 @@ class RelaxAndUnwindFragment : Fragment() {
 
         binding.btnContinue.setOnClickListener {
             if (selectedList.isNotEmpty())
-                QuestionnaireThinkRightActivity.navigateToNextPage()
+                submit(selectedList[0].title)
+                //QuestionnaireThinkRightActivity.navigateToNextPage()
             else
                 Toast.makeText(requireContext(), "Please select at least one", Toast.LENGTH_SHORT)
                     .show()
         }
+    }
+
+    private fun submit(answer: String) {
+        val questionSeven = TRQuestionSeven()
+        questionSeven.answer = answer
+        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionSeven = questionSeven
+        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
+            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

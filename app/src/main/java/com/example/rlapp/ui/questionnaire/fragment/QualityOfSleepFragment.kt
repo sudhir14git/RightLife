@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentQualityOfSleepBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.SRQuestionOne
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionFour
 
 class QualityOfSleepFragment : Fragment() {
 
@@ -45,8 +47,18 @@ class QualityOfSleepFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.btnContinue.setOnClickListener {
-            QuestionnaireThinkRightActivity.navigateToNextPage()
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit("")
         }
+    }
+
+    private fun submit(answer: String) {
+        val questionOne = SRQuestionOne()
+        questionOne.answer = answer
+        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionOne = questionOne
+        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
+            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

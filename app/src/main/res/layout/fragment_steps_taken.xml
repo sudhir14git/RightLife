@@ -11,9 +11,160 @@
         android:layout_height="wrap_content"
         android:text="How many steps do you usually take in a day?"
         android:textSize="18sp"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"
         android:textColor="@color/menu_icon_color_unselected" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Slide the bar to select"
+        android:fontFamily="@font/dmsans_regular"
+        android:textColor="@color/text_color_app"
+        android:layout_height="100dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rl_water"
+        android:layout_margin="10dp"
+        android:layout_height="wrap_content">
+
+
+
+        <com.example.rlapp.quiestionscustomviews.CoffeWaterIntakeView
+            android:id="@+id/steps_slider_view"
+            android:layout_width="80dp"
+            android:layout_centerInParent="true"
+            android:layout_height="350dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="350dp"
+            android:layout_alignTop="@+id/steps_slider_view"
+            android:layout_marginEnd="20dp"
+            android:layout_toLeftOf="@id/steps_slider_view"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/step_count_text_6"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="12K + steps" />
+
+            <TextView
+                android:id="@+id/step_count_text_5"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="10k steps" />
+
+            <TextView
+                android:id="@+id/step_count_text_4"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="8k steps" />
+
+            <TextView
+                android:id="@+id/step_count_text_3"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="6k steps" />
+
+            <TextView
+                android:id="@+id/step_count_text_2"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="4k steps" />
+
+            <TextView
+                android:id="@+id/step_count_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="2k steps" />
+        </LinearLayout>
+
+
+<!--         recomended steps view -->
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="350dp"
+            android:layout_alignTop="@+id/steps_slider_view"
+
+            android:layout_toEndOf="@id/steps_slider_view"
+            android:orientation="vertical">
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+
+                android:gravity="top"
+                android:text="8k -10k\n\nRecomended Steps" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:text="" />
+        </LinearLayout>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

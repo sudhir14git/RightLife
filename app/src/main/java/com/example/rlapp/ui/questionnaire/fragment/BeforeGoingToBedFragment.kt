@@ -12,6 +12,8 @@ import com.example.rlapp.databinding.FragmentBeforeGoingToBedBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.RelaxAndWindAdapter
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.SRQuestionFive
+import com.example.rlapp.ui.questionnaire.pojo.SRQuestionSix
 import com.example.rlapp.ui.questionnaire.pojo.StressReason
 
 class BeforeGoingToBedFragment : Fragment() {
@@ -75,11 +77,21 @@ class BeforeGoingToBedFragment : Fragment() {
 
         binding.btnContinue.setOnClickListener {
             if (selectedList.isNotEmpty())
-                QuestionnaireThinkRightActivity.navigateToNextPage()
+                submit(selectedList[0].title)
+                //QuestionnaireThinkRightActivity.navigateToNextPage()
             else
                 Toast.makeText(requireContext(), "Please select at least one", Toast.LENGTH_SHORT)
                     .show()
         }
+    }
+
+    private fun submit(answer: String) {
+        val questionSix = SRQuestionSix()
+        questionSix.answer = answer
+        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionSix = questionSix
+        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
+            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

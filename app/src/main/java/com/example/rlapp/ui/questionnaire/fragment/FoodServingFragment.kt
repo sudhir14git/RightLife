@@ -10,8 +10,13 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentServingBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ServingAdapter
+import com.example.rlapp.ui.questionnaire.pojo.AnswerFruitVegetable
+import com.example.rlapp.ui.questionnaire.pojo.ERQuestionFour
+import com.example.rlapp.ui.questionnaire.pojo.ERQuestionThree
+import com.example.rlapp.ui.questionnaire.pojo.Fruits
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ServingItem
+import com.example.rlapp.ui.questionnaire.pojo.Vegetables
 
 class FoodServingFragment : Fragment() {
 
@@ -64,8 +69,25 @@ class FoodServingFragment : Fragment() {
         binding.recyclerViewServing.layoutManager = LinearLayoutManager(requireContext())
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireEatRightActivity.navigateToNextPage()
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            val answerFruitVegetable = AnswerFruitVegetable()
+            val vegetable = Vegetables()
+            vegetable.servings = vegetableCount.toString()
+            answerFruitVegetable.vegetables = vegetable
+            val fruit = Fruits()
+            fruit.servings = fruitCount.toString()
+            answerFruitVegetable.fruits = fruit
+            submit(answerFruitVegetable)
         }
+    }
+
+    private fun submit(answer: AnswerFruitVegetable) {
+        val questionFour = ERQuestionFour()
+        questionFour.answer = answer
+        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionFour = questionFour
+        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
+            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

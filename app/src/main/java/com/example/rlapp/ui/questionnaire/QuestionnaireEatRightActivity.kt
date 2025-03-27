@@ -7,6 +7,8 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.rlapp.databinding.ActivityQuestionnaireBinding
 import com.example.rlapp.ui.questionnaire.adapter.QuestionnaireEatRightPagerAdapter
+import com.example.rlapp.ui.questionnaire.pojo.EatRightAnswerRequest
+import com.example.rlapp.ui.questionnaire.pojo.MoveRightAnswerRequest
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class QuestionnaireEatRightActivity : AppCompatActivity() {
@@ -18,6 +20,8 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityQuestionnaireBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // Store activity reference
+        instance = this
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         //binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
@@ -82,6 +86,9 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
 
         private lateinit var viewPager: ViewPager2
         private lateinit var questionnairePagerAdapter: QuestionnaireEatRightPagerAdapter
+        private var instance: QuestionnaireEatRightActivity? = null // Store Activity reference
+        val eatRightAnswerRequest: EatRightAnswerRequest = EatRightAnswerRequest()
+        val moveRightAnswerRequest: MoveRightAnswerRequest = MoveRightAnswerRequest()
 
         fun navigateToPreviousPage() {
             if (viewPager.currentItem > 0) {
@@ -94,5 +101,25 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                 viewPager.currentItem += 1
             }
         }
+
+        fun submitEatRightAnswerRequest(eatRightAnswerRequest: EatRightAnswerRequest) {
+            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+                instance?.finish() // Finish activity safely
+            else
+                navigateToNextPage()
+
+        }
+
+        fun submitSMoveRightAnswerRequest(moveRightAnswerRequest: MoveRightAnswerRequest) {
+            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+                instance?.finish() // Finish activity safely
+            else
+                navigateToNextPage()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        instance = null
     }
 }

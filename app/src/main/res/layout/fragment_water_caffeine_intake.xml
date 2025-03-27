@@ -20,6 +20,247 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp">
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/rl_water"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/ll_water_icon"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Water"
+                        android:layout_margin="5dp"
+                        android:layout_height="wrap_content"/>
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:src="@drawable/ic_water_cup"
+                        android:background="@drawable/circle_shape"
+                        android:padding="20dp"
+                        android:backgroundTint="@color/water_light_color"
+                        android:layout_height="60dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="( 1 cup = 250 ml)"
+                        android:layout_margin="5dp"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_water_quantity"
+                    android:layout_width="match_parent"
+                    android:text="0 ml"
+                    android:layout_margin="5dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:layout_below="@+id/water_view"
+                    android:layout_alignStart="@+id/water_view"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"/>
+
+                <com.example.rlapp.quiestionscustomviews.CoffeWaterIntakeView
+                    android:id="@+id/water_view"
+                    android:layout_width="80dp"
+                    android:layout_below="@+id/ll_water_icon"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="300dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_alignTop="@+id/water_view"
+                    android:layout_marginEnd="20dp"
+                    android:layout_toLeftOf="@id/water_view"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/water_count_text_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text=">12 cups" />
+
+                    <TextView
+                        android:id="@+id/water_count_text_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text="10 cups" />
+
+                    <TextView
+                        android:id="@+id/water_count_text_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text="8 cups" />
+
+                    <TextView
+                        android:id="@+id/water_count_text_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text="6 cups" />
+
+                    <TextView
+                        android:id="@+id/water_count_text_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text="4 cups" />
+
+                    <TextView
+                        android:id="@+id/water_count_text_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text="2 cups" />
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/rl_coffee"
+                android:layout_margin="10dp"
+                android:layout_height="match_parent">
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/ll_cofee_icon"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Coffee"
+                        android:layout_margin="5dp"
+                        android:layout_height="wrap_content"/>
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:src="@drawable/ic_coffee_cup"
+                        android:background="@drawable/circle_shape"
+                        android:padding="20dp"
+                        android:backgroundTint="@color/coffee_light_color"
+                        android:layout_height="60dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="( 1 cup = 125 ml)"
+                        android:layout_margin="5dp"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_coffee_quantity"
+                    android:layout_width="match_parent"
+                    android:text="0 ml"
+                    android:layout_margin="5dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:layout_below="@+id/coffee_view"
+                    android:layout_alignEnd="@+id/coffee_view"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"/>
+
+                <com.example.rlapp.quiestionscustomviews.CoffeWaterIntakeView
+                    android:id="@+id/coffee_view"
+                    android:layout_width="80dp"
+                    android:layout_below="@+id/ll_cofee_icon"
+                    android:layout_height="300dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="300dp"
+                    android:layout_alignTop="@+id/coffee_view"
+                    android:layout_toRightOf="@+id/coffee_view"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/coffee_count_text_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:visibility="gone"
+                        android:text="12 cups" />
+
+                    <TextView
+                        android:id="@+id/coffee_count_text_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:visibility="gone"
+                        android:text="10 cups" />
+
+                    <TextView
+                        android:id="@+id/coffee_count_text_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text="7 cups" />
+
+                    <TextView
+                        android:id="@+id/coffee_count_text_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text="5 cups" />
+
+                    <TextView
+                        android:id="@+id/coffee_count_text_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="top"
+                        android:text="3 cups" />
+
+                    <TextView
+                        android:id="@+id/coffee_count_text_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="center"
+                        android:text="1 cup" />
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+
         <Button
             android:id="@+id/btnContinue"
             android:layout_width="match_parent"

@@ -1,8 +1,6 @@
 package com.example.rlapp.ui.questionnaire.fragment
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +10,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentEatAffectMoodBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.ERQuestionSeven
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 
@@ -57,12 +56,22 @@ class EatAffectMoodFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = ScheduleOptionAdapter(scheduleOptions) { selectedOption ->
-            Handler(Looper.getMainLooper()).postDelayed({
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)
+            }, 500)*/
+            submit(selectedOption.title)
         }
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter
+    }
+
+    private fun submit(answer: String) {
+        val questionSeven = ERQuestionSeven()
+        questionSeven.answer = answer
+        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionSeven = questionSeven
+        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
+            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

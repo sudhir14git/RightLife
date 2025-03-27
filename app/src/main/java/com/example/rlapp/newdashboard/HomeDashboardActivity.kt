@@ -22,6 +22,7 @@ import com.example.rlapp.newdashboard.NewHomeFragment.HomeFragment
 import com.example.rlapp.ui.HomeActivity
 import com.example.rlapp.ui.profile_new.ProfileSettingsActivity
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.utility.SharedPreferenceConstants
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.google.gson.Gson
@@ -116,7 +117,7 @@ class HomeDashboardActivity : AppCompatActivity() {
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
             Toast.makeText(this, "Think Right", Toast.LENGTH_SHORT).show()
-           // startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
+            startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
             //Toast.makeText(this, "Sync Health", Toast.LENGTH_SHORT).show()

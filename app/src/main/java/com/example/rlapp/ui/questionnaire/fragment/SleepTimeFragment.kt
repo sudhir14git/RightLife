@@ -1,8 +1,6 @@
 package com.example.rlapp.ui.questionnaire.fragment
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +11,7 @@ import com.example.rlapp.databinding.FragmentSleepTimeBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.SRQuestionTwo
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 
 class SleepTimeFragment : Fragment() {
@@ -57,12 +56,22 @@ class SleepTimeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = ScheduleOptionAdapter(scheduleOptions, "SleepRight") { selectedOption ->
-            Handler(Looper.getMainLooper()).postDelayed({
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireThinkRightActivity.navigateToNextPage()
-            }, 500)
+            }, 500)*/
+            submit(selectedOption.title)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun submit(answer: String) {
+        val questionTwo = SRQuestionTwo()
+        questionTwo.answer = answer
+        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionTwo = questionTwo
+        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
+            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

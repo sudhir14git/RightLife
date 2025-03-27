@@ -13,6 +13,7 @@ import com.example.rlapp.databinding.FragmentSleepSelectionBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.SleepSelectionAdapter
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.SRQuestionFour
 import com.example.rlapp.ui.questionnaire.pojo.SleepOption
 
 class SleepSelectionFragment : Fragment() {
@@ -61,13 +62,23 @@ class SleepSelectionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = SleepSelectionAdapter(sleepOptions) { sleepOption ->
-            Handler(Looper.getMainLooper()).postDelayed({
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireThinkRightActivity.navigateToNextPage()
-            }, 500)
+            }, 500)*/
+            submit(sleepOption.title)
         }
 
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun submit(answer: String) {
+        val questionFour = SRQuestionFour()
+        questionFour.answer = answer
+        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionFour = questionFour
+        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
+            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

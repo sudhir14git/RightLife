@@ -14,6 +14,8 @@ import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.SocialInteractionAdapter
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.SocialInteraction
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionFive
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionSix
 
 class SocialInteractionFragment : Fragment() {
 
@@ -57,13 +59,23 @@ class SocialInteractionFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = SocialInteractionAdapter(socialInteractionsList) {
-            Handler(Looper.getMainLooper()).postDelayed({
+        val adapter = SocialInteractionAdapter(socialInteractionsList) { socialInteraction ->
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireThinkRightActivity.navigateToNextPage()
-            }, 500)
+            }, 500)*/
+            submit(socialInteraction.title)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun submit(answer: String) {
+        val questionSix = TRQuestionSix()
+        questionSix.answer = answer
+        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionSix = questionSix
+        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
+            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

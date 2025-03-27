@@ -12,6 +12,7 @@ import com.example.rlapp.ui.jounal.new_journal.JournalMoodAdapter
 import com.example.rlapp.ui.jounal.new_journal.Mood
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.SRQuestionFive
 
 class FeelAfterWakingFragment : Fragment() {
 
@@ -51,8 +52,18 @@ class FeelAfterWakingFragment : Fragment() {
         setUpMoodList()
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireThinkRightActivity.navigateToNextPage()
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit("")
         }
+    }
+
+    private fun submit(answer: String) {
+        val questionFive = SRQuestionFive()
+        questionFive.answer = answer
+        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionFive = questionFive
+        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
+            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

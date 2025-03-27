@@ -1,20 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
     <TextView
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="How does your energy levels feel throughout the day?"
         android:textSize="18sp"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"
         android:textColor="@color/menu_icon_color_unselected" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Scroll the slider to select level."
+        android:fontFamily="@font/dmsans_regular"
+        android:textColor="@color/text_color_app"
+        android:layout_height="50dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rl_water"
+        android:layout_margin="10dp"
+        android:layout_height="500dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:id="@+id/bottom_title_view"
+            android:layout_below="@+id/ll_slider_holder"
+            android:layout_alignLeft="@+id/ll_slider_holder"
+            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Morning"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:fontFamily="@font/dmsans_medium"
+                android:textSize="@dimen/textsize_large"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Afternoon"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:fontFamily="@font/dmsans_medium"
+                android:textSize="@dimen/textsize_large"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Night"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:fontFamily="@font/dmsans_medium"
+                android:textSize="@dimen/textsize_large"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:id="@+id/ll_slider_holder"
+            android:orientation="horizontal"
+            android:layout_toEndOf="@+id/ll_text_holder"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/rl_morning_slider"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+            <com.example.rlapp.quiestionscustomviews.EnergyLevelSelectorView
+                android:id="@+id/morning_slider_view"
+                android:layout_width="50dp"
+                android:layout_centerInParent="true"
+                android:layout_height="350dp" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/rl_afternon_slider"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+                <com.example.rlapp.quiestionscustomviews.EnergyLevelSelectorView
+                    android:id="@+id/afternoon_slider_view"
+                    android:layout_width="50dp"
+                    android:layout_centerInParent="true"
+                    android:layout_height="350dp" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/rl_evening_slider"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+                <com.example.rlapp.quiestionscustomviews.EnergyLevelSelectorView
+                    android:id="@+id/evening_slider_view"
+                    android:layout_width="50dp"
+                    android:layout_centerInParent="true"
+                    android:layout_height="350dp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_text_holder"
+            android:layout_width="wrap_content"
+            android:layout_height="350dp"
+            android:layout_alignTop="@+id/ll_slider_holder"
+            android:layout_marginEnd="20dp"
+            android:layout_alignParentStart="true"
+
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/enery_count_text_3"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:layout_marginTop="20dp"
+                android:text="High" />
+
+            <TextView
+                android:id="@+id/enery_count_text_2"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="20dp"
+                android:gravity="top"
+                android:text="Medium" />
+
+            <TextView
+                android:id="@+id/enery_count_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:gravity="top"
+                android:layout_marginTop="20dp"
+                android:text="Low" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,5 +172,4 @@
             android:layout_marginBottom="12dp"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

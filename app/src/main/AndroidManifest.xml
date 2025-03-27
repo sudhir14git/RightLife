@@ -191,6 +191,8 @@
         <activity android:name="com.example.rlapp.ai_package.ui.MainAIActivity" />
         <activity android:name="com.example.rlapp.ai_package.ui.eatright.fragment.Main2Activity" />
 
+        <activity android:name="com.example.rlapp.ui.scan_history.PastReportActivity" />
+
 
 
         <provider

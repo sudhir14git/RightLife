@@ -57,6 +57,7 @@ import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse;
 import com.example.rlapp.ui.payment.PaymentCardResponse;
 import com.example.rlapp.ui.profile_new.pojo.OtpRequest;
 import com.example.rlapp.ui.profile_new.pojo.VerifyOtpRequest;
+import com.example.rlapp.ui.scan_history.ScanHistoryResponse;
 import com.example.rlapp.ui.settings.pojo.FAQResponse;
 import com.example.rlapp.ui.settings.pojo.GeneralInformationResponse;
 import com.example.rlapp.ui.therledit.EpisodeTrackRequest;
@@ -1054,6 +1055,11 @@ public interface ApiService {
             @Body VerifyOtpRequest verifyOtpRequest
     );
 
+    @Headers("Content-Type: application/json")
+    @GET("user/past-report")
+    Call<ScanHistoryResponse> getPastReports(
+            @Header("Authorization") String authToken
+    );
 
 }
 
