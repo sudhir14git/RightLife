@@ -69,8 +69,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var progressDialog: ProgressDialog
     private lateinit var appPreference: AppPreference
 
-
-
     //    // Define all required read permissions
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
