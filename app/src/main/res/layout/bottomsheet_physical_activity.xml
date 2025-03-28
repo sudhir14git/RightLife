@@ -1,0 +1,272 @@
+<!-- res/layout/bottom_sheet_layout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/design_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="20dp"
+    android:background="@drawable/toproundedcornershape">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="Set Activity Frequency"
+        android:textColor="@color/txt_color_header"
+        android:textSize="18sp"
+        android:layout_margin="20dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_food_item"
+        android:layout_margin="8dp"
+        android:padding="16dp"
+        android:backgroundTint="@color/settings_bg_color">
+
+        <ImageView
+            android:id="@+id/imageIcon1"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_walking" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/imageIcon1"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:id="@+id/textTitle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fruits"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/txt_color_header"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textDesc1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Times per week"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/txt_color_header" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
+
+            <ImageButton
+                android:id="@+id/btnMinus1"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_minus_red"
+                android:backgroundTint="@color/white" />
+
+            <TextView
+                android:id="@+id/textCount1"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="1"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnPlus1"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_plus_red"
+                android:backgroundTint="@color/white" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_food_item"
+        android:layout_margin="8dp"
+        android:padding="16dp"
+        android:backgroundTint="@color/settings_bg_color">
+
+        <ImageView
+            android:id="@+id/imageIcon2"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_running" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/imageIcon2"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:id="@+id/textTitle2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fruits"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/txt_color_header"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textDesc2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Times per week"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/txt_color_header" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
+
+            <ImageButton
+                android:id="@+id/btnMinus2"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_minus_red"
+                android:backgroundTint="@color/white" />
+
+            <TextView
+                android:id="@+id/textCount2"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="1"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnPlus2"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_plus_red"
+                android:backgroundTint="@color/white" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_food_item"
+        android:layout_margin="8dp"
+        android:padding="16dp"
+        android:backgroundTint="@color/settings_bg_color">
+
+        <ImageView
+            android:id="@+id/imageIcon3"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_yoga" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/imageIcon3"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:id="@+id/textTitle3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fruits"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/txt_color_header"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textDesc3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Times per week"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/txt_color_header" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
+
+            <ImageButton
+                android:id="@+id/btnMinus3"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_minus_red"
+                android:backgroundTint="@color/white" />
+
+            <TextView
+                android:id="@+id/textCount3"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="1"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnPlus3"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_plus_red"
+                android:backgroundTint="@color/white" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <Button
+        android:id="@+id/btn_set_now"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="36dp"
+        android:backgroundTint="@color/menuselected"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="Set Now"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textsize_large" />
+
+
+</LinearLayout>

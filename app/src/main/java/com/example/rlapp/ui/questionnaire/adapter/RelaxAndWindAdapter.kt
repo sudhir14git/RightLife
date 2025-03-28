@@ -9,6 +9,7 @@ import com.example.rlapp.ui.questionnaire.pojo.StressReason
 
 class RelaxAndWindAdapter(
     private val reasons: List<StressReason>,
+    private val type: String = "ThinkRight",
     private val onSelectionChanged: (StressReason) -> Unit
 ) : RecyclerView.Adapter<RelaxAndWindAdapter.ReasonViewHolder>() {
 
@@ -19,12 +20,21 @@ class RelaxAndWindAdapter(
             binding.tvTitle.text = reason.title
             binding.ivIcon.setImageResource(reason.iconRes)
 
-            val background = if (reason.isSelected)
-                R.drawable.bg_item_selected_think_right
-            else
-                R.drawable.bg_food_item
+            if (type == "ThinkRight") {
+                val background = if (reason.isSelected)
+                    R.drawable.bg_item_selected_think_right
+                else
+                    R.drawable.bg_food_item
+                binding.root.setBackgroundResource(background)
+            }
 
-            binding.root.setBackgroundResource(background)
+            if (type == "SleepRight") {
+                val background = if (reason.isSelected)
+                    R.drawable.bg_item_selected_sleep_right
+                else
+                    R.drawable.bg_food_item
+                binding.root.setBackgroundResource(background)
+            }
 
             binding.root.setOnClickListener {
                 reason.isSelected = !reason.isSelected

@@ -13,6 +13,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentFoodPreferenceBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.FoodOption
+import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class FoodPreferenceFragment : Fragment() {
 
@@ -28,6 +29,26 @@ class FoodPreferenceFragment : Fragment() {
         FoodOption("Non-Vegetarian", "(All Types Of Meat)", R.drawable.ic_fish)
     )
 
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): FoodPreferenceFragment {
+            val fragment = FoodPreferenceFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +63,7 @@ class FoodPreferenceFragment : Fragment() {
         val adapter = FoodOptionAdapter(foodOptions) { selectedOption ->
             Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireEatRightActivity.navigateToNextPage()
-            },500)
+            }, 500)
         }
 
         binding.rvFoodOptions.layoutManager = GridLayoutManager(requireContext(), 2)

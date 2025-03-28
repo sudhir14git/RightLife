@@ -47,6 +47,7 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
         })
 
         val fragmentList = arrayListOf(
+            "EmotionsPastWeekFragment",
             "ShakeOffBadDayFragment",
             "WhatsInYourMindFragment",
             "AnexityPowerFragment",
@@ -55,7 +56,10 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
             "RelaxAndUnwindFragment",
             "QualityOfSleepFragment",
             "SleepTimeFragment",
-            "BedWakeupTimeFragment"
+            "BedWakeupTimeFragment",
+            "SleepSelectionFragment",
+            "FeelAfterWakingFragment",
+            "BeforeGoingToBedFragment"
         )
 
         questionnairePagerAdapter = QuestionnaireThinkRightPagerAdapter(this)

@@ -11,11 +11,32 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentBedWakeupTimeBinding
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import java.time.Duration
 import java.time.LocalTime
 
 class BedWakeupTimeFragment : Fragment() {
     private lateinit var binding: FragmentBedWakeupTimeBinding
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): BedWakeupTimeFragment {
+            val fragment = BedWakeupTimeFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

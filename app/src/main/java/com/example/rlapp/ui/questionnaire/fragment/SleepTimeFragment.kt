@@ -12,6 +12,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentSleepTimeBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 
 class SleepTimeFragment : Fragment() {
@@ -25,6 +26,26 @@ class SleepTimeFragment : Fragment() {
         ScheduleOption(R.drawable.ic_3_4_times, "I hardly follow a routine", ""),
         ScheduleOption(R.drawable.ic_daily, "My bedtime is reliant on external factors", ""),
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): SleepTimeFragment {
+            val fragment = SleepTimeFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

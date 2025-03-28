@@ -11,7 +11,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentRelaxAndUnwindBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.RelaxAndWindAdapter
-import com.example.rlapp.ui.questionnaire.adapter.StressReasonAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.StressReason
 
 class RelaxAndUnwindFragment : Fragment() {
@@ -33,6 +33,26 @@ class RelaxAndUnwindFragment : Fragment() {
         StressReason("Going for walking or being in nature", R.drawable.ic_rau_9),
         StressReason("Browsing social media or online shopping", R.drawable.ic_rau_10)
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): RelaxAndUnwindFragment {
+            val fragment = RelaxAndUnwindFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

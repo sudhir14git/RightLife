@@ -1,0 +1,1905 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/eat_right_background"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="73dp"
+        android:background="@color/meal_log_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/left_arrow_reclangle"
+            android:layout_marginStart="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/meal_log_title"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageView
+            android:id="@+id/setting_icon"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_green_setting"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_green_download"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/setting_icon"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:orientation="vertical">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/heading_one"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your Meal Summary"
+                    android:textStyle="bold"
+                    android:textColor="@color/meal_log_title"
+                    android:textSize="18sp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_info_circle"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/calorie_balance_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:paddingBottom="10dp"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/balance_icon"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_spoon"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="13dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/meal_log_title"
+                        android:text="Today's Macros"
+                        android:textStyle="bold"
+                        android:textSize="16dp"
+                        android:layout_marginStart="6dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/balance_icon"
+                        app:layout_constraintStart_toEndOf="@+id/balance_icon"/>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/forwardicon"
+                        android:id="@+id/img_macro_arrow"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginEnd="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/today_macros_with_data_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@+id/img_macro_arrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+                        <com.example.rlapp.ai_package.ui.eatright.fragment.HalfCurveProgressBar
+                            android:layout_width="match_parent"
+                            android:layout_height="170dp"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/halfCurveProgressBar"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_centerInParent="true" />
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/layout_progress_cal_info"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/halfCurveProgressBar">
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/layout_subtraction"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent">
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/layout_subtraction_cal_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    android:layout_gravity="left"
+                                    android:orientation="horizontal"
+                                    android:gravity="center"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp">
+
+                                    <ImageView
+                                        android:layout_width="11dp"
+                                        android:layout_height="11dp"
+                                        android:visibility="gone"
+                                        android:scaleType="fitXY"
+                                        android:src="@drawable/ic_carbs" />
+
+                                    <!-- Vertical Layout for TextViews -->
+                                    <androidx.constraintlayout.widget.ConstraintLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        >
+
+                                        <TextView
+                                            android:id="@+id/tv_subtraction_cal_value"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="28sp"
+                                            android:fontFamily="@font/dmsans_bold"
+                                            android:textColor="#B50200"
+                                            android:text="95"
+                                            />
+
+                                        <TextView
+                                            android:id="@+id/tv_subtraction_cal_unit"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="12sp"
+                                            android:layout_marginBottom="3dp"
+                                            android:fontFamily="@font/dmsans_regular"
+                                            android:textColor="@color/text_color_kcal"
+                                            android:text="/ 84 g"
+                                            app:layout_constraintBottom_toBottomOf="@+id/tv_subtraction_cal_value"
+                                            app:layout_constraintStart_toEndOf="@+id/tv_subtraction_cal_value"/>
+                                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                                <RelativeLayout
+                                    android:id="@+id/progressBar_subtractionLayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="10dp"
+                                    app:layout_constraintTop_toBottomOf="@+id/layout_meal_cal_value"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent">
+
+                                    <ProgressBar
+                                        android:id="@+id/carbs_progressBar"
+                                        style="?android:attr/progressBarStyleHorizontal"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="10dp"
+                                        android:progressDrawable="@drawable/progress_bar_subtraction_meal_log"
+                                        android:max="84"
+                                        android:progress="11" />
+
+                                </RelativeLayout>
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:orientation="horizontal">
+                                    <ImageView
+                                        android:layout_width="14dp"
+                                        android:layout_height="14dp"
+                                        android:src="@drawable/ic_carbs"
+                                        android:layout_gravity="center_vertical"
+                                        />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Protien"
+                                        android:textSize="14dp"
+                                        android:layout_marginStart="2dp"/>
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/layout_baguette"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent">
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/layout_baguette_cal_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    android:layout_gravity="left"
+                                    android:orientation="horizontal"
+                                    android:gravity="center"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp">
+
+                                    <ImageView
+                                        android:layout_width="11dp"
+                                        android:layout_height="11dp"
+                                        android:visibility="gone"
+                                        android:scaleType="fitXY"
+                                        android:src="@drawable/ic_carbs" />
+
+                                    <!-- Vertical Layout for TextViews -->
+                                    <androidx.constraintlayout.widget.ConstraintLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        >
+
+                                        <TextView
+                                            android:id="@+id/tv_subtraction_carbs_value"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="28sp"
+                                            android:fontFamily="@font/dmsans_regular"
+                                            android:textColor="#B50200"
+                                            android:text="558"
+                                            tools:ignore="MissingConstraints" />
+
+                                        <TextView
+                                            android:id="@+id/tv_subtraction_carbs_unit"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="12sp"
+                                            android:layout_marginBottom="3dp"
+                                            android:fontFamily="@font/dmsans_regular"
+                                            android:textColor="@color/text_color_kcal"
+                                            android:text="/ 500g"
+                                            app:layout_constraintBottom_toBottomOf="@+id/tv_subtraction_carbs_value"
+                                            app:layout_constraintStart_toEndOf="@+id/tv_subtraction_carbs_value"/>
+                                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                                <RelativeLayout
+                                    android:id="@+id/progressBar_baguetteLayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="10dp"
+                                    app:layout_constraintTop_toBottomOf="@+id/layout_meal_cal_value"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent">
+
+                                    <ProgressBar
+                                        android:id="@+id/protien_progressBar"
+                                        style="?android:attr/progressBarStyleHorizontal"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="10dp"
+                                        android:progressDrawable="@drawable/progress_bar_baguette_meal_log"
+                                        android:max="500"
+                                        android:progress="338" />
+                                </RelativeLayout>
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:orientation="horizontal">
+                                    <ImageView
+                                        android:layout_width="14dp"
+                                        android:layout_height="14dp"
+                                        android:src="@drawable/ic_proteins"
+                                        android:layout_gravity="center_vertical"
+                                        />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Carbs"
+                                        android:textSize="14dp"
+                                        android:layout_marginStart="2dp"/>
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/layout_dewpoint"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent">
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/layout_baguette_fats_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    android:layout_gravity="left"
+                                    android:orientation="horizontal"
+                                    android:gravity="center"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp">
+
+                                    <ImageView
+                                        android:layout_width="11dp"
+                                        android:layout_height="11dp"
+                                        android:visibility="gone"
+                                        android:scaleType="fitXY"
+                                        android:src="@drawable/ic_carbs" />
+
+                                    <!-- Vertical Layout for TextViews -->
+                                    <androidx.constraintlayout.widget.ConstraintLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        >
+
+                                        <TextView
+                                            android:id="@+id/tv_subtraction_fats_value"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="28sp"
+                                            android:fontFamily="@font/dmsans_bold"
+                                            android:textColor="#B50200"
+                                            android:text="75" />
+
+                                        <TextView
+                                            android:id="@+id/tv_subtraction_fats_unit"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="12sp"
+                                            android:layout_marginBottom="3dp"
+                                            android:fontFamily="@font/dmsans_regular"
+                                            android:textColor="@color/text_color_kcal"
+                                            android:text="/ 68 g"
+                                            app:layout_constraintBottom_toBottomOf="@+id/tv_subtraction_fats_value"
+                                            app:layout_constraintStart_toEndOf="@+id/tv_subtraction_fats_value"/>
+                                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                                <RelativeLayout
+                                    android:id="@+id/progressBar_dewpointLayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="10dp"
+                                    app:layout_constraintTop_toBottomOf="@+id/layout_meal_cal_value"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent">
+
+                                    <ProgressBar
+                                        android:id="@+id/fats_progressBar"
+                                        style="?android:attr/progressBarStyleHorizontal"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="10dp"
+                                        android:progressDrawable="@drawable/progress_bar_dewpoint_meal_log"
+                                        android:max="65"
+                                        android:progress="25" />
+                                </RelativeLayout>
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:orientation="horizontal">
+                                    <ImageView
+                                        android:layout_width="14dp"
+                                        android:layout_height="14dp"
+                                        android:src="@drawable/ic_fats"
+                                        android:layout_gravity="center_vertical"
+                                        />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Fats"
+                                        android:textSize="14dp"
+                                        android:layout_marginStart="2dp"/>
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        <ImageView
+                            android:id="@+id/green_tick_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/greentick"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="20dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/layout_progress_cal_info"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="On Track"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:textColor="@color/on_track_color"
+                            android:layout_marginStart="6dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/green_tick_icon"
+                            app:layout_constraintStart_toEndOf="@id/green_tick_icon"/>
+                        <TextView
+                            android:id="@+id/on_track_textLine"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:textStyle="normal"
+                            android:textSize="16dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="28dp"
+                            android:textColor="@color/on_track_color"
+                            android:text="You are in Deficit, keep this on for the full day and there’s nothing stopping you on your weight loss journey."
+                            app:layout_constraintTop_toBottomOf="@+id/green_tick_icon"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <View
+                            android:id="@+id/view_border_line"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="15dp"
+                            android:background="@color/border_line"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/on_track_textLine"/>
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/log_meal_button"
+                            android:layout_width="130dp"
+                            android:layout_height="37dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/log_meal_btn_background"
+                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/view_border_line">
+
+                            <LinearLayout
+                                android:id="@+id/layout_meal_log"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/spoon"
+                                    android:layout_marginEnd="8dp" /> <!-- Space between icon and text -->
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Log Meal"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/lyt_snap_meal"
+                            android:layout_width="130dp"
+                            android:layout_height="37dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/log_meal_btn_background"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/view_border_line">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/run"
+                                    android:layout_marginEnd="8dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Snap Meal"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/today_macro_no_data_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@+id/img_macro_arrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <TextView
+                            android:id="@+id/today_macro_no_data_heading"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="24sp"
+                            android:text="Still Waiting On Your Plate"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="33dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            />
+                        <TextView
+                            android:id="@+id/today_macro_no_data_description"
+                            android:layout_width="297dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="10dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Protein, carbs, fats—we’re tracking them all. But first, log a meal to get started."
+                            app:layout_constraintTop_toBottomOf="@+id/today_macro_no_data_heading"
+                            app:layout_constraintStart_toStartOf="parent"/>
+
+
+                        <View
+                            android:id="@+id/view_border_line_no_data"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="15dp"
+                            android:background="@color/border_line"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/today_macro_no_data_description"/>
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/log_meal_button_no_data"
+                            android:layout_width="130dp"
+                            android:layout_height="37dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/log_meal_btn_background"
+                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/view_border_line_no_data">
+
+                            <LinearLayout
+                                android:id="@+id/layout_meal_log_no_data"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/spoon"
+                                    android:layout_marginEnd="8dp" /> <!-- Space between icon and text -->
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Log Meal"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/lyt_snap_meal_no_data"
+                            android:layout_width="130dp"
+                            android:layout_height="37dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/log_meal_btn_background"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/view_border_line_no_data">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/run"
+                                    android:layout_marginEnd="8dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Snap Meal"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <!-- <ProgressBar
+                         android:id="@+id/progressBar"
+                         style="?android:attr/progressBarStyleHorizontal"
+                         android:layout_width="match_parent"
+                         android:layout_height="22dp"
+                         android:progressDrawable="@drawable/progress_bar"
+                         android:max="2500"
+                         android:progress="1285"
+                         android:layout_marginStart="20dp"
+                         android:layout_marginEnd="20dp"
+                         app:layout_constraintTop_toBottomOf="@+id/vertical_line_green"
+                         app:layout_constraintStart_toStartOf="parent"
+                         app:layout_constraintEnd_toEndOf="parent" />-->
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/todays_micros"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:paddingBottom="10dp"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/balance_icon_"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/balance"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="13dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/meal_log_title"
+                        android:id="@+id/tv_todays_micros"
+                        android:text="Today's Micros"
+                        android:textStyle="bold"
+                        android:textSize="16dp"
+                        android:layout_marginStart="6dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/balance_icon_"
+                        app:layout_constraintStart_toEndOf="@+id/balance_icon_"/>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/today_micros_with_data_layout"
+                        android:layout_width="match_parent"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_todays_micros"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardview_today_micros"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="13dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <ImageView
+                                    android:id="@+id/img_today_micro"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/balance"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"/>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </androidx.cardview.widget.CardView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/meal_log_title"
+                            android:text="You are in Deficit, keep this on \n for the full day and"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:layout_marginTop="13dp"
+                            android:layout_marginStart="6dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/cardview_today_micros"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/today_macro_no_data_layout_one"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_todays_micros"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+                        <TextView
+                            android:id="@+id/today_micros_no_data_heading"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="29dp"
+                            android:layout_marginStart="20dp"
+                            android:text="Tiny Nutrients, Big Impact"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textColor="@color/black"
+                            android:textSize="24sp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"/>
+                        <TextView
+                            android:layout_width="295dp"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:layout_marginStart="20dp"
+                            android:text="Iron, calcium, magnesium—we’ll handle the math. Just log a meal to turn on the insights."
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/today_micros_no_data_heading"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/meal_plan_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="37dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/white_meal_date_bg"
+                    android:gravity="center"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/meal_plan_green_icon"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp" /> <!-- Space between icon and text -->
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Meal Plan"
+                            android:textColor="@color/dark_green_meal_background"
+                            android:textSize="16sp" />
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:src="@drawable/forward_green_color_meal"
+                            android:layout_marginEnd="8dp" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/recipes_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="37dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:background="@drawable/white_meal_date_bg"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/recipe_green_color_icon"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp" /> <!-- Space between icon and text -->
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Recipes"
+                            android:textColor="@color/black"
+                            android:textSize="16sp" />
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:src="@drawable/forward_green_color_meal"
+                            android:layout_marginEnd="8dp" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:paddingBottom="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/img_more_meals"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/forward_green_color_meal"
+                    android:layout_marginEnd="15dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/meal_log_title"
+                    android:id="@+id/tv_meal_logs"
+                    android:text="Your Meal Logs"
+                    android:textStyle="bold"
+                    android:textSize="18dp"
+                    android:layout_marginStart="15dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/today_meal_balance_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:padding="8dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:text="15"
+                            android:textSize="20sp"
+                            android:src="@drawable/today_meal_icon"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="@color/meal_log_title"
+                            />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Today’s Meal Log"
+                            android:textSize="18sp"
+                            android:layout_weight="0.7"
+                            android:layout_marginStart="5dp"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="@color/meal_log_title"
+                            />
+                    </LinearLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/today_meal_log_no_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/today_meal_log_no_data_heading"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="29dp"
+                            android:layout_marginStart="20dp"
+                            android:text="What's On The Meal?"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textColor="@color/black"
+                            android:textSize="24sp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"/>
+                        <TextView
+                            android:id="@+id/today_log_meal_description"
+                            android:layout_width="295dp"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:layout_marginStart="20dp"
+                            android:text="We’re standing by with insights—but we need a meal first. Log one to get rolling!"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/today_meal_log_no_data_heading"/>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginBottom="10dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/today_log_meal_description"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:gravity="center"
+                            android:background="@drawable/green_meal_bg"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:textSize="20sp"
+                                android:src="@drawable/spoon_fork"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:textColor="@color/meal_log_title" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="10dp"
+                                android:text="Log Your Water Intake"
+                                android:textSize="16sp"
+                                android:textColor="@color/white" />
+                        </LinearLayout>
+
+
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerview_meal_plan_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@color/meal_log_background"
+                        android:visibility="gone"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        app:layout_constraintTop_toBottomOf="@+id/layout_meal_plan_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/log_your_meal_balance_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:visibility="gone"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"
+                        android:padding="8dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:textSize="20sp"
+                            android:src="@drawable/spoon_fork"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="@color/meal_log_title"
+                            />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Log Your Next Meal"
+                            android:textSize="16sp"
+                            android:layout_weight="0.7"
+                            android:layout_marginStart="5dp"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="@color/meal_log_title"
+                            />
+                    </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerview_frequently_logged_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/meal_log_background"
+                        android:visibility="visible"
+
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="10dp">
+                        <LinearLayout
+                            android:layout_width="150dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:gravity="center"
+                            android:background="@drawable/green_meal_bg"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:textSize="20sp"
+                                android:visibility="gone"
+                                android:src="@drawable/spoon_fork"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:textColor="@color/meal_log_title"
+                                />
+                            <TextView
+                                android:padding="5dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="10dp"
+                                android:text="Log Other Meals"
+                                android:textSize="14sp"
+                                android:textColor="@color/white"
+                                />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="150dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:gravity="center"
+                            android:background="@drawable/green_meal_bg"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:textSize="20sp"
+                                android:visibility="gone"
+                                android:src="@drawable/spoon_fork"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:textColor="@color/meal_log_title"
+                                />
+                            <TextView
+                                android:padding="5dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="10dp"
+                                android:text="Log This Meal"
+                                android:textSize="14sp"
+                                android:textColor="@color/white"
+                                />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+
+            <LinearLayout
+                android:id="@+id/other_reciepie_might_like_with_data"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:weightSum="10"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_weight="9"
+                    android:textStyle="bold"
+                    android:text="Other Recipes You Might Like"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    />
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:textSize="20sp"
+                    android:src="@drawable/recipes_right_icon"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:textColor="@color/meal_log_title"
+                    />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerview_other_reciepe_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/meal_log_background"
+                android:visibility="gone"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                app:layout_constraintTop_toBottomOf="@+id/layout_meal_plan_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="center"
+                android:weightSum="10"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_weight="9"
+                    android:textStyle="bold"
+                    android:text="Hydration Tracker"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    />
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:textSize="20sp"
+                    android:src="@drawable/recipes_right_icon"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:textColor="@color/meal_log_title"
+                    />
+
+            </LinearLayout>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/today_water_intake_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_gravity="center"
+                        android:weightSum="10"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="15dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_weight="1"
+                            android:src="@drawable/hydration_icon"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="@color/meal_log_title"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_weight="9"
+                            android:gravity="center_vertical"
+                            android:textStyle="bold"
+                            android:text="Today’s Water Intake"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="10dp"
+                        android:weightSum="10"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:orientation="horizontal">
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="172dp"
+                            android:layout_height="85dp"
+                            android:background="@drawable/border_green"
+                            android:id="@+id/lyt_water_intake">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="9"
+                                android:textStyle="bold"
+                                android:id="@+id/tv_water_quantity"
+                                android:text="500"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_marginTop="20dp"
+                                android:textSize="18sp"
+                                android:textColor="@color/black"
+                                />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="9"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toEndOf="@id/tv_water_quantity"
+                                android:layout_marginStart="5dp"
+                                app:layout_constraintTop_toTopOf="@id/tv_water_quantity"
+                                android:text="ml"
+                                android:id="@+id/tv_quantity_ml"
+                                android:textSize="14sp"
+                                android:textColor="@color/black"
+                                />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="@id/tv_water_quantity"
+                                app:layout_constraintTop_toBottomOf="@id/tv_water_quantity"
+                                app:layout_constraintEnd_toEndOf="@id/tv_quantity_ml"
+                                android:gravity="center_vertical"
+                                android:textStyle="bold"
+                                android:text="/3000ml"
+                                android:textSize="13sp"
+                                android:textColor="@color/black"
+                                />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <com.example.rlapp.ai_package.ui.eatright.fragment.GlassWithWaterView
+                            android:id="@+id/glass_with_water_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="95dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="10dp"
+                        android:gravity="center"
+                        android:background="@drawable/green_meal_bg"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:textSize="20sp"
+                            android:src="@drawable/spoon_fork"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="@color/meal_log_title" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Log Your Water Intake"
+                            android:textSize="16sp"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="center"
+                android:weightSum="10"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_weight="9"
+                    android:textStyle="bold"
+                    android:text="Weight Tracker"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    />
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:textSize="20sp"
+                    android:src="@drawable/recipes_right_icon"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:textColor="@color/meal_log_title"
+                    />
+
+            </LinearLayout>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/weight_tracker_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_gravity="center"
+                        android:weightSum="10"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="15dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_weight="1"
+                            android:textSize="20sp"
+                            android:src="@drawable/last_logged_icon"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="@color/meal_log_title"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_weight="6"
+                            android:layout_marginTop="5dp"
+                            android:textStyle="bold"
+                            android:text="Last Logged"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:textAlignment="center"
+                            android:layout_weight="3"
+                            android:textStyle="bold"
+                            android:text="27 Jan, 2025"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            />
+                    </LinearLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="10dp"
+                        android:weightSum="10"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/last_logged_no_data"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="10dp"
+                            android:text="No weight data found"
+                            android:textSize="16dp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            />
+                        <TextView
+                            android:id="@+id/text_heading_calories"
+                            android:layout_width="wrap_content"
+                            android:visibility="gone"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="20dp"
+                            android:text="86.5"
+                            android:textSize="36dp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
+                        <TextView
+                            android:id="@+id/text_heading_calories_unit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kg"
+                            android:visibility="gone"
+                            android:layout_marginBottom="10dp"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/dmsans_regular"
+                            app:layout_constraintStart_toEndOf="@+id/text_heading_calories"
+                            app:layout_constraintBottom_toBottomOf="@+id/text_heading_calories"/>
+                        <LinearLayout
+                            android:id="@+id/new_improvement_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:visibility="gone"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginBottom="10dp"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            app:layout_constraintTop_toBottomOf="@+id/text_heading_calories"
+                            app:layout_constraintStart_toStartOf="@+id/text_heading_calories"
+                            app:layout_constraintEnd_toEndOf="@+id/text_heading_calories">
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:visibility="gone"
+                                android:src="@drawable/spoon_fork"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:textColor="@color/meal_log_title" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Improvement"
+                                android:textSize="12sp"
+                                android:textColor="@color/black" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="119dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginBottom="10dp"
+                            android:gravity="center"
+                            android:background="@drawable/green_meal_bg"
+                            android:orientation="horizontal"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent">
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:textSize="20sp"
+                                android:visibility="gone"
+                                android:src="@drawable/spoon_fork"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:textColor="@color/meal_log_title" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="15dp"
+                                android:text="Loss new weight"
+                                android:textSize="12sp"
+                                android:textColor="@color/white" />
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="15dp"
+                android:id="@+id/tv_go_deeper1"
+                android:text="Go Deeper"/>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview3"
+                android:layout_width="match_parent"
+                android:background="@drawable/extreme_light_orange"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="7dp"
+                app:cardUseCompatPadding="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="20dp">
+                        <ImageView
+                            android:layout_width="130dp"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="10dp"
+                            android:src="@drawable/health_icon"
+                            android:id="@+id/img_health"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:layout_toRightOf="@id/img_health"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_health"
+                            android:text="5 best exercises to streng then arthritic knees with physical therapy physical therapy physical theraaa"/>
+
+                    </RelativeLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp"
+                        android:weightSum="3"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_name"
+                            android:text="Aishwarya"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_date"
+                            android:text="12 sept 2024"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textAlignment="center"
+                            android:layout_weight="1"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_time"
+                            android:text="5 min read"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="15dp"
+                android:id="@+id/tv_go_deeper"
+                android:text="Go Deeper"/>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview2"
+                android:layout_width="match_parent"
+                android:background="@drawable/extreme_light_orange"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="7dp"
+                app:cardUseCompatPadding="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="20dp">
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/exercise_icon"
+                            android:layout_marginEnd="10dp"
+                            android:id="@+id/img_exercise"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:layout_toLeftOf="@id/img_exercise"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_exercise"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"/>
+
+                    </RelativeLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="12sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:drawableStart="@drawable/awesome_tag"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/tv_pos"
+                            android:text="Positivity"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="12sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:drawablePadding="5dp"
+                            android:drawableStart="@drawable/ionic_eye"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/tv_count"
+                            android:text="243"/>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="15dp"
+                android:id="@+id/tv_health_title"
+                android:text="Check Your Health Snapshot"/>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview4"
+                android:layout_width="match_parent"
+                android:background="@drawable/extreme_light_orange"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="7dp"
+                app:cardUseCompatPadding="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="20dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="170dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/scan_face"
+                            android:layout_marginEnd="10dp"
+                            android:id="@+id/img_scan"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:layout_below="@id/img_scan"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/tv_scan"
+                            android:text="Get detailed health vitals with a 30-second face scan……."/>
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="center"
+                android:weightSum="10"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:textSize="20sp"
+                    android:src="@drawable/last_logged_icon"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:textColor="@color/meal_log_title"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_weight="3"
+                    android:layout_marginTop="5dp"
+                    android:text="Health Cam"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="6"
+                    android:gravity="center"
+                    android:background="@drawable/green_meal_bg"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/qr_scanner"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:textColor="@color/meal_log_title"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="10dp"
+                        android:text="Scan Now"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

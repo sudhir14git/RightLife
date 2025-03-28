@@ -23,4 +23,9 @@ class GoogleLoginTokenResponse {
     @SerializedName("role")
     @Expose
     var role: String? = null
+
+    @SerializedName("isNewUser")
+    @Expose
+    var isNewUser: Boolean? = null
+
 }

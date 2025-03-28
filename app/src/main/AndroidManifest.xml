@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
@@ -182,52 +183,12 @@
         <activity android:name=".ui.NewSleepSounds.NewSleepSoundActivity" />
 
 
-        <activity android:name="com.example.rlapp.ui.jounal.JournalingActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.JournalingListActivity" />
 
-        <activity android:name="com.example.rlapp.ui.healthcam.NewHealthCamReportActivity" />
-
-        <activity android:name="com.example.rlapp.ui.jounal.MyJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.EditJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.thoughtoftheday.ThoughtOfTheDayDetailActivity" />
-        <activity android:name="com.example.rlapp.ui.Wellness.SeriesEpisodeDetailActivity" />
-
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.JournalNewActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.JournalPromptActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.Journal4QuestionsActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.FreeFormJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.BulletJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.GriefJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.JournalListActivity" />
-
-        <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity1" />
-        <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity2" />
-        <activity android:name="com.example.rlapp.ui.affirmation.TodaysAffirmationActivity" />
-        <activity android:name="com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity"/>
-        <activity android:name="com.example.rlapp.newdashboard.HomeDashboardActivity" />
-        <activity android:name="com.example.rlapp.ui.breathwork.BreathworkActivity" />
-        <activity android:name="com.example.rlapp.ui.breathwork.BreathworkSessionActivity" />
-        <activity android:name="com.example.rlapp.ui.breathwork.BreathworkPracticeActivity" />
-
-        <activity android:name="com.example.rlapp.ui.settings.SettingsNewActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.AppSettingsActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.NotificationsNewActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.EmailNotificationsNewActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.SupportActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.FAQNewActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.FAQDetailsActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.GeneralInformationActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.HtmlTextActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.SubscriptionPlansActivity" />
-
-        <activity android:name="com.example.rlapp.ui.profile_new.ProfileNewActivity" />
-        <activity android:name="com.example.rlapp.ui.profile_new.ProfileSettingsActivity" />
-        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountSelectionActivity" />
-        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountReasonActivity" />
-        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountEmailDataActivity" />
 
         <activity android:name="com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity" />
         <activity android:name="com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity" />
+
+        <activity android:name="com.example.rlapp.ai_package.ui.MainAIActivity" />
 
 
 

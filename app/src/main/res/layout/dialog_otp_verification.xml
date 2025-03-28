@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@drawable/roundedcornershape"
+    android:gravity="center">
+
+    <!-- Step Circle -->
+    <TextView
+        android:id="@+id/tvCountdown"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_circle"
+        android:text="4"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Close Button -->
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/close_journal"
+        android:layout_gravity="end" />
+
+    <!-- Heading -->
+    <TextView
+        android:id="@+id/tv_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter The OTP Below"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp" />
+
+    <!-- Subheading -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please enter the four digit code sent to"
+        android:layout_marginTop="4dp" />
+
+    <!-- Phone Number and Change -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp">
+
+        <TextView
+            android:id="@+id/tv_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+91 1234567890"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change"
+            android:textColor="@color/black"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- OTP Inputs -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:gravity="center">
+
+        <EditText
+            android:id="@+id/et_otp1"
+            style="@style/OtpEditTextStyle" />
+
+        <EditText
+            android:id="@+id/et_otp2"
+            style="@style/OtpEditTextStyle"
+            android:layout_marginStart="8dp" />
+
+        <EditText
+            android:id="@+id/et_otp3"
+            style="@style/OtpEditTextStyle"
+            android:layout_marginStart="8dp" />
+
+        <EditText
+            android:id="@+id/et_otp4"
+            style="@style/OtpEditTextStyle"
+            android:layout_marginStart="8dp" />
+
+        <EditText
+            android:id="@+id/etOtp5"
+            style="@style/OtpEditTextStyle"
+            android:layout_marginStart="8dp" />
+
+        <EditText
+            android:id="@+id/etOtp6"
+            style="@style/OtpEditTextStyle"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- Verification Result -->
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(otp sent)"
+        android:textSize="10sp"
+        android:layout_margin="8dp" />
+
+    <!-- Verify Button -->
+    <Button
+        android:id="@+id/btn_verify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="Verify"
+        android:textSize="16sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/menuselected" />
+
+    <Button
+        android:id="@+id/tv_resend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="Resend OTP"
+        android:textSize="16sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/color_bg_button_affirmed" />
+</LinearLayout>

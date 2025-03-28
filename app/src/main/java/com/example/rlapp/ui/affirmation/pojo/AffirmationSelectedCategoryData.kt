@@ -47,4 +47,10 @@ class AffirmationSelectedCategoryData {
     @SerializedName("__v")
     @Expose
     var v: Int? = null
+
+    @SerializedName("categoryName")
+    @Expose
+    var categoryName: String? = null
+
+
 }

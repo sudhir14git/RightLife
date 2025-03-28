@@ -55,6 +55,8 @@ import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse;
 import com.example.rlapp.ui.payment.PaymentCardResponse;
+import com.example.rlapp.ui.profile_new.pojo.OtpRequest;
+import com.example.rlapp.ui.profile_new.pojo.VerifyOtpRequest;
 import com.example.rlapp.ui.settings.pojo.FAQResponse;
 import com.example.rlapp.ui.settings.pojo.GeneralInformationResponse;
 import com.example.rlapp.ui.therledit.EpisodeTrackRequest;
@@ -777,7 +779,8 @@ public interface ApiService {
 
     //article details
     @Headers("Content-Type: application/json")
-    @GET("content/{contentId}") // Use {contentId} as a path parameter
+    @GET("content/{contentId}")
+    // Use {contentId} as a path parameter
     Call<JsonElement> getArticleDetails(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Path("contentId") String contentId // Pass contentId as a path parameter
@@ -785,7 +788,7 @@ public interface ApiService {
     );
 
     @POST("content/like")
-    Call<ResponseBody> ArticleLikeRequest(@Header("Authorization") String authToken,@Body ArticleLikeRequest request);
+    Call<ResponseBody> ArticleLikeRequest(@Header("Authorization") String authToken, @Body ArticleLikeRequest request);
 
     @Headers("Content-Type: application/json")
     @GET("app/type/content")
@@ -881,8 +884,8 @@ public interface ApiService {
     Call<ResponseBody> createAffirmationPlaylist(
             @Header("Authorization") String authToken,
             @Body CreateAffirmationPlaylistRequest affirmationPlaylistRequest
-            );
-  
+    );
+
     // API TO get series episode detail
     // Define the GET request with a dynamic ID path and optional query parameter
     @GET("series/{seriesId}/episode/{episodeId}")
@@ -1029,12 +1032,28 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Path("playlistId") String playlistId
     );
-// get user playlist
-@Headers("Content-Type: application/json")
-@GET("sleepSound/sleepSoundPlaylist")
-Call<SleepSoundPlaylistResponse> getUserCreatedPlaylist(
-        @Header("Authorization") String authToken
-);
+
+    // get user playlist
+    @Headers("Content-Type: application/json")
+    @GET("sleepSound/sleepSoundPlaylist")
+    Call<SleepSoundPlaylistResponse> getUserCreatedPlaylist(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("auth/mobile/generate-otp?type=changePhoneNumber")
+    Call<ResponseBody> generateOtpForPhoneNumber(
+            @Header("Authorization") String authToken,
+            @Body OtpRequest otpRequest
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("user/verifyPhoneNumber?actionType=verifyNewPhoneNumber")
+    Call<ResponseBody> verifyOtpForPhoneNumber(
+            @Header("Authorization") String authToken,
+            @Body VerifyOtpRequest verifyOtpRequest
+    );
+
 
 }
 

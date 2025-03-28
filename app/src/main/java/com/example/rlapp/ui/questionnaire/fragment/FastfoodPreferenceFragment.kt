@@ -12,6 +12,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentFastfoodPreferenceBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 
 class FastfoodPreferenceFragment : Fragment() {
@@ -25,6 +26,26 @@ class FastfoodPreferenceFragment : Fragment() {
         ScheduleOption(R.drawable.ic_3_4_times, "3-4 times a week", ""),
         ScheduleOption(R.drawable.ic_daily, "Daily", ""),
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): FastfoodPreferenceFragment {
+            val fragment = FastfoodPreferenceFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

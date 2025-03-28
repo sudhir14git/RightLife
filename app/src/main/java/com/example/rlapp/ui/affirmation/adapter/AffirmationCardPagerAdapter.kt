@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.rlapp.R
@@ -43,12 +44,63 @@ class AffirmationCardPagerAdapter(
             .placeholder(R.drawable.image_affirmation_card)
             .into(imageAffirmationCard)*/
 
-        imageAffirmationCard.imageTintList = Utils.getColorStateListFromColorCode(item.textColor)
-        cardViewAffirmation.backgroundTintList = Utils.getColorStateListFromColorCode(item.bgColor)
+        //imageAffirmationCard.imageTintList = Utils.getColorStateListFromColorCode(item.textColor)
+        //cardViewAffirmation.backgroundTintList = Utils.getColorStateListFromColorCode(item.bgColor)
+
+        // set card bg
+
+        when (item.categoryName?.lowercase()) {
+            "self-love" -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_selflove)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_selflove)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_selflove))
+            }
+            "manifestation" -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_manifestation)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_manifestation)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_manifestation))
+            }
+            "health" -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_health)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_health)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_health))
+            }
+            "abundance" -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_abundance)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_abundance)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_abundance))
+            }
+            "gratitude" -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_gratitude)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_gratitude)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_gratitude))
+            }
+            "relationships" -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_relationship)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_relationship)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_relationship))
+            }
+            "mindfulness" -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_mindfulness)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_mindfulness)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_mindfulness))
+            }
+            "stress relief" -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_stressrelief)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_stressrelief)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_stressrelief))
+            }
+            else -> {
+                imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_gratitude)
+                cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_gratitude)
+                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_gratitude))
+            }
+        }
+
 
         tvAffirmationTitle.text = item.title
         tvAffirmationAuthor.text = "${item.artist?.firstName} ${item.artist?.firstName}"
-        tvAffirmationAuthor.setTextColor(Utils.getColorFromColorCode(item.textColor))
+
 
         // Load image using Glide
         //Glide.with(context).load(item).into(image)

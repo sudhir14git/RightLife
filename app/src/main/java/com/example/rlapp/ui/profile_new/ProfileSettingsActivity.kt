@@ -1,7 +1,10 @@
 package com.example.rlapp.ui.profile_new
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rlapp.RetrofitData.ApiClient
@@ -21,6 +24,12 @@ class ProfileSettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileSettingsBinding
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
+    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            setUserData()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
@@ -32,7 +41,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         setupPersonalizationRecyclerView()
 
         binding.llProfile.setOnClickListener{
-            startActivity(Intent(this, ProfileNewActivity::class.java))
+            activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
         }
         binding.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsNewActivity::class.java))

@@ -15,6 +15,7 @@ import com.example.rlapp.databinding.BottomsheetAwakeNightBinding
 import com.example.rlapp.databinding.FragmentWhatsInYourMindBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.StressReasonAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.StressReason
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
@@ -37,6 +38,26 @@ class WhatsInYourMindFragment : Fragment() {
         StressReason("Something else", R.drawable.ic_stress_reason_9),
         StressReason("None", R.drawable.ic_stress_reason_10)
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): WhatsInYourMindFragment {
+            val fragment = WhatsInYourMindFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

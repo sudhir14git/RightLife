@@ -27,6 +27,7 @@ import com.example.rlapp.databinding.FragmentSchedulePreferenceBinding
 import com.example.rlapp.ui.affirmation.ReminderReceiver
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.text.SimpleDateFormat
@@ -49,6 +50,26 @@ class SchedulePreferenceFragment : Fragment() {
         ScheduleOption(R.drawable.ic_schedule_4, "Rarely", "My timings are all over the place"),
         ScheduleOption(R.drawable.ic_schedule_5, "Never", "I don’t follow any pattern")
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): SchedulePreferenceFragment {
+            val fragment = SchedulePreferenceFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -146,8 +167,7 @@ class SchedulePreferenceFragment : Fragment() {
                             if (selectedHour <= 12) {
                                 textView.text = "$hourFormatted:$minuteFormatted $amPm"
                                 selectedMorningTime = textView.text.toString()
-                            }
-                            else {
+                            } else {
                                 Toast.makeText(
                                     requireContext(),
                                     "Please select a morning time (AM only)",
@@ -160,8 +180,7 @@ class SchedulePreferenceFragment : Fragment() {
                             if (selectedHour in 12..18) {
                                 textView.text = "$hourFormatted:$minuteFormatted $amPm"
                                 selectedAfternoonTime = textView.text.toString()
-                            }
-                            else {
+                            } else {
                                 Toast.makeText(
                                     requireContext(),
                                     "Please select a time in the afternoon.",
@@ -174,8 +193,7 @@ class SchedulePreferenceFragment : Fragment() {
                             if (selectedHour >= 18) {
                                 textView.text = "$hourFormatted:$minuteFormatted $amPm"
                                 selectedEveningTime = textView.text.toString()
-                            }
-                            else {
+                            } else {
                                 Toast.makeText(
                                     requireContext(),
                                     "Please select a time in the evening (6:00 PM to 11:59 PM).",

@@ -17,6 +17,7 @@ import com.example.rlapp.ui.questionnaire.fragment.PhysicalActivitiesFragment
 import com.example.rlapp.ui.questionnaire.fragment.SchedulePreferenceFragment
 import com.example.rlapp.ui.questionnaire.fragment.StepsTakenFragment
 import com.example.rlapp.ui.questionnaire.fragment.WaterCaffeineIntakeFragment
+import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class QuestionnaireEatRightPagerAdapter(fragment: FragmentActivity) :
     FragmentStateAdapter(fragment) {
@@ -25,21 +26,22 @@ class QuestionnaireEatRightPagerAdapter(fragment: FragmentActivity) :
     override fun getItemCount() = fragmentList.size
 
     override fun createFragment(position: Int): Fragment {
+        val question = Question("Q1", "How do you to feel?", "EatRight")
         return when (position) {
-            0 -> FoodPreferenceFragment()
-            1 -> MealPreferenceFragment()
-            2 -> SchedulePreferenceFragment()
-            3 -> FoodServingFragment()
-            4 -> WaterCaffeineIntakeFragment()
-            5 -> FastfoodPreferenceFragment()
-            6 -> EatAffectMoodFragment()
-            7 -> ExercisePreferenceFragment()
-            8 -> ActiveDuringSessionsFragment()
-            9 -> PhysicalActivitiesFragment()
-            10 -> ExerciseLocationFragment()
-            11 -> StepsTakenFragment()
-            12 -> EnergyLevelFragment()
-            13 -> BreaksToStretchFragment()
+            0 -> FoodPreferenceFragment.newInstance(question)
+            1 -> MealPreferenceFragment.newInstance(question)
+            2 -> SchedulePreferenceFragment.newInstance(question)
+            3 -> FoodServingFragment.newInstance(question)
+            4 -> WaterCaffeineIntakeFragment.newInstance(question)
+            5 -> FastfoodPreferenceFragment.newInstance(question)
+            6 -> EatAffectMoodFragment.newInstance(question)
+            7 -> ExercisePreferenceFragment.newInstance(question)
+            8 -> ActiveDuringSessionsFragment.newInstance(question)
+            9 -> PhysicalActivitiesFragment.newInstance(question)
+            10 -> ExerciseLocationFragment.newInstance(question)
+            11 -> StepsTakenFragment.newInstance(question)
+            12 -> EnergyLevelFragment.newInstance(question)
+            13 -> BreaksToStretchFragment.newInstance(question)
             else -> throw IllegalStateException("Invalid position")
         }
     }

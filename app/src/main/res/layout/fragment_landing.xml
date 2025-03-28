@@ -1,0 +1,1454 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/backgroundimage">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="73dp"
+        android:background="@color/header_background"
+        app:layout_constraintTop_toTopOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/back"
+            android:layout_marginStart="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/text_color"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/setting_icon"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/settingicon"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/download"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/setting_icon" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/heading_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Caloric Summary"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/infocircle"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/calorie_balance_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/calorie_no_data_filled_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/balance_icon_no_data"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/balance"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="13dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calorie Balance"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:layout_marginStart="6dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/balance_icon_no_data"
+                            app:layout_constraintStart_toEndOf="@+id/balance_icon_no_data" />
+
+                        <View
+                            android:id="@+id/view_top_border_line_calorie_no_data"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/border_line"
+                            app:layout_constraintTop_toBottomOf="@+id/balance_icon_no_data"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <TextView
+                            android:id="@+id/calorie_no_data_text_heading"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="24dp"
+                            android:text="No Meals Logged"
+                            android:layout_marginTop="19dp"
+                            android:layout_marginStart="20dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/view_top_border_line_calorie_no_data" />
+
+                        <TextView
+                            android:id="@+id/calorie_no_data_text_description"
+                            android:layout_width="320dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="20dp"
+                            android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/calorie_no_data_text_heading" />
+
+                        <View
+                            android:id="@+id/view_border_line_no_data"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="15dp"
+                            android:background="@color/border_line"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/calorie_no_data_text_description" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/log_meal_button_no_data"
+                            android:layout_width="150dp"
+                            android:layout_height="35dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/log_meal_btn_background"
+                            android:gravity="center"
+                            android:layout_marginBottom="20dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/view_border_line_no_data">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/spoon"
+                                    android:layout_marginEnd="8dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Log Meal"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/lyt_snap_meal_no_data"
+                            android:layout_width="150dp"
+                            android:layout_height="35dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginTop="20dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:layout_marginBottom="20dp"
+                            android:background="@drawable/add_workout_btn_background"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/view_border_line_no_data">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/run"
+                                    android:layout_marginEnd="8dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Workout"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/calorie_layout_data_filled"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/balance_icon"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/balance"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="13dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calorie Balance"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:layout_marginStart="6dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/balance_icon"
+                            app:layout_constraintStart_toEndOf="@+id/balance_icon" />
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/forwardicon"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="20dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <View
+                            android:id="@+id/horizontal_dotted_green"
+                            android:layout_width="56dp"
+                            android:layout_height="6dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/dotted_line_green"
+                            app:layout_constraintEnd_toStartOf="@+id/calorie_count"
+                            app:layout_constraintTop_toTopOf="@+id/calorie_count"
+                            app:layout_constraintBottom_toBottomOf="@+id/calorie_count"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="20dp" />
+
+                        <TextView
+                            android:id="@+id/calorie_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1500"
+                            android:textSize="45dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_color_1500"
+                            android:layout_marginTop="61dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="kCal"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_color_kcal"
+                            app:layout_constraintEnd_toEndOf="@+id/calorie_count"
+                            app:layout_constraintStart_toStartOf="@+id/calorie_count"
+                            app:layout_constraintTop_toBottomOf="@+id/calorie_count" />
+
+                        <View
+                            android:id="@+id/horizontal_dotted_red"
+                            android:layout_width="56dp"
+                            android:layout_height="6dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/dotted_line_red"
+                            app:layout_constraintStart_toEndOf="@+id/calorie_count"
+                            app:layout_constraintTop_toTopOf="@+id/calorie_count"
+                            app:layout_constraintBottom_toBottomOf="@+id/calorie_count"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="20dp" />
+
+                        <View
+                            android:id="@+id/vertical_dotted_green"
+                            android:layout_width="6dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/dotted_vertical_green_background"
+                            app:layout_constraintTop_toBottomOf="@+id/horizontal_dotted_green"
+                            app:layout_constraintStart_toStartOf="@+id/horizontal_dotted_green" />
+
+                        <View
+                            android:id="@+id/vertical_dotted_red"
+                            android:layout_width="6dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/dotted_line_vertical"
+                            app:layout_constraintTop_toBottomOf="@+id/horizontal_dotted_red"
+                            app:layout_constraintEnd_toEndOf="@+id/horizontal_dotted_red" />
+
+                        <TextView
+                            android:id="@+id/textView1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold"
+                            android:text="1285"
+                            android:textSize="22dp"
+                            android:textColor="@color/dotted_green"
+                            app:layout_constraintTop_toBottomOf="@+id/vertical_dotted_green"
+                            app:layout_constraintStart_toStartOf="@+id/vertical_dotted_green"
+                            app:layout_constraintEnd_toEndOf="@+id/vertical_dotted_green" />
+
+                        <TextView
+                            android:id="@+id/textViewBurnValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold"
+                            android:text="2751"
+                            android:textSize="22dp"
+                            android:textColor="@color/dotted_red"
+                            app:layout_constraintTop_toBottomOf="@+id/vertical_dotted_red"
+                            app:layout_constraintStart_toStartOf="@+id/vertical_dotted_red"
+                            app:layout_constraintEnd_toEndOf="@+id/vertical_dotted_red" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/intake_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:text="INTAKE"
+                            android:textSize="10dp"
+                            android:textColor="@color/dotted_green"
+                            android:background="@drawable/button_green"
+                            android:padding="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/textView1"
+                            app:layout_constraintStart_toStartOf="@+id/textView1"
+                            app:layout_constraintEnd_toEndOf="@+id/textView1" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/burned_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:textSize="10dp"
+                            android:text="BURNED"
+                            android:textColor="@color/dotted_red"
+                            android:background="@drawable/button_red"
+                            android:padding="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/textViewBurnValue"
+                            app:layout_constraintStart_toStartOf="@+id/textViewBurnValue"
+                            app:layout_constraintEnd_toEndOf="@+id/textViewBurnValue" />
+
+                        <View
+                            android:id="@+id/vertical_line_green"
+                            android:layout_width="2dp"
+                            android:layout_height="28dp"
+                            android:background="@drawable/vertical_line_green"
+                            app:layout_constraintTop_toBottomOf="@+id/intake_btn"
+                            app:layout_constraintEnd_toEndOf="@+id/intake_btn"
+                            app:layout_constraintStart_toStartOf="@+id/intake_btn" />
+
+                        <View
+                            android:id="@+id/vertical_line_red"
+                            android:layout_width="2dp"
+                            android:layout_height="28dp"
+                            android:background="@drawable/vertical_line_red"
+                            app:layout_constraintTop_toBottomOf="@+id/burned_btn"
+                            app:layout_constraintEnd_toEndOf="@+id/burned_btn"
+                            app:layout_constraintStart_toStartOf="@+id/burned_btn" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/progressBarLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            app:layout_constraintTop_toBottomOf="@+id/vertical_line_green"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent">
+
+                            <ProgressBar
+                                android:id="@+id/progressBar"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="0dp"
+                                android:layout_height="22dp"
+                                android:progressDrawable="@drawable/progress_bar"
+                                android:max="2500"
+                                android:progress="1285"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/circleIndicatorGuideline"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_percent="0" />
+
+                            <View
+                                android:id="@+id/circleIndicator"
+                                android:layout_width="16dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/white_circle_indicator_background"
+                                app:layout_constraintTop_toTopOf="@id/progressBar"
+                                app:layout_constraintBottom_toBottomOf="@id/progressBar"
+                                app:layout_constraintStart_toStartOf="@id/circleIndicatorGuideline" />
+
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/overlayGuideline"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_percent="0" />
+
+                            <View
+                                android:id="@+id/transparentOverlay"
+                                android:layout_width="90dp"
+                                android:layout_height="32dp"
+                                android:background="@drawable/border_black"
+                                app:layout_constraintTop_toTopOf="@id/progressBar"
+                                app:layout_constraintBottom_toBottomOf="@id/progressBar"
+                                app:layout_constraintStart_toStartOf="@id/overlayGuideline" />
+
+                            <ImageView
+                                android:id="@+id/imageViewBelowOverlay"
+                                android:layout_width="90dp"
+                                android:layout_height="14dp"
+                                android:layout_marginTop="8dp"
+                                android:src="@drawable/weigth_loss_icon"
+                                app:layout_constraintTop_toBottomOf="@id/transparentOverlay"
+                                app:layout_constraintStart_toStartOf="@id/overlayGuideline"
+                                app:layout_constraintEnd_toEndOf="@id/transparentOverlay" />
+
+                            <TextView
+                                android:id="@+id/weightLossZoneText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Weight Loss Zone"
+                                android:textColor="@color/black"
+                                android:textSize="8dp"
+                                app:layout_constraintTop_toBottomOf="@+id/imageViewBelowOverlay"
+                                app:layout_constraintStart_toStartOf="@id/overlayGuideline"
+                                app:layout_constraintEnd_toEndOf="@id/transparentOverlay" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        <!-- <ProgressBar
+                             android:id="@+id/progressBar"
+                             style="?android:attr/progressBarStyleHorizontal"
+                             android:layout_width="match_parent"
+                             android:layout_height="22dp"
+                             android:progressDrawable="@drawable/progress_bar"
+                             android:max="2500"
+                             android:progress="1285"
+                             android:layout_marginStart="20dp"
+                             android:layout_marginEnd="20dp"
+                             app:layout_constraintTop_toBottomOf="@+id/vertical_line_green"
+                             app:layout_constraintStart_toStartOf="parent"
+                             app:layout_constraintEnd_toEndOf="parent" />-->
+                        <ImageView
+                            android:id="@+id/green_tick_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/greentick"
+                            android:layout_marginTop="40dp"
+                            android:layout_marginStart="20dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/progressBarLayout" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="On Track"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:textColor="@color/on_track_color"
+                            android:layout_marginStart="6dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/green_tick_icon"
+                            app:layout_constraintStart_toEndOf="@id/green_tick_icon" />
+
+                        <TextView
+                            android:id="@+id/on_track_textLine"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:textStyle="normal"
+                            android:textSize="16dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="28dp"
+                            android:textColor="@color/on_track_color"
+                            android:text="You are in Deficit, keep this on for the full day and there’s nothing stopping you on your weight loss journey."
+                            app:layout_constraintTop_toBottomOf="@+id/green_tick_icon"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <View
+                            android:id="@+id/view_border_line"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="15dp"
+                            android:background="@color/border_line"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/on_track_textLine" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/log_meal_button"
+                            android:layout_width="150dp"
+                            android:layout_height="35dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/log_meal_btn_background"
+                            android:gravity="center"
+                            android:layout_marginBottom="20dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/view_border_line">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/spoon"
+                                    android:layout_marginEnd="8dp" /> <!-- Space between icon and text -->
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Log Meal"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/lyt_snap_meal"
+                            android:layout_width="150dp"
+                            android:layout_height="35dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginTop="20dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:layout_marginBottom="20dp"
+                            android:background="@drawable/add_workout_btn_background"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/view_border_line">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/run"
+                                    android:layout_marginEnd="8dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Workout"
+                                    android:textColor="@color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/heading_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Movement Summary"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/infocircle"
+                app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/activity_factor_layout"
+                android:layout_width="match_parent"
+                android:layout_height="131dp"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:visibility="visible"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/heading_two"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/activity_icon"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/activity_icon"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="13dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Activity Factor"
+                        android:textStyle="bold"
+                        android:textSize="16dp"
+                        android:layout_marginStart="6dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/activity_icon"
+                        app:layout_constraintStart_toEndOf="@+id/activity_icon" />
+
+                    <ImageView
+                        android:id="@+id/activity_forward_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/forwardicon"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginEnd="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/text_activity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.48"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="56dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:layout_width="62dp"
+                        android:layout_height="13dp"
+                        android:src="@drawable/improvement"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintTop_toBottomOf="@+id/text_activity"
+                        app:layout_constraintStart_toStartOf="@+id/text_activity"
+                        app:layout_constraintEnd_toEndOf="@+id/text_activity" />
+
+                    <com.example.rlapp.ai_package.ui.moveright.graphs.LineGraphView
+                        android:id="@+id/line_graph"
+                        android:layout_width="155dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/workout_layout"
+                android:layout_width="match_parent"
+                android:layout_height="342dp"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/activity_factor_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/workout_icon"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/workout_icon"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="13dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Workouts"
+                        android:textStyle="bold"
+                        android:textSize="16dp"
+                        android:layout_marginStart="6dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/workout_icon"
+                        app:layout_constraintStart_toEndOf="@+id/workout_icon" />
+
+                    <ImageView
+                        android:id="@+id/workout_forward_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/forwardicon"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginEnd="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/workout_border_line"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/border_line"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/workout_icon" />
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/carouselViewPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="240dp"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/workout_border_line"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/dotsLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@+id/carouselViewPager"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/step_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/workout_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/steps_no_data_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No Data Yet"
+                        android:textSize="24dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:visibility="gone"
+                        android:layout_marginTop="73dp"
+                        android:layout_marginStart="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/stes_no_data_text_description"
+                        android:layout_width="299dp"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="16dp"
+                        android:layout_marginTop="10dp"
+                        android:visibility="gone"
+                        android:text="Get to know your cardio fitness index, based on your phsyical &amp; cardiovascular health"
+                        app:layout_constraintStart_toStartOf="@+id/steps_no_data_text"
+                        app:layout_constraintTop_toBottomOf="@+id/steps_no_data_text" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/sync_with_apple_button"
+                        android:layout_width="270dp"
+                        android:layout_height="48dp"
+                        android:visibility="gone"
+                        android:layout_marginTop="217dp"
+                        android:background="@drawable/sync_button_background"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/sync_with_apple_icon"
+                            android:layout_width="27dp"
+                            android:layout_height="27dp"
+                            android:src="@drawable/sync_with_apple_icon"
+                            android:layout_marginStart="28dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16dp"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="Sync With Apple Health"
+                            android:layout_marginStart="63dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <ImageView
+                        android:id="@+id/step_icon"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/step_icon"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="13dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Steps"
+                        android:textStyle="bold"
+                        android:textSize="16dp"
+                        android:layout_marginStart="6dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/step_icon"
+                        app:layout_constraintStart_toEndOf="@+id/step_icon" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/forwardicon"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginEnd="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/step_text_heading"
+                        android:layout_width="269dp"
+                        android:layout_height="wrap_content"
+                        android:text="You’re walking less than you do on a typical day"
+                        android:textColor="@color/workout_textcolor"
+                        android:textSize="16dp"
+                        android:textStyle="normal"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="65dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <com.example.rlapp.ai_package.ui.moveright.graphs.LineGrapghViewSteps
+                        android:id="@+id/line_graph_steps"
+                        android:layout_width="310dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="135dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="20dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/step_today_line"
+                        android:layout_width="11dp"
+                        android:layout_height="2dp"
+                        android:src="@drawable/today_line"
+                        app:layout_constraintEnd_toStartOf="@+id/step_today"
+                        app:layout_constraintTop_toTopOf="@+id/step_today"
+                        app:layout_constraintBottom_toBottomOf="@+id/step_today" />
+
+                    <TextView
+                        android:id="@+id/step_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Today"
+                        android:textSize="12dp"
+                        android:layout_marginStart="38dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/step_today"
+                        android:layout_marginTop="291dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/steps_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="6,331"
+                        android:textColor="@color/step_today"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/step_today"
+                        app:layout_constraintStart_toStartOf="@+id/step_today_line"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Steps"
+                        android:textSize="12dp"
+                        android:textColor="@color/step_today"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@+id/steps_text"
+                        app:layout_constraintBottom_toBottomOf="@+id/steps_text" />
+
+                    <ImageView
+                        android:id="@+id/active_line"
+                        android:layout_width="11dp"
+                        android:layout_height="2dp"
+                        android:src="@drawable/activeline"
+                        app:layout_constraintEnd_toStartOf="@+id/active_today"
+                        app:layout_constraintTop_toTopOf="@+id/active_today"
+                        app:layout_constraintBottom_toBottomOf="@+id/active_today" />
+
+                    <TextView
+                        android:id="@+id/active_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active"
+                        android:textSize="12dp"
+                        android:layout_marginStart="149dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/active_text_color"
+                        android:layout_marginTop="291dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/active_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10331"
+                        android:textColor="@color/active_text_color"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@+id/active_today"
+                        app:layout_constraintStart_toStartOf="@+id/active_line" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Steps"
+                        android:textSize="12dp"
+                        android:textColor="@color/active_text_color"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@+id/active_text"
+                        app:layout_constraintBottom_toBottomOf="@+id/active_text" />
+
+                    <ImageView
+                        android:id="@+id/goal_line"
+                        android:layout_width="11dp"
+                        android:layout_height="2dp"
+                        android:src="@drawable/goalline"
+                        app:layout_constraintEnd_toStartOf="@+id/goal_today"
+                        app:layout_constraintTop_toTopOf="@+id/goal_today"
+                        app:layout_constraintBottom_toBottomOf="@+id/goal_today" />
+
+                    <TextView
+                        android:id="@+id/goal_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Goal"
+                        android:textSize="12dp"
+                        android:layout_marginEnd="46dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/goal_text_color"
+                        android:layout_marginTop="291dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/goal_tex"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12500"
+                        android:textColor="@color/goal_text_color"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@+id/goal_today"
+                        app:layout_constraintStart_toStartOf="@+id/goal_line" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Steps"
+                        android:textSize="12dp"
+                        android:textColor="@color/goal_text_color"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@+id/goal_tex"
+                        app:layout_constraintBottom_toBottomOf="@+id/goal_tex" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/your_vitals_haeading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Vitals"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/step_layout" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/infocircle"
+                app:layout_constraintTop_toBottomOf="@+id/step_layout"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/active_heartrate_layout"
+                android:layout_width="match_parent"
+                android:layout_height="202dp"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="14dp"
+                app:layout_constraintTop_toBottomOf="@+id/your_vitals_haeading"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/active_heartrate_icon"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/active_heartrate_icon"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="13dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active Heart Rate Zones"
+                        android:textStyle="bold"
+                        android:textSize="16dp"
+                        android:layout_marginStart="6dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/active_heartrate_icon"
+                        app:layout_constraintStart_toEndOf="@+id/active_heartrate_icon" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/forwardicon"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginEnd="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="188"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light_bgmtext"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_start_light_bgmtext"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_start_light_bgmtext" />
+
+                    <TextView
+                        android:id="@+id/vertical_line_start_light_bgmtext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="bpm"
+                        android:textSize="12dp"
+                        android:textColor="@color/text_color_kcal"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_start_light"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_start_light" />
+
+                    <View
+                        android:id="@+id/vertical_line_start_light"
+                        android:layout_width="1dp"
+                        android:layout_height="62dp"
+                        android:background="@drawable/activity_heartrate_verticalline"
+                        app:layout_constraintBottom_toBottomOf="@+id/light_button"
+                        app:layout_constraintStart_toStartOf="@+id/light_button" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/light_button"
+                        android:layout_width="69dp"
+                        android:layout_height="30dp"
+                        android:background="@color/light_btn_color"
+                        android:layout_marginStart="36dp"
+                        android:layout_marginBottom="23dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Light"
+                            android:textColor="@color/white"
+                            android:textSize="10dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="188"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_fatloss_button_bgmtext"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_fatloss_button_bgmtext"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_fatloss_button_bgmtext" />
+
+                    <TextView
+                        android:id="@+id/vertical_line_fatloss_button_bgmtext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="bpm"
+                        android:textSize="12dp"
+                        android:textColor="@color/text_color_kcal"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_fatloss_button"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_fatloss_button"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_fatloss_button" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="24dp"
+                        android:text="No Data Yet"
+                        android:layout_marginTop="73dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/vertical_line_fatloss_button"
+                        android:layout_width="1dp"
+                        android:layout_height="62dp"
+                        android:background="@drawable/activity_heartrate_verticalline"
+                        app:layout_constraintBottom_toBottomOf="@+id/light_button"
+                        app:layout_constraintEnd_toEndOf="@+id/light_button" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/fatloss_button"
+                        android:layout_width="69dp"
+                        android:layout_height="30dp"
+                        android:background="@color/fatloss_btn_color"
+                        android:layout_marginBottom="23dp"
+                        app:layout_constraintStart_toEndOf="@+id/light_button"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Fat Loss"
+                            android:textColor="@color/white"
+                            android:textSize="10dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="188"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_cardio_button_bgmtext"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_cardio_button_bgmtext"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_cardio_button_bgmtext" />
+
+                    <TextView
+                        android:id="@+id/vertical_line_cardio_button_bgmtext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="bpm"
+                        android:textSize="12dp"
+                        android:textColor="@color/text_color_kcal"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_cardio_button"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_cardio_button"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_cardio_button" />
+
+                    <View
+                        android:id="@+id/vertical_line_cardio_button"
+                        android:layout_width="1dp"
+                        android:layout_height="62dp"
+                        android:background="@drawable/activity_heartrate_verticalline"
+                        app:layout_constraintBottom_toBottomOf="@+id/fatloss_button"
+                        app:layout_constraintEnd_toEndOf="@+id/fatloss_button" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/cardio_button"
+                        android:layout_width="69dp"
+                        android:layout_height="30dp"
+                        android:background="@color/cardio_btn_color"
+                        android:layout_marginBottom="23dp"
+                        app:layout_constraintStart_toEndOf="@+id/fatloss_button"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cardio"
+                            android:textColor="@color/black"
+                            android:textSize="10dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="188"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_bgmtext"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_bgmtext"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_bgmtext" />
+
+                    <TextView
+                        android:id="@+id/vertical_line_peak_button_bgmtext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="bpm"
+                        android:textSize="12dp"
+                        android:textColor="@color/text_color_kcal"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button" />
+
+                    <View
+                        android:id="@+id/vertical_line_peak_button"
+                        android:layout_width="1dp"
+                        android:layout_height="62dp"
+                        android:background="@drawable/activity_heartrate_verticalline"
+                        app:layout_constraintBottom_toBottomOf="@+id/cardio_button"
+                        app:layout_constraintEnd_toEndOf="@+id/cardio_button" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/peak_button"
+                        android:layout_width="69dp"
+                        android:layout_height="30dp"
+                        android:background="@color/peak_btn_color"
+                        android:layout_marginBottom="23dp"
+                        app:layout_constraintStart_toEndOf="@+id/cardio_button"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Peak"
+                            android:textColor="@color/white"
+                            android:textSize="10dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="188"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_end_bgmtext"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_end_bgmtext"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_end_bgmtext" />
+
+                    <TextView
+                        android:id="@+id/vertical_line_peak_button_end_bgmtext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="bpm"
+                        android:textSize="12dp"
+                        android:textColor="@color/text_color_kcal"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_end"
+                        app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_end"
+                        app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_end" />
+
+                    <View
+                        android:id="@+id/vertical_line_peak_button_end"
+                        android:layout_width="1dp"
+                        android:layout_height="62dp"
+                        android:background="@drawable/activity_heartrate_verticalline"
+                        app:layout_constraintBottom_toBottomOf="@+id/peak_button"
+                        app:layout_constraintEnd_toEndOf="@+id/peak_button" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/active_heartrate_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp"
+                    android:scrollbars="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

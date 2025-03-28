@@ -10,6 +10,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentServingBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ServingAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ServingItem
 
 class FoodServingFragment : Fragment() {
@@ -20,9 +21,29 @@ class FoodServingFragment : Fragment() {
     private var vegetableCount = 0
 
     private val foodList = arrayListOf(
-        ServingItem(R.drawable.ic_fruits,"Fruits",  "Serving per day",1),
-        ServingItem(R.drawable.ic_vegitables,"Vegetables",  "Per day",1)
+        ServingItem(R.drawable.ic_fruits, "Fruits", "Serving per day", 1),
+        ServingItem(R.drawable.ic_vegitables, "Vegetables", "Per day", 1)
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): FoodServingFragment {
+            val fragment = FoodServingFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,10 +54,10 @@ class FoodServingFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ServingAdapter(foodList){ servingItem ->
-            when(servingItem.title){
+        val adapter = ServingAdapter(foodList) { servingItem ->
+            when (servingItem.title) {
                 "Fruits" -> fruitCount = servingItem.count
-                "Vegetables"-> vegetableCount = servingItem.count
+                "Vegetables" -> vegetableCount = servingItem.count
             }
         }
         binding.recyclerViewServing.adapter = adapter

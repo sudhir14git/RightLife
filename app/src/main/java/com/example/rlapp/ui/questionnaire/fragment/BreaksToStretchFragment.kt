@@ -12,6 +12,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentBreaksToStretchBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 
 class BreaksToStretchFragment : Fragment() {
@@ -30,6 +31,26 @@ class BreaksToStretchFragment : Fragment() {
             ""
         ),
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): BreaksToStretchFragment {
+            val fragment = BreaksToStretchFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

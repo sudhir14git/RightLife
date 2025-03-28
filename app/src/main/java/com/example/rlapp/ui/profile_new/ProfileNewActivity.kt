@@ -1,11 +1,19 @@
 package com.example.rlapp.ui.profile_new
 
 import android.Manifest
+import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Environment
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
@@ -22,18 +30,29 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.apimodel.userdata.UserProfileResponse
 import com.example.rlapp.apimodel.userdata.Userdata
 import com.example.rlapp.databinding.ActivityProfileNewBinding
 import com.example.rlapp.databinding.BottomsheetAgeSelectionBinding
 import com.example.rlapp.databinding.BottomsheetGenderSelectionBinding
 import com.example.rlapp.databinding.BottomsheetHeightSelectionBinding
 import com.example.rlapp.databinding.BottomsheetWeightSelectionBinding
+import com.example.rlapp.databinding.DialogOtpVerificationBinding
 import com.example.rlapp.ui.new_design.RulerAdapter
 import com.example.rlapp.ui.new_design.RulerAdapterVertical
+import com.example.rlapp.ui.profile_new.pojo.OtpRequest
+import com.example.rlapp.ui.profile_new.pojo.VerifyOtpRequest
 import com.example.rlapp.ui.utility.ConversionUtils
 import com.example.rlapp.ui.utility.SharedPreferenceManager
+import com.example.rlapp.ui.utility.Utils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.shawnlin.numberpicker.NumberPicker
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -53,6 +72,9 @@ class ProfileNewActivity : AppCompatActivity() {
     private lateinit var adapterHeight: RulerAdapterVertical
     private var selectedLabel: String = " feet"
     private lateinit var adapterWeight: RulerAdapter
+    private lateinit var dialogOtp: Dialog
+    private lateinit var userData: Userdata
+    private lateinit var userDataResponse: UserProfileResponse
 
     // Activity Result Launcher to get image
     private val pickImageLauncher =
@@ -87,9 +109,9 @@ class ProfileNewActivity : AppCompatActivity() {
         setContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
-        val userData = sharedPreferenceManager.userProfile
-
-        userData.userdata?.let { setUserData(it) }
+        userDataResponse = sharedPreferenceManager.userProfile
+        userData = userDataResponse.userdata
+        setUserData(userData)
 
         // Non-editable field click listeners
         binding.llAge.setOnClickListener {
@@ -126,11 +148,21 @@ class ProfileNewActivity : AppCompatActivity() {
         }
 
         binding.btnVerify.setOnClickListener {
-            // Trigger phone verification logic
+            val mobileNumber = binding.etMobile.text.toString()
+            if (mobileNumber.isEmpty()) {
+                showToast("Please enter 10 digit mobile number")
+            } else if (mobileNumber.length != 10) {
+                showToast("Please enter correct mobile number")
+            } else {
+                generateOtp("+91$mobileNumber")
+            }
         }
 
         binding.btnSave.setOnClickListener {
-            // Save account details logic
+            saveData()
+        }
+        binding.ivBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -140,8 +172,12 @@ class ProfileNewActivity : AppCompatActivity() {
         binding.etLastName.setText(userData.lastName)
         binding.etEmail.setText(userData.email)
         binding.etMobile.setText(userData.phoneNumber)
-        binding.tvGender.text = userData.gender
+        if (userData.gender == "M")
+            binding.tvGender.text = "Male"
+        else
+            binding.tvGender.text = "Female"
         binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
+        binding.tvProfileLetter.text = userData.firstName.first().toString()
 
         if (userData.heightUnit == "FT_AND_INCHES") {
             val height = userData.height.toString().split(".")
@@ -365,7 +401,7 @@ class ProfileNewActivity : AppCompatActivity() {
                 selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
                 setLbsValue()
             } else {
-                selectedLabel = " kg"
+                selectedLabel = " kgs"
                 selectedWeight = ConversionUtils.convertKgToLbs(w[0])
                 setKgsValue()
             }
@@ -442,6 +478,7 @@ class ProfileNewActivity : AppCompatActivity() {
 
         dialogBinding.btnConfirm.setOnClickListener {
             bottomSheetDialog.dismiss()
+            dialogBinding.rulerView.adapter = null
             binding.tvWeight.text = selectedWeight
         }
 
@@ -567,10 +604,10 @@ class ProfileNewActivity : AppCompatActivity() {
             )
         }
 
-
         dialogBinding.btnConfirm.setOnClickListener {
             if (validateInput()) {
                 bottomSheetDialog.dismiss()
+                dialogBinding.rulerView.adapter = null
                 binding.tvHeight.text = selectedHeight
             }
         }
@@ -663,7 +700,7 @@ class ProfileNewActivity : AppCompatActivity() {
                 returnValue = true
             } else {
                 returnValue = false
-                showToast("Height should be in between 120 feet to 220 feet")
+                showToast("Height should be in between 120 cms to 220 cms")
             }
 
         }
@@ -687,4 +724,216 @@ class ProfileNewActivity : AppCompatActivity() {
         adapterHeight.setType("feet")
         adapterHeight.notifyDataSetChanged()
     }
+
+    private fun generateOtp(mobileNumber: String) {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.generateOtpForPhoneNumber(
+            sharedPreferenceManager.accessToken,
+            OtpRequest(mobileNumber)
+        )
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    showToast("Otp sent to your mobile number")
+                    showOtpDialog(this@ProfileNewActivity, mobileNumber)
+                } else {
+                    showToast(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                showToast("Network Error: " + t.message)
+            }
+        })
+    }
+
+    private fun showOtpDialog(activity: Activity, mobileNumber: String) {
+        dialogOtp = Dialog(activity)
+        val binding = DialogOtpVerificationBinding.inflate(LayoutInflater.from(activity))
+        dialogOtp.setContentView(binding.root)
+        dialogOtp.setCancelable(false)
+        dialogOtp.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val otpFields = listOf(
+            binding.etOtp1, binding.etOtp2, binding.etOtp3,
+            binding.etOtp4, binding.etOtp5, binding.etOtp6
+        )
+
+        // Move focus automatically
+        otpFields.forEachIndexed { index, editText ->
+            editText.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    if (s?.length == 1 && index < otpFields.size - 1) {
+                        otpFields[index + 1].requestFocus()
+                    }
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+        }
+
+        // Countdown Timer
+        val timer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                binding.tvCountdown.text = "${millisUntilFinished / 1000}"
+            }
+
+            override fun onFinish() {
+                binding.tvCountdown.text = "Expired"
+            }
+        }
+        timer.start()
+
+        // Cancel Button
+        binding.ivClose.setOnClickListener {
+            timer.cancel()
+            dialogOtp.dismiss()
+        }
+
+        // Verify Button
+        binding.btnVerify.setOnClickListener {
+            val otp = otpFields.joinToString("") { it.text.toString().trim() }
+            if (otp.length == 6) {
+                Toast.makeText(activity, "OTP Verified: $otp", Toast.LENGTH_SHORT).show()
+                verifyOtp(mobileNumber, otp, binding)
+                timer.cancel()
+            } else {
+                Toast.makeText(activity, "Enter all 6 digits", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogOtp.show()
+    }
+
+    private fun verifyOtp(
+        mobileNumber: String,
+        otp: String,
+        binding: DialogOtpVerificationBinding
+    ) {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.verifyOtpForPhoneNumber(
+            sharedPreferenceManager.accessToken,
+            VerifyOtpRequest(
+                phoneNumber = mobileNumber,
+                otp = otp
+            )
+        )
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    showToast(response.message())
+                    binding.tvResult.text = "(Verification Success)"
+                    binding.tvResult.setTextColor(getColor(R.color.color_green))
+                } else {
+                    showToast("Server Error: " + response.code())
+                    binding.tvResult.text = "(Verification Failed-Incorrect OTP)"
+                    binding.tvResult.setTextColor(getColor(R.color.menuselected))
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                showToast("Network Error: " + t.message)
+                binding.tvResult.text = "(Verification Failed-Incorrect OTP)"
+                binding.tvResult.setTextColor(getColor(R.color.menuselected))
+            }
+
+        })
+    }
+
+    private fun saveData() {
+        val firstName = binding.etFirstName.text.toString()
+        val lastName = binding.etLastName.text.toString()
+        val email = binding.etEmail.text.toString()
+        val mobileNumber = binding.etMobile.text.toString()
+        val age = binding.tvAge.text.toString()
+        val height = binding.tvHeight.text.toString()
+        val weight = binding.tvWeight.text.toString()
+        val gender = binding.tvGender.text.toString()
+        if (firstName.isEmpty()) {
+            showToast("First Name is required")
+        } else if (lastName.isEmpty()) {
+            showToast("Last Name is required")
+        } else if (email.isEmpty()) {
+            showToast("Email is required")
+        } else if (!email.matches(Utils.emailPattern.toRegex())) {
+            showToast("Invalid Email format")
+        } else if (mobileNumber.isEmpty() || mobileNumber.length != 10) {
+            showToast("Phone Number is incorrect")
+        } else if (age.isEmpty()) {
+            showToast("Please select Age")
+        } else if (gender.isEmpty()) {
+            showToast("Please select Gender")
+        } else if (height.isEmpty()) {
+            showToast("Please select Height")
+        } else if (weight.isEmpty()) {
+            showToast("Please select Weight")
+        } else {
+            userData.firstName = firstName
+            userData.lastName = lastName
+            userData.email = email
+            userData.phoneNumber = mobileNumber
+            if (gender.equals("Male", ignoreCase = true)) {
+                userData.gender = "M"
+            } else {
+                userData.gender = "F"
+            }
+            val w = weight.split(" ")
+            userData.weight = w[0].toDouble()
+            if ("kgs".equals(w[1], ignoreCase = true)) {
+                userData.weightUnit = "KG"
+            } else {
+                userData.weightUnit = "LBS"
+            }
+
+            val h = height.split(" ")
+            if (h.size == 2) {
+                userData.height = h[0].toDouble()
+                userData.heightUnit = "CM"
+            } else {
+                userData.height = "${h[0]}.${h[2]}".toDouble()
+                userData.heightUnit = "FT_AND_INCHES"
+            }
+            updateUserData(userData)
+        }
+    }
+
+    private fun updateUserData(userdata: Userdata) {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call: Call<ResponseBody> =
+            apiService.updateUser(sharedPreferenceManager.accessToken, userdata)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    setResult(RESULT_OK)
+                    userDataResponse.userdata = userdata
+                    sharedPreferenceManager.saveUserProfile(userDataResponse)
+                    finish()
+                } else {
+                    Toast.makeText(
+                        this@ProfileNewActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Toast.makeText(
+                    this@ProfileNewActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
 }

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rlapp.databinding.FragmentShakeOffBadDayBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ShakeOffBadDayAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class ShakeOffBadDayFragment : Fragment() {
 
@@ -24,6 +25,26 @@ class ShakeOffBadDayFragment : Fragment() {
         "A few days",
         "It takes a long time"
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): ShakeOffBadDayFragment {
+            val fragment = ShakeOffBadDayFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

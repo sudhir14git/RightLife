@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="5dp"
+    android:id="@+id/layoutMain">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layoutCalendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/txtMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Jan"
+            android:textSize="12sp"
+            android:textColor="@color/black_no_meals"
+            android:fontFamily="@font/dmsans_medium" />
+
+        <TextView
+            android:id="@+id/txtDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="12sp"
+            android:textColor="@color/black_no_meals"
+            android:fontFamily="@font/dmsans_regular" />
+
+        <View
+            android:id="@+id/viewDate"
+            android:layout_width="8dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="3dp"
+            android:visibility="invisible"
+            android:background="@color/meal_log_title"></View>
+
+        <ImageView
+            android:id="@+id/imgCheck"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:scaleType="fitXY"
+            android:layout_marginTop="3dp"
+            android:src="@drawable/ic_uncheck_circle"
+            android:visibility="visible" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -12,6 +12,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentSocialInteractionsBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.SocialInteractionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.SocialInteraction
 
 class SocialInteractionFragment : Fragment() {
@@ -25,6 +26,26 @@ class SocialInteractionFragment : Fragment() {
         SocialInteraction("Neutral", R.drawable.ic_si_3),
         SocialInteraction("Extremely challenging", R.drawable.ic_si_4)
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): SocialInteractionFragment {
+            val fragment = SocialInteractionFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

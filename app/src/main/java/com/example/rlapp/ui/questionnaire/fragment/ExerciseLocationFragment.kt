@@ -12,6 +12,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentFastfoodPreferenceBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 
 class ExerciseLocationFragment : Fragment() {
@@ -27,6 +28,26 @@ class ExerciseLocationFragment : Fragment() {
         ScheduleOption(R.drawable.ic_dont_fix_place, "I don’t have a fixed place", ""),
     )
 
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): ExerciseLocationFragment {
+            val fragment = ExerciseLocationFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,7 +57,7 @@ class ExerciseLocationFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ScheduleOptionAdapter(scheduleOptions,"MoveRight") { selectedOption ->
+        val adapter = ScheduleOptionAdapter(scheduleOptions, "MoveRight") { selectedOption ->
             Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireEatRightActivity.navigateToNextPage()
             }, 500)

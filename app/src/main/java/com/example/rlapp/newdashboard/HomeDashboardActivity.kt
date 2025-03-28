@@ -20,6 +20,8 @@ import com.example.rlapp.apimodel.userdata.UserProfileResponse
 import com.example.rlapp.databinding.ActivityHomeDashboardBinding
 import com.example.rlapp.newdashboard.NewHomeFragment.HomeFragment
 import com.example.rlapp.ui.HomeActivity
+import com.example.rlapp.ui.profile_new.ProfileSettingsActivity
+import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.utility.SharedPreferenceConstants
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.google.gson.Gson
@@ -106,6 +108,52 @@ class HomeDashboardActivity : AppCompatActivity() {
             binding.progressThumb.translationX = thumbX
             binding.tvWeightlossZone.translationX = thumbX
         }
+
+        // click listners for checklist
+        binding.includeChecklist.rlChecklistEatright.setOnClickListener {
+            Toast.makeText(this, "Eat Right", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
+        }
+        binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
+            Toast.makeText(this, "Think Right", Toast.LENGTH_SHORT).show()
+           // startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
+        }
+        binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
+            //Toast.makeText(this, "Sync Health", Toast.LENGTH_SHORT).show()
+        }
+        binding.includeChecklist.rlChecklistProfile.setOnClickListener {
+            Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
+        }
+        binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
+            Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()
+        }
+        binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
+            Toast.makeText(this, "Face Scan", Toast.LENGTH_SHORT).show()
+        }
+    binding.profileImage.setOnClickListener {
+
+        /*if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
+            else drawer.closeDrawer(Gravity.RIGHT);*/
+        startActivity(Intent(this@HomeDashboardActivity, ProfileSettingsActivity::class.java))
+    }
+
+        binding.cardMoverightMain.setOnClickListener{
+            //startActivity(Intent(this@HomeDashboardActivity, MoveRightActivity::class.java))
+            Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
+        }
+        binding.cardEatright.setOnClickListener{
+            //startActivity(Intent(this@HomeDashboardActivity, MoveRightActivity::class.java))
+            Toast.makeText(this, "EatRight AI Dashboard", Toast.LENGTH_SHORT).show()
+        }
+        binding.cardSleepright.setOnClickListener{
+            //startActivity(Intent(this@HomeDashboardActivity, MoveRightActivity::class.java))
+            Toast.makeText(this, "SleepRight AI Dashboard", Toast.LENGTH_SHORT).show()
+        }
+        binding.cardThinkright.setOnClickListener{
+            //startActivity(Intent(this@HomeDashboardActivity, MoveRightActivity::class.java))
+            Toast.makeText(this, "ThinkRight AI Dashboard", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     private fun loadFragment(fragment: Fragment) {

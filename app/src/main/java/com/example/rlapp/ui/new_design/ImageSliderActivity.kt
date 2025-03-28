@@ -326,6 +326,9 @@ class ImageSliderActivity : AppCompatActivity() {
                             val intent = Intent(this@ImageSliderActivity, HomeActivity::class.java)
                             startActivity(intent)
                         } else {
+                            if (apiResponse.isNewUser == true){
+                                //Toast.makeText(this@ImageSliderActivity, "New User", Toast.LENGTH_SHORT).show()
+
                             val intent =
                                 Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
                             intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
@@ -336,6 +339,10 @@ class ImageSliderActivity : AppCompatActivity() {
                             sharedPreferenceManager.email = mEmail
                             sharedPreferenceManager.displayName = displayName
                             startActivity(intent)
+                            }else{
+                                val intent = Intent(this@ImageSliderActivity, HomeActivity::class.java)
+                                startActivity(intent)
+                            }
                         }
                         finishAffinity()
 

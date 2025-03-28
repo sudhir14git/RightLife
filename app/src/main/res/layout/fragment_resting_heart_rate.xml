@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="73dp"
+        android:background="@color/header_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/back"
+            android:layout_marginStart="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Resting Heart Rate"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/text_color"
+            android:layout_marginBottom="3dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/setting_icon"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:visibility="gone"
+            android:src="@drawable/settingicon"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="12dp"
+            android:visibility="gone"
+            android:src="@drawable/download"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/setting_icon" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/gradient_color_background_workout">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/calorie_balance_layout"
+                android:layout_width="match_parent"
+                android:layout_height="550dp"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioGroup
+                        android:id="@+id/tabGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:orientation="horizontal"
+                        android:background="@drawable/tab_background_heart_rate"
+                        android:padding="2dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <RadioButton
+                            android:id="@+id/rbWeek"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="Week"
+                            android:textSize="14sp"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tab_background_heart_rate"
+                            android:gravity="center"
+                            android:button="@null"
+                            android:checked="true" />
+
+                        <RadioButton
+                            android:id="@+id/rbMonth"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="Month"
+                            android:textSize="14sp"
+                            android:textColor="@color/black"
+                            android:background="@drawable/tab_background_heart_rate"
+                            android:gravity="center"
+                            android:button="@null" />
+
+                        <RadioButton
+                            android:id="@+id/rbSixMonths"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="6 Months"
+                            android:textSize="14sp"
+                            android:textColor="@color/black"
+                            android:background="@drawable/tab_background_heart_rate"
+                            android:gravity="center"
+                            android:button="@null" />
+                    </RadioGroup>
+
+                    <ImageView
+                        android:id="@+id/backward_image_heart_rate"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="21dp"
+                        android:src="@drawable/backward_create_heart_rate"
+                        android:layout_marginTop="14dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
+
+                    <ImageView
+                        android:id="@+id/forward_image_heart_rate"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="21dp"
+                        android:src="@drawable/forward_image_create_heartrate"
+                        android:layout_marginTop="14dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3 Feb -9 Feb, 2O25"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="@+id/backward_image_heart_rate"
+                        app:layout_constraintStart_toEndOf="@+id/backward_image_heart_rate"
+                        app:layout_constraintEnd_toStartOf="@+id/forward_image_heart_rate" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/border_line"
+                        android:layout_marginTop="18dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate" />
+
+                    <TextView
+                        android:id="@+id/average_text_heading"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="108dp"
+                        android:layout_marginStart="21dp"
+                        android:text="Average"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/average_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="78.5"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:layout_marginStart="21dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/average_text_heading" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ms"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/average_number"
+                        app:layout_constraintStart_toEndOf="@+id/average_number" />
+
+                    <ImageView
+                        android:id="@+id/percentage_icon"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/forward_image_create_heartrate"
+                        android:layout_marginStart="21dp"
+                        app:layout_constraintTop_toBottomOf="@+id/average_number"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/percentage_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="50% past week"
+                        android:textSize="10sp"
+                        android:layout_marginStart="4dp"
+                        android:textColor="@color/green_text"
+                        app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"
+                        app:layout_constraintStart_toEndOf="@+id/percentage_icon" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/heartRateChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/percentage_text"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/heart_rate_description_heading"
+                android:layout_width="339dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:layout_width="339dp"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="8dp"
+                android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
+                app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

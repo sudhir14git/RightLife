@@ -12,6 +12,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentEatAffectMoodBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 
 class EatAffectMoodFragment : Fragment() {
@@ -25,6 +26,26 @@ class EatAffectMoodFragment : Fragment() {
         ScheduleOption(R.drawable.ic_eat_affect_3, "Sometimes", "it depends on the day"),
         ScheduleOption(R.drawable.ic_eat_affect_4, "Always", "I eat based on my mood"),
     )
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): EatAffectMoodFragment {
+            val fragment = EatAffectMoodFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

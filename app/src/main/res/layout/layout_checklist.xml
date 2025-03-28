@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_layout_checklist"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="#F7F7F7"
+
+    android:layout_marginBottom="20dp"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minLines="2"
+        android:fontFamily="@font/dmsans_bold"
+        android:gravity="center_vertical"
+        android:text="Your Setup Checklist"
+        android:textColor="@color/text_color_app"
+
+        android:textSize="@dimen/textsize_large" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title"
+            android:layout_marginTop="1dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:gravity="center_vertical"
+            android:text="1 of 6 tasks completed"
+            android:textColor="@color/text_color_char_left"
+            android:textSize="@dimen/textsize_medium" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_checklist_question"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/rl_checklist_profile"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_check"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_checklist_complete" />
+
+        <ImageView
+            android:id="@+id/img_checklist_logo"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="20dp"
+            android:scaleType="fitXY"
+            android:layout_toRightOf="@+id/img_check"
+            android:src="@drawable/ic_checklist_profile" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/img_check"
+            android:layout_toEndOf="@id/img_checklist_logo"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="2"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_vertical"
+                android:text="Complete Your Profile"
+                android:textColor="@color/text_color_app"
+                android:textSize="@dimen/textsize_medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/clock_affirmation" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="2-3 mins"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_color_char_left"
+                    android:textSize="@dimen/textsize_medium" />
+            </LinearLayout>
+        </LinearLayout>
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_checklist_smallarrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_checklist_snapmeal"
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_check_snapmeal"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_checklist_tick_bg" />
+
+        <ImageView
+            android:id="@+id/img_checklist_logo_snapmeal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_toRightOf="@+id/img_check_snapmeal"
+            android:src="@drawable/ic_checklist_meal_snap" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/img_check_snapmeal"
+            android:layout_toEndOf="@id/img_checklist_logo_snapmeal"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="2"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_vertical"
+                android:text="Snap Your First Meal"
+                android:textColor="@color/text_color_app"
+                android:textSize="@dimen/textsize_medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/clock_affirmation" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="2 mins"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_color_char_left"
+                    android:textSize="@dimen/textsize_medium" />
+            </LinearLayout>
+        </LinearLayout>
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_checklist_smallarrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_checklist_eatright"
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_check_eatright"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+
+            android:src="@drawable/ic_checklist_pending" />
+
+        <ImageView
+            android:id="@+id/img_checklist_logo_eatright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_toRightOf="@+id/img_check_eatright"
+            android:src="@drawable/ic_checklist_eatright_mr" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/img_check_eatright"
+            android:layout_toEndOf="@id/img_checklist_logo_eatright"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="2"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_vertical"
+                android:text="Discover Your Eating &amp; \nMovement Style"
+                android:textColor="@color/text_color_app"
+                android:textSize="@dimen/textsize_medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/clock_affirmation" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="2 mins"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_color_char_left"
+                    android:textSize="@dimen/textsize_medium" />
+            </LinearLayout>
+        </LinearLayout>
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_checklist_smallarrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_checklist_facescan"
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_check_facescan"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+
+            android:src="@drawable/ic_checklist_tick_bg" />
+
+        <ImageView
+            android:id="@+id/img_checklist_logo_facescan"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="20dp"
+            android:layout_toRightOf="@+id/img_check_facescan"
+            android:src="@drawable/ic_checklist_facescan" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/img_check_facescan"
+            android:layout_toEndOf="@id/img_checklist_logo_facescan"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="2"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_vertical"
+                android:text="Get Your Vitals with a \nFacial Scan"
+                android:textColor="@color/text_color_app"
+                android:textSize="@dimen/textsize_medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/clock_affirmation" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="2 mins"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_color_char_left"
+                    android:textSize="@dimen/textsize_medium" />
+            </LinearLayout>
+        </LinearLayout>
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_checklist_smallarrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_checklist_sleepright"
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_check_sleepright"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+
+            android:src="@drawable/ic_checklist_tick_bg" />
+
+        <ImageView
+            android:id="@+id/img_checklist_logo_sleepright"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="20dp"
+            android:layout_toRightOf="@+id/img_check_sleepright"
+            android:src="@drawable/ic_checklist_sleepright_tr" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/img_check_sleepright"
+            android:layout_toEndOf="@id/img_checklist_logo_sleepright"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="2"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_vertical"
+                android:text="Unlock Your Sleep &amp; \nMind Insights"
+                android:textColor="@color/text_color_app"
+                android:textSize="@dimen/textsize_medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/clock_affirmation" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="2 mins"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_color_char_left"
+                    android:textSize="@dimen/textsize_medium" />
+            </LinearLayout>
+        </LinearLayout>
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_checklist_smallarrow" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_checklist_synchealth"
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_check_synchealth"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+
+            android:src="@drawable/ic_checklist_tick_bg" />
+
+        <ImageView
+            android:id="@+id/img_checklist_logo_synchealth"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="20dp"
+            android:layout_toRightOf="@+id/img_check_synchealth"
+            android:src="@drawable/ic_checklist_healthdata" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/img_check_synchealth"
+            android:layout_toEndOf="@id/img_checklist_logo_synchealth"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="2"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_vertical"
+                android:text="Sync Your Health Data"
+                android:textColor="@color/text_color_app"
+                android:textSize="@dimen/textsize_medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/clock_affirmation" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="2 mins"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_color_char_left"
+                    android:textSize="@dimen/textsize_medium" />
+            </LinearLayout>
+        </LinearLayout>
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_checklist_smallarrow" />
+    </RelativeLayout>
+
+</LinearLayout>

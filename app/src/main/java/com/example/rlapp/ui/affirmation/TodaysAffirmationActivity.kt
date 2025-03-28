@@ -139,7 +139,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
         }
     }
 
-    private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
+   /* private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
         affirmationCardPagerAdapter =
             AffirmationCardPagerAdapter(affirmationList, this, binding.cardViewPager)
         binding.cardViewPager.setPageTransformer(true, AffirmationPageTransformer())
@@ -162,7 +162,32 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
             }
         })
-    }
+    }*/
+   private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
+       affirmationCardPagerAdapter =
+           AffirmationCardPagerAdapter(affirmationList, this, binding.cardViewPager)
+       binding.cardViewPager.setPageTransformer(true, AffirmationPageTransformer())
+       binding.cardViewPager.adapter = affirmationCardPagerAdapter
+       if (affirmationList.isNotEmpty())
+           updateAddButtonImage(0)
+       binding.cardViewPager.addOnPageChangeListener(object : OnPageChangeListener {
+           override fun onPageScrolled(
+               position: Int,
+               positionOffset: Float,
+               positionOffsetPixels: Int
+           ) {
+
+           }
+
+           override fun onPageSelected(position: Int) {
+               updateAddButtonImage(position)
+           }
+
+           override fun onPageScrollStateChanged(state: Int) {
+
+           }
+       })
+   }
 
     private fun updateAddButtonImage(position: Int) {
         var flag = false

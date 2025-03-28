@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:gravity="end"
+    android:layout_marginTop="35dp"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_gravity="end"
+        android:orientation="vertical">
+
+        <!-- Tooltip Arrow -->
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="12dp"
+            android:src="@drawable/tooltip_arrow_vector"
+            android:layout_gravity="end" />
+
+        <!-- Tooltip Bubble -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tooltip_background"
+            android:gravity="center"
+            android:padding="8dp"
+            android:elevation="6dp">
+
+            <TextView
+                android:id="@+id/tvTooltipText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="You can access calendar \n view from here."
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="14sp"
+                android:padding="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>
