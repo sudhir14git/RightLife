@@ -3,21 +3,17 @@ package com.jetsynthesys.rightlife.ai_package.model
 import com.google.gson.annotations.SerializedName
 
 data class RestingHeartRateResponse(
+    @SerializedName("status_code") val statusCode: Int,
     @SerializedName("message") val message: String,
     @SerializedName("start_date") val startDate: String,
     @SerializedName("end_date") val endDate: String,
-    @SerializedName("resting_heart_rate") val restingHeartRate: List<RestingHeartRateMain>
+    @SerializedName("resting_heart_rate_totals") val restingHeartRateTotals: List<RestingHeartRateData>?,
+    @SerializedName("current_avg_bpm") val currentAvgBpm: Double?,
+    @SerializedName("progress_percentage") val progressPercentage: Double?,
+    @SerializedName("progress_sign") val progressSign: String?
 )
 
-// Data class for each resting heart rate record
-data class RestingHeartRateMain(
-    @SerializedName("creation_datetime") val creationDatetime: String,
-    @SerializedName("end_datetime") val endDatetime: String,
-    @SerializedName("source_version") val sourceVersion: String,
-    @SerializedName("start_datetime") val startDatetime: String,
-    @SerializedName("record_type") val recordType: String,
-    @SerializedName("unit") val unit: String,
-    @SerializedName("value") val value: String, // Kept as String since JSON shows it as a string ("60")
-    @SerializedName("_id") val id: String,
-    @SerializedName("user_id") val userId: String
+data class RestingHeartRateData(
+    @SerializedName("bpm") val bpm: Double?,
+    @SerializedName("date") val date: String
 )

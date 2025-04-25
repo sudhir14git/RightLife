@@ -581,40 +581,46 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     }
 
     private fun setSelectedDate(selectedWeekDate: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val dateString = selectedWeekDate
-        val date = dateFormat.parse(dateString)
-        calendar.time = date ?: Calendar.getInstance().time
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        calendar.set(year, month, day)
-        calendar.add(Calendar.DAY_OF_YEAR, -6)
-        val dateStr = dateFormat.format(calendar.time)
-        val dateView: String = "${convertDate(dateStr)}-${convertDate(selectedWeekDate)},$year"
-        selectedDate.text = dateView
-        selectedDate.gravity = Gravity.CENTER
+        activity?.runOnUiThread {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val dateString = selectedWeekDate
+            val date = dateFormat.parse(dateString)
+            calendar.time = date ?: Calendar.getInstance().time
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -6)
+            val dateStr = dateFormat.format(calendar.time)
+            val dateView: String = "${convertDate(dateStr)}-${convertDate(selectedWeekDate)},$year"
+            selectedDate.text = dateView
+            selectedDate.gravity = Gravity.CENTER
+        }
+
     }
 
     private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val dateString = selectedMonthDate
-        val date = dateFormat.parse(dateString)
-        calendar.time = date ?: Calendar.getInstance().time
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        if (dateViewType == "Month") {
-            val lastDayOfMonth = getDaysInMonth(month + 1, year)
-            val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-            val dateView: String = "${convertDate(selectedMonthDate)}-${convertDate(lastDateOfMonth)},$year"
-            selectedDate.text = dateView
-            selectedDate.gravity = Gravity.CENTER
-        } else {
-            selectedDate.text = year.toString()
-            selectedDate.gravity = Gravity.CENTER
+        activity?.runOnUiThread {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val dateString = selectedMonthDate
+            val date = dateFormat.parse(dateString)
+            calendar.time = date ?: Calendar.getInstance().time
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            if (dateViewType == "Month") {
+                val lastDayOfMonth = getDaysInMonth(month + 1, year)
+                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                val dateView: String = "${convertDate(selectedMonthDate)}-${convertDate(lastDateOfMonth)},$year"
+                selectedDate.text = dateView
+                selectedDate.gravity = Gravity.CENTER
+            } else {
+                selectedDate.text = year.toString()
+                selectedDate.gravity = Gravity.CENTER
+            }
         }
+
     }
 
     private fun convertDate(inputDate: String): String {

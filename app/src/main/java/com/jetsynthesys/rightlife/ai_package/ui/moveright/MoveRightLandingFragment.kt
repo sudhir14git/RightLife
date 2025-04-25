@@ -219,10 +219,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val adapter1 = GridAdapter(items) { itemName ->
             when (itemName) {
                 "RHR" -> {
-                    navigateToFragment(AverageHeartRateFragment(), "AverageHeartRateFragment")
+                    navigateToFragment(RestingHeartRateFragment(), "RestingHeartRateFragment")
                 }
                 "Avg HR" -> {
-                    navigateToFragment(RestingHeartRateFragment(), "RestingHeartRateFragment")
+                    navigateToFragment(AverageHeartRateFragment(), "AverageHeartRateFragment")
+
                 }
                 "HRV" -> {
                     navigateToFragment(HeartRateVariabilityFragment(), "HeartRateVariabilityFragment")

@@ -94,7 +94,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         // Show Week data by default
         radioGroup.check(R.id.rbMonth)
         fetchWeightData("last_monthly")
-        setupLineChart()
+        //setupLineChart()
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -794,24 +794,27 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     }
 
     private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val dateString = selectedMonthDate
-        val date = dateFormat.parse(dateString)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        if (dateViewType.contentEquals("Month")) {
-            val lastDayOfMonth = getDaysInMonth(month + 1, year)
-            val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-            val dateView: String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth) + "," + year.toString()
-            selectedDate.text = dateView
-            selectedDate.gravity = Gravity.CENTER
-        } else {
-            selectedDate.text = year.toString()
-            selectedDate.gravity = Gravity.CENTER
+        activity?.runOnUiThread {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val dateString = selectedMonthDate
+            val date = dateFormat.parse(dateString)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            if (dateViewType.contentEquals("Month")) {
+                val lastDayOfMonth = getDaysInMonth(month + 1, year)
+                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                val dateView: String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth) + "," + year.toString()
+                selectedDate.text = dateView
+                selectedDate.gravity = Gravity.CENTER
+            } else {
+                selectedDate.text = year.toString()
+                selectedDate.gravity = Gravity.CENTER
+            }
         }
-    }
+        }
+
 
     private fun convertDate(inputDate: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
