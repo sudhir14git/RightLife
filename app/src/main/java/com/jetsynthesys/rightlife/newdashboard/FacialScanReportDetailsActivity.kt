@@ -190,7 +190,6 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                             it1
                         )
                     }
-                    Log.d("AAAA","Date : = "+date)
                     val value = it.y
 
                     binding.reportDate.text = date.toString()
@@ -530,32 +529,6 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         } ?: emptyList()
 
         when (duration.lowercase(Locale.ROOT)) {
-
-            // --- Week: Show 7 consecutive days ---
-            /*"week" -> {
-                val calendar = Calendar.getInstance()
-                calendar.time = dateList.minOrNull() ?: Date()
-                calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
-
-                val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
-                repeat(7) { i ->
-                    val day = calendar.time
-                    //val value = parsedData.find { sdfInput.format(it.first) == sdfInput.format(day) }?.second ?: 0f
-                    val sameDayValue = parsedData.find {
-                        val cal1 = Calendar.getInstance().apply { time = it.first }
-                        val cal2 = Calendar.getInstance().apply { time = day }
-                        cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
-                    }?.second ?: 0f
-                    entries.add(Entry(i.toFloat(), sameDayValue))
-                    //entries.add(Entry(i.toFloat(), value))
-                    xAxisLabels.add(dayFormat.format(day))
-                    calendar.add(Calendar.DAY_OF_MONTH, 1)
-                    Log.d("ParsedData", "parsed data: ${parsedData.map { sdfInput.format(it.first) }}")
-                    Log.d("DayComparison", "checking day: ${sdfInput.format(day)}")
-                }
-            }*/
-
             "week" -> {
                 val today = Calendar.getInstance().apply {
                     time = Date() // Current date/time
@@ -600,87 +573,6 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     currentDayIndex++
                 }
             }
-
-
-            // --- Month: Group data in weekly buckets and average values ---
-            /*"month" -> {
-                val calendar = Calendar.getInstance()
-                calendar.time = dateList.minOrNull() ?: Date()
-                calendar.set(Calendar.DAY_OF_MONTH, 1)
-
-                val month = calendar.get(Calendar.MONTH)
-                val monthFormat = SimpleDateFormat("d MMM", Locale.getDefault())
-
-                var weekIndex = 0
-                while (calendar.get(Calendar.MONTH) == month) {
-                    val weekStart = calendar.time
-                    val weekEnd = Calendar.getInstance().apply {
-                        time = weekStart
-                        add(Calendar.DAY_OF_MONTH, 6)
-                    }.time
-
-                    val weeklyValues = parsedData.filter {
-                        it.first >= weekStart && it.first <= weekEnd
-                    }.map { it.second }
-
-                    val weekValue =
-                        if (weeklyValues.isNotEmpty()) weeklyValues.average().toFloat() else 0f
-                    entries.add(Entry(weekIndex.toFloat(), weekValue))
-
-                    val startDay = calendar.get(Calendar.DAY_OF_MONTH)
-                    val endDay =
-                        (startDay + 6).coerceAtMost(calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
-                    val monthLabel = monthFormat.format(calendar.time).split(" ")[1]
-                    xAxisLabels.add("$startDay-$endDay $monthLabel")
-
-                    calendar.add(Calendar.DAY_OF_MONTH, 7)
-                    weekIndex++
-                }
-            }*/
-
-            /*"month" -> {
-                val today = Calendar.getInstance().apply {
-                    time = Date()
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }
-
-                // Start from beginning of current week (Sunday)
-                val calendar = Calendar.getInstance().apply {
-                    time = today.time
-                    set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-                    add(Calendar.WEEK_OF_YEAR, -4) // Show 5 weeks total
-                }
-
-                val dateFormat = SimpleDateFormat("d MMM", Locale.getDefault())
-                var weekIndex = 0
-
-                // Generate entries for 5 weeks
-                repeat(5) {
-                    val weekStart = calendar.time
-                    val weekEnd = Calendar.getInstance().apply {
-                        time = weekStart
-                        add(Calendar.DAY_OF_MONTH, 6)
-                    }.time
-
-                    val weeklyValues = parsedData.filter {
-                        it.first >= weekStart && it.first <= weekEnd
-                    }.map { it.second }
-
-                    val weekValue = if (weeklyValues.isNotEmpty()) weeklyValues.average().toFloat() else 0f
-                    entries.add(Entry(weekIndex.toFloat(), weekValue))
-
-                    val startDay = dateFormat.format(weekStart)
-                    val endDay = dateFormat.format(weekEnd)
-                    xAxisLabels.add("$startDay-$endDay")
-
-                    calendar.add(Calendar.WEEK_OF_YEAR, 1)
-                    weekIndex++
-                }
-            }*/
-
 
             "month" -> {
                 // 1. Get today at midnight (00:00:00.000)
@@ -752,14 +644,23 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         }
 
         // Chart setup
-        val dataSet = LineDataSet(entries, "Data Set").apply {
+        val circleColors = entries.map { entry ->
+            if (entry.y == 0f) Color.TRANSPARENT else Color.parseColor("#05AB26")
+        }
+
+        val modifiedEntries = entries.map {
+            if (it.y == 0f) Entry(it.x, Float.NaN) else it
+        }
+
+        val dataSet = LineDataSet(modifiedEntries, "Data Set").apply {
             color = Color.parseColor("#05AB26")
-            setCircleColor(Color.parseColor("#05AB26"))
+            setCircleColors(circleColors)
             lineWidth = 2f
             circleRadius = 4f
             valueTextSize = 10f
             mode = LineDataSet.Mode.LINEAR
             setDrawValues(false)
+            setDrawHighlightIndicators(false)
         }
 
         val lineData = LineData(dataSet)
