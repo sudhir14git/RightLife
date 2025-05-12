@@ -17,7 +17,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
-import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.request.LogRoutineRequest
+
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.MyRoutineMainListAdapter
 import com.jetsynthesys.rightlife.databinding.FragmentMyRoutineBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -33,6 +34,7 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
             requireContext(),
             arrayListOf(),
             -1,
+            this,
             null,
             false,
             ::onWorkoutItemClick
@@ -134,6 +136,50 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
                         Toast.makeText(
                             context,
                             "Error fetching routines: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    fun logRoutineToServer(userId: String, date: String, routineId: String) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                Log.d("LogRoutine", "Logging routine for userId: $userId, routineId: $routineId, date: $date")
+
+                // Create request body
+                val request = LogRoutineRequest(userId, date, routineId)
+
+                // Call the API using suspend function
+                val response = ApiClient.apiServiceFastApi.logRoutine(request)
+
+                // Handle response on main thread
+                withContext(Dispatchers.Main) {
+                    if (isAdded && view != null) {
+                        Log.d("LogRoutine", "Routine logged successfully: ${response.message}")
+                        Toast.makeText(
+                            requireContext(),
+                            "Routine logged: ${response.message}\nStatus: ${response.statusCode}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        // Log workout details
+                        response.workouts.forEach { workout ->
+                            Log.d("LogRoutine", "Workout: ${workout.activityId}, Calories: ${workout.caloriesBurned}")
+                        }
+                        // Refresh the list after logging
+                        fetchRoutines()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    if (isAdded && view != null) {
+                        Log.e("LogRoutine", "Exception: ${e.message}", e)
+                        Toast.makeText(
+                            requireContext(),
+                            "Error logging routine: ${e.message}",
                             Toast.LENGTH_LONG
                         ).show()
                     }

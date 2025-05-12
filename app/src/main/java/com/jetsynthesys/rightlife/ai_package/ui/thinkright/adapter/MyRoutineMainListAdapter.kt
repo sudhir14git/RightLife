@@ -2,11 +2,14 @@ package com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
@@ -15,12 +18,16 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteRoutineBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.MyRoutineFragment
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MyRoutineMainListAdapter(
     private val context: Context,
     private var dataLists: ArrayList<WorkoutRoutineItem>,
     private var clickPos: Int,
+    private val fragment: MyRoutineFragment,
     private var workoutItem: WorkoutRoutineItem?,
     private var isClickView: Boolean,
     private val onWorkoutItemClick: (WorkoutRoutineItem, Int, Boolean) -> Unit
@@ -33,6 +40,7 @@ class MyRoutineMainListAdapter(
         return ViewHolder(view)
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onBindViewHolder(holder: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val item = dataLists[position]
 
@@ -51,6 +59,16 @@ class MyRoutineMainListAdapter(
             // Implement edit functionality
         }
         holder.addToWorkout.setOnClickListener {
+            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+            // Call the logRoutineToServer function directly using the fragment reference
+            fragment.logRoutineToServer(
+                userId = item.userId ?: "67f6698fa213d14e22a47c2a",
+                date = currentDate,
+                routineId = item.routineId
+            )
+
+            // Optionally, you can still show the bottom sheet if needed
             val bottomSheet = LoggedBottomSheet()
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
