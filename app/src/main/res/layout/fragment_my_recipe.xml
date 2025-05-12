@@ -29,7 +29,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
@@ -131,7 +131,7 @@
                         android:text="Your Recipes" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:id="@+id/layout_btnAdd"
+                        android:id="@+id/addRecipeLayout"
                         android:layout_width="80dp"
                         android:layout_height="30dp"
                         android:orientation="horizontal"

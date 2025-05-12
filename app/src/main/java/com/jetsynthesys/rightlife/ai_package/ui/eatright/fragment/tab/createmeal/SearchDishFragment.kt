@@ -143,8 +143,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     if (searchType.contentEquals("mealScanResult")){
                         val fragment = MealScanResultFragment()
                         val args = Bundle()
-                        mealId = arguments?.getString("mealId").toString()
-                        mealName = arguments?.getString("mealName").toString()
+                        args.putString("mealId", mealId)
+                        args.putString("mealName", mealName)
                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -169,8 +169,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             if (searchType.contentEquals("mealScanResult")){
                 val fragment = MealScanResultFragment()
                 val args = Bundle()
-                mealId = arguments?.getString("mealId").toString()
-                mealName = arguments?.getString("mealName").toString()
+                args.putString("mealId", mealId)
+                args.putString("mealName", mealName)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {

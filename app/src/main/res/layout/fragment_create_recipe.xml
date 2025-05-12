@@ -29,7 +29,7 @@
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <ImageView
-                    android:id="@+id/back_button"
+                    android:id="@+id/backButton"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginTop="20dp"
@@ -70,7 +70,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:gravity="center"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -125,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:gravity="center"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -162,7 +162,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             android:layout_marginStart="5dp"
                             android:textSize="22sp"
-                            android:text="Tare Poha"
+                            android:text=""
                             android:textColor="@color/black_no_meals"
                             android:fontFamily="@font/dmsans_bold"
                             />
@@ -185,6 +185,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:visibility="gone"
                         android:background="@drawable/white_bg"
                         android:layout_marginStart="15dp"
                         android:layout_marginEnd="15dp"
@@ -215,7 +216,7 @@
                                 android:id="@+id/ivDecrease"
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
-                                android:src="@drawable/icon_minus"
+                                android:src="@drawable/ic_minus"
                                />
 
                             <TextView
@@ -232,7 +233,7 @@
                                 android:id="@+id/ivIncrease"
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
-                                android:src="@drawable/icon_plus" />
+                                android:src="@drawable/ic_plus" />
                         </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -394,7 +395,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:orientation="horizontal"
-        android:visibility="gone"
+        android:visibility="visible"
         android:background="@drawable/green_meal_bg"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"

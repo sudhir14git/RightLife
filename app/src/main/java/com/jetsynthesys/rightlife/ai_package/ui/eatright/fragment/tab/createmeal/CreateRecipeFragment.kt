@@ -1,70 +1,69 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.model.DailyRecipe
-import com.jetsynthesys.rightlife.ai_package.model.MealList
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogWeeklyDayAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.request.CreateRecipeRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.IngredientEntry
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetail
+import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.IngredientListAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.DeleteIngredientBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DinnerMealModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogDateModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.IngredientDishFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.SearchIngredientFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRecipeBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import androidx.core.view.isGone
 
 class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
 
-    private lateinit var progressBarConfirmation :ProgressBar
-    private lateinit var mealLogDateRecyclerView : RecyclerView
-    private lateinit var breakfastMealRecyclerView : RecyclerView
-    private lateinit var lunchMealRecyclerView : RecyclerView
-    private lateinit var addedIngredientsItemRecyclerview : RecyclerView
+    private lateinit var backButton : ImageView
+    private lateinit var addedIngredientsRecyclerview : RecyclerView
     private lateinit var etAddName : EditText
     private lateinit var tvContinue : TextView
     private lateinit var editRecipe : ImageView
     private lateinit var addedNameTv : TextView
     private lateinit var btnAddLayout : LinearLayoutCompat
-    private lateinit var editDeleteBreakfast : CardView
-    private lateinit var editDeleteLunch : CardView
     private lateinit var addedRecipeListLayout : LinearLayoutCompat
     private lateinit var saveRecipeLayout : LinearLayoutCompat
     private lateinit var layoutNoIngredients: LinearLayoutCompat
     private lateinit var addRecipeNameLayout : LinearLayoutCompat
     private lateinit var continueLayout : LinearLayoutCompat
-    var breakfastLists : ArrayList<MealList> = ArrayList()
+    private var ingredientLists : ArrayList<IngredientDetail> = ArrayList()
+    private var ingredientLocalListModel : IngredientLocalListModel? = null
+    private var recipeId : String = ""
+    private var recipeName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRecipeBinding
         get() = FragmentCreateRecipeBinding::inflate
 
-    private val mealLogDateAdapter by lazy { MealLogWeeklyDayAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onMealLogDateItem) }
-//    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
-//        null, false, :: onBreakfastMealLogItem, :: onBreakfastDeleteItem, :: onBreakfastEditItem) }
-//    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
-//        null, false, :: onLunchMealLogItem) }
-//    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
-//        null, false, :: onDinnerMealLogItem) }
+    private val ingredientListAdapter by lazy { IngredientListAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onIngredientClickItem, :: onIngredientDeleteItem, :: onIngredientEditItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -73,36 +72,37 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-      //  view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
-
         addRecipeNameLayout = view.findViewById(R.id.layout_add_recipe_name)
         etAddName = view.findViewById(R.id.et_add_name)
         continueLayout = view.findViewById(R.id.layout_continue)
         tvContinue = view.findViewById(R.id.tv_continue)
-        addedIngredientsItemRecyclerview = view.findViewById(R.id.recyclerview_added_ingredients_item)
+        addedIngredientsRecyclerview = view.findViewById(R.id.recyclerview_added_ingredients_item)
         layoutNoIngredients = view.findViewById(R.id.layout_noIngredients)
         saveRecipeLayout = view.findViewById(R.id.layout_save_recipe)
         editRecipe = view.findViewById(R.id.ic_edit)
         addedRecipeListLayout = view.findViewById(R.id.layout_added_recipe_list)
         btnAddLayout = view.findViewById(R.id.layout_btnAdd)
         addedNameTv = view.findViewById(R.id.addedNameTv)
-//        editDeleteDinner = view.findViewById(R.id.btn_edit_delete_dinner)
-//        layoutMain = view.findViewById(R.id.layout_main)
-//        layoutDelete = view.findViewById(R.id.layout_delete)
-//        layoutViewFood = view.findViewById(R.id.layout_view_food)
-  //      val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
-     //   val circleIndicator = view.findViewById<View>(R.id.circleIndicator)
+        backButton = view.findViewById(R.id.backButton)
         continueLayout.isEnabled = false
         continueLayout.setBackgroundResource(R.drawable.light_green_bg)
-//
-//        breakfastMealRecyclerView.layoutManager = LinearLayoutManager(context)
-//        breakfastMealRecyclerView.adapter = breakfastMealLogsAdapter
-//
-//        lunchMealRecyclerView.layoutManager = LinearLayoutManager(context)
-//        lunchMealRecyclerView.adapter = lunchMealLogsAdapter
-//
-//        dinnerMealRecyclerView.layoutManager = LinearLayoutManager(context)
-//        dinnerMealRecyclerView.adapter = dinnerMealLogsAdapter
+
+        addedIngredientsRecyclerview.layoutManager = LinearLayoutManager(context)
+        addedIngredientsRecyclerview.adapter = ingredientListAdapter
+
+        recipeId = arguments?.getString("recipeId").toString()
+        recipeName = arguments?.getString("recipeName").toString()
+
+        val ingredientLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("ingredientLocalListModel", IngredientLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("ingredientLocalListModel")
+        }
+
+        if (ingredientLocalListModels != null){
+            ingredientLocalListModel = ingredientLocalListModels
+            ingredientLists.addAll(ingredientLocalListModel!!.data)
+        }
 
         etAddName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -125,9 +125,8 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragment = CreateRecipeFragment()
+                val fragment = HomeTabMealFragment()
                 val args = Bundle()
-
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -137,17 +136,16 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             }
         })
 
-        onFrequentlyLoggedItemRefresh()
+        onIngredientList()
 
         saveRecipeLayout.setOnClickListener {
 
-            val fragment = HomeTabMealFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "mealLog")
-                addToBackStack("mealLog")
-                commit()
+            if (ingredientLists.isNotEmpty()){
+                if (recipeId != "null"){
+                    updateRecipe(ingredientLists)
+                }else{
+                createRecipe(ingredientLists)
+               }
             }
         }
 
@@ -157,13 +155,57 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             addedRecipeListLayout.visibility = View.VISIBLE
             saveRecipeLayout.visibility = View.VISIBLE
             addedNameTv.text = etAddName.text
-            if (layoutNoIngredients.visibility == View.GONE){
+            if (layoutNoIngredients.isGone){
                 saveRecipeLayout.isEnabled = true
                 saveRecipeLayout.setBackgroundResource(R.drawable.green_meal_bg)
             }else{
                 saveRecipeLayout.isEnabled = false
                 saveRecipeLayout.setBackgroundResource(R.drawable.light_green_bg)
             }
+        }
+
+        if (ingredientLists.isNotEmpty()){
+            addRecipeNameLayout.visibility = View.GONE
+            continueLayout.visibility = View.GONE
+            addedRecipeListLayout.visibility = View.VISIBLE
+            saveRecipeLayout.visibility = View.VISIBLE
+            if (recipeName != "null"){
+                addedNameTv.text = recipeName
+            }else{
+                addedNameTv.text = etAddName.text
+            }
+            if (layoutNoIngredients.isGone){
+                saveRecipeLayout.isEnabled = true
+                saveRecipeLayout.setBackgroundResource(R.drawable.green_meal_bg)
+            }else{
+                saveRecipeLayout.isEnabled = false
+                saveRecipeLayout.setBackgroundResource(R.drawable.light_green_bg)
+            }
+        }else{
+            addRecipeNameLayout.visibility = View.VISIBLE
+            continueLayout.visibility = View.VISIBLE
+            addedRecipeListLayout.visibility = View.GONE
+            saveRecipeLayout.visibility = View.GONE
+            if (recipeName != "null"){
+                addedNameTv.text = recipeName
+            }else{
+                addedNameTv.text = etAddName.text
+            }
+            if (layoutNoIngredients.isGone){
+                saveRecipeLayout.isEnabled = true
+                saveRecipeLayout.setBackgroundResource(R.drawable.green_meal_bg)
+            }else{
+                saveRecipeLayout.isEnabled = false
+                saveRecipeLayout.setBackgroundResource(R.drawable.light_green_bg)
+            }
+        }
+
+        if (etAddName.text.length > 0){
+            continueLayout.isEnabled = true
+            continueLayout.setBackgroundResource(R.drawable.green_meal_bg)
+        }else{
+            continueLayout.isEnabled = false
+            continueLayout.setBackgroundResource(R.drawable.light_green_bg)
         }
 
         editRecipe.setOnClickListener {
@@ -180,20 +222,24 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             }
         }
 
-//        dinnerDotMenu.setOnClickListener {
-//            if (editDeleteDinner.visibility == View.GONE){
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
-//                editDeleteDinner.visibility = View.VISIBLE
-//            }else{
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
-//                editDeleteDinner.visibility = View.GONE
-//            }
-//        }
-
         btnAddLayout.setOnClickListener {
-            val fragment = SearchDishFragment()
+            val fragment = SearchIngredientFragment()
             val args = Bundle()
             args.putString("searchType", "createRecipe")
+            args.putString("recipeId", recipeId)
+            args.putString("recipeName", addedNameTv.text.toString())
+            args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        }
+
+        backButton.setOnClickListener {
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
@@ -203,125 +249,173 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         }
     }
 
-    private fun onFrequentlyLoggedItemRefresh (){
+    private fun onIngredientList (){
 
-        val meal = listOf(
-            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false)
-        )
-
-        if (meal.size < 0){
-            addedIngredientsItemRecyclerview.visibility = View.VISIBLE
+        if (ingredientLists.size > 0){
+            addedIngredientsRecyclerview.visibility = View.VISIBLE
             layoutNoIngredients.visibility = View.GONE
             saveRecipeLayout.visibility = View.VISIBLE
         }else{
             layoutNoIngredients.visibility = View.VISIBLE
-            addedIngredientsItemRecyclerview.visibility = View.GONE
+            addedIngredientsRecyclerview.visibility = View.GONE
             saveRecipeLayout.visibility = View.GONE
         }
 
+        val valueLists : ArrayList<IngredientDetail> = ArrayList()
+        valueLists.addAll(ingredientLists as Collection<IngredientDetail>)
+        val mealLog: IngredientDetail? = null
+        ingredientListAdapter.addAll(valueLists, -1, mealLog, false)
     }
 
-    private fun onFrequentlyLoggedItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
+    private fun onIngredientClickItem(mealLogDateModel: IngredientDetail, position: Int, isRefresh: Boolean) {
 
-        val mealLogs = listOf(
-            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false)
+    }
+
+    private fun onIngredientDeleteItem(mealItem: IngredientDetail, position: Int, isRefresh: Boolean) {
+
+        val valueLists : ArrayList<IngredientDetail> = ArrayList()
+        valueLists.addAll(ingredientLists as Collection<IngredientDetail>)
+        ingredientListAdapter.addAll(valueLists, position, mealItem, isRefresh)
+
+        deleteIngredientDialog(mealItem)
+    }
+
+    private fun onIngredientEditItem(mealItem: IngredientDetail, position: Int, isRefresh: Boolean) {
+        val valueLists : ArrayList<IngredientDetail> = ArrayList()
+        valueLists.addAll(ingredientLists as Collection<IngredientDetail>)
+        ingredientListAdapter.addAll(valueLists, position, mealItem, isRefresh)
+
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            val fragment = IngredientDishFragment()
+            val args = Bundle()
+            args.putString("searchType", "createMeal")
+            args.putString("recipeId", recipeId)
+            args.putString("recipeName", addedNameTv.text.toString())
+            args.putString("ingredientName", mealItem.ingredient_name)
+            args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
+            fragment.arguments = args
+            replace(R.id.flFragment, fragment, "Steps")
+            addToBackStack(null)
+            commit()
+        }
+    }
+    private fun deleteIngredientDialog(ingredientItem: IngredientDetail){
+
+        val deleteDishBottomSheet = DeleteIngredientBottomSheet()
+        deleteDishBottomSheet.isCancelable = true
+        val args = Bundle()
+        args.putBoolean("test",false)
+        args.putString("recipeId", recipeId)
+        args.putString("recipeName", addedNameTv.text.toString())
+        args.putString("ingredientName", ingredientItem.ingredient_name)
+        args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
+        deleteDishBottomSheet.arguments = args
+        activity?.supportFragmentManager?.let { deleteDishBottomSheet.show(it, "DeleteDishBottomSheet") }
+    }
+
+    private fun createRecipe(ingredientList : ArrayList<IngredientDetail>) {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
+        val ingredientLists : ArrayList<IngredientEntry> = ArrayList()
+        ingredientList?.forEach { ingredient ->
+            val ingredientData = IngredientEntry(
+                ingredient_id = ingredient.id,
+                quantity = ingredient.quantity?.toInt(),
+                measure = ingredient.unit
+            )
+            ingredientLists.add(ingredientData)
+        }
+        val recipeRequest = CreateRecipeRequest(
+            recipe_name = addedNameTv.text.toString(),
+            ingredients = ingredientLists,
+            total_time = "",
+            course_one_or_more = "",
+            tags_optional = "",
+            cuisine_optional = "",
+            photo_url = ""
         )
-
-
+        val call = ApiClient.apiServiceFastApi.createRecipe(userId, recipeRequest)
+        call.enqueue(object : Callback<MealUpdateResponse> {
+            override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
+                if (response.isSuccessful) {
+                    LoaderUtil.dismissLoader(requireActivity())
+                    val mealData = response.body()?.message
+                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    val fragment = HomeTabMealFragment()
+                    val args = Bundle()
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
     }
 
-    private fun onLunchMealLogItemRefresh() {
-        val mealLogs = listOf(
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
+    private fun updateRecipe(ingredientList : ArrayList<IngredientDetail>) {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
+        val ingredientLists : ArrayList<IngredientEntry> = ArrayList()
+        ingredientList?.forEach { ingredient ->
+            val ingredientData = IngredientEntry(
+                ingredient_id = ingredient.id,
+                quantity = ingredient.quantity?.toInt(),
+                measure = ingredient.unit
+            )
+            ingredientLists.add(ingredientData)
+        }
+        val updateRecipeRequest = CreateRecipeRequest(
+            recipe_name = addedNameTv.text.toString(),
+            ingredients = ingredientLists,
+            total_time = "",
+            course_one_or_more = "",
+            tags_optional = "",
+            cuisine_optional = "",
+            photo_url = ""
         )
-        val valueLists : ArrayList<LunchMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-        val lunchMealData: LunchMealModel? = null
-      //  lunchMealLogsAdapter.addAll(valueLists, -1, lunchMealData, false)
+        val call = ApiClient.apiServiceFastApi.updateRecipe(recipeId, userId, updateRecipeRequest)
+        call.enqueue(object : Callback<MealUpdateResponse> {
+            override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
+                if (response.isSuccessful) {
+                    LoaderUtil.dismissLoader(requireActivity())
+                    val mealData = response.body()?.message
+                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    val fragment = HomeTabMealFragment()
+                    val args = Bundle()
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
     }
-
-    private fun onDinnerMealLogItemRefresh() {
-        val mealLogs = listOf(
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-        val dinnerMealData: DinnerMealModel? = null
-      //  dinnerMealLogsAdapter.addAll(valueLists, -1, dinnerMealData, false)
-    }
-
-    private fun onMealLogDateItem(mealLogDateModel: MealLogWeeklyDayModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            MealLogDateModel("01", "M", true),
-            MealLogDateModel("02", "T", false),
-            MealLogDateModel("03", "W", true),
-            MealLogDateModel("04", "T", false),
-            MealLogDateModel("05", "F", true),
-            MealLogDateModel("06", "S", true),
-            MealLogDateModel("07", "S", true)
-        )
-//        val valueLists : ArrayList<DailyRecipe> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<DailyRecipe>)
-//        mealLogDateAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onBreakfastMealLogItem(mealLogDateModel: BreakfastMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-        )
-        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
-       // breakfastMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onLunchMealLogItem(mealLogDateModel: LunchMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<LunchMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-     //   lunchMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onDinnerMealLogItem(mealLogDateModel: DinnerMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            LunchMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-      //  dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onBreakfastDeleteItem(mealItem: MealList, position: Int, isRefresh: Boolean) {
-
-//        val valueLists : ArrayList<MealList> = ArrayList()
-//        valueLists.addAll(breakfastLists as Collection<MealList>)
-//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
-
-    }
-
-    private fun onBreakfastEditItem(mealItem: MealList, position: Int, isRefresh: Boolean) {
-
-//        val valueLists : ArrayList<MealList> = ArrayList()
-//        valueLists.addAll(breakfastLists as Collection<MealList>)
-//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
-
-    }
-
-//    private fun deleteMealDialog(){
-//
-//        deleteBottomSheetFragment = DeleteMealBottomSheet()
-//        deleteBottomSheetFragment.isCancelable = true
-//        val bundle = Bundle()
-//        bundle.putBoolean("test",false)
-//        deleteBottomSheetFragment.arguments = bundle
-//        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
-//    }
 }

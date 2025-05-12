@@ -1,0 +1,66 @@
+package com.jetsynthesys.rightlife.ai_package.model.response
+
+data class MyRecipeResponse(
+    val status_code: Int,
+    val message: String,
+    val data: List<MyRecipe>
+)
+
+data class MyRecipe(
+    val _id: String,
+    val user_id: String,
+    val recipe_name: String,
+    val ingredients_per_serving: List<Ingredient>,
+    val instructions: List<String>,
+    val author: String,
+    val total_time: String,
+    val time_in_seconds: Int,
+    val servings: Int,
+    val course_one_or_more: String,
+    val tags_optional: String,
+    val cuisine_optional: String,
+    val photo_url: String,
+    val serving_weight: Int,
+    val calories: Double,
+    val carbs: Double,
+    val sugar: Double,
+    val fiber: Double,
+    val protein: Double,
+    val fat: Double,
+    val saturated_fat: Double,
+    val trans_fat: Double,
+    val cholesterol: Double,
+    val sodium: Double,
+    val potassium: Double,
+    val recipe_id: String,
+    val hits: Int,
+    val createdAt: String
+)
+
+data class Ingredient(
+    val ingredient_id: String?,
+    val ingredient_name: String?,
+    val quantity: Double,
+    val measure: String,
+    val description: String?,
+    val ingredient_category : String?,
+    val photo_url: String?,
+    val calories: Double?,
+    val carbs: Double?,
+    val sugar: Double?,
+    val fiber: Double?,
+    val protein: Double?,
+    val fat: Double?,
+    val cholesterol: Double?,
+    val vitamin_a: Double?,
+    val vitamin_c: Double?,
+    val vitamin_k: Double?,
+    val vitamin_d: Double?,
+    val folate: Double?,
+    val iron: Double?,
+    val calcium: Double?,
+    val magnesium: Double?,
+    val sodium: Double?,
+    val potassium: Double?,
+    val zinc: Double?,
+)

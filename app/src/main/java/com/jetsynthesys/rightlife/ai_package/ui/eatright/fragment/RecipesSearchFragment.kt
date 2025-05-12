@@ -1,6 +1,5 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -33,8 +32,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TabContentAdapt
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.RecipeSearchAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentRecipeSearchBinding
 import retrofit2.Call
@@ -61,9 +60,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private var mealTypeList: ArrayList<String> = ArrayList()
     private var foodTypeList: ArrayList<String> = ArrayList()
     private var cuisineList: ArrayList<String> = ArrayList()
-    private var snapDishLocalListModel: SnapDishLocalListModel? = null
     private lateinit var backButton: ImageView
-    private lateinit var currentPhotoPathsecound: Uri
     private lateinit var mealType: String
     private val tabTitles = arrayOf("Meal Type", "Food Type", "Cuisine")
     private var currentFragmentTag: String? = null
@@ -166,30 +163,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
 
-        val imagePathString = arguments?.getString("ImagePathsecound")
-        if (imagePathString != null) {
-            currentPhotoPathsecound = Uri.parse(imagePathString)
-        }
-
         allDishesRecyclerview.layoutManager = GridLayoutManager(context, 2)
         allDishesRecyclerview.adapter = recipeSearchAdapter
-
-        val snapDishLocalListModels = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            arguments?.getParcelable("snapDishLocalListModel")
-        }
-
-        if (snapDishLocalListModels != null) {
-            snapDishLocalListModel = snapDishLocalListModels
-        }
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val fragment = YourMealLogsFragment()
+                    val fragment = HomeBottomTabFragment()
                     val args = Bundle()
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -201,7 +182,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             })
 
         backButton.setOnClickListener {
-            val fragment = YourMealLogsFragment()
+            val fragment = HomeBottomTabFragment()
             val args = Bundle()
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -294,18 +275,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun onSnapSearchDishItem(recipesModel: SnapRecipeList, position: Int, isRefresh: Boolean) {
-        val valueLists: ArrayList<SnapRecipeList> = ArrayList()
-        valueLists.addAll(snapRecipesList as Collection<SnapRecipeList>)
-        recipeSearchAdapter.addAll(valueLists, position, recipesModel, isRefresh)
-
-        // Navigate to DishToLogFragment with the complete SnapRecipeList data
         requireActivity().supportFragmentManager.beginTransaction().apply {
             val snapMealFragment = RecipeDetailsFragment()
             val args = Bundle()
             args.putString("searchType", searchType)
             args.putString("mealType", mealType)
             args.putParcelable("snapRecipeList", recipesModel)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             snapMealFragment.arguments = args
             replace(R.id.flFragment, snapMealFragment, "Steps")
             addToBackStack(null)
@@ -335,8 +310,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         foodType: String? = selectedFoodType,
         cuisine: String? = selectedCuisine
     ) {
-        val userId = appPreference.getUserId().toString()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiServiceFastApi.getRecipesList(
             mealType = mealType,
             foodType = foodType,
@@ -365,8 +338,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun getSnapMealRecipesList() {
-        val userId = appPreference.getUserId().toString()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiServiceFastApi.getSnapMealRecipesList()
         call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
             override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {

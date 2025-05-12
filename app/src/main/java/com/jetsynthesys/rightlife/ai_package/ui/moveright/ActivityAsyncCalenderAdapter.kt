@@ -31,16 +31,15 @@ class ActivityAsyncCalenderAdapter(private val context: Context, private var dat
         holder.txtMonth.text = item.month
         if (item.month.contentEquals(item.currentMonth)){
             val day = item.currentDate.split(" ")[1]
-            if (day.contentEquals(item.date.toString())){
+            if (day.toInt() == item.date){
                 holder.viewDate.visibility = View.VISIBLE
             }else{
                 holder.viewDate.visibility = View.INVISIBLE
             }
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context,R.color.white))
         }else{
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.activity_async_calenderolor))
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context,R.color.meal_log_background))
         }
-
         if (item.date == 1){
             if (item.month.contentEquals("Jan")){
                 holder.txtMonth.visibility = View.VISIBLE
@@ -53,7 +52,7 @@ class ActivityAsyncCalenderAdapter(private val context: Context, private var dat
             holder.txtMonth.visibility = View.INVISIBLE
         }
 
-        if (item.isSelected){
+        if (item.is_available){
             holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
 
 

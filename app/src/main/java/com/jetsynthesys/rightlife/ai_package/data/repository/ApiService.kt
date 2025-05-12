@@ -54,6 +54,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.request.CreateRecipeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.LogRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
@@ -83,6 +84,8 @@ import com.jetsynthesys.rightlife.ai_package.model.response.FitnessData
 import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.GetCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogRoutineResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
@@ -93,6 +96,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MoveRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SetStepsGoalResponse
@@ -103,6 +107,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.UpdateCaloriesRespon
 import com.jetsynthesys.rightlife.ai_package.model.response.UpdateRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutPlanResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MoveDashboardResponse
@@ -154,6 +159,10 @@ interface ApiService {
     fun getSnapMealRecipesDetails(
         @Path("foodId") foodId: String): Call<RecipeResponse>
 
+    @GET("eat/fetch_ingredient_detail/")
+    fun getRecipesDetails(
+        @Query("ingredient_id") ingredientId: String): Call<IngredientDetailResponse>
+
     @GET("eat/recipes/frequently_more_than_five/{userId}")
     fun getFrequentlyLog(
         @Path("userId") userId: String): Call<FrequentRecipesResponse>
@@ -180,6 +189,9 @@ interface ApiService {
     @GET("eat/meals/get_search/")
     fun getSearchMealList(@Query("keyword") keyword: String): Call<SearchResultsResponse>
 
+    @GET("eat/fetch_ingredient_list/")
+    fun getSearchIngredientList(@Query("limit") limit: String): Call<IngredientResponse>
+
     @POST("eat/log-meal/")
     fun createLogDish(@Body request: MealLogRequest): Call<MealLogResponse>
 
@@ -188,6 +200,12 @@ interface ApiService {
 
     @POST("eat/meals/create_meal/")
     fun createMealsSave(@Query("user_id") userId: String,@Body request: MealSaveRequest): Call<MealUpdateResponse>
+
+    @POST("eat/recipes/create/")
+    fun createRecipe(@Query("user_id") userId: String,@Body request: CreateRecipeRequest): Call<MealUpdateResponse>
+
+    @PUT("eat/recipes/update")
+    fun updateRecipe(@Query("recipe_id") recipeId: String, @Query("user_id") userId: String,@Body request: CreateRecipeRequest): Call<MealUpdateResponse>
 
     @POST("eat/meals/log_meal/")
     fun createSaveMealsToLog(@Query("user_id") userId: String,
@@ -209,6 +227,9 @@ interface ApiService {
 
     @DELETE("eat/meals/delete_meal/")
     fun deleteMyMeal(@Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<MealUpdateResponse>
+
+    @DELETE("eat/recipes/delete/")
+    fun deleteMyRecipe(@Query("recipe_id") mealId: String, @Query("user_id") userId: String): Call<MealUpdateResponse>
 
     @GET("eat/meals/get_log_meals/")
     fun getMealsLogList(@Query("user_id") userId: String,
@@ -235,8 +256,21 @@ interface ApiService {
     @GET("eat/meals/get_mymeal_list/")
     fun getMyMealList(@Query("user_id") userId: String): Call<MyMealsSaveResponse>
 
+    @GET("eat/recipes/my_recipes_list/")
+    fun getMyRecipeList(@Query("limit") limit: String, @Query("user_id") userId: String): Call<MyRecipeResponse>
+
     @POST("eat/meal-plans/log/")
     fun createMealPlanLog(@Query("user_id") userId: String,@Query("meal_plan_id") mealPlanId: String,@Body request: MealPlanLogRequest): Call<MealPlanResponse>
+
+    @GET("move/calendar_view_activity_details/")
+    fun getActivityLogHistoryCalender(@Query("user_id") userId: String,
+                                      @Query("source") source: String,
+                                   @Query("date_range") dateRange: String): Call<WorkoutHistoryResponse>
+
+    @GET("move/calendar_view_activity_details/")
+    fun getActivityLogHistory(@Query("user_id") userId: String,
+                              @Query("source") source: String,
+                           @Query("date") startDate: String): Call<WorkoutHistoryResponse>
 
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(

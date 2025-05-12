@@ -1,33 +1,49 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarDateModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 import com.jetsynthesys.rightlife.databinding.FragmentActivitySyncCalenderBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutRecord
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-
 class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBinding>() {
+
     private lateinit var icLeftArrow : ImageView
     private lateinit var txtDate : TextView
     private lateinit var icRightArrow : ImageView
     private lateinit var btnClose : ImageView
     private lateinit var recyclerCalendar : RecyclerView
     private lateinit var recyclerSummary : RecyclerView
+    private var workoutHistoryResponse : WorkoutHistoryResponse? = null
+    private var  workoutLogHistory :  ArrayList<WorkoutRecord> = ArrayList()
+    private var workoutLogYearlyList : List<CalendarDateModel> = ArrayList()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentActivitySyncCalenderBinding
         get() = FragmentActivitySyncCalenderBinding::inflate
@@ -43,6 +59,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         super.onActivityCreated(savedInstanceState)
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -60,8 +77,9 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         recyclerSummary.adapter = calendarSummaryAdapter
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
             override fun handleOnBackPressed() {
-                val fragment = YourMealLogsFragment()
+                val fragment = YourActivityFragment()
                 val args = Bundle()
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -83,37 +101,24 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
             }
         }
 
-        icLeftArrow.setOnClickListener {
-            txtDate.text = "Thur, 5 Feb 2025"
-        }
+//        icLeftArrow.setOnClickListener {
+//            txtDate.text = "Thur, 5 Feb 2025"
+//        }
+//
+//        icRightArrow.setOnClickListener {
+//            txtDate.text = "Thur, 7 Feb 2025"
+//        }
 
-        icRightArrow.setOnClickListener {
-            txtDate.text = "Thur, 7 Feb 2025"
-        }
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedCurrentDate = currentDateTime.format(formatter)
+        val ninetyDaysAgo = currentDateTime.minusDays(60)
+        val dateRange  = ninetyDaysAgo.format(formatter) + "_to_" + formattedCurrentDate
+        getWorkoutLogHistory(dateRange)
+        workoutLogYearlyList = generateYearCalendar()
 
-        onMealLogCalenderItemRefresh()
+      //  onMealLogCalenderItemRefresh()
         onMealLogCalenderSummaryRefresh()
-    }
-
-    private fun onMealLogCalenderItemRefresh (){
-
-        val yearDays = generateYearCalendar()
-        // val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
-
-//        val calendarDays = listOf(
-//            MealLogDateModel("01", "M", true),
-//            MealLogDateModel("02", "T", false),
-//            MealLogDateModel("03", "W", true),
-//            MealLogDateModel("04", "T", false),
-//            MealLogDateModel("05", "F", true),
-//            MealLogDateModel("06", "S", true),
-//            MealLogDateModel("07", "S", true)
-//        )
-
-        val valueLists : ArrayList<CalendarDateModel> = ArrayList()
-        valueLists.addAll(yearDays as Collection<CalendarDateModel>)
-        val mealLogDateData: CalendarDateModel? = null
-        calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
     private fun onMealLogCalenderSummaryRefresh (){
@@ -140,7 +145,6 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
 
         val yearDays = generateYearCalendar()
         //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
-
         val valueLists : ArrayList<CalendarDateModel> = ArrayList()
         valueLists.addAll(yearDays as Collection<CalendarDateModel>)
         calendarAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
@@ -164,28 +168,6 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
         calendarSummaryAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
-
-//    private fun generateYearDays(year: Int): List<CalendarDateModel> {
-//        val calendar = Calendar.getInstance()
-//        val daysList = mutableListOf<CalendarDateModel>()
-//
-//        for (month in 0..11) { // 0 = January, 11 = December
-//            calendar.set(year, month, 1)
-//            val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-//
-//            for (day in 1..daysInMonth) {
-//                daysList.add(
-//                    CalendarDateModel(
-//                        date = day,
-//                        month = month,
-//                        year = year,
-//                        surplus = (day * 50) % 500 // Random surplus example
-//                    )
-//                )
-//            }
-//        }
-//        return daysList
-//    }
 
     private fun generateYearCalendar(): List<CalendarDateModel> {
         val calendar = java.util.Calendar.getInstance()
@@ -248,5 +230,54 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         val dateFormat =
             java.text.SimpleDateFormat("MMM", Locale.ENGLISH) // "MMM" for 3-letter month
         return dateFormat.format(calendar.time)
+    }
+
+    private fun getWorkoutLogHistory(dateRange: String) {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val call = ApiClient.apiServiceFastApi.getActivityLogHistoryCalender(userId,"google", dateRange)
+        call.enqueue(object : Callback<WorkoutHistoryResponse> {
+            override fun onResponse(call: Call<WorkoutHistoryResponse>, response: Response<WorkoutHistoryResponse>) {
+                if (response.isSuccessful) {
+                    LoaderUtil.dismissLoader(requireActivity())
+                    if (response.body() != null){
+                        workoutHistoryResponse = response.body()
+                        if (workoutHistoryResponse?.data?.record_details!!.size > 0){
+                            workoutLogHistory.addAll(workoutHistoryResponse!!.data.record_details)
+                            onWorkoutLogCalenderList(workoutLogYearlyList, workoutLogHistory)
+                        }
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<WorkoutHistoryResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
+    }
+
+    private fun onWorkoutLogCalenderList (yearList: List<CalendarDateModel>, workoutLogHistory: ArrayList<WorkoutRecord>){
+
+        if (workoutLogHistory.size > 0 && yearList.isNotEmpty()){
+            workoutLogHistory.forEach { mealLog ->
+                for (item in yearList){
+                    if (item.fullDate == mealLog.date){
+                        if (mealLog.is_available_workout == true){
+                            item.is_available = true
+                        }
+                    }
+                }
+            }
+        }
+
+        val valueLists : ArrayList<CalendarDateModel> = ArrayList()
+        valueLists.addAll(yearList as Collection<CalendarDateModel>)
+        val mealLogDateData: CalendarDateModel? = null
+        calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 }

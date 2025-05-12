@@ -42,6 +42,7 @@ android:background="@drawable/gradient_color_background_workout">
                     android:id="@+id/icLeftArrow"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:visibility="gone"
                     android:src="@drawable/ic_left_arrow_circle"
                     android:contentDescription="Back" />
 
@@ -62,6 +63,7 @@ android:background="@drawable/gradient_color_background_workout">
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:scaleType="fitXY"
+                    android:visibility="gone"
                     android:src="@drawable/ic_right_arrow_circle"
                     android:contentDescription="Close" />
             </LinearLayout>

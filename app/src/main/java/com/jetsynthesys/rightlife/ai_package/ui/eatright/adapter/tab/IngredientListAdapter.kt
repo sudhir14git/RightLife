@@ -7,32 +7,55 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
+import com.jetsynthesys.rightlife.ai_package.model.MealDetails
+import com.jetsynthesys.rightlife.ai_package.model.MealLists
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetail
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 
-class RecipeAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-                    private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                    private var isClickView : Boolean, val onMealDeleteItem: (MyMealModel, Int, Boolean) -> Unit,
-                    val onMealLogItem: (MyMealModel, Int, Boolean) -> Unit) :
-    RecyclerView.Adapter<RecipeAdapter.ViewHolder>() {
+class IngredientListAdapter(private val context: Context, private var dataLists: ArrayList<IngredientDetail>,
+                            private var clickPos: Int, private var mealLogListData : IngredientDetail?,
+                            private var isClickView : Boolean, val onIngredientClickItem: (IngredientDetail, Int, Boolean) -> Unit,
+                            val onIngredientDeleteItem: (IngredientDetail, Int, Boolean) -> Unit,
+                            val onIngredientEditItem: (IngredientDetail, Int, Boolean) -> Unit) :
+    RecyclerView.Adapter<IngredientListAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_my_meal_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_ingredient_ai, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.mealName
-        holder.servesCount.text = item.serve
-        holder.calValue.text = item.cal
-        holder.subtractionValue.text = item.subtraction
-        holder.baguetteValue.text = item.baguette
-        holder.dewpointValue.text = item.dewpoint
+      //  holder.mealTitle.text = item.mealType
+        val capitalized = item.ingredient_name.toString().replaceFirstChar { it.uppercase() }
+        holder.mealName.text = capitalized
+        if (item.quantity.toInt() > 0){
+            holder.servesCount.text = item.quantity.toInt().toString()
+        }
+
+        if (item.unit.isNotEmpty()){
+            holder.serves.text = item.unit
+        }
+//        if (item.cooking_time_in_seconds != null){
+//            val mealTime = item.cooking_time_in_seconds.toString()
+//            holder.mealTime.text = mealTime
+//        }
+        holder.calValue.text = item.calories?.toInt().toString()
+        holder.subtractionValue.text = item.carbs?.toInt().toString()
+        holder.baguetteValue.text = item.protein?.toInt().toString()
+        holder.dewpointValue.text = item.fat?.toInt().toString()
+        val imageUrl = getDriveImageUrl(item.photo_url!!)
+        Glide.with(context)
+            .load(imageUrl)
+            .placeholder(R.drawable.ic_view_meal_place)
+            .error(R.drawable.ic_view_meal_place)
+            .into(holder.mealImage)
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -58,11 +81,11 @@ class RecipeAdapter(private val context: Context, private var dataLists: ArrayLi
    //     }
 
         holder.delete.setOnClickListener {
-            onMealDeleteItem(item, position, true)
+            onIngredientDeleteItem(item, position, true)
         }
 
-        holder.circlePlus.setOnClickListener {
-            onMealLogItem(item, position, true)
+        holder.edit.setOnClickListener {
+            onIngredientEditItem(item, position, true)
         }
     }
 
@@ -72,10 +95,11 @@ class RecipeAdapter(private val context: Context, private var dataLists: ArrayLi
 
      inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
+         val mealTime: TextView = itemView.findViewById(R.id.tv_eat_time)
          val delete: ImageView = itemView.findViewById(R.id.image_delete)
          val edit: ImageView = itemView.findViewById(R.id.image_edit)
-         val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+         val imageUpDown : ImageView = itemView.findViewById(R.id.imageUpDown)
+         val mealImage : ImageView = itemView.findViewById(R.id.image_meal)
          val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
          val serve: ImageView = itemView.findViewById(R.id.image_serve)
          val serves: TextView = itemView.findViewById(R.id.tv_serves)
@@ -94,7 +118,7 @@ class RecipeAdapter(private val context: Context, private var dataLists: ArrayLi
          val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
      }
 
-    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<IngredientDetail>?, pos: Int, mealLogItem : IngredientDetail?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -103,5 +127,16 @@ class RecipeAdapter(private val context: Context, private var dataLists: ArrayLi
             isClickView = isClick
         }
         notifyDataSetChanged()
+    }
+
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
     }
 }

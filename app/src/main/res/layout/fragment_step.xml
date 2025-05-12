@@ -426,6 +426,120 @@
                 app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/step_progress_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:background="@color/white"
+            app:cardCornerRadius="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/step_discreption"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/description_progressbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="You’ve been walking less on average this week compared to your steps last week."
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+            <TextView
+                android:id="@+id/total_steps_progress_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="7,665"
+                app:layout_constraintTop_toBottomOf="@+id/description_progressbar_layout"
+                app:layout_constraintStart_toStartOf="parent"/>
+            <TextView
+                android:id="@+id/steps_day_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="steps/day"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/total_steps_progress_layout"
+                app:layout_constraintBottom_toBottomOf="@+id/total_steps_progress_layout"/>
+            <TextView
+                android:id="@+id/current_week_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="10dp"
+                android:text="Current Week"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/steps_day_text"
+                app:layout_constraintEnd_toEndOf="parent"/>
+            <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.SimpleProgressBar
+                android:id="@+id/customProgressBarFatBurn"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/current_week_text"
+                 />
+            <TextView
+                android:id="@+id/value_previous_week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="10,665"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurn"
+                app:layout_constraintStart_toStartOf="parent"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="steps/day"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/value_previous_week"
+                app:layout_constraintBottom_toBottomOf="@+id/value_previous_week"/>
+            <TextView
+                android:id="@+id/previous_week_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="10dp"
+                android:text="Previous Week"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurn"
+                app:layout_constraintEnd_toEndOf="parent"/>
+            <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.BasicProgressBar
+                android:id="@+id/customProgressPreviousWeek"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_previous_week"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
