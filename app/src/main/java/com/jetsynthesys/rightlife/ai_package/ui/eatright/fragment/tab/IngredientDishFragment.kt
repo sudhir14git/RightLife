@@ -588,7 +588,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
             MicroNutrientsModel(fiber_mg, "mg", "Fiber", R.drawable.ic_fats),
             MicroNutrientsModel(zinc, "mg", "Zinc", R.drawable.ic_fats),
             MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
-            MicroNutrientsModel(sugar_mg, "mg", "Sugar", R.drawable.ic_fats)
+            MicroNutrientsModel(sugar_mg, "g", "Sugar", R.drawable.ic_fats)
         )
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
         for (item in mealLogs){

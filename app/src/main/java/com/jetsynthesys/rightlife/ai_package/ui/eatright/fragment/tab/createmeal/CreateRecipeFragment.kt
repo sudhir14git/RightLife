@@ -383,6 +383,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
+                    args.putString("tabType", "MyRecipe")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -453,6 +454,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
+                    args.putString("tabType", "MyRecipe")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")

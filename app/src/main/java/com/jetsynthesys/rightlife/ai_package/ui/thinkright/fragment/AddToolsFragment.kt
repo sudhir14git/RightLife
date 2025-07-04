@@ -346,7 +346,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
             if (toolsData!=null) {
                 moduleId = toolsData._id ?: ""
                 isSelectedModule = if (toolsData.isSelectedModule == true) false else true
-                selectTools(toolsData?.title)
+                selectTools(toolsData?.title,isSelectedModule)
             }else{
                 startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
             }
@@ -416,7 +416,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
 
     }
 
-    private fun selectTools(title1: String?) {
+    private fun selectTools(title1: String?, isSelectedModule1: Boolean) {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
        // val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
@@ -427,9 +427,9 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                     progressDialog.dismiss()
                     if (response.body()!=null) {
                         baseResponse = response.body()!!
-                        if (baseResponse.successMessage == "Tools add successfully"){
+                        if (isSelectedModule1){
                             showGreenBannerToast(requireActivity(),"$title1 Added To Tools")
-                        }else{
+                        }else {
                             showRedBannerToast(requireActivity(),"$title1 Removed From Tools")
                         }
 

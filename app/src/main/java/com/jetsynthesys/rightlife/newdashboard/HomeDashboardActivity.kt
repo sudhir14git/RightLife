@@ -1277,12 +1277,13 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
             R.id.ll_mood_log -> {
                 if (checkTrailEndedAndShowDialog()) {
-                    startActivity(Intent(
-                        this@HomeDashboardActivity, MainAIActivity::class.java
-                    ).apply {
-                        putExtra("ModuleName", "ThinkRight")
-                        putExtra("BottomSeatName", "RecordEmotionMoodTracThink")
-                    })
+                    Toast.makeText(this,"Coming Soon", Toast.LENGTH_SHORT).show()
+//                    startActivity(Intent(
+//                        this@HomeDashboardActivity, MainAIActivity::class.java
+//                    ).apply {
+//                        putExtra("ModuleName", "ThinkRight")
+//                        putExtra("BottomSeatName", "RecordEmotionMoodTracThink")
+//                    })
                 }
             }
 

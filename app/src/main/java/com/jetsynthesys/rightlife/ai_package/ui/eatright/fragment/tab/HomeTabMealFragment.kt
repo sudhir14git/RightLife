@@ -77,6 +77,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var snapMealLogRequestList : ArrayList<SnapMealLogRequest> = ArrayList()
     private var snapMealRequestCount : Int = 0
     private var loadingOverlay : FrameLayout? = null
+    private var tabType : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
@@ -102,6 +103,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
 
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
+        tabType = arguments?.getString("tabType").toString()
         val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
         } else {
@@ -168,9 +170,21 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
           //  }
         }else{
             // Set default fragment
-            if (savedInstanceState == null) {
-                replaceFragment(FrequentlyLoggedFragment())
-                updateTabColors()
+            if (tabType != null && tabType != "null"){
+                if (tabType.contentEquals("MyMeal")){
+                    replaceFragment(MyMealFragment())
+                    tabLayout.getTabAt(1)?.select()
+                    updateTabColors()
+                }else if (tabType.contentEquals("MyRecipe")){
+                    replaceFragment(MyRecipeFragment())
+                    tabLayout.getTabAt(2)?.select()
+                    updateTabColors()
+                }
+            }else{
+                if (savedInstanceState == null) {
+                    replaceFragment(FrequentlyLoggedFragment())
+                    updateTabColors()
+                }
             }
         }
 

@@ -596,7 +596,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
             MicroNutrientsModel(omega3, "mg", "Omega-3", R.drawable.ic_fats),
             MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
             MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
-            MicroNutrientsModel(sugar, "mg", "Sugar", R.drawable.ic_fats)
+            MicroNutrientsModel(sugar, "g", "Sugar", R.drawable.ic_fats)
         )
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
        // valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)

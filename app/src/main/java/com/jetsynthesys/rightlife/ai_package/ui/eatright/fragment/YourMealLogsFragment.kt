@@ -126,6 +126,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private lateinit var maxCarbUnit : TextView
     private lateinit var maxProteinUnit : TextView
     private lateinit var maxFatsUnit : TextView
+    private var selectedMealDate : String = ""
 
     private var currentWeekStart: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
     private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
@@ -300,6 +301,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
         selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
+        selectedMealDate = formattedDate
         getMealsLogHistory(formattedDate)
 
         mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
@@ -367,12 +369,18 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         }
 
         btnLogMeal.setOnClickListener {
-            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
-            selectMealTypeBottomSheet.isCancelable = true
-            val bundle = Bundle()
-            bundle.putBoolean("test",false)
-            selectMealTypeBottomSheet.arguments = bundle
-            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
+            val current = LocalDate.parse(formattedDate, formatter)
+            val updated = LocalDate.parse(selectedMealDate, formatter)
+            if (current >= updated){
+                selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
+                selectMealTypeBottomSheet.isCancelable = true
+                val bundle = Bundle()
+                bundle.putBoolean("test",false)
+                selectMealTypeBottomSheet.arguments = bundle
+                parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
+            }else{
+                Toast.makeText(context, "Not allowed to log meals for future dates", Toast.LENGTH_SHORT).show()
+            }
         }
 
         breakfastDotMenu.setOnClickListener {
@@ -572,6 +580,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
         val formatter = DateTimeFormatter.ofPattern("E, d MMM yyyy")
         selectedWeeklyDayTv.text = mealLogWeeklyDayModel.fullDate.format(formatter)
+        selectedMealDate = mealLogWeeklyDayModel.fullDate.toString()
 
         val weekLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
         weekLists.addAll(mealLogWeeklyDayList as Collection<MealLogWeeklyDayModel>)
