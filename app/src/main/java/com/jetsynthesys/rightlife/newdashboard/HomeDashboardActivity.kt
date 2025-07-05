@@ -508,6 +508,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         fetchDashboardData()
         getDashboardChecklist("")
         getDashboardChecklistStatus()
+        getAiDashboard("")
     }
 
     private fun loadFragment(fragment: Fragment) {

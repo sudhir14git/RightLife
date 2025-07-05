@@ -145,7 +145,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="8dp"
                             android:fontFamily="@font/dmsans_regular"
-                            android:text="Stay on track with affirmations, workouts, and more."
+                            android:text="Stay on track with affirmations, workouts, workout analysis and more."
                             android:textColor="@color/txt_color_header"
                             android:textSize="18sp" />
 
@@ -223,7 +223,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="8dp"
                             android:fontFamily="@font/dmsans_regular"
-                            android:text="Be the first to know about new features and programs."
+                            android:text="Be the first to know about new features and programs!"
                             android:textColor="@color/txt_color_header"
                             android:textSize="18sp" />
 
@@ -258,7 +258,7 @@
                         android:layout_marginEnd="16dp"
                         android:fontFamily="@font/dmsans_regular"
                         android:gravity="center"
-                        android:text="You are 2.4x more likely to achieve your goals."
+                        android:text="You are 2.4x more likely to achieve your goals!"
                         android:textColor="@color/txt_color_header"
                         android:textSize="12sp" />
 

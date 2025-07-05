@@ -290,7 +290,7 @@ class StressManagementSelectionFragment : Fragment() {
                 stressManagementList.add(
                     StressManagement(
                         "Expert",
-                        "I craft my own progressive workouts, track key metrics, and tweak my training as results come in.",
+                        "I craft my own progressive workouts & specialised training programs, and track key metrics.",
                         R.drawable.expert
                     )
                 )
