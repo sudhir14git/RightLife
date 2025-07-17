@@ -10,10 +10,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.VideoView
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
-import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 
 class SplashScreenActivity : BaseActivity() {
@@ -63,7 +62,7 @@ class SplashScreenActivity : BaseActivity() {
                     }
                 }
                 if (loggedInUser?.isOnboardingComplete == true) {
-                    val intent = Intent(this, HomeDashboardActivity::class.java)
+                    val intent = Intent(this, HomeNewActivity::class.java)
                     startActivity(intent)
                 } else {
                     if (!sharedPreferenceManager.createUserName) {
@@ -72,24 +71,24 @@ class SplashScreenActivity : BaseActivity() {
                     } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()
                         || sharedPreferenceManager.wellnessFocusTopics.isNullOrEmpty()
                         || !sharedPreferenceManager.unLockPower
-                        ||!sharedPreferenceManager.thirdFiller
-                        || !sharedPreferenceManager.interest) {
+                        || !sharedPreferenceManager.thirdFiller
+                        || !sharedPreferenceManager.interest
+                    ) {
                         val intent = Intent(this, WellnessFocusActivity::class.java)
                         startActivity(intent)
-                    }else if (!sharedPreferenceManager.allowPersonalization) {
+                    } else if (!sharedPreferenceManager.allowPersonalization) {
                         val intent = Intent(this, PersonalisationActivity::class.java)
                         startActivity(intent)
                     } else if (!sharedPreferenceManager.onBoardingQuestion) {
                         val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
                         startActivity(intent)
-                    }
-                    else if (!sharedPreferenceManager.enableNotification){
+                    } else if (!sharedPreferenceManager.enableNotification) {
                         val intent = Intent(this, EnableNotificationActivity::class.java)
                         startActivity(intent)
                     } else if (!sharedPreferenceManager.syncNow) {
                         val intent = Intent(this, SyncNowActivity::class.java)
                         startActivity(intent)
-                    }else{
+                    } else {
                         val intent = Intent(this, FreeTrialServiceActivity::class.java)
                         startActivity(intent)
                     }

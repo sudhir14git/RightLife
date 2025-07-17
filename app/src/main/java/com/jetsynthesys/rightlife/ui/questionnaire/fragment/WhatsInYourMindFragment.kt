@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.BottomsheetAwakeNightBinding
 import com.jetsynthesys.rightlife.databinding.FragmentWhatsInYourMindBinding
@@ -18,7 +19,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.StressReasonAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.StressReason
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionThree
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class WhatsInYourMindFragment : Fragment() {
 
@@ -81,9 +82,10 @@ class WhatsInYourMindFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
         binding.btnContinue.setOnClickListener {
-            if (selectedList.isNotEmpty())
+            if (selectedList.isNotEmpty()) {
+                binding.btnContinue.disableViewForSeconds()
                 showAwakeNightBottomSheet()
-            else
+            } else
                 Toast.makeText(requireContext(), "Please select at least one", Toast.LENGTH_SHORT)
                     .show()
         }
@@ -113,12 +115,14 @@ class WhatsInYourMindFragment : Fragment() {
         }
 
         dialogBinding.btnNO.setOnClickListener {
+            dialogBinding.btnNO.disableViewForSeconds()
             bottomSheetDialog.dismiss()
             submit(selectedList[0].title)
             //QuestionnaireThinkRightActivity.navigateToNextPage()
         }
 
         dialogBinding.btnYes.setOnClickListener {
+            dialogBinding.btnYes.disableViewForSeconds()
             bottomSheetDialog.dismiss()
             //QuestionnaireThinkRightActivity.navigateToNextPage()
             submit(selectedList[0].title)
@@ -129,7 +133,8 @@ class WhatsInYourMindFragment : Fragment() {
     private fun submit(answer: String) {
         val questionThree = TRQuestionThree()
         questionThree.answer = answer
-        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionThree = questionThree
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionThree =
+            questionThree
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )

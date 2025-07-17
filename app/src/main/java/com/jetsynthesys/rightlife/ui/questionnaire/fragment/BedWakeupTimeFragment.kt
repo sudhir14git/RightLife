@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivi
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SleepTimeAnswer
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.time.Duration
 import java.time.LocalTime
 
@@ -71,6 +72,7 @@ class BedWakeupTimeFragment : Fragment() {
         binding.timePickerWakeTime.setOnTimeChangedListener { _, _, _ -> updateSleepDuration() }
 
         binding.btnContinue.setOnClickListener {
+            binding.btnContinue.disableViewForSeconds()
             val sleepTimeAnswer = SleepTimeAnswer()
             sleepTimeAnswer.bedTime = getSelectedTimeFromTimePicker(binding.timePickerBedtime)
             sleepTimeAnswer.wakeTime = getSelectedTimeFromTimePicker(binding.timePickerWakeTime)

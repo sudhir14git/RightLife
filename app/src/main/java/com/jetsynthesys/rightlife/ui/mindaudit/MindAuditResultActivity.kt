@@ -18,7 +18,7 @@ import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityMindAuditResultBinding
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
@@ -124,7 +124,7 @@ class MindAuditResultActivity : BaseActivity() {
     private fun onBackPressHandle() {
         finish()
         if (isFrom != null && isFrom?.isNotEmpty() == true) {
-            val intent = Intent(this, HomeDashboardActivity::class.java)
+            val intent = Intent(this, HomeNewActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             intent.putExtra("finish_MindAudit", true)
             startActivity(intent)

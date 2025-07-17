@@ -16,6 +16,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionSix
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.StressReason
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class BeforeGoingToBedFragment : Fragment() {
 
@@ -76,10 +77,11 @@ class BeforeGoingToBedFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
         binding.btnContinue.setOnClickListener {
-            if (selectedList.isNotEmpty())
+            if (selectedList.isNotEmpty()) {
+                binding.btnContinue.disableViewForSeconds()
                 submit(selectedList[0].title)
-            //QuestionnaireThinkRightActivity.navigateToNextPage()
-            else
+                //QuestionnaireThinkRightActivity.navigateToNextPage()
+            } else
                 Toast.makeText(requireContext(), "Please select at least one", Toast.LENGTH_SHORT)
                     .show()
         }

@@ -27,6 +27,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.PhysicalActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ServingItem
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class PhysicalActivitiesFragment : Fragment() {
 
@@ -292,6 +293,7 @@ class PhysicalActivitiesFragment : Fragment() {
 
         dialogBinding.btnSetNow.setOnClickListener {
             if (QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!! == calculation) {
+                dialogBinding.btnSetNow.disableViewForSeconds()
                 bottomSheetDialog.dismiss()
                 submit(selectedActivities)
             } else {

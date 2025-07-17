@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivi
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionOne
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okio.FileNotFoundException
 
 class EmotionsPastWeekFragment : Fragment() {
@@ -92,6 +93,7 @@ class EmotionsPastWeekFragment : Fragment() {
         })
 
         binding.btnContinue.setOnClickListener {
+            binding.btnContinue.disableViewForSeconds()
             submit(emotionSelected)
         }
     }

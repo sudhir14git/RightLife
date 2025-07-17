@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.SnapHelper
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlin.math.floor
 
 
@@ -166,7 +167,7 @@ class WeightSelectionFragment : Fragment() {
                     return@setOnClickListener
                 }
             }
-
+            btnContinue.disableViewForSeconds()
             val onboardingQuestionRequest =
                 SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
             onboardingQuestionRequest.weight = selectedWeight

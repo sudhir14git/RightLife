@@ -12,13 +12,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.ui.HomeActivity;
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
 import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity;
 
 public class MindAuditFromActivity extends BaseActivity {
@@ -220,7 +219,7 @@ public class MindAuditFromActivity extends BaseActivity {
             dialog.dismiss();
             //this.finish();
             finishAffinity();
-            Intent intent = new Intent(MindAuditFromActivity.this, HomeActivity.class);
+            Intent intent = new Intent(MindAuditFromActivity.this, HomeNewActivity.class);
             startActivity(intent);
 
         });

@@ -33,7 +33,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapMealLogsAda
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.databinding.FragmentViewMealInsightsBinding
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -107,13 +107,13 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }
         })
 
         backButton.setOnClickListener {
-            startActivity(Intent(context, HomeDashboardActivity::class.java))
+            startActivity(Intent(context, HomeNewActivity::class.java))
             requireActivity().finish()
         }
 

@@ -16,6 +16,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Fruits
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ServingItem
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Vegetables
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class FoodServingFragment : Fragment() {
 
@@ -68,6 +69,7 @@ class FoodServingFragment : Fragment() {
         binding.recyclerViewServing.layoutManager = LinearLayoutManager(requireContext())
 
         binding.btnContinue.setOnClickListener {
+            binding.btnContinue.disableViewForSeconds()
             //QuestionnaireEatRightActivity.navigateToNextPage()
             val answerFruitVegetable = AnswerFruitVegetable()
             val vegetable = Vegetables()

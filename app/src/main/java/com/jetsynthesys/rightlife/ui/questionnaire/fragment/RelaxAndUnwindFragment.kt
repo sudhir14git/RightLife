@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.RelaxAndWindAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.StressReason
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionSeven
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class RelaxAndUnwindFragment : Fragment() {
 
@@ -77,9 +78,11 @@ class RelaxAndUnwindFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
         binding.btnContinue.setOnClickListener {
-            if (selectedList.isNotEmpty())
-                submit(selectedList[0].title)
+            if (selectedList.isNotEmpty()) {
+                binding.btnContinue.disableViewForSeconds()
                 //QuestionnaireThinkRightActivity.navigateToNextPage()
+                submit(selectedList[0].title)
+            }
             else
                 Toast.makeText(requireContext(), "Please select at least one", Toast.LENGTH_SHORT)
                     .show()
@@ -89,7 +92,8 @@ class RelaxAndUnwindFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSeven = TRQuestionSeven()
         questionSeven.answer = answer
-        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionSeven = questionSeven
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionSeven =
+            questionSeven
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )

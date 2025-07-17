@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.text.DecimalFormat
 
 class HeightSelectionFragment : Fragment() {
@@ -165,6 +166,7 @@ class HeightSelectionFragment : Fragment() {
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
             if (validateInput()) {
+                btnContinue.disableViewForSeconds()
                 val onboardingQuestionRequest =
                     SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
                 onboardingQuestionRequest.height = selectedHeight

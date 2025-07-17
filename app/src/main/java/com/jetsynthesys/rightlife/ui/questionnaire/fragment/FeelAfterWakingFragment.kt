@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.jounal.new_journal.Mood
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionFive
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class FeelAfterWakingFragment : Fragment() {
 
@@ -53,6 +54,7 @@ class FeelAfterWakingFragment : Fragment() {
         setUpMoodList()
 
         binding.btnContinue.setOnClickListener {
+            binding.btnContinue.disableViewForSeconds()
             //QuestionnaireThinkRightActivity.navigateToNextPage()
             submit(mSelectedMood.name)
         }

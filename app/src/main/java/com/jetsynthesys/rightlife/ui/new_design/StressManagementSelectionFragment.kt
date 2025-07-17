@@ -21,6 +21,7 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.StressManagement
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -101,6 +102,7 @@ class StressManagementSelectionFragment : Fragment() {
             tvSelectedStressManagementHeader.text = selectedStressManagement.header
             tvSelectedStressManagementDesc.text = selectedStressManagement.description
 
+            btnContinue.disableViewForSeconds()
             val onboardingQuestionRequest =
                 SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
             onboardingQuestionRequest.experienceStressMindfulManagement =

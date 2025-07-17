@@ -18,6 +18,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentBodyFatSelectionBinding
 import com.jetsynthesys.rightlife.ui.new_design.pojo.BodyFat
 import com.jetsynthesys.rightlife.ui.utility.DecimalDigitsInputFilter
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class BodyFatSelectionFragment : Fragment() {
 
@@ -122,7 +123,7 @@ class BodyFatSelectionFragment : Fragment() {
                 binding.tvSelectedBodyFat.text = "${binding.edtBodyFat.text}%"
                 binding.llSelectedBodyFat.visibility = VISIBLE
                 binding.cardViewBodyFat.visibility = GONE
-
+                binding.btnContinue.disableViewForSeconds()
                 val onboardingQuestionRequest =
                     SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
                 onboardingQuestionRequest.bodyFat = binding.edtBodyFat.text.toString()

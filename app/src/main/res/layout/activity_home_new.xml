@@ -1,0 +1,214 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="#F7F7F7"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="80dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/rl_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="16dp">
+
+                <RelativeLayout
+                    android:id="@+id/relative_profileImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp">
+                    <!-- Profile Image -->
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profileImage"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentStart="true"
+                        android:background="@drawable/rounded_image"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/profile_man"
+                        android:tint="@color/txt_color_header" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/img_green_dot"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_margin="12dp"
+                        android:background="@drawable/circle_shape"
+                        android:backgroundTint="@color/white"
+                        android:padding="2dp"
+                        android:src="@drawable/rounded_image"
+                        app:tint="@color/dark_green" />
+
+                </RelativeLayout>
+
+
+                <!-- Greeting Text -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/relative_profileImage"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/greetingText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:text="Good Morning,"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <TextView
+                        android:id="@+id/userName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="@dimen/textsize_medium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llCountDown"
+                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="20dp"
+                    android:padding="6dp"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/roundedcornerborderred"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:src="@drawable/ic_db_flash"
+                        android:layout_height="wrap_content"
+                        app:tint="@color/days_border_trialdays" />
+
+                    <TextView
+                        android:id="@+id/tvCountDown"
+                        android:layout_width="wrap_content"
+                        android:text="1/7"
+                        android:fontFamily="@font/dmsans_semibold"
+                        android:textSize="@dimen/textsize_large"
+                        android:textColor="@color/days_border_trialdays"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="days"
+                        android:layout_marginEnd="5dp"
+                        android:textColor="@color/days_border_trialdays"
+                        android:textSize="@dimen/textsize_extrasmall"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <!-- Fragment Container -->
+            <FrameLayout
+                android:id="@+id/fragmentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <include layout="@layout/home_bottomsheet"
+        android:id="@+id/includedhomebottomsheet"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="77dp"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        style="@style/Widget.MaterialComponents.FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_menu"
+        android:layout_centerHorizontal="true"
+        android:elevation="10dp"
+        android:src="@drawable/icon_quicklink_plus"
+        app:backgroundTint="@color/rightlife"
+        app:layout_anchor="@id/bottom_menu"
+        app:layout_anchorGravity="top|center" />
+
+    <LinearLayout
+        android:id="@+id/bottom_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@drawable/toproundedcornershape"
+        android:elevation="5dp"
+        android:orientation="horizontal">
+
+        <!-- Home Menu Item -->
+        <LinearLayout
+            android:id="@+id/menu_home"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/icon_home"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/homemenu" />
+
+            <TextView
+                android:id="@+id/label_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:padding="5dp"
+                android:text="Home"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Explore Menu Item -->
+        <LinearLayout
+            android:id="@+id/menu_explore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/icon_explore"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/homemenu" />
+
+            <TextView
+                android:id="@+id/label_explore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:padding="5dp"
+                android:text="Explore"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

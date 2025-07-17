@@ -9,7 +9,7 @@ import android.text.style.ForegroundColorSpan
 import android.widget.TextView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 
 class WelcomeActivity : BaseActivity() {
 
@@ -35,7 +35,7 @@ class WelcomeActivity : BaseActivity() {
 
         textView.text = spannable
         Handler(mainLooper).postDelayed({
-            startActivity(Intent(this, HomeDashboardActivity::class.java))
+            startActivity(Intent(this, HomeNewActivity::class.java))
             finishAffinity()
         },1000)
     }

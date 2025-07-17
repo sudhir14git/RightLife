@@ -12,7 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
@@ -167,7 +167,7 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                             startActivity(
                                 Intent(
                                     this@OnboardingQuestionnaireActivity,
-                                    HomeDashboardActivity::class.java
+                                    HomeNewActivity::class.java
                                 )
                             )
                         finishAffinity()

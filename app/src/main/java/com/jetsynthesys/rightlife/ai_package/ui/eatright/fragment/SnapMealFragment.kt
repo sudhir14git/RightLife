@@ -62,7 +62,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.io.File
 import java.io.FileInputStream
@@ -269,7 +269,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (moduleName.equals("HomeDashboard")){
-                    startActivity(Intent(context, HomeDashboardActivity::class.java))
+                    startActivity(Intent(context, HomeNewActivity::class.java))
                     requireActivity().finish()
                 }else{
                     val fragment = HomeBottomTabFragment()
@@ -287,7 +287,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
         backButton.setOnClickListener {
             if (moduleName.equals("HomeDashboard")){
-                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }else{
                 val fragment = HomeBottomTabFragment()
@@ -471,7 +471,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
             Activity.RESULT_CANCELED -> {
                 // ✅ Only here when user presses back or closes camera
-                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }
         }
@@ -716,7 +716,7 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
 
         view.findViewById<ImageView>(R.id.closeButton)?.setOnClickListener {
             dismiss()
-            startActivity(Intent(context, HomeDashboardActivity::class.java))
+            startActivity(Intent(context, HomeNewActivity::class.java))
             requireActivity().finish()
         }
 

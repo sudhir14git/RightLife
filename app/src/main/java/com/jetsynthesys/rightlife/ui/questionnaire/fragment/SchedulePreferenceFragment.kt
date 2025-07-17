@@ -32,6 +32,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -133,12 +134,15 @@ class SchedulePreferenceFragment : Fragment() {
         }
 
         dialogBinding.llBreakFastTime.setOnClickListener {
+            dialogBinding.llBreakFastTime.disableViewForSeconds()
             showTimePickerDialog(dialogBinding.tvTimeBreakfast, 1,9)
         }
         dialogBinding.llLunchTime.setOnClickListener {
+            dialogBinding.llLunchTime.disableViewForSeconds()
             showTimePickerDialog(dialogBinding.tvTimeLunch, 2,13)
         }
         dialogBinding.llDinnerTime.setOnClickListener {
+            dialogBinding.llDinnerTime.disableViewForSeconds()
             showTimePickerDialog(dialogBinding.tvTimeDinner, 3,20)
         }
 
@@ -150,6 +154,8 @@ class SchedulePreferenceFragment : Fragment() {
                 ).show()
                 return@setOnClickListener
             } else {
+
+                dialogBinding.btnSetNow.disableViewForSeconds()
 
                 if (!selectedMorningTime.isNullOrEmpty())
                     selectedMorningTime?.let { it1 -> setReminder(it1) }

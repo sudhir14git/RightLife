@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.new_design.pojo.HealthGoal
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class HealthGoalFragment : Fragment() {
 
@@ -95,6 +96,8 @@ class HealthGoalFragment : Fragment() {
             rlHealthGoal.visibility = GONE
             tvSelectedHealthGoal.text = selectedHealthGoal
             tvDescription.visibility = GONE
+
+            btnContinue.disableViewForSeconds()
 
             val onboardingQuestionRequest =
                 SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest

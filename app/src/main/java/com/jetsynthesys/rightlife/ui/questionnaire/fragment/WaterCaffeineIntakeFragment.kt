@@ -18,6 +18,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionFive
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Water
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class WaterCaffeineIntakeFragment : Fragment() {
 
@@ -160,6 +161,7 @@ class WaterCaffeineIntakeFragment : Fragment() {
             if (binding.tvWaterQuantity.text.toString().equals("0 ml", ignoreCase = true)) {
                 Toast.makeText(requireContext(), "Please select water intake", Toast.LENGTH_SHORT).show()
             }else {
+                binding.btnContinue.disableViewForSeconds()
                 submit(answerWaterCoffee)
             }
         }

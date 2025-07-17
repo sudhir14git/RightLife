@@ -18,6 +18,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class GenderSelectionFragment : Fragment() {
 
@@ -71,6 +72,7 @@ class GenderSelectionFragment : Fragment() {
         //(activity as OnboardingQuestionnaireActivity).tvSkip.visibility = INVISIBLE
 
         llMale.setOnClickListener {
+            llMale.disableViewForSeconds()
             selectedGender = "Male"
             llMale.background = wrappedDrawable
             tvMale.setTextColor(requireContext().getColor(R.color.white))
@@ -106,6 +108,7 @@ class GenderSelectionFragment : Fragment() {
         }
 
         llFemale.setOnClickListener {
+            llFemale.disableViewForSeconds()
             selectedGender = "Female"
             llMale.background = bgDrawable
             tvFemale.setTextColor(requireContext().getColor(R.color.white))

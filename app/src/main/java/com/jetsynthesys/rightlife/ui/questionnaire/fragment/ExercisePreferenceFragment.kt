@@ -11,6 +11,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionOne
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class ExercisePreferenceFragment : Fragment() {
     private var _binding: FragmentExercisePreferenceBinding? = null
@@ -49,6 +50,7 @@ class ExercisePreferenceFragment : Fragment() {
 
         binding.btnAdd.setOnClickListener {
             val times = binding.inputTimes.text.toString()
+            binding.btnAdd.disableViewForSeconds()
             if (times.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter value", Toast.LENGTH_SHORT).show()
             } else if (times.toInt() == 0) {

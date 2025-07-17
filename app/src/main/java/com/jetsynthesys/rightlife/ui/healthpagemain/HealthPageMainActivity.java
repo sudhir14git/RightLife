@@ -7,13 +7,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.Articles.ReceipeDetailActivity;
-import com.jetsynthesys.rightlife.ui.HomeActivity;
 import com.jetsynthesys.rightlife.ui.rlpagemain.RLPageActivity;
 
 public class HealthPageMainActivity extends BaseActivity implements View.OnClickListener {
@@ -99,7 +97,7 @@ public class HealthPageMainActivity extends BaseActivity implements View.OnClick
             //startActivity(intent);
         } else if (viewId == R.id.ll_homemenuclick) {
             //Toast.makeText(HealthPageMainActivity.this, "Home Menu clicked", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(HealthPageMainActivity.this, HomeActivity.class);
+            Intent intent = new Intent(HealthPageMainActivity.this, HomeNewActivity.class);
             // Optionally pass data
             //intent.putExtra("key", "value");
             startActivity(intent);

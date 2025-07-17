@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.EnergyAnswer
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionSix
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class EnergyLevelFragment : Fragment() {
     private lateinit var energyCountTexts: Array<TextView>
@@ -126,6 +127,7 @@ class EnergyLevelFragment : Fragment() {
 
         binding.btnContinue.setOnClickListener {
             //QuestionnaireEatRightActivity.navigateToNextPage()
+            binding.btnContinue.disableViewForSeconds()
             val energyAnswer = EnergyAnswer()
             energyAnswer.morning = morningEneryValue
             energyAnswer.evening = afternoonEneryValue

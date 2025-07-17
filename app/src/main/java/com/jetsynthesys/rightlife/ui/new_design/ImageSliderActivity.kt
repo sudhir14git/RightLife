@@ -24,7 +24,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
@@ -327,7 +327,7 @@ class ImageSliderActivity : BaseActivity() {
                             startActivity(
                                 Intent(
                                     this@ImageSliderActivity,
-                                    HomeDashboardActivity::class.java
+                                    HomeNewActivity::class.java
                                 )
                             )
                         } else {

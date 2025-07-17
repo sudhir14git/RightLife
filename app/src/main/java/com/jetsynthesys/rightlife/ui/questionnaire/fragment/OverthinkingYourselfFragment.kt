@@ -10,6 +10,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentOverthiningYourselfBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionFive
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class OverthinkingYourselfFragment : Fragment() {
 
@@ -70,6 +71,7 @@ class OverthinkingYourselfFragment : Fragment() {
 
         binding.btnContinue.setOnClickListener {
             //QuestionnaireThinkRightActivity.navigateToNextPage()
+            binding.btnContinue.disableViewForSeconds()
             submit(binding.tvTitle.text.toString())
         }
     }

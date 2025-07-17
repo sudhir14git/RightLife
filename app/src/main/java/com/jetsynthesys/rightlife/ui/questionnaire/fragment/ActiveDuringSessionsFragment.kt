@@ -11,6 +11,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentActiveDuringSessionBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionTwo
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.shawnlin.numberpicker.NumberPicker
 import java.util.Locale
 
@@ -80,6 +81,7 @@ class ActiveDuringSessionsFragment : Fragment() {
 
         binding.btnContinue.setOnClickListener {
             //QuestionnaireEatRightActivity.navigateToNextPage()
+            binding.btnContinue.disableViewForSeconds()
             submit(selectedActiveTime)
         }
 

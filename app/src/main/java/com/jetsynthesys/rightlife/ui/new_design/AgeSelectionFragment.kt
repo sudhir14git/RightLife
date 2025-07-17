@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.shawnlin.numberpicker.NumberPicker
 import java.util.Locale
 
@@ -164,6 +165,7 @@ class AgeSelectionFragment : Fragment() {
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
+            btnContinue.disableViewForSeconds()
             val onboardingQuestionRequest =
                 SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
             val age = selectedAge.split(" ")

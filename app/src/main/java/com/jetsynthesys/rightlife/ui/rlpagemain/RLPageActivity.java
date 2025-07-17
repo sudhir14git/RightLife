@@ -1,8 +1,6 @@
 package com.jetsynthesys.rightlife.ui.rlpagemain;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -27,7 +25,6 @@ import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity;
 import com.jetsynthesys.rightlife.apimodel.rlpagemain.nextdate.MindAuditNextDate;
 import com.jetsynthesys.rightlife.apimodel.rlpagemodels.RLPageVoiceResult.RLPageVoiceScanResultResponse;
@@ -41,7 +38,7 @@ import com.jetsynthesys.rightlife.apimodel.rlpagemodels.scanresultfacescan.Repor
 import com.jetsynthesys.rightlife.apimodel.rlpagemodels.uniquelyyours.UniquelyYoursResponse;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
-import com.jetsynthesys.rightlife.ui.HomeActivity;
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
 import com.jetsynthesys.rightlife.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.jetsynthesys.rightlife.ui.healthaudit.HealthAuditActivity;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity;
@@ -53,7 +50,6 @@ import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity;
 import com.jetsynthesys.rightlife.ui.mindaudit.UserEmotions;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity;
@@ -651,7 +647,7 @@ public class RLPageActivity extends BaseActivity implements View.OnClickListener
             //intent.putExtra("key", "value");
             //startActivity(intent);
         } else if (viewId == R.id.ll_homemenuclick) {
-            Intent intent = new Intent(RLPageActivity.this, HomeActivity.class);
+            Intent intent = new Intent(RLPageActivity.this, HomeNewActivity.class);
             // Optionally pass data
             //intent.putExtra("key", "value");
             startActivity(intent);

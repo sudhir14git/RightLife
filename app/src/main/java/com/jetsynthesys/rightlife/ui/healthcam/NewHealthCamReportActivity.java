@@ -37,7 +37,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityNewhealthcamreportBinding;
 import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
 import com.jetsynthesys.rightlife.newdashboard.FacialScanReportDetailsActivity;
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
@@ -167,7 +167,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
     private void onBackPressHandle() {
         finish();
         if (isFrom != null && !isFrom.isEmpty()) {
-            Intent intent = new Intent(this, HomeDashboardActivity.class);
+            Intent intent = new Intent(this, HomeNewActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             intent.putExtra("finish_healthCam", true);
             startActivity(intent);
@@ -181,7 +181,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
     }
 
     private void updateChecklistStatus() {
-        CommonAPICall.INSTANCE.updateChecklistStatus(this, "vital_facial_scan", AppConstants.CHECKLIST_COMPLETED);
+        CommonAPICall.INSTANCE.updateChecklistStatus(this, "vital_facial_scan", AppConstants.CHECKLIST_COMPLETED,null);
     }
 
     private void getMyRLHealthCamResult() {

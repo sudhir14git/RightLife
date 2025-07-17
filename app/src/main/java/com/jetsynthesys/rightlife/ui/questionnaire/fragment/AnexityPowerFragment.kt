@@ -12,6 +12,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentAnexityPowerBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionFour
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class AnexityPowerFragment : Fragment() {
 
@@ -86,6 +87,7 @@ class AnexityPowerFragment : Fragment() {
 
         binding.btnContinue.setOnClickListener {
             //QuestionnaireThinkRightActivity.navigateToNextPage()
+            binding.btnContinue.disableViewForSeconds()
             submit(selectedAnxiety)
         }
     }

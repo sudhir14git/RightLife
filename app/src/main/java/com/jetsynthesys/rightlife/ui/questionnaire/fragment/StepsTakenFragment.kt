@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentStepsTakenBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionFive
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class StepsTakenFragment : Fragment() {
 
@@ -108,6 +109,7 @@ class StepsTakenFragment : Fragment() {
 
         binding.btnContinue.setOnClickListener {
             //QuestionnaireEatRightActivity.navigateToNextPage()
+            binding.btnContinue.disableViewForSeconds()
             submit(selectedSteps)
         }
     }

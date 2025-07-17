@@ -12,6 +12,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentQualityOfSleepBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionOne
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class QualityOfSleepFragment : Fragment() {
     private lateinit var sleepQualityLevelTexts: Array<TextView>
@@ -83,6 +84,7 @@ class QualityOfSleepFragment : Fragment() {
         }
 
         binding.btnContinue.setOnClickListener {
+            binding.btnContinue.disableViewForSeconds()
             //QuestionnaireThinkRightActivity.navigateToNextPage()
             submit(selectedSleepQuality)
         }

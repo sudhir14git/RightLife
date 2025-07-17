@@ -91,12 +91,7 @@
             android:screenOrientation="portrait"
             android:label="@string/title_activity_rlpage"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ui.HomeActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_homepage"
-            android:launchMode="singleTop" />
+
         <activity
             android:name=".ui.new_design.SplashScreenActivity"
             android:exported="true"
@@ -363,9 +358,11 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".newdashboard.HomeDashboardActivity"
+            android:name=".newdashboard.HomeNewActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_homepage"
+            android:launchMode="singleTop" />
         <activity
             android:name=".newdashboard.FacialScanReportDetailsActivity"
             android:exported="false"

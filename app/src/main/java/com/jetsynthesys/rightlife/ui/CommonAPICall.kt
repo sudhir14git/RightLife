@@ -166,7 +166,12 @@ object CommonAPICall {
     }
 
 
-    fun updateChecklistStatus(context: Context, type: String, status: String) {
+    fun updateChecklistStatus(
+        context: Context,
+        type: String,
+        status: String,
+        responseListener: ((success: Boolean) -> Unit)? = null
+    ) {
         val authToken = SharedPreferenceManager.getInstance(context).accessToken
         val apiService = ApiClient.getClient(context).create(ApiService::class.java)
 
@@ -178,13 +183,14 @@ object CommonAPICall {
                     call: Call<CommonResponse>,
                     response: Response<CommonResponse>
                 ) {
-                    if (response.isSuccessful) {
-                        Log.d("AAAA", "status = " + response.body())
-                    }
+                    if (response.isSuccessful)
+                        responseListener?.invoke(true)
+                    else
+                        responseListener?.invoke(false)
                 }
 
                 override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
-                    t.message?.let { Log.d("AAAA", "status = " + it) }
+                    t.message?.let { responseListener?.invoke(false) }
                 }
 
             })
