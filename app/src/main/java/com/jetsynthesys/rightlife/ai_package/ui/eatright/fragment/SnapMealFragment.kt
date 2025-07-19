@@ -838,14 +838,19 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
                 Toast.makeText(requireContext(), "Flash not supported", Toast.LENGTH_SHORT).show()
                 return
             }
-            isTorchOn = !isTorchOn
-            it.cameraControl.enableTorch(isTorchOn)
+            if (isTorchOn){
+                isTorchOn = !isTorchOn
+                it.cameraControl.enableTorch(isTorchOn)
+                view?.findViewById<ImageView>(R.id.flashToggle)?.setImageResource(R.drawable.ic_flash_off)
+            }else{
+                isTorchOn = true
+                it.cameraControl.enableTorch(isTorchOn)
+                view?.findViewById<ImageView>(R.id.flashToggle)?.setImageResource(R.drawable.flash_icon)
+            }
 
-            Toast.makeText(
-                requireContext(),
-                "Flash ${if (isTorchOn) "ON" else "OFF"}",
-                Toast.LENGTH_SHORT
-            ).show()
+
+
+         //   Toast.makeText(requireContext(), "Flash ${if (isTorchOn) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
         } ?: run {
             Toast.makeText(requireContext(), "Camera not initialized", Toast.LENGTH_SHORT).show()
         }

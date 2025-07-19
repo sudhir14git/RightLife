@@ -575,7 +575,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
-                android:text="7,665"
+                android:text="0"
                 app:layout_constraintTop_toBottomOf="@+id/description_progressbar_layout"
                 app:layout_constraintStart_toStartOf="parent"/>
 
@@ -618,7 +618,7 @@
                 android:layout_marginStart="20dp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
-                android:text="10,665"
+                android:text="0"
                 app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurn"
                 app:layout_constraintStart_toStartOf="parent"/>
 

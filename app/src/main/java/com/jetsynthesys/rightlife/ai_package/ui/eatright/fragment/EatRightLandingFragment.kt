@@ -79,6 +79,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import kotlin.math.floor
+import kotlin.math.round
 
 class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), SelectMealTypeEatLandingBottomSheet.OnOtherRecipeLogListener {
 
@@ -711,9 +712,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
       //  tvCaloriesValue.text = landingPageResponse.total_calories.toString()
-        tvProteinValue.text = landingPageResponse.total_protein.toInt().toString()
-        tvCabsValue.text = landingPageResponse.total_carbs.toInt().toString()
-        tvFatsValue.text = landingPageResponse.total_fat.toInt().toString()
+        tvProteinValue.text = round(landingPageResponse.total_protein).toInt().toString()
+        tvCabsValue.text = round(landingPageResponse.total_carbs).toInt().toString()
+        tvFatsValue.text = round(landingPageResponse.total_fat).toInt().toString()
         carbsUnitTv.text = " / " + landingPageResponse.max_carbs.toInt().toString() +" g"
         proteinUnitTv.text = " / " + landingPageResponse.max_protein.toInt().toString() +" g"
         fatsUnitTv.text = " / " + landingPageResponse.max_fat.toInt().toString() +" g"
@@ -737,7 +738,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         fatsProgressBar.max = landingPageResponse.max_fat.toInt()
         fatsProgressBar.progress = landingPageResponse.total_fat.toInt()
 
-        halfCurveProgressBar.setValues(landingPageResponse.total_calories.toInt(),landingPageResponse.max_calories.toInt())
+        halfCurveProgressBar.setValues(round(landingPageResponse.total_calories).toInt(),landingPageResponse.max_calories.toInt())
         halfCurveProgressBar.setProgress(100f)
         val animator = ValueAnimator.ofFloat(0f, 100f)
         animator.duration = 1000

@@ -28,17 +28,23 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
+import com.jetsynthesys.rightlife.ai_package.model.CardItem
 import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateZoneMinutes
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateZonePercentages
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateZones
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutRecord
+import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesWeeklyListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
@@ -58,9 +64,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+import kotlin.math.abs
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
+
     private lateinit var usernameReset: EditText
     private lateinit var signupConfirm: TextView
     private lateinit var activitySync: ImageView
@@ -244,7 +252,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
 
         }
-        fetchCalories(formattedDate)
+       // fetchCalories(formattedDate)
+        fetchUserWorkouts(formattedDate)
 
         imageCalender.setOnClickListener {
             val fragment = ActivitySyncCalenderFragment()
@@ -303,108 +312,141 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         loadingOverlay?.visibility = View.GONE
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private fun fetchCalories(formattedDate: String) {
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+    private fun fetchUserWorkouts(formattedDate: String) {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Skip if fragment is not attached or not visible
-                if (!isAdded || view == null || !isVisible) {
-                    Log.w("FetchCalories", "Fragment not attached or not visible for date $formattedDate, skipping")
-                    return@launch
-                }
-
-                withContext(Dispatchers.Main) {
-                    showLoader(requireView())
-                }
-
-                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264" // Fallback userId
-                val response = ApiClient.apiServiceFastApi.getCalories(
-                    userId = userId,
-                    startDate = formattedDate,
-                    endDate = formattedDate,
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
+                    userId = userid,
+                start_date = formattedDate,
+                    end_date = formattedDate,
                     page = 1,
-                    limit = 10,
-                    includeStats = false
+                    limit = 10
                 )
-
                 if (response.isSuccessful) {
-                    val caloriesResponse = response.body()
-                    Log.d("FetchCalories", "Date: $formattedDate, Received ${caloriesResponse?.data?.size ?: 0} workouts")
-
-                    // Create ArrayList to match adapter's expected type
-                    val newActivities = ArrayList<ActivityModel>()
-                    caloriesResponse?.data?.forEachIndexed { index, workout ->
-                        Log.d("FetchCalories", "Workout $index - Type: ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}, ID: ${workout.activity_id}")
-                        val activity = ActivityModel(
-                            activityType = workout.workoutType,
-                            activity_id = workout.activity_id,
-                            duration = "${workout.duration} min",
-                            caloriesBurned = "${workout.caloriesBurned.toInt()} kcal",
-                            icon = workout.icon,
-                            intensity = workout.intensity,
-                            calorieId = workout.id,
-                            userId = userId
-                        )
-                        println(newActivities)
-                        newActivities.add(activity)
-                    }
-
-                    withContext(Dispatchers.Main) {
-                        if (!isAdded || view == null || !isVisible) {
-                            Log.w("FetchCalories", "Fragment not attached after API call for date $formattedDate, skipping UI update")
-                            return@withContext
+                    val workouts = response.body()
+                    workouts?.let {
+                        // Map syncedWorkouts to CardItem objects
+                        val syncedCardItems = it.syncedWorkouts.map { workout ->
+                            val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
+                            val durationMinutes = durationDouble.toInt()
+                            val hours = durationMinutes / 60
+                            val minutes = durationMinutes % 60
+                            val durationText = if (hours > 0) "$hours hr ${minutes.toString().padStart(2, '0')} mins" else "$minutes mins"
+                            val caloriesText = "${workout.caloriesBurned}"
+                            val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
+                                val totalHeartRate = workout.heartRateData.sumOf { it.heartRate }
+                                val count = workout.heartRateData.size
+                                "${(totalHeartRate / count).toInt()} bpm"
+                            } else "N/A"
+                            workout.heartRateData.forEach { heartRateData ->
+                                heartRateData.trendData.addAll(listOf(listOf(110, 112, 115, 118, 120, 122, 125).toString()))
+                            }
+                            ActivityModel(
+                                userId = workout.userId,
+                                id = workout.id,
+                                source = workout.source,
+                                recordType = workout.recordType,
+                                workoutType = workout.workoutType,
+                                workoutId = workout.workoutId,
+                                duration = durationText,
+                                averageHeartRate = workout.averageHeartRate,
+                                caloriesBurned = caloriesText,
+                                caloriesUnit = workout.caloriesUnit,
+                                icon = "",
+                                intensity = "",
+                                isSynced = true
+                            )
                         }
-
-                        // Update activityList and adapter
-                        activityList.clear()
-                        activityList.addAll(newActivities)
-
-                        Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
-
-                        // Clear adapter (fallback if clear() is not available)
-                       /* try {
-                            myActivityAdapter.clear() // Try calling clear() if it exists
-                        } catch (e: NoSuchMethodError) {
-                            Log.w("FetchCalories", "Adapter clear() method not found, clearing manually")
-                            myActivityAdapter.addAll(ArrayList(), -1, null, false) // Pass empty list to clear
-                        }*/
-
-                        // Update adapter with new data
-                        myActivityAdapter.addAll(newActivities, -1, null, false)
-                        myActivityAdapter.notifyDataSetChanged()
-
-                        // Update RecyclerView visibility
-                        if (activityList.isNotEmpty()) {
-                            myActivityRecyclerView.visibility = View.VISIBLE
-                            btnLogMeal.visibility = View.VISIBLE
-                            Log.d("FetchCalories", "Adapter updated with ${newActivities.size} activities, RecyclerView visible for date $formattedDate")
-                        } else {
-                            myActivityRecyclerView.visibility = View.GONE
-                            btnLogMeal.visibility = View.GONE
-                            Log.d("FetchCalories", "No activities to display for date $formattedDate")
+                        // Map unsyncedWorkouts to CardItem objects
+                        val unsyncedCardItems = it.unsyncedWorkouts.map { workout ->
+                            val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
+                            val durationMinutes = durationDouble.toInt()
+                            val hours = durationMinutes / 60
+                            val minutes = durationMinutes % 60
+                            val durationText = if (hours > 0) "$hours hr ${minutes.toString().padStart(2, '0')} mins" else "$minutes mins"
+                            val caloriesDouble = workout.caloriesBurned.toDoubleOrNull() ?: 0.0
+                            val caloriesText = "${caloriesDouble.toInt()}"
+                            ActivityModel(
+                                userId = workout.userId,
+                                id = workout.id,
+                                source = workout.source,
+                                recordType = workout.recordType,
+                                workoutType = workout.workoutType,
+                                workoutId = workout.workoutId,
+                                duration = durationText,
+                                averageHeartRate = 0.0,
+                                caloriesBurned = caloriesText,
+                                caloriesUnit = workout.caloriesUnit,
+                                icon = workout.icon,
+                                intensity = workout.intensity,
+                                isSynced = false
+                            )
                         }
-
-                        btnLogMeal.isEnabled = true
-                        dismissLoader(requireView())
+                        // Combine synced and unsynced CardItems
+                        val newActivities = ArrayList<ActivityModel>()
+                        val allCardItems = syncedCardItems + unsyncedCardItems
+                        withContext(Dispatchers.Main) {
+                            if (!isAdded || view == null || !isVisible) {
+                                Log.w("FetchCalories", "Fragment not attached after API call for date $formattedDate, skipping UI update")
+                                return@withContext
+                            }
+                            // Update activityList and adapter
+                            newActivities.addAll(allCardItems)
+                            activityList.clear()
+                            activityList.addAll(newActivities)
+                            Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
+                            myActivityAdapter.addAll(newActivities, -1, null, false)
+                            myActivityAdapter.notifyDataSetChanged()
+                            // Update RecyclerView visibility
+                            if (activityList.isNotEmpty()) {
+                                myActivityRecyclerView.visibility = View.VISIBLE
+                                btnLogMeal.visibility = View.VISIBLE
+                                Log.d("FetchCalories", "Adapter updated with ${newActivities.size} activities, RecyclerView visible for date $formattedDate")
+                            } else {
+                                myActivityRecyclerView.visibility = View.GONE
+                                btnLogMeal.visibility = View.GONE
+                                Log.d("FetchCalories", "No activities to display for date $formattedDate")
+                            }
+                            btnLogMeal.isEnabled = true
+                            if (isAdded  && view != null){
+                                requireActivity().runOnUiThread {
+                                    dismissLoader(requireView())
+                                }
+                            }
+                        }
+                    } ?: withContext(Dispatchers.Main) {
+                        myActivityRecyclerView.visibility = View.GONE
+                        btnLogMeal.visibility = View.GONE
+                        Toast.makeText(requireContext(), "No workout data received", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error details"
                     withContext(Dispatchers.Main) {
-                        if (!isAdded || view == null || !isVisible) return@withContext
-                        Log.e("FetchCalories", "API Error ${response.code()} for date $formattedDate: $errorBody")
                         myActivityRecyclerView.visibility = View.GONE
-                        Toast.makeText(context, "Failed to fetch calories: ${response.code()}", Toast.LENGTH_LONG).show()
-                        dismissLoader(requireView())
+                        Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    if (!isAdded || view == null || !isVisible) return@withContext
-                    Log.e("FetchCalories", "Exception for date $formattedDate: ${e.message}", e)
                     myActivityRecyclerView.visibility = View.GONE
-                    Toast.makeText(context, "Error fetching calories: ${e.message}", Toast.LENGTH_LONG).show()
-                    dismissLoader(requireView())
+                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -486,7 +528,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private fun onWorkoutItemClick(workoutModel: ActivityModel, position: Int, isRefresh: Boolean) {
-        Log.d("WorkoutClick", "Clicked on ${workoutModel.activityType} at position $position")
+        Log.d("WorkoutClick", "Clicked on ${workoutModel.workoutType} at position $position")
     }
 
     private fun getWorkoutLogHistory(formattedDate: String) {
@@ -578,7 +620,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
         val seleteddate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = mealLogWeeklyDayModel.fullDate.format(seleteddate)
-        fetchCalories(formattedDate)
+       // fetchCalories(formattedDate)
+        fetchUserWorkouts(formattedDate)
     }
 
     private fun getWeekFrom(startDate: LocalDate): List<WorkoutWeeklyDayModel> {

@@ -62,6 +62,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.round
 
 class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), DeleteLogDishBottomSheet.OnLogDishDeletedListener,
     SelectMealTypeBottomSheet.OnMealTypeListener {
@@ -495,6 +496,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (breakFastMealDetailsLog != null){
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putParcelable("mealDetailsLog", breakFastMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -509,6 +511,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (morningSnackMealDetailsLog != null){
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putParcelable("mealDetailsLog", morningSnackMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -523,6 +526,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (lunchMealDetailsLog != null){
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putParcelable("mealDetailsLog", lunchMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -537,6 +541,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (eveningSnackMealDetailsLog != null){
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putParcelable("mealDetailsLog", eveningSnackMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -551,6 +556,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (dinnerMealDetailsLog != null){
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putParcelable("mealDetailsLog", dinnerMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -615,10 +621,10 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val maxCarbs = SharedPreferenceManager.getInstance(requireActivity()).maxCarbs
             val maxProtein = SharedPreferenceManager.getInstance(requireActivity()).maxProtein
             val maxFats = SharedPreferenceManager.getInstance(requireActivity()).maxFats
-            calValue.text = dailyRecipe?.calories?.toInt().toString()
-            carbsValue.text = dailyRecipe?.carbs?.toInt().toString()
-            proteinsValue.text = dailyRecipe?.protein?.toInt().toString()
-            fatsValue.text = dailyRecipe?.fats?.toInt().toString()
+            calValue.text = dailyRecipe?.calories?.let { round(it).toInt().toString() }
+            carbsValue.text = dailyRecipe?.carbs?.let { round(it)?.toInt().toString() }
+            proteinsValue.text = dailyRecipe?.protein?.let { round(it)?.toInt().toString() }
+            fatsValue.text = dailyRecipe?.fats?.let { round(it)?.toInt().toString() }
             maxCalUnit.text = " / " + maxCalorie.toString()
             maxCarbUnit.text = " / " + maxCarbs.toString()
             maxProteinUnit.text = " / " + maxProtein.toString()

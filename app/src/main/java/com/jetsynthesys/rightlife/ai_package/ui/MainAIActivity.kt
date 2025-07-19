@@ -5,13 +5,10 @@ import android.widget.Toast
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseActivity
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.ViewMealInsightsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.ViewSnapMealInsightsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.SearchWorkoutFragment
-import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.JournalFragment
-import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MoodTrackerFragment
 import com.jetsynthesys.rightlife.databinding.ActivityMainAiBinding
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -31,6 +31,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealMode
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.databinding.FragmentViewMealInsightsBinding
+import kotlin.math.round
 
 class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>() {
 
@@ -92,6 +93,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         dishesItemRecyclerview.layoutManager = LinearLayoutManager(context)
         dishesItemRecyclerview.adapter = mealLogsAdapter
 
+        val moduleName = arguments?.getString("ModuleName").toString()
         val mealDetailsLogResponse = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("mealDetailsLog", MealDetailsLog::class.java)
         } else {
@@ -129,6 +131,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
             override fun handleOnBackPressed() {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "mealLog")
@@ -140,6 +143,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         backButton.setOnClickListener {
             val fragment = YourMealLogsFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -207,10 +211,10 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 
     private fun onMacroNutrientsList(mealDetails: MealNutritionSummary, value: Int) {
 
-        val calories_kcal : String = mealDetails.calories?.times(value)?.toInt().toString()?: "NA"
-        val protein_g : String = mealDetails.protein?.times(value)?.toInt().toString()?: "NA"
-        val carb_g : String = mealDetails.carbs?.times(value)?.toInt().toString()?: "NA"
-        val fat_g : String = mealDetails.fats?.times(value)?.toInt().toString()?: "NA"
+        val calories_kcal : String = round(mealDetails.calories.times(value))?.toInt().toString()?: "NA"
+        val protein_g : String = round(mealDetails.protein.times(value))?.toInt().toString()?: "NA"
+        val carb_g : String = round(mealDetails.carbs.times(value))?.toInt().toString()?: "NA"
+        val fat_g : String = round(mealDetails.fats.times(value))?.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
             MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),

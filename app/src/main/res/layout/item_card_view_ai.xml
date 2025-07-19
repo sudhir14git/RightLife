@@ -32,9 +32,9 @@
 
         <ImageView
             android:id="@+id/sourceIcon"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:src="@drawable/health_connect_sync_button_icon"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/wearablee"
             android:layout_marginEnd="13dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

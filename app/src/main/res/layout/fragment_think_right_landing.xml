@@ -20,7 +20,7 @@
             android:layout_height="25dp"
             android:id="@+id/img_back"
             android:src="@drawable/eat_right_back"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Today"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:fontFamily="@font/dmsans_bold"
             android:textColor="@color/eatright_text_color"
             android:layout_marginBottom="3dp"

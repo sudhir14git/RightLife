@@ -28,6 +28,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
@@ -148,6 +149,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var verticalLinePeakBpmTv : TextView
     private lateinit var verticalLinePeakEndBpmTv : TextView
     private lateinit var caloricInfo : ImageView
+    private lateinit var viewWorkoutHistory : LinearLayoutCompat
     private lateinit var yourMovementSummary : ImageView
     private lateinit var yourVitals : ImageView
     private lateinit var yourHeartRateZone : ImageView
@@ -242,6 +244,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         yourMovementSummary = view.findViewById(R.id.yourMovementSummary)
         yourVitals = view.findViewById(R.id.yourVitals)
         yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
+        viewWorkoutHistory = view.findViewById(R.id.viewWorkoutHistory)
         val displayMetrics = resources.displayMetrics
         val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
         val dottedLine = view.findViewById<View>(R.id.horizontal_dotted_green)
@@ -298,6 +301,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         lytNoDataAddWorkoutBtn.setOnClickListener{
             navigateToFragment(YourActivityFragment(), "YourActivityFragment")
         }
+
+        viewWorkoutHistory.setOnClickListener{
+            navigateToFragment(YourActivityFragment(), "YourActivityFragment")
+        }
+
         layoutAddWorkout.setOnClickListener {
             navigateToFragment(YourActivityFragment(), "YourActivityFragment")
         }

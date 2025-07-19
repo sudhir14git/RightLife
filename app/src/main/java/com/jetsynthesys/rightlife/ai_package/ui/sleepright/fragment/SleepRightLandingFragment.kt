@@ -1993,7 +1993,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val entries = parseSleepData.toSleepEntries()               // skips the 0-hour rows
         sleepConsistencyChart.setSleepData(entries)
         sleepConsistencyChart.setOnBarClickListener { entry ->
-            tvConsistencyDate.text = entry.startLocal.format(DateTimeFormatter.ofPattern("EEEE d MMM, yyyy"))
+            tvConsistencyDate.text = entry.endLocal.format(DateTimeFormatter.ofPattern("EEEE d MMM, yyyy"))
             val dur = Duration.ofMinutes((entry.durationHrs * 60).roundToInt().toLong())
             val hrs = dur.toHours()
             val mins = dur.minusHours(hrs).toMinutes()

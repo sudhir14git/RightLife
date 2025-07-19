@@ -448,7 +448,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         val entries = parseSleepData.toSleepEntries()               // skips the 0-hour rows
         barChart.setSleepData(entries)
         barChart.setOnBarClickListener { entry ->
-            sleepDate.text = entry.startLocal.format(DateTimeFormatter.ofPattern("EEEE d MMM, yyyy"))
+            sleepDate.text = entry.endLocal.format(DateTimeFormatter.ofPattern("EEEE d MMM, yyyy"))
             val dur = Duration.ofMinutes((entry.durationHrs * 60).roundToInt().toLong())
             val hrs = dur.toHours()
             val mins = dur.minusHours(hrs).toMinutes()
@@ -805,8 +805,8 @@ class SleepGraphView @JvmOverloads constructor(
             c.drawRoundRect(rect, radius, radius, paint)
             barHits += BarHit(rect, e)        // store for click detection
 
-            val day  = e.startLocal.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
-            val date = e.startLocal.format(DateTimeFormatter.ofPattern("d MMM"))
+            val day  = e.endLocal.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+            val date = e.endLocal.format(DateTimeFormatter.ofPattern("d MMM"))
             val cx   = rect.centerX()
             c.drawText(day,  cx, height - bottomPadW / 1.6f, labelPaint)
             c.drawText(date, cx, height - dp(4f),           labelPaint)
@@ -956,10 +956,11 @@ class SleepGraphView @JvmOverloads constructor(
    Only nights with >0.0 duration will be graphed.                         */
 fun List<SleepDetails>.toSleepEntries(): List<SleepEntry> =
     filter { it.sleepDurationHours!! >= 0.0 }           // ignore the zero-length nights
-        .map { SleepEntry.fromUtcIso(it.sleepStartTime!!, it.sleepDurationHours!!) }
+        .map { SleepEntry.fromUtcIso(it.sleepStartTime!!,it.sleepEndTime!!, it.sleepDurationHours!!) }
 
 data class SleepEntry(
     val startLocal: LocalDateTime,
+    val endLocal: LocalDateTime,
     val durationHrs: Float
 ) {
     companion object {
@@ -972,19 +973,31 @@ data class SleepEntry(
          * If the string has *no* 'Z' or offset we assume it is UTC, append 'Z',
          * then convert to the device’s [ZoneId.systemDefault].
          */
-        fun fromUtcIso(utcIso: String, duration: Double): SleepEntry {
-            val fixed = utcIso.takeIf { it.endsWith('Z') || it.contains('+') || it.contains('-') }
-                ?: "${utcIso}Z"
+        fun fromUtcIso(startutcIso: String, endutcIso: String, duration: Double): SleepEntry {
+            val fixed = startutcIso.takeIf { it.endsWith('Z') || it.contains('+') || it.contains('-') }
+                ?: "${startutcIso}Z"
 
             val instant: Instant = runCatching { Instant.parse(fixed) }
                 .getOrElse {
                     // fallback: parse as OffsetDateTime without offset → add UTC offset
-                    val noZone = LocalDateTime.parse(utcIso)
+                    val noZone = LocalDateTime.parse(startutcIso)
                     noZone.toInstant(ZoneOffset.UTC)
                 }
 
             val local = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
-            return SleepEntry(local, duration.toFloat())
+
+            val fixedend = endutcIso.takeIf { it.endsWith('Z') || it.contains('+') || it.contains('-') }
+                ?: "${endutcIso}Z"
+
+            val instantend: Instant = runCatching { Instant.parse(fixedend) }
+                .getOrElse {
+                    // fallback: parse as OffsetDateTime without offset → add UTC offset
+                    val noZone = LocalDateTime.parse(endutcIso)
+                    noZone.toInstant(ZoneOffset.UTC)
+                }
+
+            val localend = instantend.atZone(ZoneId.systemDefault()).toLocalDateTime()
+            return SleepEntry(local,localend, duration.toFloat())
         }
     }
 }
