@@ -5,6 +5,9 @@ import android.text.Html
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFaqDetailsBinding
 import com.jetsynthesys.rightlife.ui.settings.pojo.FAQDetails
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class FAQDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityFaqDetailsBinding
@@ -34,6 +37,14 @@ class FAQDetailsActivity : BaseActivity() {
 
         binding.writeToUsButton.setOnClickListener {
             WriteToUsUtils.sendEmail(this)
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.USER_FEEDBACK_CLICK,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                )
+            )
         }
     }
 }

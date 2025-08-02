@@ -33,6 +33,9 @@ import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall.updateChecklistStatus
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
@@ -121,6 +124,24 @@ class NewHealthCamReportActivity : BaseActivity() {
         myRLHealthCamResult
 
         updateChecklistStatus()
+
+        var productId = ""
+        sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
+            if (subscription.status) {
+                productId = subscription.productId
+            }
+        }
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.FACE_SCAN_COMPLETE,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.FACE_SCAN_COMPLETE to true,
+                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                AnalyticsParam.USER_PLAN to productId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+            )
+        )
 
         binding!!.btnSyncNow.setOnClickListener {
             downloadReport(

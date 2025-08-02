@@ -25,6 +25,9 @@ import com.jetsynthesys.rightlife.databinding.ActivityJournalAnswerBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetAddTagBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -633,6 +636,16 @@ class Journal4QuestionsActivity : BaseActivity() {
                         response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    AnalyticsLogger.logEvent(AnalyticsEvent.JOURNAL_ENTRY_CREATED,
+                        mapOf(
+                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                            AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                            AnalyticsParam.JOURNAL_TYPE to journalItem?.title!!,
+                            AnalyticsParam.JOURNAL_ID to journalEntry?.id!!
+                        )
+                    )
+
                     closeActivity()
                 } else {
                     Toast.makeText(

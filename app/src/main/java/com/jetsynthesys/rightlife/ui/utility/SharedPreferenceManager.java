@@ -173,6 +173,16 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
+    public String getSelectedOnboardingSubModule() {
+        return sharedPreferences.getString(SharedPreferenceConstants.ON_BOARDING_SELECTED_SUB_MODULE, "");
+    }
+
+    public void setSelectedOnboardingSubModule(String moduleName) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.ON_BOARDING_SELECTED_SUB_MODULE, moduleName);
+        editor.apply();
+    }
+
     public void saveMindAuditRequest(MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest) {
         SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
         Gson gson = new Gson();

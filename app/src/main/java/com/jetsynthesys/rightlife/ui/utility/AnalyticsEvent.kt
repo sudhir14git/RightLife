@@ -4,6 +4,7 @@ object AnalyticsEvent {
 
     // Splash and Onboarding
     const val SPLASH_SCREEN_OPEN = "splash_screen_open"
+    const val USER_LOGIN = "user_login"
     const val ACTIVE_USER = "active_user"
     const val USER_RETENTION = "user_retention"
     const val ONBOARDING_COMPLETE = "onboarding_complete"
@@ -64,6 +65,7 @@ object AnalyticsEvent {
     const val AFFIRMATION_STARTED = "affirmation_started"
     const val AFFIRMATION_ADDED = "affirmation_added"
     const val AFFIRMATION_PLAYLIST_CREATED = "affirmation_playlist_created"
+    const val AFFIRMATION_PLAYLIST_PRACTISE = "affirmation_practise"
 
     // Breathing & Mind
     const val BREATHING_SESSION_STARTED = "breathing_session_started"

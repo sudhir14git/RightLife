@@ -104,6 +104,7 @@ class WellnessFocusListActivity : BaseActivity() {
                 it.id?.let { it1 -> selectedOptions.add(it1) }
             }
             updateOnBoardingModule(header, selectedOptions)
+            sharedPreferenceManager.selectedOnboardingSubModule = selectedWellnessFocus[0].moduleName
             if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
                 finish()
                 startActivity(

@@ -59,6 +59,9 @@ import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import kotlinx.coroutines.launch
@@ -415,6 +418,13 @@ class HomeDashboardFragment : BaseFragment() {
         if (DashboardChecklistManager.checklistStatus) {
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.CHECKLIST_COMPLETE,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.CHECKLIST_COMPLETE to true
+                )
+            )
         } else {
             binding.llDashboardMainData.visibility = View.GONE
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
@@ -694,18 +704,19 @@ class HomeDashboardFragment : BaseFragment() {
                         val (carbsValue, carbsTotal) = extractNumericValues(module.carbs.toString())
                         val (fatsValue, fatsTotal) = extractNumericValues(module.fats.toString())
 
-                        binding.tvProtienValue.text = ""+proteinValue.toDouble().roundToLong().toInt()
+                        binding.tvProtienValue.text =
+                            "" + proteinValue.toDouble().roundToLong().toInt()
                         binding.proteinUnitTv.text = "/" + proteinTotal + " g"
                         binding.proteinProgressBar.max = proteinTotal.toDouble().toInt()
                         binding.proteinProgressBar.progress = proteinValue.toDouble().toInt()
 
 
-                        binding.tvCarbsValue.text = ""+carbsValue.toDouble().roundToLong().toInt()
+                        binding.tvCarbsValue.text = "" + carbsValue.toDouble().roundToLong().toInt()
                         binding.carbsUnitTv.text = "/" + carbsTotal + " g"
                         binding.carbsProgressBar.max = carbsTotal.toDouble().toInt()
                         binding.carbsProgressBar.progress = carbsValue.toDouble().toInt()
 
-                        binding.tvFatsValue.text = ""+fatsValue.toDouble().roundToLong().toInt()
+                        binding.tvFatsValue.text = "" + fatsValue.toDouble().roundToLong().toInt()
                         binding.fatsUnitTv.text = "/" + fatsTotal + " g"
                         binding.fatsProgressBar.max = fatsTotal.toDouble().toInt()
                         binding.fatsProgressBar.progress = fatsValue.toDouble().toInt()
@@ -817,7 +828,7 @@ class HomeDashboardFragment : BaseFragment() {
     private fun handleDescoverList(aiDashboardResponseMain: AiDashboardResponseMain?) {
         if (aiDashboardResponseMain?.data?.discoverData != null) {
             setHealthNoDataCardAdapter(aiDashboardResponseMain.data.discoverData)
-        }else{
+        } else {
             binding.llDiscoverLayout.visibility = View.GONE
         }
     }

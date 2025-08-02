@@ -8,6 +8,9 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivitySupportBinding
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class SupportActivity : BaseActivity() {
 
@@ -40,6 +43,14 @@ class SupportActivity : BaseActivity() {
 
                 "Write to us!" -> {
                     WriteToUsUtils.sendEmail(this@SupportActivity)
+                    AnalyticsLogger.logEvent(
+                        AnalyticsEvent.USER_FEEDBACK_CLICK,
+                        mapOf(
+                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                            AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                        )
+                    )
                 }
             }
         }

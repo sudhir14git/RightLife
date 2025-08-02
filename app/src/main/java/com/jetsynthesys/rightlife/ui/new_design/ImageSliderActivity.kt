@@ -21,13 +21,16 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -235,7 +238,7 @@ class ImageSliderActivity : BaseActivity() {
                             if (account != null) {
                                 // User is signed in, display user information
                                 displayName = account.displayName!!
-                                val firstName = displayName.split(" ")?.get(0) ?: ""
+                                val firstName = displayName.split(" ").get(0)
                                 displayName = firstName
                                 mEmail = account.email.toString()
                                 val authcode = account.serverAuthCode
@@ -311,6 +314,20 @@ class ImageSliderActivity : BaseActivity() {
                     SharedPreferenceManager.getInstance(this@ImageSliderActivity)
                         .saveAccessToken(apiResponse?.accessToken)
                     saveAccessToken(apiResponse?.accessToken!!)
+                    var productId = ""
+                    sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
+                        if (subscription.status) {
+                            productId = subscription.productId
+                        }
+                    }
+                    AnalyticsLogger.logEvent(
+                        AnalyticsEvent.USER_LOGIN, mapOf(
+                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                            AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                            AnalyticsParam.USER_PLAN to productId,
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        )
+                    )
                     Handler(Looper.getMainLooper()).postDelayed({
                         // Send username to next Activity
                         var loggedInUser: LoggedInUser? = null

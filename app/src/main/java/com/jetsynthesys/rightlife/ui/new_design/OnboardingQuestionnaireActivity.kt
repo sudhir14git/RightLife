@@ -10,12 +10,15 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -28,11 +31,14 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
     lateinit var tvSkip: TextView
     lateinit var tv_fragment_count: TextView
     var forProfileChecklist: Boolean = false
-
+    private var startTime: Long = 0
+    private var profileSkipped = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setChildContentView(R.layout.activity_onboarding_questionnaire)
+
+        startTime = System.currentTimeMillis()
 
         var header = intent.getStringExtra("WellnessFocus")
         if (header.isNullOrEmpty()) {
@@ -64,6 +70,7 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
             }
             sharedPreferenceManager.currentQuestion = viewPager.currentItem
             navigateToNextPage()
+            profileSkipped = true
         }
         if (forProfileChecklist) {
             tvSkip.visibility = View.GONE
@@ -174,6 +181,41 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                         SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity)
                             .clearOnboardingQuestionRequest()
                         updateChecklistStatus()
+                        var productId = ""
+                        sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
+                            if (subscription.status) {
+                                productId = subscription.productId
+                            }
+                        }
+                        AnalyticsLogger.logEvent(
+                            AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE, mapOf(
+                                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                                AnalyticsParam.TIME_TO_COMPLETE to (System.currentTimeMillis() - startTime) / 1000,
+                                AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                                AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                                AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
+                                AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                                AnalyticsParam.USER_PLAN to productId,
+                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                            )
+                        )
+                        AnalyticsLogger.logEvent(
+                            AnalyticsEvent.ONBOARDING_COMPLETE, mapOf(
+                                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                                AnalyticsParam.TIME_TO_COMPLETE to (System.currentTimeMillis() - startTime) / 1000,
+                                AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                                AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                                AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
+                                AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                                AnalyticsParam.USER_PLAN to productId,
+                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                                AnalyticsParam.PROFILE_SKIPPED to profileSkipped,
+                            )
+                        )
                     } else {
                         navigateToNextPage()
                         sharedPreferenceManager.currentQuestion = viewPager.currentItem

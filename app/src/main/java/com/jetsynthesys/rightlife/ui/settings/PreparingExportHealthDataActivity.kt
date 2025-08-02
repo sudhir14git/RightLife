@@ -8,6 +8,9 @@ import android.widget.Toast
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityPreparingExportHealthDataBinding
 import com.jetsynthesys.rightlife.ui.CommonResponse
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,6 +27,16 @@ class PreparingExportHealthDataActivity : BaseActivity() {
         binding.ivClose.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.DATA_EXPORT_REQUESTED,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.DATA_EXPORT_REQUESTED to true
+            )
+        )
 
         exportHealthData()
     }

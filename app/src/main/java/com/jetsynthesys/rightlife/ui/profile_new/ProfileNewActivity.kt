@@ -56,6 +56,9 @@ import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.shawnlin.numberpicker.NumberPicker
@@ -1165,6 +1168,26 @@ class ProfileNewActivity : BaseActivity() {
             }
             updateUserData(userData)
             updateChecklistStatus()
+            var productId = ""
+            sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
+                if (subscription.status) {
+                    productId = subscription.productId
+                }
+            }
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE, mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIME_TO_COMPLETE to "",
+                    AnalyticsParam.GENDER to userData.gender,
+                    AnalyticsParam.AGE to userData.age,
+                    AnalyticsParam.WEIGHT to userData.weight,
+                    AnalyticsParam.HEIGHT to userData.height,
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                    AnalyticsParam.USER_PLAN to productId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                )
+            )
         }
     }
 

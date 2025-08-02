@@ -15,6 +15,9 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetBreathworkCompleteBindi
 import com.jetsynthesys.rightlife.databinding.BottomsheetEarlyFinishBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
@@ -31,11 +34,15 @@ class BreathworkPracticeActivity : BaseActivity() {
     private var exhaleTime: Long = 0
     private var holdTime: Long = 0
     private var startDate = ""
+    private var startTime: Long = 0
+    private var endTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBreathworkPracticeBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
+
+        startTime = System.currentTimeMillis()
 
         // Retrieve the selected breathing practice from the intent
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
@@ -91,12 +98,32 @@ class BreathworkPracticeActivity : BaseActivity() {
 
     private fun startBreathingCycle() {
         if (currentSet <= totalSets) {
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.BREATHING_SESSION_STARTED, mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.BREATHING_TYPE_ID to breathingData?.id!!,
+                    AnalyticsParam.BREATHING_TYPE_NAME to "",
+                    AnalyticsParam.BREATHING_SESSION_DURATION to breathingData?.duration!!
+                )
+            )
             binding.setIndicator.text = "Set $currentSet/$totalSets"
             startBreathIn()
         } else {
             //finish()
             CommonAPICall.postWellnessStreak(this, "breathing")
             showCompletedBottomSheet()
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.BREATHING_SESSION_COMPLETED, mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.BREATHING_TYPE_ID to breathingData?.id!!,
+                    AnalyticsParam.BREATHING_TYPE_NAME to "",
+                    AnalyticsParam.BREATHING_SESSION_DURATION to System.currentTimeMillis() - startTime
+                )
+            )
         }
     }
 

@@ -8,26 +8,25 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
-import com.jetsynthesys.rightlife.RetrofitData.LogoutUserRequest
-import com.jetsynthesys.rightlife.databinding.ActivitySettingsNewBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
-import com.jetsynthesys.rightlife.ui.new_design.ImageSliderActivity
-import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
-import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.LogoutUserRequest
+import com.jetsynthesys.rightlife.databinding.ActivitySettingsNewBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
+import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
+import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -162,7 +161,7 @@ class SettingsNewActivity : BaseActivity() {
     private fun shareIntent() {
         val intent = Intent(Intent.ACTION_SEND).apply {
             //type = "image/*"
-            type = "text/plain";
+            type = "text/plain"
             //putExtra(Intent.EXTRA_STREAM, getImageToShare(bitmap))
             putExtra(
                 Intent.EXTRA_TEXT,
@@ -203,6 +202,15 @@ class SettingsNewActivity : BaseActivity() {
     }
 
     private fun clearUserDataAndFinish() {
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.USER_SIGN_OUT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.USER_SIGN_OUT to true
+            )
+        )
         val sharedPreferences =
             getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
         val editor = sharedPreferences.edit()

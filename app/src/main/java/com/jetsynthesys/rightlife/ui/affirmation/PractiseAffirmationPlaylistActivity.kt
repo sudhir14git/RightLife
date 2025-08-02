@@ -46,6 +46,9 @@ import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationSelectedCategor
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetAffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetWatchedAffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.WatchAffirmationPlaylistRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -638,6 +641,17 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
     private fun updateWatchedAffirmationPlaylist() {
         Utils.showLoader(this)
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.AFFIRMATION_PLAYLIST_PRACTISE,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                AnalyticsParam.TIME_TO_COMPLETE to binding.tvTimer.text.toString(),
+                AnalyticsParam.AFFIRMATION_PLAYLIST_ID to sharedPreferenceManager.userId,
+            )
+        )
+
         val authToken = sharedPreferenceManager.accessToken
 
         val watchAffirmationPlaylistRequest = WatchAffirmationPlaylistRequest()

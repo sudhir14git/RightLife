@@ -41,6 +41,9 @@ import com.jetsynthesys.rightlife.ui.affirmation.pojo.CreateAffirmationPlaylistR
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetAffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ui.showBalloon
 import com.jetsynthesys.rightlife.ui.showBalloonWithDim
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -137,13 +140,24 @@ class TodaysAffirmationActivity : BaseActivity() {
                     }
                 }
             } else {
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.AFFIRMATION_ADDED,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        AnalyticsParam.AFFIRMATION_ID to affirmationList[binding.cardViewPager.currentItem].id!!,
+                        AnalyticsParam.AFFIRMATION_TYPE to affirmationList[binding.cardViewPager.currentItem].categoryName!!
+                    )
+                )
                 addCardToPlaylist()
             }
         }
 
         binding.btnCreateAffirmation.setOnClickListener {
-            if (affirmationPlaylistRequest.isNotEmpty())
+            if (affirmationPlaylistRequest.isNotEmpty()) {
                 createAffirmationPlaylist()
+            }
         }
 
         setSelectedCategoryAdapter(affirmationList)
@@ -647,6 +661,16 @@ class TodaysAffirmationActivity : BaseActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Utils.dismissLoader(this@TodaysAffirmationActivity)
                 if (response.isSuccessful && response.body() != null) {
+
+                    AnalyticsLogger.logEvent(
+                        AnalyticsEvent.AFFIRMATION_PLAYLIST_CREATED,
+                        mapOf(
+                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                            AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                            AnalyticsParam.AFFIRMATION_PLAYLIST_ID to sharedPreferenceManager.userId,
+                        )
+                    )
 
                     if (sharedPreferenceManager.firstTimeUserForAffirmation) {
                         CommonAPICall.postWellnessStreak(

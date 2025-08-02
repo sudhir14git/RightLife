@@ -63,6 +63,9 @@ import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -1018,6 +1021,23 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                             val mealId = response.body()?.inserted_ids?.meal_log_id?: ""
                             CommonAPICall.updateChecklistStatus(requireContext(),"meal_snap", AppConstants.CHECKLIST_COMPLETED)
                             CommonAPICall.updateChecklistStatus(requireContext(),"snap_mealId", mealId)
+                            var productId = ""
+                            sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
+                                if (subscription.status) {
+                                    productId = subscription.productId
+                                }
+                            }
+
+                            AnalyticsLogger.logEvent(
+                                AnalyticsEvent.MEAL_SCAN_COMPLETE,
+                                mapOf(
+                                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                                    AnalyticsParam.MEAL_SCAN_COMPLETE to true,
+                                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                                    AnalyticsParam.USER_PLAN to productId,
+                                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                                )
+                            )
                             startActivity(Intent(context, HomeNewActivity::class.java))
                             requireActivity().finish()
                         }

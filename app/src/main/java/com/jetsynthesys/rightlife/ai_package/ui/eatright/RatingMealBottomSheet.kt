@@ -16,11 +16,16 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class RatingMealBottomSheet: BottomSheetDialogFragment() {
 
     private var listener: RatingSnapMealListener? = null
     private var isRating:Boolean = false
+    private var context: Context? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +37,7 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        this.context = context
         listener = when {
             context is RatingSnapMealListener -> context
             parentFragment is RatingSnapMealListener -> parentFragment as RatingSnapMealListener
@@ -92,6 +98,26 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
             successLayout.visibility= View.VISIBLE
             //dismiss()
             listener?.onSnapMealRating(1.0, isSave)
+
+            val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+
+            var productId = ""
+            sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
+                if (subscription.status) {
+                    productId = subscription.productId
+                }
+            }
+
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.MEAL_SCAN_RATING,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.MEAL_SCAN_RATING to true,
+                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
+                    AnalyticsParam.USER_PLAN to productId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                )
+            )
         }
 
         layoutNotNow.setOnClickListener {
