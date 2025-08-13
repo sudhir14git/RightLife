@@ -16,33 +16,30 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragme
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.ThinkRightReportFragment
 import com.jetsynthesys.rightlife.databinding.HomeBottomTabFragmentAiBinding
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class
 HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
 
-    private lateinit var layoutButton : LinearLayout
+    private lateinit var layoutButton: LinearLayout
     private lateinit var tabThink: LinearLayout
     private lateinit var tabMove: LinearLayout
     private lateinit var tabEat: LinearLayout
     private lateinit var tabSleep: LinearLayout
-    private lateinit var icThink : ImageView
-    private lateinit var icMove : ImageView
-    private lateinit var icEat : ImageView
-    private lateinit var icSleep : ImageView
-    private lateinit var tvThink : TextView
-    private lateinit var tvMove : TextView
-    private lateinit var tvEat : TextView
-    private lateinit var tvSleep : TextView
-    var homeBottomArgument:String = ""
+    private lateinit var icThink: ImageView
+    private lateinit var icMove: ImageView
+    private lateinit var icEat: ImageView
+    private lateinit var icSleep: ImageView
+    private lateinit var tvThink: TextView
+    private lateinit var tvMove: TextView
+    private lateinit var tvEat: TextView
+    private lateinit var tvSleep: TextView
+    var homeBottomArgument: String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> HomeBottomTabFragmentAiBinding
         get() = HomeBottomTabFragmentAiBinding::inflate
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -65,30 +62,65 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         val moduleName = arguments?.getString("ModuleName").toString()
         val bottomSeatName = arguments?.getString("BottomSeatName").toString()
 
-        tabThink.setOnClickListener { switchFragment(ThinkRightReportFragment(), tabThink, "Think", bottomSeatName) }
-        tabMove.setOnClickListener { switchFragment(MoveRightLandingFragment(), tabMove, "Move", bottomSeatName) }
-        tabEat.setOnClickListener { switchFragment(EatRightLandingFragment(), tabEat, "Eat", bottomSeatName) }
-        tabSleep.setOnClickListener { switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep", bottomSeatName) }
+        tabThink.setOnClickListener {
+            switchFragment(
+                ThinkRightReportFragment(),
+                tabThink,
+                "Think",
+                bottomSeatName
+            )
+        }
+        tabMove.setOnClickListener {
+            switchFragment(
+                MoveRightLandingFragment(),
+                tabMove,
+                "Move",
+                bottomSeatName
+            )
+        }
+        tabEat.setOnClickListener {
+            switchFragment(
+                EatRightLandingFragment(),
+                tabEat,
+                "Eat",
+                bottomSeatName
+            )
+        }
+        tabSleep.setOnClickListener {
+            switchFragment(
+                SleepRightLandingFragment(),
+                tabSleep,
+                "Sleep",
+                bottomSeatName
+            )
+        }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                requireActivity().finish()
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    requireActivity().finish()
+                }
+            })
 
 
-        if (moduleName.contentEquals("MoveRight")){
+        if (moduleName.contentEquals("MoveRight")) {
             switchFragment(MoveRightLandingFragment(), tabMove, "Move", bottomSeatName)
-        }else if (moduleName.contentEquals("EatRight")){
+        } else if (moduleName.contentEquals("EatRight")) {
             switchFragment(EatRightLandingFragment(), tabEat, "Eat", bottomSeatName)
-        }else if (moduleName.contentEquals("SleepRight")){
+        } else if (moduleName.contentEquals("SleepRight")) {
             switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep", bottomSeatName)
-        }else{
+        } else if (moduleName.contentEquals("ThinkRight")) {
             switchFragment(ThinkRightReportFragment(), tabThink, "Think", bottomSeatName)
         }
     }
-    
-    private fun switchFragment(fragment: Fragment, selectedTab: LinearLayout, selectedTabName : String , bottomSeatName : String) {
+
+    private fun switchFragment(
+        fragment: Fragment,
+        selectedTab: LinearLayout,
+        selectedTabName: String,
+        bottomSeatName: String
+    ) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             val args = Bundle()
             args.putString("BottomSeatName", bottomSeatName)
@@ -104,7 +136,8 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         tabSleep.setBackgroundResource(R.drawable.tab_unselected_bg)
 
         // Highlight selected tab
-        if (selectedTabName.contentEquals("Think")){
+        if (selectedTabName.contentEquals("Think")) {
+            ActivityUtils.startThinkRightReportsActivity(requireContext(), bottomSeatName, true)
             selectedTab.setBackgroundResource(R.drawable.think_tab_selected_bg)
             tvThink.visibility = View.VISIBLE
             tvMove.visibility = View.GONE
@@ -114,7 +147,8 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
             icMove.setImageResource(R.drawable.ic_move)
             icEat.setImageResource(R.drawable.ic_eat)
             icSleep.setImageResource(R.drawable.ic_sleep)
-        }else if (selectedTabName.contentEquals("Move")){
+        } else if (selectedTabName.contentEquals("Move")) {
+            ActivityUtils.startMoveRightReportsActivity(requireContext(), bottomSeatName, true)
             selectedTab.setBackgroundResource(R.drawable.move_tab_selected_bg)
             tvThink.visibility = View.GONE
             tvMove.visibility = View.VISIBLE
@@ -124,7 +158,8 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
             icMove.setImageResource(R.drawable.ic_move_white)
             icEat.setImageResource(R.drawable.ic_eat)
             icSleep.setImageResource(R.drawable.ic_sleep)
-        }else if (selectedTabName.contentEquals("Eat")){
+        } else if (selectedTabName.contentEquals("Eat")) {
+            ActivityUtils.startEatRightReportsActivity(requireContext(), bottomSeatName, isFromAIDashBoard = true)
             selectedTab.setBackgroundResource(R.drawable.eat_tab_selected_bg)
             tvThink.visibility = View.GONE
             tvMove.visibility = View.GONE
@@ -134,7 +169,8 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
             icMove.setImageResource(R.drawable.ic_move)
             icEat.setImageResource(R.drawable.ic_eat_white)
             icSleep.setImageResource(R.drawable.ic_sleep)
-        }else {
+        } else {
+            ActivityUtils.startSleepRightReportsActivity(requireContext(), bottomSeatName, true)
             selectedTab.setBackgroundResource(R.drawable.sleep_tab_selected_bg)
             tvThink.visibility = View.GONE
             tvMove.visibility = View.GONE

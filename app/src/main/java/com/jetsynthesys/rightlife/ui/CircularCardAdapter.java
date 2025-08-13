@@ -21,7 +21,6 @@ import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
-import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
@@ -89,10 +88,7 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
                 } else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN") ||
                         item.getCategory().equalsIgnoreCase("Health Cam") || item.getCategory().equalsIgnoreCase("FACE_SCAN")) {
-                    Intent intent = new Intent(mContext, HealthCamActivity.class);
-                    // Optionally pass data
-                    //intent.putExtra("key", "value");
-                    mContext.startActivity(intent);
+                    ActivityUtils.INSTANCE.startFaceScanActivity(mContext);
                 }
 
                 ViewCountRequest viewCountRequest = new ViewCountRequest();
@@ -160,7 +156,7 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         private final TextView cardbtntext;
         private final TextView cardbtntextDesc;
         private final TextView workshop_tag1;
-        private final ImageView cardImage,img_btn_icon,img_title_icon;
+        private final ImageView cardImage, img_btn_icon, img_title_icon;
         private TextView workshop_tag3;
 
         public CardViewHolder(@NonNull View itemView) {

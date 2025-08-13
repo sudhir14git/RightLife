@@ -34,6 +34,7 @@ import com.jetsynthesys.rightlife.apimodel.welnessresponse.ContentWellness
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse
 import com.jetsynthesys.rightlife.databinding.FragmentHomeExploreBinding
 import com.jetsynthesys.rightlife.runWhenAttached
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.CardItem
 import com.jetsynthesys.rightlife.ui.CategoryListActivity
@@ -42,7 +43,6 @@ import com.jetsynthesys.rightlife.ui.ServicePaneAdapter
 import com.jetsynthesys.rightlife.ui.TestAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
-import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.zhpan.bannerview.constants.PageStyle
@@ -135,33 +135,33 @@ class HomeExploreFragment : BaseFragment() {
         }
         binding.relativeRledit2.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
-            callRlEditDetailActivity(1)
+                callRlEditDetailActivity(1)
             } else showInternetError()
         }
         binding.relativeRledit1.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
-            callRlEditDetailActivity(0)
+                callRlEditDetailActivity(0)
             } else showInternetError()
         }
 
         binding.relativeWellness1.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
-            callWellnessDetailActivity(0)
+                callWellnessDetailActivity(0)
             } else showInternetError()
         }
         binding.relativeWellness2.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
-            callWellnessDetailActivity(1)
+                callWellnessDetailActivity(1)
             } else showInternetError()
         }
         binding.relativeWellness3.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
-            callWellnessDetailActivity(2)
+                callWellnessDetailActivity(2)
             } else showInternetError()
         }
         binding.relativeWellness4.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
-            callWellnessDetailActivity(3)
+                callWellnessDetailActivity(3)
             } else showInternetError()
         }
 
@@ -767,9 +767,9 @@ class HomeExploreFragment : BaseFragment() {
 
 
         // Set offscreen page limit and page margin
-        binding.viewPager.setOffscreenPageLimit(5) // Load adjacent pages
-        binding.viewPager.setClipToPadding(false)
-        binding.viewPager.setClipChildren(false)
+        binding.viewPager.offscreenPageLimit = 5 // Load adjacent pages
+        binding.viewPager.clipToPadding = false
+        binding.viewPager.clipChildren = false
         binding.viewPager.setPageTransformer(object : ViewPager2.PageTransformer {
             private val MIN_SCALE = 0.85f
             private val MIN_ALPHA = 0.5f
@@ -818,24 +818,13 @@ class HomeExploreFragment : BaseFragment() {
                 }
 
                 "Mind Audit" -> {
-                    val intentMind =
-                        Intent(requireContext(), MindAuditActivity::class.java)
-                    startActivity(intentMind)
+                    ActivityUtils.startMindAuditActivity(requireContext())
                 }
 
-                "Health Cam" -> startActivity(
-                    Intent(
-                        requireContext(),
-                        HealthCamActivity::class.java
-                    )
-                )
+                "Health Cam" -> ActivityUtils.startFaceScanActivity(requireContext())
 
                 else -> {
-                    val intentHealthAudit = Intent(
-                        requireContext(),
-                        HealthCamActivity::class.java
-                    )
-                    startActivity(intentHealthAudit)
+                    ActivityUtils.startFaceScanActivity(requireContext())
                 }
             }
         }

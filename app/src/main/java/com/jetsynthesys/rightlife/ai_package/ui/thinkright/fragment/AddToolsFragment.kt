@@ -32,6 +32,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentAllToolsListBinding
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -350,7 +351,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                 isSelectedModule = if (toolsData.isSelectedModule == true) false else true
                 selectTools(toolsData?.title,isSelectedModule)
             }else{
-                startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
+                ActivityUtils.startTodaysAffirmationActivity(requireContext())
             }
         }
         recyclerView.adapter = toolsAdapter

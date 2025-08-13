@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <ScrollView
+        android:layout_above="@id/bottomButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:padding="@dimen/margin_card_16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Welcome To"
+                android:textSize="22sp"
+                android:layout_marginTop="80dp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/merriweather_bold"
+                android:textColor="@color/txt_color_mind" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="RightLife"
+                android:textSize="30sp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/merriweather_bold"
+                android:textColor="@color/menuselected" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/rl_cs1" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Complete Your Checklist"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Finish setup to set baseline and unlock personalization."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/rl_cs2" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Explore Smarter Content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Get insights and tools matched to your goals and habits."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/rl_cs3" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="QuickLinks for Ease"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Log food, activity, hydration, and access app features in one click."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:id="@+id/bottomButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="30dp">
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/menuselected" />
+
+    </LinearLayout>
+
+</RelativeLayout>

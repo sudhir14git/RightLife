@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <ScrollView
+        android:layout_above="@id/bottomButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:padding="@dimen/margin_card_16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mental Health &amp; Sleep Assessment"
+                android:textSize="24sp"
+                android:layout_marginTop="50dp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/merriweather_bold"
+                android:textColor="@color/txt_color_mind" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/tr_sr_1" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mental Wellness Tools"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Personalized journaling, breathing, and affirmations - built around your habits."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/tr_sr_2" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Personalised Sleep Tips"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your ideal sleep is tailored to how you rest, move, and recover."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/tr_sr_3" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Track What Matters"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Spot emotional trends and sleep patterns that evolve with you."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/tr_sr_4" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Insights That Guide"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Clear, useful recommendations for mood, rest, and mental wellness."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:id="@+id/bottomButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="30dp">
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/menuselected" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -46,6 +46,23 @@ public class SharedPreferenceConstants {
     public static final String EAT_RIGHT_MAX_PROTEIN = "EAT_RIGHT_MAX_PROTEIN";
     public static final String EAT_RIGHT_MAX_FATS = "EAT_RIGHT_MAX_FATS";
     public static final String AI_REPORT_GENERATED = "AI_REPORT_GENERATED";
+
+    public static final String ALL_IN_ONE_PLACE = "ALL_IN_ONE_PLACE";
+    public static final String AFFIRMATION_CONTEXT_SCREEN = "AFFIRMATION_CONTEXT_SCREEN";
+    public static final String BREATH_WORK_CONTEXT_SCREEN = "BREATH_WORK_CONTEXT_SCREEN";
+    public static final String FACE_SCAN_CONTEXT_SCREEN = "FACE_SCAN_CONTEXT_SCREEN";
+    public static final String JOURNAL_CONTEXT_SCREEN = "JOURNAL_CONTEXT_SCREEN";
+    public static final String MEAL_SCAN_CONTEXT_SCREEN = "MEAL_SCAN_CONTEXT_SCREEN";
+    public static final String MIND_AUDIT_CONTEXT_SCREEN = "MIND_AUDIT_CONTEXT_SCREEN";
+    public static final String MRER_CONTEXT_SCREEN = "MRER_CONTEXT_SCREEN";
+    public static final String SLEEP_SOUND_CONTEXT_SCREEN = "SLEEP_SOUND_CONTEXT_SCREEN";
+    public static final String TRSR_CONTEXT_SCREEN = "TRSR_CONTEXT_SCREEN";
+    public static final String EAT_RIGHT_CONTEXT_SCREEN = "EAT_RIGHT_CONTEXT_SCREEN";
+    public static final String MOVE_RIGHT_CONTEXT_SCREEN = "MOVE_RIGHT_CONTEXT_SCREEN";
+    public static final String SLEEP_RIGHT_CONTEXT_SCREEN = "SLEEP_RIGHT_CONTEXT_SCREEN";
+    public static final String THINK_RIGHT_CONTEXT_SCREEN = "THINK_RIGHT_CONTEXT_SCREEN";
+    public static final String RIGHT_LIFE_CONTEXT_SCREEN = "RIGHT_LIFE_CONTEXT_SCREEN";
+
 }
 
 

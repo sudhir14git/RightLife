@@ -536,5 +536,15 @@ public class SharedPreferenceManager {
         editor.putBoolean(SharedPreferenceConstants.AI_REPORT_GENERATED, isReportGenerated);
         editor.apply();
     }
+
+    public Boolean getFirstTimeView(String name) {
+        return sharedPreferences.getBoolean(name, true);
+    }
+
+    public void setFirstTimeView(String name) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(name, false);
+        editor.apply();
+    }
 }
 

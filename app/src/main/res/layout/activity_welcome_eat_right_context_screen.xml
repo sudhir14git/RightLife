@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <ScrollView
+        android:layout_above="@id/bottomButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:padding="@dimen/margin_card_16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Welcome To"
+                android:textSize="22sp"
+                android:layout_marginTop="80dp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/merriweather_bold"
+                android:textColor="@color/txt_color_mind" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="EatRight"
+                android:textSize="30sp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/merriweather_bold"
+                android:textColor="@color/color_eat_right" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/welcome_er1" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Custom Nutrition Goals"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your calories, macros, and micros set for your body and goals."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/welcome_er2" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Smart Meal Logging"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Snap or log meals and track your protein, carbs, fats, and vitamins."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/welcome_er3" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recipe Inspiration"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Browse 5,000+ recipes based on your habits and preferences."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/welcome_er4" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hydration &amp; Weight Log"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Log water and weight to keep your nutrition on the right path."
+                        android:textSize="14sp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:id="@+id/bottomButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="30dp">
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/color_eat_right" />
+
+    </LinearLayout>
+
+</RelativeLayout>

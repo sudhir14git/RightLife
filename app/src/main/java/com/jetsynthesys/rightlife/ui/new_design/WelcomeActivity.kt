@@ -1,15 +1,14 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.widget.TextView
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
-import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 
 class WelcomeActivity : BaseActivity() {
 
@@ -35,8 +34,8 @@ class WelcomeActivity : BaseActivity() {
 
         textView.text = spannable
         Handler(mainLooper).postDelayed({
-            startActivity(Intent(this, HomeNewActivity::class.java))
+            ActivityUtils.startRightLifeContextScreenActivity(this)
             finishAffinity()
-        },1000)
+        }, 1000)
     }
 }

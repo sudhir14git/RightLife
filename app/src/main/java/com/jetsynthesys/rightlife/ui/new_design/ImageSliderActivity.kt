@@ -32,8 +32,7 @@ import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
-import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
-import com.jetsynthesys.rightlife.ui.DialogUtils
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
@@ -254,7 +253,7 @@ class ImageSliderActivity : BaseActivity() {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             // Retrieve the access token
-                             accessTokenGoogle =
+                            accessTokenGoogle =
                                 GoogleAuthUtil.getToken(this@ImageSliderActivity, email!!, scope)
                             Log.d("AccessToken", "Access Token: $accessTokenGoogle")
 
@@ -269,7 +268,11 @@ class ImageSliderActivity : BaseActivity() {
                                 val authcode = account.serverAuthCode
                             }
 
-                            fetchDeviceInfo(Utils.getDeviceId(this@ImageSliderActivity),mEmail,accessTokenGoogle)
+                            fetchDeviceInfo(
+                                Utils.getDeviceId(this@ImageSliderActivity),
+                                mEmail,
+                                accessTokenGoogle
+                            )
                         } catch (e: Exception) {
                             Log.e("GoogleAuthUtil", "Error retrieving access token", e)
                         }
@@ -351,14 +354,10 @@ class ImageSliderActivity : BaseActivity() {
                         isNewUser = apiResponse.isNewUser ?: false
                         if (apiResponse.isNewUser == false || loggedInUser?.isOnboardingComplete == true) {
 
-                            val loggedInUser = LoggedInUser(email = mEmail, isOnboardingComplete = true)
+                            val loggedInUser =
+                                LoggedInUser(email = mEmail, isOnboardingComplete = true)
                             sharedPreferenceManager.setLoggedInUsers(arrayListOf(loggedInUser))
-                            startActivity(
-                                Intent(
-                                    this@ImageSliderActivity,
-                                    HomeNewActivity::class.java
-                                )
-                            )
+                            ActivityUtils.startRightLifeContextScreenActivity(this@ImageSliderActivity)
                         } else {
                             val intent =
                                 Intent(
@@ -502,7 +501,7 @@ class ImageSliderActivity : BaseActivity() {
                             "Server Error: 500 - Internal Server Error",
                             Toast.LENGTH_SHORT
                         ).show()
-                        showSwitchAccountDialog(this@ImageSliderActivity,"","")
+                        showSwitchAccountDialog(this@ImageSliderActivity, "", "")
                     } else {
                         // Try to parse errorBody if present
                         val errorBodyString = response.errorBody()?.string()
@@ -536,7 +535,6 @@ class ImageSliderActivity : BaseActivity() {
     }
 
 
-
     private fun handleApiError(jsonObject: JSONObject) {
         val statusCode = jsonObject.optInt("statusCode")
         val displayMessage = jsonObject.optString("displayMessage")
@@ -547,10 +545,15 @@ class ImageSliderActivity : BaseActivity() {
 
         when (errorCode) {
             "DEVICE_ALREADY_EXISTS" -> {
-                Toast.makeText(this@ImageSliderActivity, "Device already registered!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@ImageSliderActivity,
+                    "Device already registered!",
+                    Toast.LENGTH_SHORT
+                ).show()
                 // You can navigate or perform a specific action here if needed
-                showSwitchAccountDialog(this,"","")
+                showSwitchAccountDialog(this, "", "")
             }
+
             else -> {
                 Toast.makeText(this@ImageSliderActivity, displayMessage, Toast.LENGTH_SHORT).show()
             }
