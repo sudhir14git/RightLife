@@ -83,7 +83,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var workoutLogHistory: ArrayList<WorkoutRecord> = ArrayList()
     private var loadingOverlay: FrameLayout? = null
     private var activityList: ArrayList<ActivityModel> = ArrayList()
-
+    private var newActivityList: ArrayList<ActivityModel> = ArrayList()
     private val handler = Handler(Looper.getMainLooper())
     private var tooltipRunnable1: Runnable? = null
     private var tooltipRunnable2: Runnable? = null
@@ -288,7 +288,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         layoutSaveWorkout.setOnClickListener {
             val fragment = CreateRoutineFragment()
             val args = Bundle().apply {
-                putParcelableArrayList("ACTIVITY_LIST", activityList)
+                putParcelableArrayList("ACTIVITY_LIST", newActivityList)
             }
             fragment.arguments = args
             Log.d("YourActivityFragment", "Sending ${activityList.size} activities to CreateRoutineFragment")
@@ -492,7 +492,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             // Update activityList and adapter
                             newActivities.addAll(allCardItems)
                             activityList.clear()
+                            newActivityList.clear()
                             activityList.addAll(newActivities)
+                            newActivityList.addAll(unsyncedCardItems)
                             Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
                             myActivityAdapter.addAll(newActivities, syncedCardItemsView,-1, null, false)
                             myActivityAdapter.notifyDataSetChanged()
