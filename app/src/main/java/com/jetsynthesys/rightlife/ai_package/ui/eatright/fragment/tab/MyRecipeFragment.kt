@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -20,6 +21,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFr
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMyRecipeBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetail
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipe
@@ -34,6 +36,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeBottomSheet.OnRecipeDeletedListener {
+
+    private val sharedViewModel: SharedMealViewModel by activityViewModels()
 
     private lateinit var addRecipeLayout : LinearLayoutCompat
     private lateinit var recipeRecyclerView : RecyclerView
@@ -93,6 +97,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             val fragment = CreateRecipeFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
+            args.putString("mealType", mealType)
             args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -106,6 +111,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             val fragment = CreateRecipeFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
+            args.putString("mealType", mealType)
             args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -134,6 +140,34 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             valueLists.addAll(myRecipeList as Collection<MyRecipe>)
             val mealLogDateData: MyRecipe? = null
             recipeAdapter.addAll(valueLists, -1, mealLogDateData, false)
+
+            sharedViewModel.mealData.observe(viewLifecycleOwner) { mealDataList ->
+                // Update RecyclerView / UI with latest meal dat
+                val mealLogDateData: MyRecipe? = null
+                if (myRecipeList.isNotEmpty() && mealDataList.isNotEmpty()) {
+                    val valueLists : ArrayList<MyRecipe> = ArrayList()
+                    for (item in myRecipeList) {
+                        // check if this item matches ANY meal in mealDataList
+                        val matchFound = mealDataList.any { meal ->
+                            item._id == meal.meal_id && item.recipe_name == meal.recipe_name
+                        }
+                        if (matchFound) {
+                            item.isRecipeLog = true
+                        }else{
+                            item.isRecipeLog = false
+                        }
+                        valueLists.add(item)
+                    }
+                    recipeAdapter.addAll(valueLists, -1, mealLogDateData, false)
+                }else if (myRecipeList.isNotEmpty() && mealDataList.isEmpty()){
+                    val valueLists : ArrayList<MyRecipe> = ArrayList()
+                    for (item in myRecipeList) {
+                        item.isRecipeLog = false
+                        valueLists.add(item)
+                    }
+                    recipeAdapter.addAll(valueLists, -1, mealLogDateData, false)
+                }
+            }
         }
     }
 
@@ -143,6 +177,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
         val args = Bundle()
         args.putString("ModuleName", moduleName)
         args.putString("selectedMealDate", selectedMealDate)
+        args.putString("mealType", mealType)
         args.putString("recipeId", myRecipe._id)
         args.putString("deleteType", "MyRecipe")
         deleteRecipeBottomSheet.arguments = args
@@ -188,6 +223,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("selectedMealDate", selectedMealDate)
+            args.putString("mealType", mealType)
             args.putString("recipeId", myRecipe._id)
             args.putString("recipeName", myRecipe.recipe_name)
             args.putDouble("serving", myRecipe.servings)

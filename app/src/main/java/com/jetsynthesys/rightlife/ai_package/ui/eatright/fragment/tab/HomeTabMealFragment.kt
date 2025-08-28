@@ -676,8 +676,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     while (iterator.hasNext()) {
                         val snapDish = iterator.next()
                         if (snapDish.meal_name.equals(ingredient, ignoreCase = true)) {
-                         //   snapMealLogUpdateMethod(snapDish)
                             iterator.remove()
+                            snapMealLogUpdateMethod(snapDish)
                             break // if only one item should be removed
                         }
                     }
@@ -687,8 +687,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     while (iterator.hasNext()) {
                         val dishItem = iterator.next()
                         if (dishItem.name.equals(ingredient, ignoreCase = true)) {
-                           // someUpdateMethod(ingredient)
                             iterator.remove()
+                            // someUpdateMethod(ingredient)
                             break // if only one item should be removed
                         }
                     }
@@ -698,8 +698,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     while (iterator.hasNext()) {
                         val mealLog = iterator.next()
                         if (mealLog.recipe_name.equals(ingredient, ignoreCase = true)) {
-                          //  mealLogUpdateMethod(mealLog)
                             iterator.remove()
+                            mealLogUpdateMethod(selectedMealLogList)
                             break // if only one item should be removed
                         }
                     }
@@ -717,7 +717,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
     }
 
-    private fun mealLogUpdateMethod(newData: MealLogItems) {
+    private fun mealLogUpdateMethod(newData: List<MealLogItems>) {
         sharedViewModel.mealLogUpdateMealData(newData)
     }
 

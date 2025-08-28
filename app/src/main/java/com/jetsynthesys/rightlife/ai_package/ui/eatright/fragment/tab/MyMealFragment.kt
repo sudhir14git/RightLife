@@ -28,6 +28,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapDish
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.Macros
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
@@ -100,16 +101,6 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
 
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
-
-        sharedViewModel.mealData.observe(viewLifecycleOwner) { data ->
-            // Update RecyclerView / UI with latest meal data
-            println(data)
-        }
-
-        sharedViewModel.snapMealData.observe(viewLifecycleOwner) { data ->
-            // Update RecyclerView / UI with latest meal data
-            println(data)
-        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -189,6 +180,39 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             val mealDetails: MealDetails? = null
             val snapMealDetail: SnapMealDetail? = null
             myMealListAdapter.addAll(valueLists, -1, mealDetails, snapMealDetail, false)
+
+//            sharedViewModel.mealData.observe(viewLifecycleOwner) { mealDataList ->
+//                // Update RecyclerView / UI with latest meal dat
+//                val mealLogDateData: FrequentRecipe? = null
+//                if (frequentRecipeLogList.isNotEmpty() && mealDataList.isNotEmpty()) {
+//                    val valueLists : ArrayList<FrequentRecipe> = ArrayList()
+//                    for (item in frequentRecipeLogList) {
+//                        // check if this item matches ANY meal in mealDataList
+//                        val matchFound = mealDataList.any { meal ->
+//                            item._id == meal.meal_id && item.recipe_name == meal.recipe_name
+//                        }
+//                        if (matchFound) {
+//                            item.isFrequentLog = true
+//                        }else{
+//                            item.isFrequentLog = false
+//                        }
+//                        valueLists.add(item)
+//                    }
+//                    frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+//                }else if (frequentRecipeLogList.isNotEmpty() && mealDataList.isEmpty()){
+//                    val valueLists : ArrayList<FrequentRecipe> = ArrayList()
+//                    for (item in frequentRecipeLogList) {
+//                        item.isFrequentLog = false
+//                        valueLists.add(item)
+//                    }
+//                    frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+//                }
+//            }
+//
+//            sharedViewModel.snapMealData.observe(viewLifecycleOwner) { data ->
+//                // Update RecyclerView / UI with latest meal data
+//                println(data)
+//            }
         }
     }
 

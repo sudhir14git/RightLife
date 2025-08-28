@@ -33,6 +33,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
     private var workoutList = ArrayList<WorkoutSessionRecord>()
     private var mSelectedDate = ""
     private  var workoutLists : WorkoutRoutineItem? = null
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchWorkoutBinding
         get() = FragmentSearchWorkoutBinding::inflate
@@ -42,6 +43,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         val selectedDate = arguments?.getString("selected_date")
         val routine = arguments?.getString("routine")
         val routineid = arguments?.getString("routineId")
@@ -158,12 +160,16 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun navigateToYourActivityFragment() {
-        val fragment = YourActivityFragment()
-        val args = Bundle()
-        fragment.arguments = args
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.flFragment, fragment, "YourActivityFragment")
-            .addToBackStack("YourActivityFragment")
-            .commit()
+        if (moduleName.equals("HomeDashboard")){
+            activity?.finish()
+        }else{
+            val fragment = YourActivityFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.flFragment, fragment, "YourActivityFragment")
+                .addToBackStack("YourActivityFragment")
+                .commit()
+        }
     }
 }

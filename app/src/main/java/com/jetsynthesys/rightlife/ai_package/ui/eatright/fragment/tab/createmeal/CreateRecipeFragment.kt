@@ -63,6 +63,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
+    private lateinit var mealType : String
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRecipeBinding
         get() = FragmentCreateRecipeBinding::inflate
@@ -101,6 +102,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         recipeName = arguments?.getString("recipeName").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
+        mealType = arguments?.getString("mealType").toString()
 
         val ingredientLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("ingredientLocalListModel", IngredientLocalListModel::class.java)
@@ -138,6 +140,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
                 args.putString("selectedMealDate", selectedMealDate)
+                args.putString("mealType", mealType)
                 args.putString("tabType", "MyRecipe")
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -258,6 +261,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("selectedMealDate", selectedMealDate)
+            args.putString("mealType", mealType)
             args.putString("searchType", "createRecipe")
             args.putString("recipeId", recipeId)
             args.putDouble("serving", servingTv.text.toString().toDouble())
@@ -276,6 +280,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("selectedMealDate", selectedMealDate)
+            args.putString("mealType", mealType)
             args.putString("tabType", "MyRecipe")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -327,6 +332,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("selectedMealDate", selectedMealDate)
+            args.putString("mealType", mealType)
             args.putString("searchType", "createMeal")
             args.putString("recipeId", recipeId)
             args.putDouble("serving", servingTv.text.toString().toDouble())
@@ -346,6 +352,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         val args = Bundle()
         args.putString("ModuleName", moduleName)
         args.putString("selectedMealDate", selectedMealDate)
+        args.putString("mealType", mealType)
         args.putString("recipeId", recipeId)
         args.putDouble("serving", servingTv.text.toString().toDouble())
         args.putString("recipeName", addedNameTv.text.toString())
@@ -399,6 +406,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
                     args.putString("selectedMealDate", selectedMealDate)
+                    args.putString("mealType", mealType)
                     args.putString("tabType", "MyRecipe")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -472,6 +480,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
                     args.putString("selectedMealDate", selectedMealDate)
+                    args.putString("mealType", mealType)
                     args.putString("tabType", "MyRecipe")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {

@@ -513,16 +513,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 putExtra("PlayList", "PlayList")
             })
         }
-      //  storeData()
-        if (!SharedPreferenceManager.getInstance(requireContext()).getAIReportGeneratedView()){
-            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
-                rightLifeReportCard.visibility = View.VISIBLE
-            }else{
-                rightLifeReportCard.visibility = View.GONE
-            }
-        } else {
-            rightLifeReportCard.visibility = View.GONE
-        }
 
         rightLifeReportCard.setOnClickListener {
             var dynamicReportId = ""
@@ -2937,6 +2927,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     override fun onResume() {
         super.onResume()
+        if (!SharedPreferenceManager.getInstance(requireContext()).getAIReportGeneratedView()){
+            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
+                rightLifeReportCard.visibility = View.VISIBLE
+            }else{
+                rightLifeReportCard.visibility = View.GONE
+            }
+        } else {
+            rightLifeReportCard.visibility = View.GONE
+        }
         fetchSoundSleepData()
     }
 

@@ -37,13 +37,13 @@ class FrequentlyLoggedListAdapter(private val context: Context, private var data
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.circlePlus.setImageResource(R.drawable.circle_check)
         if (item.isFrequentLog) {
-            if (clickPos == position && mealLogListData == item && isClickView == true){
+           // if (clickPos == position && mealLogListData == item && isClickView == true){
                 holder.circlePlus.setImageResource(R.drawable.circle_check)
-            }
+           // }
         }else{
-            if (clickPos == position && mealLogListData == item && isClickView == true){
+           // if (clickPos == position && mealLogListData == item && isClickView == true){
                 holder.circlePlus.setImageResource(R.drawable.ic_plus_circle)
-            }
+          //  }
         }
        // }else{
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
