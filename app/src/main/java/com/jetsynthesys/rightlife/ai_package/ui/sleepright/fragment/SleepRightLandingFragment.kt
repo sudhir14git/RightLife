@@ -910,10 +910,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 for (record in stepsResponse.records) {
                     dataOrigin = record.metadata.dataOrigin.packageName
                     val deviceInfo = record.metadata.device
-                    if (deviceInfo != null) {
-                        SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                    if (deviceInfo != null ) {
+                        if (deviceInfo.manufacturer != "") {
+                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                        }else{
+                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName("android phone")
+                        }
                         Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                        Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
                     } else {
                         Log.d("Device Info", "No device info available")
                     }
@@ -2536,7 +2540,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 if (sleepPerformanceDetail.idealSleepDuration == null) {
                     tvPerformIdealDuration.text = "7 hr 30 min"
                 }
-                if (!isRepeat && !bottomSeatName.contentEquals("LogLastNightSleep")) {
+                if (!isRepeat && !bottomSeatName.contentEquals("LogLastNightSleep") && sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == 0.0) {
                     val dialog = LogYourNapDialogFragment(
                         requireContext = requireContext(),
                         listener = object : OnLogYourNapSelectedListener {

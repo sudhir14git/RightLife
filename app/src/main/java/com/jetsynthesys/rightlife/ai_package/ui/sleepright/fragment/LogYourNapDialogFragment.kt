@@ -147,20 +147,24 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
             val duration = tvDuration.text.toString()
-            var negativeSign = false
+            var hasNegative = false
+            var totalDuration = 0
+
             val regex = Regex("-?\\d+")
-            val matches = regex.findAll(duration)
-            for (match in matches) {
-                val number = match.value.toInt()
-                if (number <= 0) {
-                    negativeSign = true
-                } else {
-                    negativeSign = false
+            val matches = regex.findAll(duration).map { it.value.toInt() }.toList()
+
+            for (number in matches) {
+                if (number < 0) {
+                    hasNegative = true
                 }
+                totalDuration += number
             }
-            if (negativeSign){
+
+            if (hasNegative) {
                 Toast.makeText(context, "Sleep duration cannot be negative", Toast.LENGTH_SHORT).show()
-            }else{
+            } else if (totalDuration == 0) {
+                Toast.makeText(context, "Sleep duration cannot be 0", Toast.LENGTH_SHORT).show()
+            } else {
                 val sleepTime = tvStartTime.text.toString()
                 val inputFmt  = DateTimeFormatter.ofPattern("hh:mm a")
                 val outputFmt = DateTimeFormatter.ofPattern("HH:mm:ss")
