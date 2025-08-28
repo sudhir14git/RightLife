@@ -31,6 +31,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.math.roundToInt
 
 data class HRDataPoint(val time: Long, val bpm: Int)
 
@@ -384,31 +385,52 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
          //   val startTime = item.heartRateData.firstOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
           //  val endTime = item.heartRateData.lastOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
          //   view.findViewById<TextView>(R.id.timeline_text).text = "$startTime to $endTime"
-            if (item.heartRateData.lastOrNull()?.date != null && item.heartRateData.firstOrNull()?.date != null) {
+            /*if (item.heartRateData.lastOrNull()?.date != null && item.heartRateData.firstOrNull()?.date != null) {
                 view.findViewById<TextView>(R.id.timeline_text).text = getTimeDifference(item.heartRateData.lastOrNull()?.date!!, item.heartRateData.firstOrNull()?.date!!)
-            }
+            }*/
             // Set the duration, calories burned, and average heart rate
             view.findViewById<TextView>(R.id.duration_text).text = item.duration
-          /*  val convertedDurationText = run {
+            val convertedDurationText = run {
                 val parts = item.duration.split(" ")
                 val hours = if (parts.contains("hr")) parts[0].toIntOrNull() ?: 0 else 0
                 val minutes = if (parts.contains("hr")) parts[2].toIntOrNull() ?: 0 else parts[0].toIntOrNull() ?: 0
                 String.format("%02d:%02d:%02d", hours + (minutes / 60), minutes % 60, 0)
             }
-            view.findViewById<TextView>(R.id.timeline_text).text = convertedDurationText*/
+            view.findViewById<TextView>(R.id.timeline_text).text = convertedDurationText
             view.findViewById<TextView>(R.id.calories_text).text = item.caloriesBurned
             view.findViewById<TextView>(R.id.avg_heart_rate_text_value).text = item.avgHeartRate.split(" ").getOrNull(0)
+            fun calculatePercentageDuration(convertedDurationText: String, percentage: Double): String {
+                // Step 1: Parse convertedDurationText to total seconds
+                val timeParts = convertedDurationText.split(":")
+                val hours = timeParts[0].toIntOrNull() ?: 0
+                val minutes = timeParts[1].toIntOrNull() ?: 0
+                val seconds = timeParts[2].toIntOrNull() ?: 0
+                val totalSeconds = hours * 3600 + minutes * 60 + seconds
 
+                // Step 2: Calculate percentage of total seconds and round to nearest integer
+                val resultSeconds = (totalSeconds * percentage / 100.0).roundToInt()
+
+                // Step 3: Convert back to HH:mm:ss format
+                val resultHours = resultSeconds / 3600
+                val resultMinutes = (resultSeconds % 3600) / 60
+                val resultRemainingSeconds = resultSeconds % 60
+                return String.format("%02d:%02d:%02d", resultHours, resultMinutes, resultRemainingSeconds)
+            }
             // Set heart rate zone percentages and minutes
             light_text_percentage.text = "${item.heartRateZonePercentages.lightZone}%"
             light_percentage_value.text = "${item.heartRateZonePercentages.fatBurnZone}%"
             fat_burn_percentage_value.text = "${item.heartRateZonePercentages.cardioZone}%"
             cardio_text_percentage_value.text = "${item.heartRateZonePercentages.peakZone}%"
-            peak_text_time_value.text = "${item.heartRateZoneMinutes.peakZone}min"
-            cardio_text_time_value.text = "${item.heartRateZoneMinutes.cardioZone}min"
-            fat_burn_time_value.text = "${item.heartRateZoneMinutes.fatBurnZone}min"
-            light_time_value.text = "${item.heartRateZoneMinutes.lightZone}min"
-            resting_time_value.text = "${item.heartRateZoneMinutes.belowLight}min"
+            peak_text_time_value.text =  item?.heartRateZonePercentages?.peakZone?.toDouble()
+                ?.let { calculatePercentageDuration(convertedDurationText, it) }
+            cardio_text_time_value.text = item?.heartRateZonePercentages?.cardioZone?.toDouble()
+                ?.let { calculatePercentageDuration(convertedDurationText, it) }
+            fat_burn_time_value.text =  item?.heartRateZonePercentages?.fatBurnZone?.toDouble()
+                ?.let { calculatePercentageDuration(convertedDurationText, it) }
+            light_time_value.text =  item?.heartRateZonePercentages?.lightZone?.toDouble()
+                ?.let { calculatePercentageDuration(convertedDurationText, it) }
+            resting_time_value.text = item?.heartRateZonePercentages?.belowLight?.toDouble()
+                ?.let { calculatePercentageDuration(convertedDurationText, it) }
             resting_text_percentage.text = "${item.heartRateZonePercentages.belowLight}%"
             val bpmValue = item.heartRateZones.lightZone.firstOrNull()
             resting_bpm_text.text = bpmValue?.let { "< $it BPM" } ?: "--"
