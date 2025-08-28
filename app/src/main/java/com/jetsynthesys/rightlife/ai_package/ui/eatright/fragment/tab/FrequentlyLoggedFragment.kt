@@ -105,11 +105,6 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
             }
         })
 
-        sharedViewModel.mealData.observe(viewLifecycleOwner) { data ->
-            // Update RecyclerView / UI with latest meal data
-            println(data)
-        }
-
         getFrequentlyLog()
 
         layoutCreateMeal.setOnClickListener {
@@ -156,6 +151,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         }
     }
 
+
     private fun onFrequentlyLoggedList (){
 
         if (frequentRecipeLogList.size > 0){
@@ -169,6 +165,34 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         valueLists.addAll(frequentRecipeLogList as Collection<FrequentRecipe>)
         val mealLogDateData: FrequentRecipe? = null
         frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+
+        sharedViewModel.mealData.observe(viewLifecycleOwner) { mealDataList ->
+            // Update RecyclerView / UI with latest meal dat
+            val mealLogDateData: FrequentRecipe? = null
+            if (frequentRecipeLogList.isNotEmpty() && mealDataList.isNotEmpty()) {
+                val valueLists : ArrayList<FrequentRecipe> = ArrayList()
+                for (item in frequentRecipeLogList) {
+                    // check if this item matches ANY meal in mealDataList
+                    val matchFound = mealDataList.any { meal ->
+                        item._id == meal.meal_id && item.recipe_name == meal.recipe_name
+                    }
+                    if (matchFound) {
+                        item.isFrequentLog = true
+                    }else{
+                        item.isFrequentLog = false
+                    }
+                    valueLists.add(item)
+                }
+                frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+            }else if (frequentRecipeLogList.isNotEmpty() && mealDataList.isEmpty()){
+                val valueLists : ArrayList<FrequentRecipe> = ArrayList()
+                for (item in frequentRecipeLogList) {
+                    item.isFrequentLog = false
+                    valueLists.add(item)
+                }
+                frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+            }
+        }
     }
 
     private fun onFrequentlyLoggedItem(mealLogDateModel: FrequentRecipe, position: Int, isRefresh: Boolean) {

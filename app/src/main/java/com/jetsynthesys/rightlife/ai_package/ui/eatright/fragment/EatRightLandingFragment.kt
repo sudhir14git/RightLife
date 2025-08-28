@@ -482,16 +482,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         }
 
-        if (!sharedPreferenceManager.getAIReportGeneratedView()){
-            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
-                rightLifeReportCard.visibility = View.VISIBLE
-            }else{
-                rightLifeReportCard.visibility = View.GONE
-            }
-        } else {
-            rightLifeReportCard.visibility = View.GONE
-        }
-
         // Open AI Report WebView on click   // Also logic to hide this button if Report is not generated pending
         rightLifeReportCard.setOnClickListener {
             var dynamicReportId = "" // This Is User ID
@@ -504,6 +494,19 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 }
                 startActivity(intent)
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!sharedPreferenceManager.getAIReportGeneratedView()){
+            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
+                rightLifeReportCard.visibility = View.VISIBLE
+            }else{
+                rightLifeReportCard.visibility = View.GONE
+            }
+        } else {
+            rightLifeReportCard.visibility = View.GONE
         }
     }
 
@@ -819,6 +822,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         animator.start()
         onOtherRecipeList(landingPageResponse.other_recipes_you_might_like)
     }
+
     fun formatValue(value: Double): String {
         return if (value >= 1000) {
             String.format("%.1fk", value / 1000) // 1 decimal ke saath
@@ -826,6 +830,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             value.toInt().toString() // normal integer
         }
     }
+
     private fun setTodayMealLogsData(){
 
         val regularRecipeData : RegularRecipeEntry? = null

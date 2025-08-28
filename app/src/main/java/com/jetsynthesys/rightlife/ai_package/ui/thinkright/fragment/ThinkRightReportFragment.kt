@@ -433,16 +433,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchJournalAnswerData()
         fetchAffirmationsList()
 
-        if (!SharedPreferenceManager.getInstance(requireContext()).aiReportGeneratedView) {
-            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
-                rightLifeReportCard.visibility = View.VISIBLE
-            } else {
-                rightLifeReportCard.visibility = View.GONE
-            }
-        } else {
-            rightLifeReportCard.visibility = View.GONE
-        }
-
         rightLifeReportCard.setOnClickListener {
             var dynamicReportId = ""
             dynamicReportId = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -999,6 +989,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     override fun onResume() {
         super.onResume()
+        if (!SharedPreferenceManager.getInstance(requireContext()).aiReportGeneratedView) {
+            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
+                rightLifeReportCard.visibility = View.VISIBLE
+            } else {
+                rightLifeReportCard.visibility = View.GONE
+            }
+        } else {
+            rightLifeReportCard.visibility = View.GONE
+        }
         fetchAffirmationsList()
         getBreathingData()
         fetchJournalAnswerData()

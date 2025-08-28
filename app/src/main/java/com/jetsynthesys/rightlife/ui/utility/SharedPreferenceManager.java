@@ -89,7 +89,7 @@ public class SharedPreferenceManager {
 
     // Method to retrieve the user ID
     public String getDeviceName() {
-        return sharedPreferences.getString(SharedPreferenceConstants.DEVICE_NAME, "");
+        return sharedPreferences.getString(SharedPreferenceConstants.DEVICE_NAME, "android phone");
     }
 
     public void saveMoveRightSyncTime(String time) {

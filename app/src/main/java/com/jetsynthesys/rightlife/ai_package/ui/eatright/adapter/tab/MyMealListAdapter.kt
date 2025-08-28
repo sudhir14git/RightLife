@@ -181,13 +181,13 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             dewpointValue.text = item.total_fat.toInt().toString()
 
             if (item.isMealLog) {
-                if (clickPos == position && mealDetails == item && isClickView == true){
+              //  if (clickPos == position && mealDetails == item && isClickView == true){
                     circlePlus.setImageResource(R.drawable.circle_check)
-                }
+              //  }
             }else{
-                if (clickPos == position && mealDetails == item && isClickView == true){
+              //  if (clickPos == position && mealDetails == item && isClickView == true){
                     circlePlus.setImageResource(R.drawable.ic_plus_circle)
-                }
+              //  }
             }
 
             delete.setOnClickListener {

@@ -60,6 +60,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
+    private lateinit var mealType : String
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -94,6 +95,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
         ingredientName = arguments?.getString("ingredientName").toString()
         recipeName = arguments?.getString("recipeName").toString()
+        mealType = arguments?.getString("mealType").toString()
 
         if (searchType.contentEquals("mealScanResult")){
             allDishesRecyclerview.layoutManager = LinearLayoutManager(context)
@@ -122,6 +124,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                         val args = Bundle()
                         args.putString("ModuleName", moduleName)
                         args.putString("selectedMealDate", selectedMealDate)
+                        args.putString("mealType", mealType)
                         args.putString("recipeId", recipeId)
                         args.putString("recipeName", recipeName)
                         args.putDouble("serving", serving)
@@ -142,6 +145,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
                 args.putString("selectedMealDate", selectedMealDate)
+                args.putString("mealType", mealType)
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
                 args.putDouble("serving", serving)
@@ -283,6 +287,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                             val args = Bundle()
                             args.putString("ModuleName", moduleName)
                             args.putString("selectedMealDate", selectedMealDate)
+                            args.putString("mealType", mealType)
                             args.putString("searchType", "searchIngredient")
                             args.putString("recipeId", recipeId)
                             args.putDouble("serving", serving)

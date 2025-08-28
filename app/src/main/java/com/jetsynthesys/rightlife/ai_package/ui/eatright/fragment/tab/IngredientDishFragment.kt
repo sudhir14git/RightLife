@@ -58,6 +58,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
     private var mealQuantity = 1.0
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
+    private lateinit var mealType : String
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -98,6 +99,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         recipeId = arguments?.getString("recipeId").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
+        mealType = arguments?.getString("mealType").toString()
         val ingredientName = arguments?.getString("ingredientName").toString()
         recipeName = arguments?.getString("recipeName").toString()
         val ingredientDetailResponse = if (Build.VERSION.SDK_INT >= 33) {
@@ -202,6 +204,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
                 args.putString("selectedMealDate", selectedMealDate)
+                args.putString("mealType", mealType)
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
                 args.putDouble("serving", serving)
@@ -217,6 +220,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
                 args.putString("selectedMealDate", selectedMealDate)
+                args.putString("mealType", mealType)
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
                 args.putDouble("serving", serving)
@@ -346,6 +350,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                         val args = Bundle()
                         args.putString("ModuleName", moduleName)
                         args.putString("selectedMealDate", selectedMealDate)
+                        args.putString("mealType", mealType)
                         args.putString("recipeId", recipeId)
                         args.putString("recipeName", recipeName)
                         args.putDouble("serving", serving)
@@ -412,6 +417,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                                         val args = Bundle()
                                         args.putString("ModuleName", moduleName)
                                         args.putString("selectedMealDate", selectedMealDate)
+                                        args.putString("mealType", mealType)
                                         args.putString("recipeId", recipeId)
                                         args.putString("recipeName", recipeName)
                                         args.putDouble("serving", serving)

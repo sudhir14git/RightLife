@@ -50,13 +50,13 @@ class MyRecipeAdapter(private val context: Context, private var dataLists: Array
         }
 
         if (item.isRecipeLog) {
-            if (clickPos == position && mealLogListData == item && isClickView == true){
+           // if (clickPos == position && mealLogListData == item && isClickView == true){
                 holder.circlePlus.setImageResource(R.drawable.circle_check)
-            }
+           // }
         }else{
-            if (clickPos == position && mealLogListData == item && isClickView == true){
+           // if (clickPos == position && mealLogListData == item && isClickView == true){
                 holder.circlePlus.setImageResource(R.drawable.ic_plus_circle)
-            }
+          //  }
         }
 
         holder.delete.setOnClickListener {

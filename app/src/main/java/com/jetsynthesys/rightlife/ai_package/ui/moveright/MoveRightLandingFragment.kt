@@ -406,16 +406,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         }
 
-        if (!SharedPreferenceManager.getInstance(requireContext()).getAIReportGeneratedView()){
-            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
-                rightLifeReportCard.visibility = View.VISIBLE
-            }else{
-                rightLifeReportCard.visibility = View.GONE
-            }
-        } else {
-            rightLifeReportCard.visibility = View.GONE
-        }
-
         rightLifeReportCard.setOnClickListener {
             var dynamicReportId = ""
             dynamicReportId = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -877,6 +867,15 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
     override fun onResume() {
         super.onResume()
+        if (!SharedPreferenceManager.getInstance(requireContext()).getAIReportGeneratedView()){
+            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
+                rightLifeReportCard.visibility = View.VISIBLE
+            }else{
+                rightLifeReportCard.visibility = View.GONE
+            }
+        } else {
+            rightLifeReportCard.visibility = View.GONE
+        }
         fetchUserWorkouts()
     }
 
