@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_row_breath_work_context"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_margin="12dp"
+    android:gravity="center_horizontal"
+    android:background="@drawable/rounded_corder_border_gray"
+    android:backgroundTint="@color/custom_breathing_card_color">
+
+    <ImageView
+        android:id="@+id/image_slider"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:src="@drawable/breath_work1" />
+
+    <TextView
+        android:id="@+id/tv_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="What This Is"
+        android:fontFamily="@font/merriweather_regular"
+        android:textSize="16sp"
+        android:textColor="@color/custom_breathing_card_color_text"/>
+
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="Create your own breath rhythm by setting how long you inhale, hold, and exhale — tailored to your mood, energy, or focus."
+        android:fontFamily="@font/merriweather_regular"
+        android:textSize="12sp"/>
+
+
+</LinearLayout>

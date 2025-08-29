@@ -372,11 +372,11 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startCountdown(duration: Long, onFinish: () -> Unit) {
-        var secondsLeft = (duration / 1000).toInt()
+        var secondsLeft = 0
         binding.circleTimer.text = secondsLeft.toString()
         countDownTimer = object : CountDownTimer(duration, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                secondsLeft--
+                secondsLeft++
                 binding.circleTimer.text = secondsLeft.toString()
             }
 

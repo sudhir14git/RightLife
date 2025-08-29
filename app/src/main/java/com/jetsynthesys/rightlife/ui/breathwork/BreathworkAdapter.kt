@@ -19,6 +19,8 @@ class BreathworkAdapter(
     private val onItemClick: OnItemClickListener
 ) : RecyclerView.Adapter<BreathworkAdapter.BreathworkViewHolder>() {
 
+    private var isClickable = true
+
     inner class BreathworkViewHolder(val binding: ItemBreathworkBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -29,6 +31,7 @@ class BreathworkAdapter(
     }
 
     override fun onBindViewHolder(holder: BreathworkViewHolder, position: Int) {
+        holder.itemView.isEnabled = isClickable
         val item = items[position]
         holder.binding.apply {
             titleTextView.text = item.title
@@ -41,21 +44,31 @@ class BreathworkAdapter(
                 .error(R.drawable.rl_placeholder)
                 .into(imageView)
 
-          /*  plusButton.setImageResource(
-                if (item.isAddedToToolKit) {
-                    R.drawable.greentick
-                } else
-                { R.drawable.ic_bookmark_breathing}
-            )*/
+            /*  plusButton.setImageResource(
+                  if (item.isAddedToToolKit) {
+                      R.drawable.greentick
+                  } else
+                  { R.drawable.ic_bookmark_breathing}
+              )*/
 
             if (item.isAddedToToolKit) {
                 plusButton.setImageResource(R.drawable.ic_save_article_active)
                 plusButton.imageTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(plusButton.context, R.color.color_eat_right))
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            plusButton.context,
+                            R.color.color_eat_right
+                        )
+                    )
             } else {
                 plusButton.setImageResource(R.drawable.ic_save_article)
                 plusButton.imageTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(plusButton.context, R.color.black))
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            plusButton.context,
+                            R.color.black
+                        )
+                    )
             }
 
             plusButton.setOnClickListener {
@@ -76,7 +89,11 @@ class BreathworkAdapter(
             }
 
             cardView.setOnClickListener {
-                onItemClick.onClick(item)
+                if (isClickable) {
+                    isClickable = false
+                    onItemClick.onClick(item)
+                    holder.itemView.postDelayed({ isClickable = true }, 500)
+                }
             }
 
             // ✅ Background color based on breathing type
@@ -85,31 +102,26 @@ class BreathworkAdapter(
                 "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color
                 "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color
                 "Custom" -> R.color.custom_breathing_card_color
-                else -> R.color.white
+                else -> R.color.custom_breathing_card_color
             }
             val colorInt = ContextCompat.getColor(holder.itemView.context, resColor)
             cardView.setCardBackgroundColor(ColorStateList.valueOf(colorInt))
 
+            val textColorRes = when (item.title?.trim()) {
+                "Box Breathing" -> R.color.box_breathing_card_color_text
+                "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color_text
+                "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color_text
+                "Custom" -> R.color.custom_breathing_card_color_text
+                else -> R.color.custom_breathing_card_color_text
+            }
+
+            val textColor = ContextCompat.getColor(holder.itemView.context, textColorRes)
+
+            titleTextView.setTextColor(textColor)
+            descriptionTextView.setTextColor(textColor)
+
             // Debug log (optional)
             Log.d("BreathworkAdapter", "position=$position title=${item.title} -> color=$resColor")
-            /*when (item.title) {
-                "Box Breathing" -> {
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.box_breathing_card_color))
-
-                }
-                "Alternate Nostril Breathing" -> {
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.alternate_breathing_card_color))
-
-                }
-                "4-7-8 Breathing" -> {
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.four_seven_breathing_card_color))
-
-                }
-                else -> {
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.custom_breathing_card_color))
-
-                }
-            }*/
         }
 
     }

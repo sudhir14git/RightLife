@@ -65,6 +65,12 @@ public class SharedPreferenceConstants {
     public static final String THINK_RIGHT_CONTEXT_SCREEN = "THINK_RIGHT_CONTEXT_SCREEN";
     public static final String RIGHT_LIFE_CONTEXT_SCREEN = "RIGHT_LIFE_CONTEXT_SCREEN";
 
+    public static final String BOX_BREATH_WORK = "BOX_BREATH_WORK";
+    public static final String CUSTOM_BREATH_WORK = "CUSTOM_BREATH_WORK";
+    public static final String FOUR_7_8_BREATH_WORK = "FOUR_7_8_BREATH_WORK";
+    public static final String EQUAL_BREATH_WORK = "EQUAL_BREATH_WORK";
+    public static final String ALTERNATE_BREATH_WORK = "ALTERNATE_BREATH_WORK";
+
 }
 
 
