@@ -43,6 +43,8 @@ import com.jetsynthesys.rightlife.ai_package.model.response.RecipeData
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.MyMealListAdapter.SavedMealViewHolder
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.MyMealListAdapter.SnapMealViewHolder
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealScanResultFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
@@ -181,38 +183,91 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             val snapMealDetail: SnapMealDetail? = null
             myMealListAdapter.addAll(valueLists, -1, mealDetails, snapMealDetail, false)
 
-//            sharedViewModel.mealData.observe(viewLifecycleOwner) { mealDataList ->
-//                // Update RecyclerView / UI with latest meal dat
-//                val mealLogDateData: FrequentRecipe? = null
-//                if (frequentRecipeLogList.isNotEmpty() && mealDataList.isNotEmpty()) {
-//                    val valueLists : ArrayList<FrequentRecipe> = ArrayList()
-//                    for (item in frequentRecipeLogList) {
-//                        // check if this item matches ANY meal in mealDataList
-//                        val matchFound = mealDataList.any { meal ->
-//                            item._id == meal.meal_id && item.recipe_name == meal.recipe_name
-//                        }
-//                        if (matchFound) {
-//                            item.isFrequentLog = true
-//                        }else{
-//                            item.isFrequentLog = false
-//                        }
-//                        valueLists.add(item)
-//                    }
-//                    frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
-//                }else if (frequentRecipeLogList.isNotEmpty() && mealDataList.isEmpty()){
-//                    val valueLists : ArrayList<FrequentRecipe> = ArrayList()
-//                    for (item in frequentRecipeLogList) {
-//                        item.isFrequentLog = false
-//                        valueLists.add(item)
-//                    }
-//                    frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
-//                }
-//            }
-//
-//            sharedViewModel.snapMealData.observe(viewLifecycleOwner) { data ->
-//                // Update RecyclerView / UI with latest meal data
-//                println(data)
-//            }
+            val snapMealsLists = valueLists.filterIsInstance<MergedMealItem.SnapMeal>()
+                .map { it.data }
+
+            val savedMealsLists = valueLists.filterIsInstance<MergedMealItem.SavedMeal>()
+                .map { it.data }
+
+            sharedViewModel.mealLogData.observe(viewLifecycleOwner) { mealDataList ->
+                if (savedMealsLists.isNotEmpty() && mealDataList.isNotEmpty()) {
+                    val bothTypeLists : ArrayList<MergedMealItem> = ArrayList()
+                    val mealLists : ArrayList<MealDetails> = ArrayList()
+                 //   val snapMealLists : ArrayList<SnapMealDetail> = ArrayList()
+                    for (item in savedMealsLists) {
+                        // check if this item matches ANY meal in mealDataList
+                        val matchFound = mealDataList.any { meal ->
+                            item._id == meal._id && item.meal_name == meal.meal_name
+                        }
+                        if (matchFound) {
+                            item.isMealLog = true
+                        }else{
+                            item.isMealLog = false
+                        }
+                        mealLists.add(item)
+                    }
+                    snapMealsLists.forEach { snap ->
+                        bothTypeLists.add(MergedMealItem.SnapMeal(snap))
+                    }
+                    mealLists.forEach { saved ->
+                        bothTypeLists.add(MergedMealItem.SavedMeal(saved))
+                    }
+                    myMealListAdapter.addAll(bothTypeLists, -1, null, null, false)
+                }else if (savedMealsLists.isNotEmpty() && mealDataList.isEmpty()){
+                    val bothTypeLists : ArrayList<MergedMealItem> = ArrayList()
+                    val mealLists : ArrayList<MealDetails> = ArrayList()
+                    for (item in savedMealsLists) {
+                        item.isMealLog = false
+                        mealLists.add(item)
+                    }
+                    snapMealsLists.forEach { snap ->
+                        bothTypeLists.add(MergedMealItem.SnapMeal(snap))
+                    }
+                    mealLists.forEach { saved ->
+                        bothTypeLists.add(MergedMealItem.SavedMeal(saved))
+                    }
+                    myMealListAdapter.addAll(bothTypeLists, -1, null, null, false)
+                }
+            }
+
+            sharedViewModel.snapMealData.observe(viewLifecycleOwner) { snapMealDataList ->
+                if (snapMealsLists.isNotEmpty() && snapMealDataList.isNotEmpty()) {
+                    val bothTypeLists : ArrayList<MergedMealItem> = ArrayList()
+                    val snapMealFilterLists : ArrayList<SnapMealDetail> = ArrayList()
+                    for (item in snapMealsLists) {
+                        val matchFound = snapMealDataList.any { meal ->
+                            item._id == meal._id && item.meal_name == meal.meal_name
+                        }
+                        if (matchFound) {
+                            item.isSnapMealLog = true
+                        }else{
+                            item.isSnapMealLog = false
+                        }
+                        snapMealFilterLists.add(item)
+                    }
+                    snapMealFilterLists.forEach { snap ->
+                        bothTypeLists.add(MergedMealItem.SnapMeal(snap))
+                    }
+                    savedMealsLists.forEach { saved ->
+                        bothTypeLists.add(MergedMealItem.SavedMeal(saved))
+                    }
+                    myMealListAdapter.addAll(bothTypeLists, -1, null, null, false)
+                }else if (snapMealsLists.isNotEmpty() && snapMealDataList.isEmpty()){
+                    val bothTypeLists : ArrayList<MergedMealItem> = ArrayList()
+                    val snapMealFilterLists : ArrayList<SnapMealDetail> = ArrayList()
+                    for (item in snapMealsLists) {
+                        item.isSnapMealLog = false
+                        snapMealFilterLists.add(item)
+                    }
+                    snapMealFilterLists.forEach { snap ->
+                        bothTypeLists.add(MergedMealItem.SnapMeal(snap))
+                    }
+                    savedMealsLists.forEach { saved ->
+                        bothTypeLists.add(MergedMealItem.SavedMeal(saved))
+                    }
+                    myMealListAdapter.addAll(bothTypeLists, -1, null, null, false)
+                }
+            }
         }
     }
 
@@ -251,7 +306,8 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             meal_name =  mealDetails.meal_name,
             meal_type = mealDetails.meal_name,
             meal_log = mealLogList,
-            isMealLog = mealDetails.isMealLog
+            isMealLog = mealDetails.isMealLog,
+            _id = mealDetails._id
         )
         val parent = parentFragment as? HomeTabMealFragment
         parent?.setSelectedFrequentlyLog(null, false, mealLogRequest, null)
@@ -425,7 +481,8 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
                 date = currentDateUtc,
                 dish = snapDishList,
                 image_url = "",
-                isSnapMealLogSelect = snapMealDetail.isSnapMealLog
+                isSnapMealLogSelect = snapMealDetail.isSnapMealLog,
+                _id = snapMealDetail._id
             )
             val parent = parentFragment as? HomeTabMealFragment
             parent?.setSelectedFrequentlyLog(mealLogData, true, null, snapMealLogRequest)
