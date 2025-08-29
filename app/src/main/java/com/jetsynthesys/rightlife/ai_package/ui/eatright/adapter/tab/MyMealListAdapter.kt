@@ -123,13 +123,9 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             dewpointValue.text = item.total_fat.toInt().toString()
 
             if (item.isSnapMealLog) {
-                if (clickPos == position && snapMealDetail == item && isClickView == true){
                    circlePlus.setImageResource(R.drawable.circle_check)
-                }
             }else{
-                if (clickPos == position && snapMealDetail == item && isClickView == true){
                     circlePlus.setImageResource(R.drawable.ic_plus_circle)
-                }
             }
 
             delete.setOnClickListener {

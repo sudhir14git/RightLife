@@ -8,6 +8,7 @@ data class SelectedMealLogList(
     val meal_name: String?,
     val meal_type: String,
     var isMealLog : Boolean = false,
+    val _id: String = "",
     val meal_log: List<MealLogItems>
 ):Parcelable
 

@@ -166,7 +166,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         val mealLogDateData: FrequentRecipe? = null
         frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
-        sharedViewModel.mealData.observe(viewLifecycleOwner) { mealDataList ->
+        sharedViewModel.recipeLogAndFrequentlyData.observe(viewLifecycleOwner) { mealDataList ->
             // Update RecyclerView / UI with latest meal dat
             val mealLogDateData: FrequentRecipe? = null
             if (frequentRecipeLogList.isNotEmpty() && mealDataList.isNotEmpty()) {

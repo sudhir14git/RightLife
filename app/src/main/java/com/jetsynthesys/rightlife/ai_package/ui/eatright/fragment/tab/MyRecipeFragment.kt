@@ -141,7 +141,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             val mealLogDateData: MyRecipe? = null
             recipeAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
-            sharedViewModel.mealData.observe(viewLifecycleOwner) { mealDataList ->
+            sharedViewModel.recipeLogAndFrequentlyData.observe(viewLifecycleOwner) { mealDataList ->
                 // Update RecyclerView / UI with latest meal dat
                 val mealLogDateData: MyRecipe? = null
                 if (myRecipeList.isNotEmpty() && mealDataList.isNotEmpty()) {

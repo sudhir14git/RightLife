@@ -262,7 +262,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             swipeRefreshLayout.isEnabled = scrollY == 0
         }
 
-
         val layoutParams = dottedLine.layoutParams as ConstraintLayout.LayoutParams
         layoutParams.width = if (screenWidthDp < 600) {
             resources.getDimensionPixelSize(R.dimen.dotted_line_width_small) // e.g., 50dp
@@ -1272,7 +1271,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 respiratoryRateRecord = emptyList()
                 Log.d("HealthData", "Respiratory rate permission denied")
             }
-            var dataOrigin = ""
+            var dataOrigin = "android phone"
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
                 val stepsResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -1284,11 +1283,18 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     dataOrigin = record.metadata.dataOrigin.packageName
                     val deviceInfo = record.metadata.device
                     if (deviceInfo != null) {
-                        SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
-                        Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                        if (deviceInfo.manufacturer != "") {
+                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
                 Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                            break
+                        }else{
+                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(dataOrigin)
+                            break
+                        }
                     } else {
-                        Log.d("Device Info", "No device info available")
+                        SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(dataOrigin)
+                        break
                     }
                 }
             }

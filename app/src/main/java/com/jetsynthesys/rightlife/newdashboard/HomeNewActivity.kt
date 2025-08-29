@@ -1478,7 +1478,7 @@ class HomeNewActivity : BaseActivity() {
                 respiratoryRateRecord = emptyList()
                 Log.d("HealthData", "Respiratory rate permission denied")
             }
-            var dataOrigin = ""
+            var dataOrigin = "android phone"
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
                 val stepsResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -1489,15 +1489,21 @@ class HomeNewActivity : BaseActivity() {
                 for (record in stepsResponse.records) {
                     dataOrigin = record.metadata.dataOrigin.packageName
                     val deviceInfo = record.metadata.device
-                    if (deviceInfo != null) {
-                        SharedPreferenceManager.getInstance(this@HomeNewActivity)
-                            .saveDeviceName(deviceInfo.manufacturer)
-                        Log.d(
-                            "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
-                        )
+                    if (deviceInfo != null && deviceInfo.manufacturer != "null") {
+                        if (deviceInfo.manufacturer != "") {
+                            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(deviceInfo.manufacturer)
+                            Log.d(
+                                "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+               Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
+                            )
+                            break
+                        }else{
+                            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(dataOrigin)
+                            break
+                        }
                     } else {
-                        Log.d("Device Info", "No device info available")
+                        SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(dataOrigin)
+                        break
                     }
                 }
             }

@@ -84,6 +84,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var dishLists : ArrayList<SearchResultItem> = ArrayList()
     private  var snapDishLocalListModel : SnapDishLocalListModel? = null
     private var mealLogRequests : SelectedMealLogList? = null
+    private var mealLogRequestsList : ArrayList<SelectedMealLogList> = ArrayList()
     private var selectedMealLogList : ArrayList<MealLogItems> = ArrayList()
     private var snapMealLogRequests : SelectedMealLogList? = null
     private var selectedSnapMealLogList : ArrayList<MealLogItems> = ArrayList()
@@ -625,6 +626,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                         selectedMealLog.add(mealLogData)
                     }
                     selectedMealLogList.addAll(selectedMealLog)
+                    mealLogRequestsList.add(mealLogRequest1)
                 }else{
                     if (selectedMealLogList.size > 0){
                         val iterator = selectedMealLogList.iterator()
@@ -677,7 +679,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                         val snapDish = iterator.next()
                         if (snapDish.meal_name.equals(ingredient, ignoreCase = true)) {
                             iterator.remove()
-                            snapMealLogUpdateMethod(snapDish)
+                            snapMealLogUpdateMethod(snapMealLogRequestList)
                             break // if only one item should be removed
                         }
                     }
@@ -699,9 +701,25 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                         val mealLog = iterator.next()
                         if (mealLog.recipe_name.equals(ingredient, ignoreCase = true)) {
                             iterator.remove()
-                            mealLogUpdateMethod(selectedMealLogList)
+                            recipeLogAndFrequentlyLogUpdateMethod(selectedMealLogList)
                             break // if only one item should be removed
                         }
+                    }
+                }
+
+                if (mealLogRequestsList.isNotEmpty() && selectedMealLogList.isNotEmpty()) {
+                    // Find the meal by ingredient
+                    val mealToRemove = mealLogRequestsList.find { it.meal_name.equals(ingredient, ignoreCase = true) }
+                    if (mealToRemove != null) {
+                        // Collect mealIds from this meal
+                        val mealIds = mealToRemove.meal_log.map { it.meal_id }
+                        // Safely remove all selected meals that match
+                        selectedMealLogList.removeAll { selected ->
+                            mealIds.contains(selected.meal_id)
+                        }
+                        // Safely remove the meal itself
+                        mealLogRequestsList.remove(mealToRemove)
+                        mealLogUpdateMethod(mealLogRequestsList)
                     }
                 }
             }
@@ -717,11 +735,15 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
     }
 
-    private fun mealLogUpdateMethod(newData: List<MealLogItems>) {
+    private fun recipeLogAndFrequentlyLogUpdateMethod(newData: List<MealLogItems>) {
+        sharedViewModel.recipeLogAndFrequentlyLogUpdateMealData(newData)
+    }
+
+    private fun mealLogUpdateMethod(newData: List<SelectedMealLogList>) {
         sharedViewModel.mealLogUpdateMealData(newData)
     }
 
-    private fun snapMealLogUpdateMethod(newData: SnapMealLogRequest) {
+    private fun snapMealLogUpdateMethod(newData:  List<SnapMealLogRequest>) {
         sharedViewModel.snapMealLogUpdateMealData(newData)
     }
 
