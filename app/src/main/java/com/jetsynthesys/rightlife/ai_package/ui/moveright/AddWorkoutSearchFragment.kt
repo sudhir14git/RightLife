@@ -463,8 +463,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             minuteSelectedValue = newVal
         }
 
-      //  hourPicker.setOnValueChangedListener(timeListener)
-     //   minutePicker.setOnValueChangedListener(timeListener)
+        //  hourPicker.setOnValueChangedListener(timeListener)
+        //   minutePicker.setOnValueChangedListener(timeListener)
         refreshPickers()
 
         // Set initial progress for non-edit mode
@@ -478,6 +478,12 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             // Use the getCurrentIntensity() method from CustomProgressBar to get the intensity
             selectedIntensity = intensityProgressBar.getCurrentIntensity()
             Log.d("AddWorkoutSearch", "Progress: $progress, Intensity set to: $selectedIntensity")
+            when (intensityProgressBar.progress) {
+                0.0f -> selectedIntensity = "Low"
+                0.3333f -> selectedIntensity = "Moderate"
+                0.6666f -> selectedIntensity = "High"
+                1.0f -> selectedIntensity = "Very High"
+            }
             val hours = hourPicker.value
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
@@ -538,15 +544,6 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             }
         }
         if(editWorkoutRoutine.equals("editworkoutRoutine")){
-            selectedIntensity = normalizeIntensity(editWorkoutRoutineItem?.intensity ?: "Low")
-            // Set progress based on intensity (progress range is 0 to 1)
-            when (selectedIntensity) {
-                "Low" -> intensityProgressBar.progress = 0.0f
-                "Moderate" -> intensityProgressBar.progress = 0.3333f
-                "High" -> intensityProgressBar.progress = 0.6666f
-                "Very High" -> intensityProgressBar.progress = 1.0f
-            }
-            //editWorkoutRoutineItem
             val durationMinutes = editWorkoutRoutineItem?.duration?.replace(" min", "")?.toIntOrNull() ?: 0
             val hours = durationMinutes / 60
             val minutes = durationMinutes % 60
@@ -556,8 +553,18 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 ?.toDoubleOrNull()
                 ?.roundToInt()
                 ?.toString() ?: "0" // Set to "1966"
+            selectedIntensity = normalizeIntensity(editWorkoutRoutineItem?.intensity ?: "Low")
+            // Set progress based on intensity (progress range is 0 to 1)
+            when (selectedIntensity) {
+                "Low" -> intensityProgressBar.progress = 0.0f
+                "Moderate" -> intensityProgressBar.progress = 0.3333f
+                "High" -> intensityProgressBar.progress = 0.6666f
+                "Very High" -> intensityProgressBar.progress = 1.0f
+            }
+            //editWorkoutRoutineItem
+
             workoutName.text = editWorkoutRoutineItem?.name
-           // Set to "Martial Arts"
+            // Set to "Martial Arts"
             when (editWorkoutRoutineItem?.name) {
                 "American Football" -> {
                     workoutIcon.setImageResource(R.drawable.american_football)// Handle American Football
