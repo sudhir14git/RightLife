@@ -188,19 +188,24 @@ class BreathworkSessionActivity : BaseActivity() {
 
         // Get the actual color value
         val mainColor = resources.getColor(colorResource, null)
-
+        val textColor = resources.getColor(colorResourceText, null)
         // Apply color to the Continue button
         binding.btnContinue.backgroundTintList = ColorStateList.valueOf(mainColor)
         binding.btnContinue.setTextColor(resources.getColor(colorResourceText, null))
         binding.btnPlus.backgroundTintList = ColorStateList.valueOf(mainColor)
         binding.btnMinus.backgroundTintList = ColorStateList.valueOf(mainColor)
-        binding.ivBreathworkImage.imageTintList = ColorStateList.valueOf(mainColor)
+        binding.ivBreathworkImage.imageTintList = ColorStateList.valueOf(textColor)
         binding.tvSettime.setTextColor(resources.getColor(colorResourceText, null))
         binding.tvSessionCount.setTextColor(resources.getColor(colorResourceText, null))
         binding.tvTitle.setTextColor(resources.getColor(colorResourceText, null))
         binding.tvDescription.setTextColor(resources.getColor(colorResourceText, null))
         binding.tvSetInfo.setTextColor(resources.getColor(colorResourceText, null))
         binding.tvSessionSets.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvHaptic.setTextColor(resources.getColor(colorResourceText, null))
+
+        binding.tvInhale.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvhold.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvExhale.setTextColor(resources.getColor(colorResourceText, null))
 
     }
 }

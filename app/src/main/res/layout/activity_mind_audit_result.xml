@@ -107,7 +107,7 @@
                 android:paddingStart="@dimen/margin_card_16dp"
                 android:paddingEnd="@dimen/margin_card_16dp"
                 android:background="#D9DBE9"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_height="wrap_content">
 
                 <TextView
@@ -119,8 +119,8 @@
                 <TextView
                     android:id="@+id/tv_checkprogress_days"
                     android:layout_width="wrap_content"
-                    android:text="  in next 10 days  "
-                    android:padding="1dp"
+                    android:text="Re - take Assessment"
+                    android:paddingHorizontal="5dp"
                     android:layout_alignParentEnd="true"
                     android:background="@drawable/roundedcornerpinkborder"
                     android:layout_height="wrap_content" />

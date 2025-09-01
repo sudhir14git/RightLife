@@ -199,9 +199,9 @@ class BreathworkPracticeActivity : BaseActivity() {
     private fun initializeSoundCues() {
         try {
             // Initialize inhale sound - you can use a default system sound or custom audio file
-            inhaleSound = MediaPlayer.create(this, R.raw.inhale)
-            exhaleSound = MediaPlayer.create(this, R.raw.inhale)
-            holdSound = MediaPlayer.create(this, R.raw.inhale)
+            inhaleSound = MediaPlayer.create(this, R.raw.inhale_w)
+            exhaleSound = MediaPlayer.create(this, R.raw.exhale_w)
+            holdSound = MediaPlayer.create(this, R.raw.hold_w)
 
             // Set volume levels (0.0 to 1.0)
             inhaleSound?.setVolume(0.7f, 0.7f)
@@ -319,6 +319,7 @@ class BreathworkPracticeActivity : BaseActivity() {
 
     private fun showCompletedBottomSheetNew() {
         binding.rlPracticeComplete.visibility = View.VISIBLE
+        binding.rlBreathingPracticeMain.visibility = View.GONE
         binding.btnExit.setOnClickListener() {
             callPostMindFullDataAPI()
             finish()
@@ -363,7 +364,7 @@ class BreathworkPracticeActivity : BaseActivity() {
 
     private fun startFinalHold() {
         binding.breathingPhase.text = "Hold"
-        playSoundCue(BreathingPhase.EXHALE) // Play exhale sound
+        playSoundCue(BreathingPhase.HOLD) // Play exhale sound
         animateCircle(1f, 1f, holdTime)
         startCountdown(holdTime) {
             currentSet++
