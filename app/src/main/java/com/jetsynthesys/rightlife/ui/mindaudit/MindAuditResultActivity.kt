@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -68,6 +69,16 @@ class MindAuditResultActivity : BaseActivity() {
             intent.putExtra("SelectedAssessment", selectedAssessment)
             startActivity(intent)
         }
+
+        binding.tvCheckprogressDays.setOnClickListener{
+            val intent = Intent(
+                this,
+                MASuggestedAssessmentActivity::class.java
+            )
+            intent.putExtra("SelectedAssessment", selectedAssessment)
+            startActivity(intent)
+            }
+
 
         if (sharedPreferenceManager.userEmotions != null) {
             val userEmotions = sharedPreferenceManager.userEmotions
@@ -312,21 +323,21 @@ class MindAuditResultActivity : BaseActivity() {
                                 binding.tvResultExplanation.text = explanation.second
                                 binding.apply {
                                     tvRange1.text = "0"
-                                    tvRange2.text = "7"
-                                    tvRange3.text = "9"
-                                    tvRange4.text = "14"
-                                    tvRange5.text = "19"
-                                    tvRange6.text = "20+"
+                                    tvRange2.text = "9"
+                                    tvRange3.text = "13"
+                                    tvRange4.text = "20"
+                                    tvRange5.text = "27"
+                                    tvRange6.text = "28+"
                                 }
                             }
                         }
                         binding.apply {
                             tvRange1.text = "0"
-                            tvRange2.text = "7"
-                            tvRange3.text = "9"
-                            tvRange4.text = "14"
-                            tvRange5.text = "19"
-                            tvRange6.text = "20+"
+                            tvRange2.text = "9"
+                            tvRange3.text = "13"
+                            tvRange4.text = "20"
+                            tvRange5.text = "27"
+                            tvRange6.text = "28+"
                         }
                     }
                     assessmentTaken.interpretations.depression?.let {
@@ -536,6 +547,23 @@ class MindAuditResultActivity : BaseActivity() {
                     cardviewMainscore2.visibility = View.GONE
                     scoreBarContainer.visibility = View.VISIBLE
                     scoreBarContainerhappiness.visibility = View.GONE
+
+                    binding.apply {
+                        tvRange1.text = "0"
+                        tvRange2.text = "4"
+                        tvRange3.text = "9"
+                        tvRange4.text = "14"
+                        tvRange5.text = "21"
+                        tvRange6.text = "21"
+                        tvRange5.visibility = View.GONE
+                        tvExtSevere.visibility = View.GONE
+
+                        tvRange1.gravity = Gravity.START
+                        tvRange2.gravity = Gravity.START
+                        tvRange3.gravity = Gravity.START
+                        tvRange4.gravity = Gravity.START
+                        tvRange5.gravity = Gravity.END
+                    }
                 }
 
                 "CAS" -> {
@@ -570,8 +598,15 @@ class MindAuditResultActivity : BaseActivity() {
                         tvRange3.text = "19"
                         tvRange4.text = "28"
                         tvRange5.text = "63"
-                        tvRange6.visibility = View.GONE
+                        tvRange6.text = "63"
+                        tvRange5.visibility = View.GONE
                         tvExtSevere.visibility = View.GONE
+
+                        tvRange1.gravity = Gravity.START
+                        tvRange2.gravity = Gravity.START
+                        tvRange3.gravity = Gravity.START
+                        tvRange4.gravity = Gravity.START
+                        tvRange5.gravity = Gravity.END
                     }
                 }
 

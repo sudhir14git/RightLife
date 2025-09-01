@@ -25,8 +25,8 @@
             android:layout_height="32dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:visibility="gone"
-            android:src="@drawable/ic_breathing_toolkit" />
+            android:src="@drawable/ic_breathing_toolkit"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <LinearLayout
@@ -37,8 +37,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="250dp">
+            android:layout_height="250dp"
+            android:layout_weight="1">
             <!-- Breathwork Image -->
             <ImageView
                 android:id="@+id/ivBreathworkImage"
@@ -51,8 +51,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -78,11 +78,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:textColor="@color/text_color_breathwork"
                     android:layout_marginBottom="10dp"
+                    android:gravity="center"
                     android:paddingStart="25dp"
                     android:paddingEnd="25dp"
+                    android:textColor="@color/text_color_breathwork"
                     android:textSize="14sp" />
 
                 <!-- Session Sets -->
@@ -91,84 +91,86 @@
                     android:id="@+id/layoutCustomPicker"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:orientation="horizontal"
                     android:gravity="center"
-                    android:visibility="visible"
-                    android:padding="16dp">
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:visibility="visible">
 
                     <!-- Inhale -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:layout_marginHorizontal="16dp"
                         android:gravity="center"
-                        android:layout_marginHorizontal="16dp">
+                        android:orientation="vertical">
 
                         <TextView
-                            android:text="Inhale\n(Seconds)"
-                            android:gravity="center"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_color_breathwork"/>
+                            android:gravity="center"
+                            android:text="Inhale\n(Seconds)"
+                            android:id="@+id/tvInhale"
+                            android:textColor="@color/text_color_breathwork"
+                            android:textStyle="bold" />
 
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/pickerInhale"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:np_textSize="@dimen/textsize_small"
-                            android:layout_marginTop="8dp"/>
+                            android:layout_marginTop="8dp"
+                            app:np_textSize="@dimen/textsize_small" />
                     </LinearLayout>
 
                     <!-- Hold -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:layout_marginHorizontal="16dp"
                         android:gravity="center"
-                        android:layout_marginHorizontal="16dp">
+                        android:orientation="vertical">
 
                         <TextView
-                            android:text="Hold\n(Seconds)"
-                            android:gravity="center"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_color_breathwork"/>
+                            android:gravity="center"
+                            android:id="@+id/tvhold"
+                            android:text="Hold\n(Seconds)"
+                            android:textColor="@color/text_color_breathwork"
+                            android:textStyle="bold" />
 
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/pickerHold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:np_textSize="@dimen/textsize_small"
-                            android:layout_marginTop="8dp"/>
+                            android:layout_marginTop="8dp"
+                            app:np_textSize="@dimen/textsize_small" />
                     </LinearLayout>
 
                     <!-- Exhale -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:layout_marginHorizontal="16dp"
                         android:gravity="center"
-                        android:layout_marginHorizontal="16dp">
+                        android:orientation="vertical">
 
                         <TextView
-                            android:text="Exhale\n(Seconds)"
-                            android:gravity="center"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_color_breathwork"/>
+                            android:gravity="center"
+                            android:text="Exhale\n(Seconds)"
+                            android:id="@+id/tvExhale"
+                            android:textColor="@color/text_color_breathwork"
+                            android:textStyle="bold" />
 
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/pickerExhale"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:np_textSize="@dimen/textsize_small"
-                            android:layout_marginTop="8dp"/>
+                            android:layout_marginTop="8dp"
+                            app:np_textSize="@dimen/textsize_small" />
                     </LinearLayout>
                 </LinearLayout>
-
 
 
                 <LinearLayout
@@ -179,22 +181,22 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/tvSessionSets"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Session Sets"
-                        android:id="@+id/tvSessionSets"
                         android:textColor="@color/text_color_breathwork"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/btnMinus"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:background="@drawable/circle_shape"
+                        android:padding="10dp"
                         android:src="@drawable/ic_minus_sign"
-                        android:padding="15dp"
                         android:text="-" />
 
                     <TextView
@@ -207,43 +209,42 @@
 
                     <ImageView
                         android:id="@+id/btnPlus"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:background="@drawable/circle_shape"
-                        android:src="@drawable/ic_plus_sign"
-                        android:padding="15dp"
-                         />
+                        android:padding="10dp"
+                        android:src="@drawable/ic_plus_sign" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp"
-                    android:gravity="center_vertical"
                     android:layout_marginBottom="20dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/tvSetInfo"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
                         android:gravity="start"
                         android:text="1 set = 4 breath cycles "
-                        android:layout_gravity="center_vertical"
                         android:textColor="@color/text_color_breathwork" />
 
                     <TextView
                         android:id="@+id/tvSettime"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="20dp"
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="15:09 mins"
-                        android:layout_marginEnd="20dp"
-                        android:layout_gravity="center_vertical"
                         android:textColor="@color/text_color_breathwork" />
                 </LinearLayout>
 
@@ -253,22 +254,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="16dp"
-                    android:visibility="gone"
-                    android:background="#CCCCCC" />
+                    android:background="#CCCCCC"
+                    android:visibility="visible" />
 
                 <!-- Haptic Feedback Switch -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="visible">
 
                     <TextView
                         android:id="@+id/tvHaptic"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Haptic Feedback"
                         android:layout_weight="1"
+                        android:text="Haptic Feedback"
                         android:textColor="@color/text_color_breathwork"
                         android:textSize="16sp" />
 
