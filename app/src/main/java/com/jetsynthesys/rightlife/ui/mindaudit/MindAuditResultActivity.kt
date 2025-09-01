@@ -366,7 +366,7 @@ class MindAuditResultActivity : BaseActivity() {
                         binding.tvResultExplanation.text = explanation.second
                         cardviewMainscore2.setOnClickListener {
                             setCenterRainbowView(assessmentTaken.interpretations.depression.score.toInt())
-
+                            setRainbowView(assessmentTaken.interpretations.depression.score.toInt())
                             val explanation = getDASS21DepressionExplanation(
                                 assessmentTaken.interpretations.depression.score.toFloat()
                             )
