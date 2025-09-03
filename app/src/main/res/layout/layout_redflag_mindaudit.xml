@@ -248,7 +248,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:background="@drawable/phone_number_bg"
+                        android:background="@color/medium_red"
                         android:padding="16dp"
                         android:gravity="center_vertical">
 
@@ -265,7 +265,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_phone_receiver" />
-                            android:contentDescription="Call" />
+
 
                     </LinearLayout>
 
@@ -289,7 +289,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_phone_receiver" />
-                            android:contentDescription="Call" />
+
 
                     </LinearLayout>
 
@@ -331,7 +331,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:background="@drawable/phone_number_bg"
+
                                 android:padding="16dp"
                                 android:gravity="center_vertical">
 
@@ -348,7 +348,7 @@
                                     android:layout_width="24dp"
                                     android:layout_height="24dp"
                                     android:src="@drawable/ic_phone_receiver" />
-                                android:contentDescription="Call" />
+
 
                             </LinearLayout>
                         </LinearLayout>
