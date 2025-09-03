@@ -89,6 +89,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var tooltipRunnable2: Runnable? = null
     private var isTooltipShown = false
     private var lastDayOfCurrentWeek : String = ""
+    private var moduleName : String = ""
     private var selectedDate: String? = null
     private var isTodayDate : Boolean = false
     private var currentWeekStartItem: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
@@ -153,6 +154,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         healthConnectSyncButton.setOnClickListener {
             // AddWorkoutSearchFragment navigation (commented as per original)
         }
+        moduleName = arguments?.getString("ModuleName").toString()
 
         mealLogDateListAdapter.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -162,16 +164,21 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val fragment = HomeBottomTabFragment()
-                    val args = Bundle().apply {
-                        putString("ModuleName", "MoveRight")
+                    if(moduleName.equals("HomeDashboard")){
+                        activity?.finish()
+                    }else{
+                        val fragment = HomeBottomTabFragment()
+                        val args = Bundle().apply {
+                            putString("ModuleName", "MoveRight")
+                        }
+                        fragment.arguments = args
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                            addToBackStack(null)
+                            commit()
+                        }
                     }
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
-                        addToBackStack(null)
-                        commit()
-                    }
+
                 }
             })
 
@@ -262,15 +269,19 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         yourActivityBackButton.setOnClickListener {
-            val fragment = HomeBottomTabFragment()
-            val args = Bundle().apply {
-                putString("ModuleName", "MoveRight")
-            }
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
-                addToBackStack(null)
-                commit()
+            if(moduleName.equals("HomeDashboard")){
+                activity?.finish()
+            }else{
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "MoveRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
             }
         }
 
