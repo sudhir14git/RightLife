@@ -22,11 +22,11 @@
 
             <ImageView
                 android:id="@+id/ic_back_dialog"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="10dp"
                 android:src="@drawable/ic_back_articlepage" />
 
             <TextView
@@ -517,7 +517,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="center"
                 android:layout_margin="16dp"
-                android:background="@drawable/roundedcornershape"
+                android:background="@drawable/rounded_corder_border_gray"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:visibility="visible">

@@ -230,6 +230,7 @@
     <color name="yellow_btn_bg">#FFE577</color>
     <color name="create_routine_fill">#FFBCBE</color>
     <color name="sleep_text_color">#002C5F</color>
+    <color name="move_text_color">#B11414</color>
     <color name="sleep_duration_blue">#0B84FF</color>
     <color name="light_blue_grey">#C5DEF9</color>
     <color name="red_light">#FF5A5F</color>
