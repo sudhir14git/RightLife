@@ -42,6 +42,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
     private lateinit var tvDate: TextView
     private lateinit var tvRemindTime: TextView
     private val mContext = requireContext
+    private var bottomSeatName : String = ""
 
     private var startTime: LocalTime = LocalTime.of(22, 0)
     private var endTime: LocalTime = LocalTime.of(7, 30)
@@ -73,6 +74,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         tvDuration = view.findViewById(R.id.tvDuration)
         tvDate = view.findViewById(R.id.tvDate)
         tvRemindTime = view.findViewById(R.id.tvRemindTime)
+        bottomSeatName = arguments?.getString("BottomSeatName").toString()
 
       //  updateDuration()
         updateDurationNew()
@@ -193,7 +195,11 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
 
         }
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
-            dismiss()
+            if (bottomSeatName.contentEquals("LogLastNightSleep")){
+                activity?.finish()
+            }else{
+                dismiss()
+            }
         }
     }
 

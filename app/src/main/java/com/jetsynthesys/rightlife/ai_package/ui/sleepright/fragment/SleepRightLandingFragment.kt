@@ -378,6 +378,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     }
                 }
             )
+            val args = Bundle()
+            args.putString("BottomSeatName", bottomSeatName)
+            dialog.arguments = args
             dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
@@ -1910,6 +1913,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 }
                             }
                         )
+                        val args = Bundle()
+                        args.putString("BottomSeatName", bottomSeatName)
+                        dialog.arguments = args
                         dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
                     }
                 } else {
@@ -1941,6 +1947,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 }
                             }
                         )
+                        val args = Bundle()
+                        args.putString("BottomSeatName", bottomSeatName)
+                        dialog.arguments = args
                         dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
                     }
                 }
@@ -2541,6 +2550,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             }
                         }
                     )
+                    val args = Bundle()
+                    args.putString("BottomSeatName", bottomSeatName)
+                    dialog.arguments = args
                     dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
                 }
             }else{

@@ -1,8 +1,10 @@
 package com.jetsynthesys.rightlife.ai_package.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.base.BaseActivity
@@ -11,6 +13,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.ViewSnapMealIn
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.SearchWorkoutFragment
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.YourActivityFragment
 import com.jetsynthesys.rightlife.databinding.ActivityMainAiBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,6 +22,7 @@ class MainAIActivity : BaseActivity() {
 
     lateinit var bi: ActivityMainAiBinding
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bi = ActivityMainAiBinding.inflate(layoutInflater)
@@ -62,7 +66,7 @@ class MainAIActivity : BaseActivity() {
             }
         }else if (bottomSeatName.contentEquals("SearchActivityLogMove")) {
             supportFragmentManager.beginTransaction().apply {
-                val searchWorkoutFragment = SearchWorkoutFragment()
+                val searchWorkoutFragment = YourActivityFragment()
                 val args = Bundle()
                 args.putString("ModuleName", "HomeDashboard")
                 searchWorkoutFragment.arguments = args
