@@ -412,7 +412,7 @@ class HomeNewActivity : BaseActivity() {
                 ActivityUtils.startEatRightReportsActivity(
                     this@HomeNewActivity,
                     "SnapMealTypeEat",
-                    sharedPreferenceManager.snapMealId.ifEmpty { "" })
+                    "")
             }
 
         }
