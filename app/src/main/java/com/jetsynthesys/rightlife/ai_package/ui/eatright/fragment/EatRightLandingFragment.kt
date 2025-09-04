@@ -150,6 +150,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private lateinit var halfCurveProgressBar : HalfCurveProgressBar
     private var loadingOverlay : FrameLayout? = null
     private var waterIntakeValue : Float = 0f
+    private var bottomSeatName : String = ""
     private lateinit var rightLifeReportCard : FrameLayout
     private lateinit var microsLayoutBtn : ConstraintLayout
     private lateinit var permissionManager: PermissionManager
@@ -191,7 +192,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         super.onViewCreated(view, savedInstanceState)
         newBoolean = true
         appPreference = AppPreference(requireContext())
-        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        bottomSeatName = arguments?.getString("BottomSeatName").toString()
         sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
 
         userDataResponse = sharedPreferenceManager.userProfile
@@ -1099,11 +1100,15 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             })
          //   binding.tvWeight.text = selectedWeight
         }
-
         dialogBinding.closeIV.setOnClickListener {
-            bottomSheetDialog.dismiss()
+            if (bottomSeatName.contentEquals("LogWeightEat")){
+                activity?.finish()
+            }else {
+                bottomSheetDialog.dismiss()
+            }
             dialogBinding.rulerView.adapter = null
         }
+
         bottomSheetDialog.show()
          fun logUserWaterIntake(
             userId: String,
@@ -1164,6 +1169,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
         val args = Bundle()
         args.putInt("waterIntakeValue", waterIntakeValue.toInt())
+        args.putString("BottomSeatName", bottomSeatName)
         waterIntakeBottomSheet.arguments = args
         waterIntakeBottomSheet.show(parentFragmentManager, WaterIntakeBottomSheet.TAG)
     }

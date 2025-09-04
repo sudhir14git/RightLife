@@ -44,6 +44,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
     private val maxIntake = 5000
     private var loadingOverlay : FrameLayout? = null
     private var previousWaterIntake : Int = 0
+    private var bottomSeatName : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +85,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         selectedValueText = view.findViewById(R.id.selectedValueText)
         ivCupIcon = view.findViewById(R.id.ivCupIcon)
 
+        bottomSeatName = arguments?.getString("BottomSeatName").toString()
         previousWaterIntake = arguments?.getInt("waterIntakeValue")?: 0
 
         progressBarContainer.viewTreeObserver.addOnGlobalLayoutListener {
@@ -124,7 +126,11 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         }
 
         closeIV.setOnClickListener {
-            dismiss()
+            if (bottomSeatName.contentEquals("LogWaterIntakeEat")){
+                activity?.finish()
+            }else{
+                dismiss()
+            }
         }
     }
 

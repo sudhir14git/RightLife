@@ -66,6 +66,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragme
 import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -565,7 +566,18 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             dismissLoader(requireView())
                         }
                     }
-                    Toast.makeText(context, response.errorBody()?.string(), Toast.LENGTH_SHORT).show()
+                    val errorBody = response.errorBody()?.string()
+                    if (!errorBody.isNullOrEmpty()) {
+                        try {
+                            val json = JSONObject(errorBody)
+                            val message = json.optString("text", "Unknown error")
+                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
+                        }
+                    }else{
+                        Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             override fun onFailure(call: Call<ScanMealNutritionResponse>, t: Throwable) {
