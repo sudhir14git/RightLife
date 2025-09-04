@@ -8,1086 +8,157 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-
-
-
-
-
-
-
-<!--
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_sleep_main_ideal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_weight="1"
-        android:visibility="visible"
-        app:cardCornerRadius="@dimen/margin_card_16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp">
-
-                <ImageView
-                    android:id="@+id/iv_module_sleepright_main_ideal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:src="@drawable/ic_db_sleepright" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="SleepRight"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textSize="@dimen/textsize_large"
-                    android:textColor="@color/ql_sleepsounds_color"
-                    android:layout_toRightOf="@id/iv_module_sleepright_main_ideal"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_db_report_right_arrow" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/gray_light_bg" />
-
-            <TextView
-                android:id="@+id/tv_sleep_requirement_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:fontFamily="@font/dmsans_bold"
-                android:text="Ideal Sleep Time Requirement"
-                android:layout_marginStart="15dp"
-                android:textColor="@color/ql_sleepsounds_color"
-                android:textSize="@dimen/textsize_large" />
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:background="#FFFFFF"
-                    android:padding="16dp">
-
-
-                    &lt;!&ndash; Sleep Duration Bar &ndash;&gt;
-                    <LinearLayout
-                        android:id="@+id/sleep_duration_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_marginStart="65dp"
-                        android:orientation="horizontal"
-                        android:layout_marginEnd="65dp"
-                        android:background="@drawable/view_grey_bg"
-                        android:gravity="center"
-
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginTop="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/tv_todays_sleep_time_requirement"
-                            android:text="8 hr 30 mins"
-                            android:textSize="22sp"
-                            android:fontFamily="@font/dmsans_bold"
-                            android:textColor="#082654" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="2dp"
-                        android:layout_height="70dp"
-                        android:layout_marginTop="30dp"
-                        app:layout_constraintTop_toTopOf="@id/sleep_duration_layout"
-                        app:layout_constraintStart_toStartOf="@id/sleep_duration_layout"
-                        android:src="@drawable/sleep_time_line" />
-
-                    <ImageView
-                        android:layout_width="2dp"
-                        android:layout_height="70dp"
-                        android:layout_marginTop="30dp"
-                        android:id="@+id/sleep_time_line"
-                        app:layout_constraintTop_toTopOf="@id/sleep_duration_layout"
-                        app:layout_constraintEnd_toEndOf="@id/sleep_duration_layout"
-                        android:src="@drawable/sleep_time_line" />
-                    &lt;!&ndash; Sleep and Wakeup Times &ndash;&gt;
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2"
-                        app:layout_constraintTop_toBottomOf="@id/sleep_time_line">
-
-                        &lt;!&ndash; Sleep Time &ndash;&gt;
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="9:00 pm"
-                                android:id="@+id/tv_todays_sleep_start_time"
-                                android:textSize="16sp"
-                                android:fontFamily="@font/dmsans_bold"
-                                android:textColor="#082654" />
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center">
-
-                                <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:src="@drawable/sleep_bed_mini_icon" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/dmsans_regular"
-                                    android:text=" Sleep Time"
-                                    android:textSize="12sp"
-                                    android:textColor="#555555" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
-                                android:gravity="center">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:id="@+id/tv_todays_wakeup_time"
-                                    android:text="5:30 am"
-                                    android:textSize="16sp"
-                                    android:fontFamily="@font/dmsans_bold"
-                                    android:textColor="#082654" />
-
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center">
-
-                                <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:src="@drawable/yellow_timer" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text=" Wakeup Time"
-                                    android:fontFamily="@font/dmsans_regular"
-                                    android:textSize="12sp"
-                                    android:textColor="#555555" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            </RelativeLayout>
-
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_sleep_main_log"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_weight="1"
-        android:visibility="visible"
-        app:cardCornerRadius="@dimen/margin_card_16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp">
-
-                <ImageView
-                    android:id="@+id/iv_module_sleepright_main2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:src="@drawable/ic_db_sleepright" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="SleepRight"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textSize="@dimen/textsize_large"
-                    android:textColor="@color/ql_sleepsounds_color"
-                    android:layout_toRightOf="@id/iv_module_sleepright_main2"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_db_report_right_arrow" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/gray_light_bg" />
-
-            <TextView
-                android:id="@+id/tv_sleep_analysis_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:fontFamily="@font/dmsans_bold"
-                android:text="Sleep Analysis"
-                android:layout_marginStart="15dp"
-                android:textColor="@color/ql_sleepsounds_color"
-                android:textSize="@dimen/textsize_large" />
-
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:paddingBottom="10dp"
-                android:layout_height="wrap_content">
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/lyt_sleep_perform"
-
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:weightSum="10"
-                    android:gravity="center"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="70dp"
-                        android:layout_weight="2"
-                        android:src="@drawable/left_path"
-                        android:id="@+id/img_left_path"
-                        android:layout_marginTop="20dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:text="80"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:textSize="34sp"
-                        android:id="@+id/tv_perform_sleep_percent"
-                        android:layout_marginStart="10dp" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:layout_marginTop="5dp"
-                        android:textColor="@color/black"
-                        android:text="%"
-                        android:textSize="14sp"
-                        android:id="@+id/tv_percent_icon" />
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="70dp"
-                        android:layout_weight="2"
-                        android:src="@drawable/right_path"
-                        android:id="@+id/img_right_path"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="5dp"
-                        app:layout_constraintStart_toEndOf="@id/last_night_title"
-                        app:layout_constraintTop_toBottomOf="@id/img_sleep_perform_right" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/lyt_sleep_time"
-                    app:layout_constraintTop_toBottomOf="@id/lyt_sleep_perform"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:weightSum="2"
-                    android:gravity="center"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/sleep_duration_blue"
-                        android:layout_weight="1"
-                        android:textAlignment="center"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:text="6 hr 24 mins"
-                        android:textSize="16sp"
-                        android:id="@+id/tv_perform_sleep_duration" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAlignment="center"
-                        android:textColor="@color/dotted_green"
-                        android:text="8 hr"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:textSize="16sp"
-                        android:id="@+id/tv_perform_ideal_duration" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/lyt_sleep_time_title"
-                    app:layout_constraintTop_toBottomOf="@id/lyt_sleep_time"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:weightSum="10"
-                    android:gravity="center"
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/sleep_duration_blue"
-                        android:layout_weight="4"
-                        android:padding="5dp"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:background="@drawable/blue_btn_bg"
-                        android:textAlignment="center"
-                        android:layout_marginStart="15dp"
-                        android:text="SLEEP DURATION"
-                        android:textSize="13sp"
-                        android:id="@+id/tv_sleep_duration_title" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:layout_marginEnd="15dp"
-                        android:background="@drawable/green_btn_bg"
-                        android:padding="5dp"
-                        android:textAlignment="center"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:textColor="@color/dotted_green"
-                        android:text="IDEAL DURATION"
-                        android:textSize="13sp"
-                        android:id="@+id/tv_ideal_duration_title" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:src="@drawable/yellow_info"
-                    android:id="@+id/img_perform_action"
-                    android:layout_marginTop="20dp"
-                    android:visibility="gone"
-                    android:layout_marginStart="15dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/lyt_sleep_time_title" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <LinearLayout
-                android:id="@+id/btn_log_sleep_now"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_above="@id/btn_skip_for_now"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginVertical="25dp"
-                android:background="@drawable/rounded_corder_border_gray_radius_small"
-                android:backgroundTint="@color/sleep_duration_blue"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="fitXY"
-                    android:layout_margin="5dp"
-                    android:src="@drawable/ic_db_logsleep"
-                    android:layout_gravity="center_vertical" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="Log Sleep"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:gravity="center_vertical" />
-            </LinearLayout>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>-->
-
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/white"
-        android:visibility="gone"
-        android:padding="1dp">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tv_description_moveright2"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txt_article_content"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
+            app:cardBackgroundColor="@color/white"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_card_16dp"
-            android:layout_marginEnd="@dimen/margin_card_16dp"
-            android:fontFamily="@font/merriweather_regular"
-            android:gravity="center_vertical"
-            android:text="Consuming adequate magnesium may enhance mood and promote healthy sleep. Additionally, it might lessen your chance of migraines and cardiovascular problems. Magnesium is necessary for your body to carry out over 300 enzymatic activities. A lack of magnesium in the body could have a significant negative impact on your health. \n\nEven though a wide range of foods contain magnesium, taking supplements can be beneficial, especially for those with low intake. However, selecting a magnesium supplement can be challenging because they come in a multitude of shapes and sizes. \n \n This article describes the many kinds and dosages of magnesium supplements and examines their advantages and disadvantages."
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_medium"
-            android:visibility="gone" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:scaleType="fitXY"
-            android:visibility="gone"
-            android:src="@drawable/ic_launcher_foreground" />
-
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:visibility="gone">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_product"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:visibility="visible"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp">
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tv_product_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="@dimen/text_margin"
-                        android:layout_marginEnd="@dimen/textsize_extrasmall"
-                        android:fontFamily="@font/merriweather_bold"
-                        android:text="Boost Your Intake"
-                        android:textColor="@color/color_godeeper_orange"
-                        android:textSize="@dimen/textsize_medium" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="10dp">
-
-                        <RelativeLayout
-                            android:id="@+id/relative_img_product"
-                            android:layout_width="120dp"
-                            android:layout_height="90dp"
-
-                            android:layout_margin="16dp">
-
-                            <ImageView
-                                android:id="@+id/img_thumbnail_product"
-                                android:layout_width="120dp"
-                                android:layout_height="80dp"
-                                android:layout_alignParentStart="true"
-                                android:scaleType="fitXY"
-                                android:src="@drawable/productimageimune"
-                                tools:ignore="DuplicateIds" />
-
-
-                        </RelativeLayout>
-
-                        <TextView
-                            android:id="@+id/txt_desc_card_product"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="@dimen/text_margin"
-                            android:layout_marginEnd="@dimen/textsize_extrasmall"
-                            android:layout_toRightOf="@+id/relative_img_product"
-                            android:fontFamily="@font/merriweather_bold"
-                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
-                            android:textColor="@color/txt_color_header"
-                            android:textSize="@dimen/textsize_medium" />
-
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/relative_img_product">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:id="@+id/txt_price_product"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="32dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:fontFamily="@font/dmsans_bold"
-                                    android:text="₹ 1,099/-"
-                                    android:textColor="@color/txt_color_header"
-                                    android:textSize="@dimen/textsize_small" />
-
-                                <TextView
-                                    android:id="@+id/txt_saved_price_product"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:fontFamily="@font/dmsans_regular"
-                                    android:text="₹1,499/- you save ₹400"
-                                    android:textColor="@color/txt_color_header"
-                                    android:textSize="@dimen/textsize_small" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/txt_btn_buy_now"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="20dp"
-                                android:background="@drawable/roundedcornerbutton"
-                                android:backgroundTint="@color/menuselected"
-                                android:fontFamily="@font/dmsans_medium"
-                                android:paddingLeft="10dp"
-                                android:paddingTop="2dp"
-                                android:paddingRight="10dp"
-                                android:paddingBottom="2dp"
-                                android:text="Buy Now"
-                                android:textColor="@android:color/white"
-                                android:textSize="@dimen/textsize_extrasmall" />
-                        </RelativeLayout>
-
-
-                    </RelativeLayout>
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_service"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:visibility="visible"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tv_service_card_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="@dimen/text_margin"
-                        android:layout_marginEnd="@dimen/textsize_extrasmall"
-                        android:fontFamily="@font/merriweather_bold"
-                        android:text="Check Your Health Snapshot"
-                        android:textColor="@color/color_godeeper_orange"
-                        android:textSize="@dimen/textsize_medium" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="10dp">
-
-                        <RelativeLayout
-                            android:id="@+id/relative_img_service"
-                            android:layout_width="120dp"
-                            android:layout_height="90dp"
-                            android:layout_margin="16dp">
-
-                            <ImageView
-                                android:id="@+id/img_thumbnail_service"
-                                android:layout_width="120dp"
-                                android:layout_height="90dp"
-                                android:layout_alignParentStart="true"
-                                android:scaleType="fitXY"
-                                android:src="@drawable/image5_rlpage_edit"
-                                tools:ignore="DuplicateIds" />
-
-
-                        </RelativeLayout>
-
-                        <TextView
-                            android:id="@+id/txt_desc_card_service"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="@dimen/text_margin"
-                            android:layout_marginEnd="@dimen/textsize_extrasmall"
-                            android:layout_toRightOf="@+id/relative_img_service"
-                            android:fontFamily="@font/merriweather_bold"
-                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
-                            android:textColor="@color/txt_color_header"
-                            android:maxLines="3"
-                            android:ellipsize="end"
-                            android:textSize="@dimen/textsize_medium" />
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toRightOf="@+id/relative_img_service"
-                            android:layout_alignBottom="@+id/relative_img_service"
-                            android:gravity="end|center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/img_tag_service"
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginLeft="20dp"
-                                android:src="@drawable/health_cam_iconrl" />
-
-                            <TextView
-                                android:id="@+id/txt_tag_service"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginEnd="16dp"
-                                android:fontFamily="@font/dmsans_regular"
-                                android:text="Health Cam"
-                                android:textColor="@color/txt_color_header"
-                                android:textSize="@dimen/textsize_small" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="10dp"
-                                android:background="@drawable/ic_verified_rightarrow"
-                                android:padding="5dp"
-                                android:src="@drawable/ic_small_arrow_right" />
-
-                            <TextView
-                                android:id="@+id/txt_viewcount_service"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginEnd="16dp"
-                                android:fontFamily="@font/dmsans_medium"
-                                android:text=""
-                                android:textColor="@android:color/black"
-                                android:textSize="@dimen/textsize_small" />
-
-                        </LinearLayout>
-
-
-                    </RelativeLayout>
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_video"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:visibility="visible"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp">
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/tv_articlecard3_title_video"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="@dimen/text_margin"
-                        android:layout_marginEnd="@dimen/textsize_extrasmall"
-                        android:layout_toEndOf="@id/rlimg12"
-                        android:fontFamily="@font/merriweather_bold"
-                        android:text="Go Deeper"
-                        android:textColor="@color/color_godeeper_orange"
-                        android:textSize="@dimen/textsize_medium" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="10dp">
-
-                        <RelativeLayout
-                            android:id="@+id/relative_img_video"
-                            android:layout_width="120dp"
-                            android:layout_height="90dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_margin="16dp">
-
-                            <ImageView
-                                android:id="@+id/img_thumbnail_card3_video"
-                                android:layout_width="120dp"
-                                android:layout_height="90dp"
-                                android:layout_alignParentStart="true"
-                                android:scaleType="fitXY"
-
-                                android:src="@drawable/image5_rlpage_edit" />
-
-                            <ImageView
-                                android:id="@+id/img_content_type_video"
-                                android:layout_width="35dp"
-                                android:layout_height="35dp"
-                                android:layout_alignParentEnd="true"
-                                android:layout_alignParentBottom="true"
-                                android:scaleType="fitXY"
-
-                                android:src="@drawable/ic_video_content"
-                                tools:ignore="DuplicateIds" />
-
-                        </RelativeLayout>
-
-                        <TextView
-                            android:id="@+id/txt_desc_card3_video"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="@dimen/text_margin"
-                            android:layout_marginEnd="@dimen/textsize_extrasmall"
-                            android:layout_toLeftOf="@+id/relative_img_video"
-                            android:fontFamily="@font/merriweather_bold"
-                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
-                            android:textColor="@color/txt_color_header"
-                            android:textSize="@dimen/textsize_medium" />
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/relative_img_video"
-                            android:gravity="end|center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/img_tag_video"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="20dp"
-                                android:src="@drawable/ic_tag" />
-
-                            <TextView
-                                android:id="@+id/txt_tag_video"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginEnd="16dp"
-                                android:fontFamily="@font/dmsans_regular"
-                                android:text="Positivity"
-                                android:textColor="@color/txt_color_header"
-                                android:textSize="@dimen/textsize_small" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="10dp"
-                                android:src="@drawable/ic_eye" />
-
-                            <TextView
-                                android:id="@+id/txt_viewcount_video"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginEnd="16dp"
-                                android:fontFamily="@font/dmsans_medium"
-                                android:text="243"
-                                android:textColor="@android:color/black"
-                                android:textSize="@dimen/textsize_small" />
-
-                        </LinearLayout>
-
-
-                    </RelativeLayout>
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card3_series"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_series"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:visibility="visible"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp">
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/tv_title_card_series"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="@dimen/text_margin"
-                        android:layout_marginEnd="@dimen/textsize_extrasmall"
-                        android:layout_toEndOf="@id/rlimg12"
-                        android:fontFamily="@font/merriweather_bold"
-                        android:text="Go Deeper"
-                        android:textColor="@color/color_godeeper_orange"
-                        android:textSize="@dimen/textsize_medium" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="10dp">
-
-                        <RelativeLayout
-                            android:id="@+id/relative_img_series"
-                            android:layout_width="120dp"
-                            android:layout_height="90dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_margin="16dp">
-
-                            <ImageView
-                                android:id="@+id/img_thumbnail_series"
-                                android:layout_width="120dp"
-                                android:layout_height="90dp"
-                                android:layout_alignParentStart="true"
-                                android:scaleType="fitXY"
-
-                                android:src="@drawable/image5_rlpage_edit"
-                                tools:ignore="DuplicateIds" />
-
-                            <ImageView
-                                android:id="@+id/img_content_type_series"
-                                android:layout_width="35dp"
-                                android:layout_height="35dp"
-                                android:layout_alignParentEnd="true"
-                                android:layout_alignParentBottom="true"
-                                android:scaleType="fitXY"
-
-                                android:src="@drawable/ic_series_content"
-                                tools:ignore="DuplicateIds" />
-
-                        </RelativeLayout>
-
-                        <TextView
-                            android:id="@+id/txt_desc_card_series"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="@dimen/text_margin"
-                            android:layout_marginEnd="@dimen/textsize_extrasmall"
-                            android:layout_toLeftOf="@+id/relative_img_series"
-                            android:fontFamily="@font/merriweather_bold"
-                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
-                            android:textColor="@color/txt_color_header"
-                            android:textSize="@dimen/textsize_medium" />
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/relative_img_series"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/img_tag_series"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="20dp"
-                                android:src="@drawable/ic_tag" />
-
-                            <TextView
-                                android:id="@+id/txt_tag_series"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginEnd="16dp"
-                                android:fontFamily="@font/dmsans_regular"
-                                android:text="Positivity"
-                                android:textColor="@color/txt_color_header"
-                                android:textSize="@dimen/textsize_small" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="10dp"
-                                android:src="@drawable/ic_eye" />
-
-                            <TextView
-                                android:id="@+id/txt_viewcount_series"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginEnd="16dp"
-                                android:fontFamily="@font/dmsans_medium"
-                                android:text="243"
-                                android:textColor="@android:color/black"
-                                android:textSize="@dimen/textsize_small" />
-
-                        </LinearLayout>
-
-
-                    </RelativeLayout>
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:visibility="gone"
-            app:cardCornerRadius="16dp"
-            app:cardBackgroundColor="#FFECE9"
-            app:cardElevation="4dp">
+            app:cardElevation="0dp">  <!-- Add this line -->
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:fontFamily="@font/merriweather_bold"
-                    android:textSize="@dimen/textsize_large"
-                    android:layout_marginTop="14dp"
-                    android:text="Fun Facts" />
+                <LinearLayout
+                    android:id="@+id/ll_moveright_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:visibility="visible">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_margin="10dp"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:gravity="center"
-                    android:minLines="5"
-                    android:text="“Dark chocolate is a good source of magnesium. So, indulge in a small piece guilt-free!”" />
+                    <LinearLayout
+                        android:id="@+id/ll_moveright_category1"
+                        android:layout_width="match_parent"
+                        android:layout_height="160dp"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="#FFBFBD"
+                        android:elevation="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/imageMoveRightCategory1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:src="@drawable/ic_healthcam_logo" />
+
+                        <TextView
+                            android:id="@+id/tvMoveRightCategory1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight=".6"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:gravity="center"
+                            android:text="Movement"
+                            android:textAlignment="center"
+                            android:textColor="#B11414"
+                            android:textSize="@dimen/textsize_large" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_moveright_categor2"
+                        android:layout_width="match_parent"
+                        android:layout_height="160dp"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="#FFBFBD"
+                        android:elevation="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/imageMoveRightCategory2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:src="@drawable/ic_voicescan_logo" />
+
+                        <TextView
+                            android:id="@+id/tvMoveRightCategory2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:gravity="center"
+                            android:text="Breathing"
+                            android:textAlignment="center"
+                            android:textColor="#B11414"
+                            android:textSize="@dimen/textsize_large" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/ll_moveright_category3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="#FFBFBD"
+                        android:elevation="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/imageMoveRightCategory3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_healthaudit_logo" />
+
+                        <TextView
+                            android:id="@+id/tvMoveRightCategory3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:gravity="center"
+                            android:text="Yoga"
+                            android:textAlignment="center"
+                            android:textColor="#B11414"
+                            android:textSize="@dimen/textsize_large" />
+
+                    </LinearLayout>
+
+                    
+
+                </LinearLayout>
+
             </LinearLayout>
+
         </androidx.cardview.widget.CardView>
 
+        <Button
+            android:id="@+id/btn_mr_explore"
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#FDD3D2"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center"
+            android:text="Expore More"
+            android:textColor="#B11414"
+            android:textSize="@dimen/textsize_medium" />
     </LinearLayout>
 
 

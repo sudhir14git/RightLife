@@ -146,6 +146,10 @@ class NewHealthCamReportActivity : BaseActivity() {
             )
         }
     }
+    override fun onResume() {
+        super.onResume()
+        myRLHealthCamResult
+    }
 
     private fun startNextOverAllWellnessDetails() {
         val unifiedList = unifiedParameterList

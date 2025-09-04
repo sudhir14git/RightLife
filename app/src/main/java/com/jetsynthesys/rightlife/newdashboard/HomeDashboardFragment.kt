@@ -414,7 +414,7 @@ class HomeDashboardFragment : BaseFragment() {
     }
 
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
-        getDashboardChecklistStatus()
+
         // profile
         setStatusOfChecklist(
             checklistResponse?.data?.profile!!,
@@ -498,6 +498,7 @@ class HomeDashboardFragment : BaseFragment() {
             sharedPreferenceManager.saveSnapMealId(snapMealId)
             this.snapMealId = snapMealId
         }
+        getDashboardChecklistStatus()
     }
 
     private fun setStatusOfChecklist(

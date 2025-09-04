@@ -301,6 +301,7 @@ class MindAuditResultActivity : BaseActivity() {
                                 getColorResForScore(assessmentTaken.interpretations.anxiety.score)
                             )
                         )
+                        getColorResForScore("mild")
                         setExplanationTitle(
                             assessmentTaken.interpretations.anxiety.level,
                             "Anxiety"
@@ -323,11 +324,11 @@ class MindAuditResultActivity : BaseActivity() {
                                 binding.tvResultExplanation.text = explanation.second
                                 binding.apply {
                                     tvRange1.text = "0"
-                                    tvRange2.text = "9"
-                                    tvRange3.text = "13"
-                                    tvRange4.text = "20"
-                                    tvRange5.text = "27"
-                                    tvRange6.text = "28+"
+                                    tvRange2.text = "7"
+                                    tvRange3.text = "9"
+                                    tvRange4.text = "14"
+                                    tvRange5.text = "19"
+                                    tvRange6.text = "20+"
                                 }
                             }
                         }
@@ -873,6 +874,15 @@ class MindAuditResultActivity : BaseActivity() {
             in 4..8 -> R.color.cyan_mild
             in 9..13 -> R.color.blue_moderate
             in 14..18 -> R.color.orange_severe
+            else -> R.color.red_ext_severe
+        }
+    }
+    private fun getColorResForScore(score: String): Int {
+        return when (score.lowercase()) {
+             "minimal" -> R.color.green_minimal
+            "mild" -> R.color.cyan_mild
+            "moderate" -> R.color.blue_moderate
+            "Severe" -> R.color.orange_severe
             else -> R.color.red_ext_severe
         }
     }
