@@ -329,7 +329,7 @@
                                 android:paddingEnd="30dp"
                                 android:paddingBottom="10dp"
                                 android:text="In This Article"
-                                android:textColor="@color/color_in_this_article"
+
                                 android:textSize="@dimen/textsize_medium"
                                 android:visibility="visible" />
                         </LinearLayout>
