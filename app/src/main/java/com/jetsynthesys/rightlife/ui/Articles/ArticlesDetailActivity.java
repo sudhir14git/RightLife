@@ -242,7 +242,7 @@ public class ArticlesDetailActivity extends BaseActivity {
                         .into(binding.authorImage);
         }
         binding.txtArticleDate.setText(DateTimeUtils.convertAPIDateMonthFormat(articleDetailsResponse.getData().getCreatedAt()));
-        binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getTags().get(0).getName());
+        binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getCategoryName());//getTags().get(0).getName());
         setModuleColor(binding.imageTag, articleDetailsResponse.getData().getModuleId());
         binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime() + " min read");
         if (!isFinishing() && !isDestroyed()) {
