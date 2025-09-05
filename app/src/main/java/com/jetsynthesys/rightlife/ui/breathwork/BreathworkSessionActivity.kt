@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -38,14 +39,50 @@ class BreathworkSessionActivity : BaseActivity() {
         if (startDate.isEmpty())
             startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
-        binding.ivPlus.setImageResource(
+        /*binding.ivPlus.setImageResource(
             if (breathingData?.isAddedToToolKit!!) R.drawable.greentick else R.drawable.ic_breathing_toolkit
-        )
+        )*/
+        setSaveImage(breathingData!!)
 
         setupUI()
         setupListeners(breathingData!!)
         calculateSessiontime()
         setBreathingTypeColors()
+    }
+
+    private fun setSaveImage(breathingData: BreathingData) {
+
+        if (breathingData.isAddedToToolKit) {
+            binding.ivPlus.setImageResource(R.drawable.ic_save_article_active)
+            binding.ivPlus.imageTintList =
+                ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.color_eat_right
+                    )
+                )
+        } else {
+            binding.ivPlus.setImageResource(R.drawable.ic_save_article)
+            binding.ivPlus.imageTintList =
+                ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.black
+                    )
+                )
+        }
+
+        val textColorRes = when (breathingData.title?.trim()) {
+            "Box Breathing" -> R.color.box_breathing_card_color_text
+            "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color_text
+            "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color_text
+            "Custom" -> R.color.custom_breathing_card_color_text
+            else -> R.color.custom_breathing_card_color_text
+        }
+
+        val textColor = ContextCompat.getColor(this, textColorRes)
+
+        binding.ivPlus.imageTintList = ColorStateList.valueOf(textColor)
     }
 
     private fun setupUI() {
@@ -64,7 +101,7 @@ class BreathworkSessionActivity : BaseActivity() {
         if (breathingData?.title == "Custom") {
             binding.layoutCustomPicker.visibility = View.VISIBLE
 
-            setupNumberPicker(binding.pickerInhale, 1, 16,  4)
+            setupNumberPicker(binding.pickerInhale, 1, 16, 4)
             setupNumberPicker(binding.pickerHold, 1, 16, 4)
             setupNumberPicker(binding.pickerExhale, 1, 16, 4)
 
@@ -81,7 +118,7 @@ class BreathworkSessionActivity : BaseActivity() {
                 breathingData?.breathExhaleTime = newVal.toString()
                 calculateSessiontime()
             }
-        }else{
+        } else {
             binding.layoutCustomPicker.visibility = View.GONE
         }
     }
@@ -92,6 +129,7 @@ class BreathworkSessionActivity : BaseActivity() {
         picker.value = defaultVal
         picker.wrapSelectorWheel = false
     }
+
     private fun setupListeners(breathWorData: BreathingData) {
         binding.ivBack.setOnClickListener { finish() }
 
@@ -111,7 +149,7 @@ class BreathworkSessionActivity : BaseActivity() {
 
         binding.btnContinue.setOnClickListener {
             val intent = Intent(this, BreathworkPracticeActivity::class.java)
-            intent.putExtra("sessionCount", sessionCount*4)
+            intent.putExtra("sessionCount", sessionCount * 4)
             intent.putExtra("BREATHWORK", breathingData)
             intent.putExtra("StartDate", startDate)
             //intent.putExtra("ITEM_DESCRIPTION", selectedItem.description)
@@ -135,9 +173,7 @@ class BreathworkSessionActivity : BaseActivity() {
                 !breathingData?.isAddedToToolKit!!
             )
             breathingData?.isAddedToToolKit = !breathingData?.isAddedToToolKit!!
-            binding.ivPlus.setImageResource(
-                if (breathingData?.isAddedToToolKit!!) R.drawable.greentick else R.drawable.ic_breathing_toolkit
-            )
+            setSaveImage(breathingData!!)
         }
     }
 

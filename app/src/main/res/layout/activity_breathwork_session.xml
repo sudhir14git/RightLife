@@ -21,12 +21,12 @@
 
         <ImageView
             android:id="@+id/ivPlus"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_breathing_toolkit"
-            android:visibility="gone" />
+            android:src="@drawable/ic_save_article"
+            android:visibility="visible" />
     </RelativeLayout>
 
     <LinearLayout

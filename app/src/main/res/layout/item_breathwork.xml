@@ -55,9 +55,9 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/white_round_bg"
+            android:background="@drawable/white_round_transferent__bg"
             android:padding="5dp"
-            android:src="@drawable/ic_save_article" />
+            android:src="@drawable/save_icon" />
 
         <ImageView
             android:id="@+id/infoButton"
@@ -66,7 +66,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:src="@drawable/ic_info_breathing" />
+            android:padding="5dp"
+            android:background="@drawable/white_round_transferent__bg"
+            android:src="@drawable/info_affirmation" />
 
     </RelativeLayout>
 

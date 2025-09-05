@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -147,12 +146,8 @@ public class ArticlesDetailActivity extends BaseActivity {
         });
 
 
-        binding.imageShareArticle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareIntent();
-            }
-        });
+        binding.imageShareArticle.setOnClickListener(v -> shareIntent());
+        binding.txtTopic1.setOnClickListener(v -> shareIntent());
 
         txt_inthisarticle_list.setText("• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion");
 

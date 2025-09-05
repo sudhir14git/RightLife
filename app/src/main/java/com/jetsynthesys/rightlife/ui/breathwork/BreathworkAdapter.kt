@@ -96,6 +96,10 @@ class BreathworkAdapter(
                 }
             }
 
+            infoButton.setOnClickListener {
+                onItemClick.onInfoClick(item)
+            }
+
             // ✅ Background color based on breathing type
             val resColor = when (item.title?.trim()) {
                 "Box Breathing" -> R.color.box_breathing_card_color
@@ -119,6 +123,10 @@ class BreathworkAdapter(
 
             titleTextView.setTextColor(textColor)
             descriptionTextView.setTextColor(textColor)
+            // Change color using tint
+            infoButton.imageTintList = ColorStateList.valueOf(textColor)
+            plusButton.imageTintList = ColorStateList.valueOf(textColor)
+
 
             // Debug log (optional)
             Log.d("BreathworkAdapter", "position=$position title=${item.title} -> color=$resColor")
@@ -131,5 +139,6 @@ class BreathworkAdapter(
     interface OnItemClickListener {
         fun onClick(breathingData: BreathingData)
         fun onAddToolTip(breathingData: BreathingData)
+        fun onInfoClick(breathingData: BreathingData)
     }
 }

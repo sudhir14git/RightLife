@@ -1537,7 +1537,7 @@
                                 android:backgroundTint="#F7E6B7"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:text="Explore More"
-                                android:textColor="#984C00"
+                                android:textColor="@color/thinkright_text_color"
                                 android:textSize="@dimen/textsize_medium" />
                         </LinearLayout>
 
@@ -1568,11 +1568,11 @@
                     android:layout_marginStart="10dp"
                     android:drawableStart="@drawable/moverightsvg"
                     android:drawablePadding="10dp"
-                    android:drawableTint="#984C00"
+                    android:drawableTint="@color/move_text_color"
                     android:fontFamily="@font/merriweather_bold"
                     android:gravity="start"
                     android:text="Move Right"
-                    android:textColor="#B11414"
+                    android:textColor="@color/move_text_color"
                     android:textSize="@dimen/textsize_extralarge" />
 
                 <TextView
@@ -1780,8 +1780,8 @@
                         android:backgroundTint="#FDD3D2"
                         android:fontFamily="@font/dmsans_bold"
                         android:gravity="center"
-                        android:text="Expore More"
-                        android:textColor="#B11414"
+                        android:text="Explore More"
+                        android:textColor="@color/move_text_color"
                         android:textSize="@dimen/textsize_medium" />
                 </LinearLayout>
 
@@ -2017,7 +2017,7 @@
                                 android:backgroundTint="#A6E0CE"
                                 android:drawableTint="#00553A"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:text="Expore More"
+                                android:text="Explore More"
                                 android:textColor="#00553A"
                                 android:textSize="@dimen/textsize_medium" />
                         </LinearLayout>
@@ -2260,8 +2260,8 @@
                 android:layout_marginBottom="10dp"
                 android:backgroundTint="#A0CEFF"
                 android:fontFamily="@font/dmsans_bold"
-                android:text="Expore More"
-                android:textColor="#00553A"
+                android:text="Explore More"
+                android:textColor="@color/sleep_text_color"
                 android:textSize="@dimen/textsize_medium" />
         </LinearLayout>
     </ScrollView>

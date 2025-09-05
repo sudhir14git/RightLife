@@ -19,7 +19,6 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.GetBreathingResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
-import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.zhpan.indicator.enums.IndicatorSlideMode
 import com.zhpan.indicator.enums.IndicatorStyle
 import retrofit2.Call
@@ -47,7 +46,7 @@ class BreathworkActivity : BaseActivity() {
         whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
         startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
-        getBreathingWork()
+        //getBreathingWork()
 
         binding.icBackDialog.setOnClickListener {
             callPostMindFullDataAPI()
@@ -87,9 +86,18 @@ class BreathworkActivity : BaseActivity() {
                 )
             }
 
+            override fun onInfoClick(breathingData: BreathingData) {
+                showBottomSheet(breathingData, 1)
+            }
+
         })
 
         binding.recyclerView.adapter = adapter
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getBreathingWork()
     }
 
     private fun getBreathingWork() {
@@ -100,6 +108,7 @@ class BreathworkActivity : BaseActivity() {
                     response: Response<GetBreathingResponse>
                 ) {
                     if (response.isSuccessful && response.body() != null) {
+                        breathWorks.clear()
                         response.body()?.data?.let { breathWorks.addAll(it) }
                         var breathingDataSend: BreathingData? = null
                         if (isFromTool) {
@@ -136,7 +145,7 @@ class BreathworkActivity : BaseActivity() {
         CommonAPICall.postMindFullData(this, "Breathing", startDate, endDate)
     }
 
-    private fun showBottomSheet(breathingData: BreathingData) {
+    private fun showBottomSheet(breathingData: BreathingData, from: Int = 0) {
         val bottomSheetDialog = BottomSheetDialog(this)
         val dialogBinding = BottomsheetBreathworkContextBinding.inflate(layoutInflater)
         val bottomSheetView = dialogBinding.root
@@ -271,7 +280,8 @@ class BreathworkActivity : BaseActivity() {
 
         dialogBinding.ivDialogClose.setOnClickListener {
             bottomSheetDialog.dismiss()
-            startNextActivity(breathingData)
+            if (from == 0)
+                startNextActivity(breathingData)
         }
 
         dialogBinding.btnContinue.setOnClickListener {
@@ -283,7 +293,8 @@ class BreathworkActivity : BaseActivity() {
             } else {
                 // Last page → Finish
                 bottomSheetDialog.dismiss()
-                startNextActivity(breathingData)
+                if (from == 0)
+                    startNextActivity(breathingData)
             }
 
 
