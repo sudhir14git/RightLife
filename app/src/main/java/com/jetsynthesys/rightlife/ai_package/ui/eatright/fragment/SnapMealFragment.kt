@@ -67,6 +67,7 @@ import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
@@ -593,12 +594,27 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 
     private fun encodeImageToBase64(imagePath: String): String {
-        val file = File(imagePath)
-        val inputStream = FileInputStream(file)
-        val bytes = inputStream.readBytes()
-        inputStream.close()
-        return Base64.encodeToString(bytes, Base64.DEFAULT)
+        val bitmap = BitmapFactory.decodeFile(imagePath)
+        // Resize if too large (e.g. max 1080px width)
+        val scaledBitmap = Bitmap.createScaledBitmap(
+            bitmap,
+            1080,
+            (bitmap.height * 1080f / bitmap.width).toInt(),
+            true
+        )
+        val outputStream = ByteArrayOutputStream()
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream) // 75% quality
+        val compressedBytes = outputStream.toByteArray()
+        return Base64.encodeToString(compressedBytes, Base64.NO_WRAP)
     }
+
+//    private fun encodeImageToBase64(imagePath: String): String {
+//        val file = File(imagePath)
+//        val inputStream = FileInputStream(file)
+//        val bytes = inputStream.readBytes()
+//        inputStream.close()
+//        return Base64.encodeToString(bytes, Base64.DEFAULT)
+//    }
 
     private fun videoPlay(){
         val videoUri = Uri.parse("android.resource://${requireContext().packageName}/${R.raw.mealsnap_v31}")
