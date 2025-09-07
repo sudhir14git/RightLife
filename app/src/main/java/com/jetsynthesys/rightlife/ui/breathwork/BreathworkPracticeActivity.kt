@@ -321,8 +321,7 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.rlPracticeComplete.visibility = View.VISIBLE
         binding.rlBreathingPracticeMain.visibility = View.GONE
         binding.btnExit.setOnClickListener() {
-            callPostMindFullDataAPI()
-            finish()
+            showCompletedBottomSheet()
         }
         binding.btnRepeat.setOnClickListener() {
             // Reset for a new session
@@ -333,7 +332,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startBreathIn() {
-        binding.breathingPhase.text = "Breath In"
+        binding.breathingPhase.text = "Inhale"
         playSoundCue(BreathingPhase.INHALE) // Play inhale sound
         animateCircle(1f, 1.5f, inhaleTime)
         startCountdown(inhaleTime) {
@@ -349,7 +348,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startBreathOut() {
-        binding.breathingPhase.text = "Breath Out"
+        binding.breathingPhase.text = "Exhale"
         playSoundCue(BreathingPhase.EXHALE) // Play exhale sound
         animateCircle(1.5f, 1f, exhaleTime)
         startCountdown(exhaleTime) {
@@ -520,6 +519,7 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         dialogBinding.ivDialogClose.setOnClickListener {
             bottomSheetDialog.dismiss()
+            finish()
         }
 
         dialogBinding.btnBetter.setOnClickListener {
