@@ -634,10 +634,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:cardCornerRadius="16dp"
         app:cardBackgroundColor="#FFECE9"
-        app:cardElevation="4dp">
+        app:cardElevation="0dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
@@ -648,18 +648,20 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="@font/merriweather_bold"
             android:textSize="@dimen/textsize_large"
-            android:layout_marginTop="14dp"
+            android:layout_marginVertical="@dimen/textsize_large"
             android:text="Fun Facts" />
 
         <TextView
+            android:id="@+id/tv_funfact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
+            android:layout_marginBottom="@dimen/textsize_large"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:gravity="center"
-            android:minLines="5"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/merriweather_regular"
+            android:textSize="@dimen/textsize_medium"
             android:text="“Dark chocolate is a good source of magnesium. So, indulge in a small piece guilt-free!”" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
