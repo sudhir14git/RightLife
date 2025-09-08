@@ -1,6 +1,5 @@
 <!-- res/layout/bottom_sheet_layout.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/design_bottom_sheet2"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,11 +12,10 @@
         android:id="@+id/ivDialogClose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/close_journal"
+        android:src="@drawable/close_breathwork"
         android:layout_gravity="end"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
-        />
+        android:layout_marginEnd="10dp" />
 
     <TextView
         android:id="@+id/tvTitle"
@@ -54,8 +52,7 @@
         android:textSize="@dimen/textsize_medium"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/text_color_app"
-        android:background="@drawable/rounded_corder_border_gray_radius_small"
-        />
+        android:background="@drawable/rounded_corder_border_gray_radius_small" />
 
     <TextView
         android:id="@+id/btnSame"
@@ -86,7 +83,6 @@
         android:textSize="@dimen/textsize_medium"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/black"
-        android:background="@drawable/rounded_corder_border_gray_radius_small"
-        />
+        android:background="@drawable/rounded_corder_border_gray_radius_small" />
 
 </LinearLayout>
