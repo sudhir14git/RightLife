@@ -74,6 +74,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 .placeholder(R.drawable.rl_placeholder)
                 .error(R.drawable.rl_placeholder)
                 .into(holder.binding.imageView);
+        if (article.getThumbnail()!=null) {
+            holder.binding.imageView.setVisibility(View.VISIBLE);
+        }else {
+            holder.binding.imageView.setVisibility(View.GONE);
+        }
 
 
         //holder.binding.imageView.setImageResource(article.getImageResId());
@@ -328,6 +333,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         // funfact Card
         if (article.getFunFacts() != null && article.getFunFacts().getDescription() != null) {
             holder.binding.card4.setVisibility(View.VISIBLE);
+            holder.binding.tvFunfact.setText(article.getFunFacts().getDescription());
         } else {
             holder.binding.card4.setVisibility(View.GONE);
         }
