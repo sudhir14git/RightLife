@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -154,8 +154,8 @@ public class ArticlesDetailActivity extends BaseActivity {
 
         contentId = getIntent().getStringExtra("contentId");
         //setVideoPlayerView();
-        //getArticleDetails(contentId);
-        getArticleDetails("681c77f13cb497116bfe09db");
+        getArticleDetails(contentId);
+        //getArticleDetails("681c77f13cb497116bfe09db");
         getRecommendedContent(contentId);
 
         binding.tvViewAll.setOnClickListener(view -> {
@@ -508,6 +508,13 @@ public class ArticlesDetailActivity extends BaseActivity {
                     Log.d("API Response", "Article Bookmark response: " + articleLikeResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
+                    String message = "";
+                    if (isBookmark) {
+                        message = "Added To Bookmarks";
+                    } else {
+                        message = "Removed From Bookmarks";
+                    }
+                    Toast.makeText(ArticlesDetailActivity.this, message, Toast.LENGTH_SHORT).show();
 
 
                 } else {
@@ -527,9 +534,13 @@ public class ArticlesDetailActivity extends BaseActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
 
-        String shareText = "“Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.\n" +
+        /*String shareText = "“Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.\n" +
                 "                     Try it and get 7 days for free. Here’s the link:\n " + "Play Store Link  https://play.google.com/store/apps/details?id=${packageName} \n" +
-                "App Store Link https://apps.apple.com/app/rightlife/id6444228850";
+                "App Store Link https://apps.apple.com/app/rightlife/id6444228850";*/
+
+        String shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. Check it out here."
+                + "\nPlay Store Link  https://play.google.com/store/apps/details?id=" + getPackageName() +
+                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850";
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText);
 
