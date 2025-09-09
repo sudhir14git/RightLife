@@ -1,0 +1,581 @@
+{
+  "countries": [
+    {
+      "name": "United Kingdom",
+      "organizations": [
+        {
+          "name": "Samaritans",
+          "hotline": "116 123",
+          "email": "jo@samaritans.org"
+        },
+        {
+          "name": "Campaign Against Living Miserably (CALM)",
+          "hotline": "0800 58 58 58",
+          "hours": "5pm to 12am"
+        },
+        {
+          "name": "Papyrus - Prevention of Young Suicide (HOPELINE247)",
+          "hotline": "0800 068 41 41",
+          "email": "pat@papyrus-uk.org"
+        },
+        {
+          "name": "SOS Silence of Suicide",
+          "hotline": "0300 1020 505",
+          "hours": "4pm to midnight",
+          "email": "support@sossilenceofsuicide.org"
+        }
+      ]
+    },
+    {
+      "name": "Germany",
+      "organizations": [
+        {
+          "name": "TelefonSeelsorge",
+          "hotline": "0800 111 0 111",
+          "hours": "24/7"
+        },
+        {
+          "name": "Nummer gegen Kummer e. V. - Kinder- und Jugendtelefon",
+          "hotline": "116111"
+        },
+        {
+          "name": "Hilfetelefon \"Gewalt gegen Frauen\"",
+          "hotline": "116016",
+          "website": "hilfetelefon.de"
+        }
+      ]
+    },
+    {
+      "name": "France",
+      "organizations": [
+        {
+          "name": "SOS Amitié",
+          "hotline": "0972394050",
+          "website": "sos-amitie.com"
+        },
+        {
+          "name": "Suicide Écoute",
+          "hotline": "(014) 539-4000"
+        },
+        {
+          "name": "3114, numéro national de prévention du suicide",
+          "hotline": "3114",
+          "website": "3114.fr"
+        }
+      ]
+    },
+    {
+      "name": "Spain",
+      "organizations": [
+        {
+          "name": "Asociación Internacional Teléfono de la Esperanza (ASITES)",
+          "hotline": "717003717"
+        },
+        {
+          "name": "Samaritans in Spain",
+          "hotline": "900525100",
+          "website": "samaritansinspain.com"
+        }
+      ]
+    },
+    {
+      "name": "Australia",
+      "organizations": [
+        {
+          "name": "Lifeline Australia",
+          "hotline": "131114"
+        },
+        {
+          "name": "R U OK?"
+        }
+      ]
+    },
+    {
+      "name": "New Zealand",
+      "organizations": [
+        {
+          "name": "1737 Need to talk?",
+          "hotline": "1737",
+          "website": "1737.org.nz"
+        },
+        {
+          "name": "0800 Whats Up",
+          "hotline": "0800 942 8787"
+        },
+        {
+          "name": "Lifeline",
+          "hotline": "0800 543354",
+          "website": "lifeline.org.nz"
+        }
+      ]
+    },
+    {
+      "name": "Canada",
+      "organizations": [
+        {
+          "name": "Talk Suicide",
+          "hotline": "1833.456.4566",
+          "text": "45645",
+          "hours": "4pm- midnight"
+        },
+        {
+          "name": "YouthSpace",
+          "hotline": "778 783-0177",
+          "website": "youthspace.ca"
+        },
+        {
+          "name": "Nisa Helpline",
+          "hotline": "888 315-6472",
+          "website": "nisahelpline.com"
+        },
+        {
+          "name": "CASP (Canadian Association for Suicide Prevention)",
+          "hotline": "1-833-456-4566"
+        }
+      ]
+    },
+    {
+      "name": "United States",
+      "organizations": [
+        {
+          "name": "988 Suicide & Crisis Lifeline",
+          "hotline": "988",
+          "website": "988lifeline.org"
+        },
+        {
+          "name": "TrevorLifeline",
+          "hotline": "(866)488-7386",
+          "text": "678678",
+          "website": "thetrevorproject.org"
+        },
+        {
+          "name": "Hey Sam",
+          "hotline": "439-726",
+          "website": "samaritanshope.org"
+        }
+      ]
+    },
+    {
+      "name": "India",
+      "states": [
+        {
+          "name": "Assam",
+          "organizations": [
+            {
+              "name": "Sarathi",
+              "hotline": "104",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Andhra Pradesh",
+          "organizations": [
+            {
+              "name": "Roshni",
+              "hotline": "+914066202000",
+              "hours": "Monday to sat, 10 am to 7 PM"
+            }
+          ]
+        },
+        {
+          "name": "Telangana",
+          "organizations": [
+            {
+              "name": "AIIMS (Bibinagar)",
+              "hotline": "9493238208",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Punjab, Chandigarh",
+          "organizations": [
+            {
+              "name": "Asha Helpline",
+              "hotline": "+91 172 2735436, +91 172 2735446",
+              "hours": "Monday to Saturday: 8am to 7pm"
+            }
+          ]
+        },
+        {
+          "name": "Chhattisgarh",
+          "organizations": [
+            {
+              "name": "Arogya Seva: Health Care and Health Counseling Center",
+              "hotline": "104",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Delhi",
+          "organizations": [
+            {
+              "name": "Sumaitri",
+              "hotline": "011-23389090",
+              "hours": "(Mon-Fri)-2PM to 6PM, Sat & Sun - 10AM to !)pm "
+            },
+            {
+              "name": "Snehi",
+              "hotline": "011-65978181",
+              "hours": "2 PM - 6PM"
+            },
+            {
+              "name": "Sanjeevani",
+              "hotline": "011 24311918, 011 24318883, 26862222, 26864488, 40769002",
+              "hours": "(Mon-Fri) first two, rest mon-sat"
+            },
+            {
+              "name": "Fortis Stress Helpline",
+              "hotline": "+918376804102",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Goa",
+          "organizations": [
+            {
+              "name": "COOJ Mental Health Foundation",
+              "hotline": "+91 8322252525, +91 98225 62522",
+              "hours": "Weekdays: 3pm to 7pm"
+            }
+          ]
+        },
+        {
+          "name": "Gujarat",
+          "organizations": [
+            {
+              "name": "Saath",
+              "hotline": "079 26305544 , 079 26300222",
+              "hours": "Daily: 1pm to 7pm"
+            },
+            {
+              "name": "Jeevan Aastha Helpline",
+              "hotline": "1800 233 3330",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Jammu and Kashmir",
+          "organizations": [
+            {
+              "name": "Kashmir Lifeline",
+              "hotline": "1800 180 7020",
+              "hours": "Sunday to Thursday: 10am to 5pm"
+            },
+            {
+              "name": "The Sara",
+              "hotline": "+91-9697-606060",
+              "hours": "Daily: 10am to 5pm"
+            }
+          ]
+        },
+        {
+          "name": "Karnataka",
+          "organizations": [
+            {
+              "name": "Parivarthan Counseling Helpline Services",
+              "hotline": "+91 7676 602 602",
+              "hours": "04:00 PM to 10:00 PM | Monday to Friday"
+            },
+            {
+              "name": "SAHAI",
+              "hotline": "080 25497777, 9886444075",
+              "hours": "Monday to Saturday: 10 AM to 8 PM"
+            },
+            {
+              "name": "Sa-Mudra Yuva Helpline",
+              "hotline": "+91 9880396331",
+              "hours": "24x7"
+            },
+            {
+              "name": "Arogya Sahayavani",
+              "hotline": "104",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Kerala",
+          "organizations": [
+            {
+              "name": "Thanal Suicide Prevention centre",
+              "hotline": "0495 2760000",
+              "hours": "Daily: 10am to 6pm"
+            }
+          ]
+        },
+        {
+          "name": "Kozhikode",
+          "organizations": [
+            {
+              "name": "Maithri Kochi",
+              "hotline": "0484 2540530",
+              "hours": "Daily: 10am to 7pm"
+            }
+          ]
+        },
+        {
+          "name": "Kochi",
+          "organizations": [
+            {
+              "name": "Pratheeksha",
+              "hotline": "0484 2448830",
+              "hours": "Daily: 10 am to 6pm"
+            }
+          ]
+        },
+        {
+          "name": "3N Paravur",
+          "organizations": [
+            {
+              "name": "Prathyasa",
+              "hotline": "0480 2820091"
+            }
+          ]
+        },
+        {
+          "name": "Irinjalakuda",
+          "organizations": [
+            {
+              "name": "Sanjeevani",
+              "hotline": "0471 2533900",
+              "hours": "Monday to Saturday: 1pm to 5pm"
+            }
+          ]
+        },
+        {
+          "name": "Thiruvananthapuram",
+          "organizations": [
+            {
+              "name": "DISHA",
+              "hotline": "1056",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Madhya Pradesh",
+              "organizations": [
+                {
+                  "name": "SPANDHAN",
+                  "hotline": "+91 9630899002, +91 7389366696",
+                  "hours": "24x7"
+                },
+                    {
+                      "name": "Sanjivani",
+                      "hotline": "1253,0761-2626622"
+                    },
+                {
+                  "name": "Jeevan Aadhar- Adolescent Helpline",
+                  "hotline": "1800-233-1250",
+                  "hours": "Daily: 9am to 5pm (Expect national holiday)" 
+                }
+
+              ]},
+
+        {
+          "name": "Maharashtra",
+              "organizations": [
+                {
+                  "name": "Hitguj help number",
+                  "hotline": "022 24131212"
+                },
+                {
+                  "name": "Aasra",
+                  "hotline": "9820466726",
+                  "hours": "24x7"
+                },
+                {
+                  "name": "Tata Institute of Social Sciences icall",
+                  "hotline": "022 25521111",
+                  "hours": "Monday to Saturday: 8 AM to 10 PM"
+                },
+                {
+                  "name": "The Samaritans Mumbai",
+                  "hotline": "+91 84229 84528 , +91 84229 84529 , +91 84229 84530",
+                  "hours": "Daily: 3 PM to 9 PM"
+                },
+                {
+                  "name": "Maitra Helpline",
+                  "hotline": "+91 022 25385447",
+                  "hours": "Monday to Saturday: 9am to 9pm and Sunday: 9am to 1pm"
+                },
+                {
+                  "name": "Connecting NGO",
+                  "hotline": "1800 843 4353 (Toll-Free)/9922001122",
+                  "hours": "Daily: 12 PM to 8 PM"
+                },
+                {
+                  "name": "Vandrevala Foundation",
+                  "hotline": "1860 266 2345, 1800 233 3330",
+                  "hours": "24x7"
+                },
+                {
+                  "name": "Shushrusha Counseling, Guidance and Training Institute",
+                  "hotline": "+91 9422627571, +91 8275038382",
+                  "hours": "24x7"
+                }]
+        },
+        {
+          "name": "Meghalaya",
+              "organizations": [
+                {
+                  "name": "District Mental Health Program of South West Garo Hills.",
+                  "hotline": "9362749485",
+                  "hours": "24x7"
+                },
+                {
+                  "name": "State Mental Health Helpline",
+                  "hotline": "14410",
+                  "hours": "24x7"
+                }
+              ]
+        },
+        {
+          "name": "Odisha",
+              "organizations": [
+                {
+                  "name": "Health Helpline",
+                  "hotline": "104",
+                  "hours": "24x7"
+                }
+              ]
+        },
+        {
+          "name": "Pondicherry",
+              "organizations": [
+                {
+                  "name": "Maitreyi",
+                  "hotline": "0413 2339999",
+                  "hours": "Daily: 2pm to 8pm"
+                }
+              ]
+        },
+        {
+          "name": "Punjab",
+              "organizations": [
+                {
+                  "name": "Medical Consultation – Health",
+                  "hotline": "104",
+                  "hours": "24x7"
+                }
+              ]
+        },
+        {
+          "name": "Rajasthan",
+          "organizations": [
+            {
+              "name": "Medical Advice and Helpline",
+              "hotline": "104",
+              "hours": "24x7"
+            },
+            {
+              "name": "Hope Helpline for Students",
+              "hotline": "0744 2333666, 0744 2414141",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Sikkim",
+          "organizations": [
+            {
+              "name": "Suicide Prevention Helpline",
+              "hotline": "221152, 18003453225",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Tamil Nadu",
+          "organizations": [
+            {
+              "name": "Sneha India foundation",
+              "hotline": "044-24640050, 044-24640060",
+              "hours": "24x7"
+            },
+            {
+              "name": "Medical Helpline",
+              "hotline": "104",
+              "hours": "24x7"
+            },
+            {
+              "name": "Jeevan Suicide Prevention Hotline",
+              "hotline": "044 2656 4444",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "Telangana",
+          "organizations": [
+            {
+              "name": "Roshni Trust",
+              "hotline": "040 6620 2000,040 6620 2001",
+              "hours": "Monday to Saturday: 11am to 9pm"
+            },
+             {
+              "name": "AIIMS (Bibinagar)",
+              "hotline": "9493238208",
+              "hours": "24x7"
+            },
+            {
+              "name": "One Life",
+              "hotline": "+91 7893078930",
+              "hours": "24x7"
+            },
+            {
+              "name": "Sevakendram-Health Information Helpline",
+              "hotline": "104",
+              "hours": "24x7"
+            },
+            {
+              "name": "Darshika",
+              "hotline": "040 27755506, 040 27755505",
+              "hours": "24x7"
+            },
+            {
+              "name": "Makro Foundation - Suicide Prevention Helpdesk",
+              "hotline": "040 46004600",
+              "hours": "Monday to Friday: 10:00 am to 7:00 pm"
+            }
+          ]
+        },
+        {
+          "name": "Uttarakhand",
+          "organizations": [
+            {
+              "name": "Jagrati Foundation",
+              "hotline": "07947357088",
+              "hours": "24x7"
+            }
+          ]
+        },
+        {
+          "name": "West Bengal",
+          "organizations": [
+            {
+              "name": "Lifeline Foundation",
+              "hotline": "033 24637401, 033 24637432",
+              "hours": "Daily: 10:00 AM to 06:00 PM"
+            }
+          ]
+        },
+        {
+          "name": "Kolkata",
+          "organizations": [
+            {
+              "name": "NIBS Helpline",
+              "hotline": "+91 98364 01234, 033 2286 5603",
+              "hours": "Monday to Friday: 6 pm and 10 pm"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#883f49"
+    android:padding="24dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/roundedcornerbutton_medium">
+
+        <!-- Header -->
+        <LinearLayout
+            android:id="@+id/llHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/roundedcornerbutton_medium"
+            android:backgroundTint="@color/menuselected"
+            android:paddingVertical="16dp"
+            android:paddingHorizontal="8dp">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Countries"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:id="@+id/ivClose"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/close"
+                app:tint="@color/white" />
+        </LinearLayout>
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCountryList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@id/llHeader"
+            android:layout_above="@id/btnImFine"
+            android:layout_marginTop="-8dp"
+            android:background="@drawable/roundedcornerbutton_medium" />
+
+        <!-- Footer Button -->
+        <Button
+            android:id="@+id/btnImFine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I'm fine"
+            android:backgroundTint="@color/menuselected"
+            android:textColor="@color/white"
+            android:visibility="invisible"
+            android:layout_alignParentBottom="true"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginVertical="12dp"/>
+    </RelativeLayout>
+</LinearLayout>

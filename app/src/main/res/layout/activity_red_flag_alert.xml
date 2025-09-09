@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/settings_bg_color">
+
+    <!-- Back Arrow and Title -->
+    <LinearLayout
+        android:id="@+id/llTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_back" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Red Flag Alert"
+            android:gravity="center_horizontal"
+            android:textSize="18sp"
+            android:fontFamily="@font/merriweather_bold"
+            android:textColor="@color/txt_color_mind" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/llTopBar"
+        android:layout_above="@id/btnLogout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="If you or someone you know is struggling, help is just a call away. You're not alone."
+                android:gravity="center_horizontal"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/txt_color_mind" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reach out to these helplines."
+                android:gravity="center_horizontal"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_mind"
+                android:layout_marginStart="4dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/group_red_flag"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="8dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/menuselected"
+                android:background="@drawable/roundedcornerbutton_medium"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="National Helpline"
+                    android:gravity="center_horizontal"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/white"
+                    android:layout_alignParentStart="true" />
+
+                <TextView
+                    android:id="@+id/tvCountry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="India"
+                    android:gravity="center_horizontal"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/white"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCountryHelpLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginTop="-10dp"
+                android:backgroundTint="@color/light_red"
+                android:background="@drawable/roundedcornerbutton_medium" />
+
+            <RelativeLayout
+                android:id="@+id/rlStateHelpLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/menuselected"
+                android:background="@drawable/roundedcornerbutton_medium"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="16dp"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:id="@+id/tvStateHelpline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="State Helpline"
+                    android:gravity="center_horizontal"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/white"
+                    android:layout_alignParentStart="true" />
+
+                <TextView
+                    android:id="@+id/tvState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/white"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvStateHelpLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginTop="-10dp"
+                android:backgroundTint="@color/light_red"
+                android:background="@drawable/roundedcornerbutton_medium" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:backgroundTint="#FF5B5B"
+        android:text="I'm fine"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:layout_alignParentBottom="true"
+        android:fontFamily="@font/dmsans_bold"
+        android:padding="8dp"
+        android:layout_marginHorizontal="50dp" />
+
+
+</RelativeLayout>

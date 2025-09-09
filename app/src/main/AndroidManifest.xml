@@ -200,6 +200,12 @@
             android:name=".ui.mindaudit.MindAuditActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.mindaudit.RedFlagAlertActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".ui.mindaudit.MindAuditResultActivity"
             android:exported="false"
