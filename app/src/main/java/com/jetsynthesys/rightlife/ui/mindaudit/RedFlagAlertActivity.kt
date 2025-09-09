@@ -30,15 +30,15 @@ class RedFlagAlertActivity : BaseActivity() {
         binding.tvCountry.paintFlags = binding.tvCountry.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
         binding.iconBack.setOnClickListener {
-            finishActivity()
+            finishThisActivity(RESULT_CANCELED)
         }
 
         onBackPressedDispatcher.addCallback {
-            finishActivity()
+            finishThisActivity(RESULT_CANCELED)
         }
 
         binding.btnImFine.setOnClickListener {
-            finishActivity()
+            finishThisActivity(RESULT_OK)
         }
 
         val jsonString = loadJSONFromAssets()
@@ -135,9 +135,9 @@ class RedFlagAlertActivity : BaseActivity() {
         }
     }
 
-    private fun finishActivity() {
+    private fun finishThisActivity(result: Int) {
         val returnIntent = Intent()
-        setResult(RESULT_OK, returnIntent)
+        setResult(result, returnIntent)
         finish()
     }
 }

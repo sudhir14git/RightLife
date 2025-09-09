@@ -34,7 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/llTopBar"
-        android:layout_above="@id/btnLogout">
+        android:layout_above="@id/btnImFine"
+        android:layout_marginVertical="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
