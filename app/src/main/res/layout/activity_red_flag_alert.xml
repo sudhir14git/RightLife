@@ -164,7 +164,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/btnLogout"
+        android:id="@+id/btnImFine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="8dp"

@@ -1,13 +1,16 @@
 package com.jetsynthesys.rightlife.ui.mindaudit
 
+import android.content.Intent
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityRedFlagAlertBinding
+
 
 class RedFlagAlertActivity : BaseActivity() {
     private lateinit var binding: ActivityRedFlagAlertBinding
@@ -25,6 +28,18 @@ class RedFlagAlertActivity : BaseActivity() {
 
         binding.tvState.paintFlags = binding.tvState.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         binding.tvCountry.paintFlags = binding.tvCountry.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
+        binding.iconBack.setOnClickListener {
+            finishActivity()
+        }
+
+        onBackPressedDispatcher.addCallback {
+            finishActivity()
+        }
+
+        binding.btnImFine.setOnClickListener {
+            finishActivity()
+        }
 
         val jsonString = loadJSONFromAssets()
         val gson = Gson()
@@ -118,5 +133,11 @@ class RedFlagAlertActivity : BaseActivity() {
             ex.printStackTrace()
             null
         }
+    }
+
+    private fun finishActivity() {
+        val returnIntent = Intent()
+        setResult(RESULT_OK, returnIntent)
+        finish()
     }
 }

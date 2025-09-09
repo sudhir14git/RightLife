@@ -1,6 +1,8 @@
 package com.jetsynthesys.rightlife.ui.mindaudit;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -8,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -29,6 +33,7 @@ public class MindAuditQuestionListFragment extends Fragment {
     //private OnNextFragmentClickListener onNextFragmentClickListener;
     private MindAuditOptionsAdapter adapter;
     private int position = 0;
+    private ActivityResultLauncher<Intent> resultLauncher;
 
     public static MindAuditQuestionListFragment newInstance(Question question, int position) {
         MindAuditQuestionListFragment fragment = new MindAuditQuestionListFragment();
@@ -46,6 +51,22 @@ public class MindAuditQuestionListFragment extends Fragment {
             question = (Question) getArguments().getSerializable(ARG_QUESTION);
             position = getArguments().getInt(ARG_POSITION, 0);
         }
+
+        // Register the launcher
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        new Handler().postDelayed(() -> {
+                            if (question.isContinueFurtherIfTrue()) {
+                                ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
+                            } else {
+                                ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+                            }
+                        }, 200);
+                    }
+                }
+        );
     }
 
     @Override
@@ -68,23 +89,28 @@ public class MindAuditQuestionListFragment extends Fragment {
         recyclerView.setLayoutManager(gridLayoutManager);
 
         adapter = new MindAuditOptionsAdapter(requireContext(), (ArrayList<ScoringPattern>) question.getScoringPattern(), scoringPattern -> {
-            new Handler().postDelayed(() -> {
-
-                ((MAAssessmentQuestionaireActivity) requireActivity()).addScore(question, scoringPattern);
-                if (question.isContinueFurtherIfTrue()) {
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
-                } else {
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
-            /*if (position != adapter.getItemCount() - 1)
-                ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
-            else
-                ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);*/
-                }
-            }, 1000);
-
+            ((MAAssessmentQuestionaireActivity) requireActivity()).addScore(question, scoringPattern);
+            //change this condition as per your need
+            //if (question.getQuestion().equalsIgnoreCase("") && scoringPattern.getOption().equalsIgnoreCase(""))
+            if (position == 2) {
+                openSecondActivity();
+            } else {
+                new Handler().postDelayed(() -> {
+                    if (question.isContinueFurtherIfTrue()) {
+                        ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
+                    } else {
+                        ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+                    }
+                }, 800);
+            }
         });
         recyclerView.setAdapter(adapter);
 
         return view;
+    }
+
+    private void openSecondActivity() {
+        Intent intent = new Intent(requireContext(), RedFlagAlertActivity.class);
+        resultLauncher.launch(intent);
     }
 }
