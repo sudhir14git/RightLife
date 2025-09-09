@@ -149,6 +149,16 @@
                 android:backgroundTint="@color/light_red"
                 android:background="@drawable/roundedcornerbutton_medium" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Remember, there's always someone ready to listen and support you.\nYour well-being matters."
+                android:gravity="center_horizontal"
+                android:textSize="14sp"
+                android:layout_margin="12dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/txt_color_mind" />
+
         </LinearLayout>
 
     </ScrollView>
