@@ -21,7 +21,7 @@ public class MindAuditOptionsAdapter extends RecyclerView.Adapter<MindAuditOptio
     private OnItemClickListener onItemClickListener;
     private int selectedItemPos = -1;
     private int lastItemSelectedPos = -1;
-    private boolean isClickable = true;
+    private long lastClickTime = 0;
 
     public MindAuditOptionsAdapter(Context context, ArrayList<ScoringPattern> scoringPatterns, OnItemClickListener onItemClickListener) {
         this.context = context;
@@ -38,7 +38,6 @@ public class MindAuditOptionsAdapter extends RecyclerView.Adapter<MindAuditOptio
 
     @Override
     public void onBindViewHolder(@NonNull OptionsViewHolder holder, int position) {
-        holder.itemView.setEnabled(isClickable);
         ScoringPattern scoringPattern = scoringPatterns.get(position);
         holder.optionText.setText(scoringPattern.getOption());
 
@@ -53,8 +52,11 @@ public class MindAuditOptionsAdapter extends RecyclerView.Adapter<MindAuditOptio
 
 
         holder.itemView.setOnClickListener(view -> {
-             if (isClickable) {
-                 isClickable = false;
+            long now = System.currentTimeMillis();
+            if (now - lastClickTime < 950) {
+                return; // too soon, ignore
+            }
+            lastClickTime = now;
                  selectedItemPos = holder.getAdapterPosition();
                  if (lastItemSelectedPos == -1)
                      lastItemSelectedPos = selectedItemPos;
@@ -64,8 +66,6 @@ public class MindAuditOptionsAdapter extends RecyclerView.Adapter<MindAuditOptio
                  }
                  notifyItemChanged(selectedItemPos);
                  onItemClickListener.onItemClick(scoringPattern);
-                 holder.itemView.postDelayed(() -> isClickable = true,950);
-             }
         });
     }
 
