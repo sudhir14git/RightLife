@@ -32,6 +32,7 @@ import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.ShortVibrateKt;
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.jetsynthesys.rightlife.databinding.ActivityArticledetailBinding;
@@ -129,6 +130,7 @@ public class ArticlesDetailActivity extends BaseActivity {
         });
 
         binding.imageLikeArticle.setOnClickListener(v -> {
+            ShortVibrateKt.shortVibrate(v, 100);
             binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
             int currentCount = getCurrentCount();
             if (articleDetailsResponse.getData().getIsLike()) {

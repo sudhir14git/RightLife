@@ -106,7 +106,7 @@
                 android:backgroundTint="@color/btn_color_journal"
                 android:textColor="@color/color_think_right"
                 android:fontFamily="@font/dmsans_bold"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:text="Submit" />

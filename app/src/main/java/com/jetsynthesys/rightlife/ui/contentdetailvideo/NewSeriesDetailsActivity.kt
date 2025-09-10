@@ -207,6 +207,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
             setReadMoreView(contentResponseObj.data.desc)
 
             /*   binding.imageLikeArticle.setOnClickListener { v ->
+                   v.shortVibrate()
                    binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
                    if (contentResponseObj.data.li) {
                        binding.imageLikeArticle.setImageResource(R.drawable.like)

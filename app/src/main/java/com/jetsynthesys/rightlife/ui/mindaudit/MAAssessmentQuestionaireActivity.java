@@ -3,8 +3,6 @@ package com.jetsynthesys.rightlife.ui.mindaudit;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -103,7 +101,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-             //   updateButtonVisibility(position);
+                //updateButtonVisibility(position);
                 updateProgress(position);
             }
         });
@@ -183,7 +181,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
     public void navigateToNextPage() {
         if (viewPager.getCurrentItem() < adapter.getItemCount() - 1) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-        }else {
+        } else {
             updateButtonVisibility(viewPager.getCurrentItem());
         }
     }

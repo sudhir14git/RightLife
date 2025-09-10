@@ -34,6 +34,7 @@ import com.jetsynthesys.rightlife.apimodel.modulecontentdetails.ModuleContentDet
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse
 import com.jetsynthesys.rightlife.databinding.ActivityContentDetailsBinding
+import com.jetsynthesys.rightlife.shortVibrate
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall
@@ -191,6 +192,7 @@ class ContentDetailsActivity : BaseActivity() {
             setReadMoreView(contentResponseObj.data.desc)
 
             binding.imageLikeArticle.setOnClickListener { v ->
+                v.shortVibrate()
                 if (contentResponseObj.data.like) {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
                     contentResponseObj.data.like = false
