@@ -62,11 +62,11 @@
 
             <ImageView
                 android:id="@+id/functional_strength_icon"
-                android:layout_width="25dp"
-                android:layout_height="35dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/workout_function_icon"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="25dp"
                 android:layout_marginStart="20dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -77,16 +77,20 @@
                 android:layout_height="wrap_content"
                 android:text="Functional Strength Training"
                 android:textSize="18dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="5dp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 app:layout_constraintStart_toEndOf="@+id/functional_strength_icon"
-                app:layout_constraintTop_toTopOf="@+id/functional_strength_icon" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/timeline_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginStart="5dp"
+                android:textSize="10sp"
                 android:text="6:00 AM to 7:00PM"
                 app:layout_constraintStart_toEndOf="@+id/functional_strength_icon"
                 app:layout_constraintTop_toBottomOf="@+id/functional_strength_text" />
