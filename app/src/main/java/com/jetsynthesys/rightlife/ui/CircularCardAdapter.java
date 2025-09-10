@@ -179,13 +179,13 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                         .error(R.drawable.rl_placeholder)
                         .into(cardImage);
             }
-            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+            if (item.getButtonImage() != null && !item.getButtonImage().isEmpty()) {
                 Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getButtonImage())
                         .placeholder(R.drawable.ic_banner_t_healthcam)
                         .error(R.drawable.ic_banner_t_healthcam)
                         .into(img_btn_icon);
             }
-            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+            if (item.getTitleImage() != null && !item.getTitleImage().isEmpty()) {
                 Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getTitleImage())
                         .placeholder(R.drawable.ic_banner_t_healthcam)
                         .error(R.drawable.ic_banner_t_healthcam)

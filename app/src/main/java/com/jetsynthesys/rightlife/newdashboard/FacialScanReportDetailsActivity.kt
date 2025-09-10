@@ -27,7 +27,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem
 import com.jetsynthesys.rightlife.databinding.ActivityFacialScanReportDetailsBinding
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanRange
-import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReport
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportData
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportDataWrapper
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse
@@ -322,7 +321,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     }
 
                     setupBottomCard(rangeList)
-                    HandleContinueWatchUI(responseBody.data)
+                    handleContinueWatchUI(responseBody.data)
                 } else {
                     showToast("Server Error: ${response.code()}")
                 }
@@ -849,14 +848,17 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         }
     }
 
-    private fun HandleContinueWatchUI(facialReportResponseNew: FacialScanReportDataWrapper?) {
+    private fun handleContinueWatchUI(facialReportResponseNew: FacialScanReportDataWrapper?) {
         if (facialReportResponseNew?.recommendation?.isNotEmpty() == true) {
+            binding.cardViewRecommended.visibility = View.VISIBLE
             val adapter =
                 HealthCamRecommendationAdapter(this, facialReportResponseNew.recommendation!!)
             val horizontalLayoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager)
             binding.recyclerViewContinue.setAdapter(adapter)
+        }else{
+            binding.cardViewRecommended.visibility = View.GONE
         }
     }
 }
