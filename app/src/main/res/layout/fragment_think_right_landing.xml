@@ -1797,7 +1797,6 @@
                         app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -1902,9 +1901,6 @@
                         android:textColor="#8B4513"/> <!-- Brown color -->
                 </LinearLayout>
 
-
-
-
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -1966,6 +1962,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
+
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/no_data_mind_audit"
                             android:layout_width="match_parent"
@@ -1974,6 +1971,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/lyt_top_header"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent">
+
                             <TextView
                                 android:id="@+id/no_data_mind_audit_heading"
                                 android:layout_width="wrap_content"
@@ -1985,6 +1983,7 @@
                                 android:layout_marginStart="20dp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"/>
+
                             <TextView
                                 android:id="@+id/no_data_mind_audit_description"
                                 android:layout_width="wrap_content"
@@ -2028,6 +2027,7 @@
                             </LinearLayout>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
+
                         <LinearLayout
                             android:id="@+id/data_filled_mind_audit"
                             android:layout_width="match_parent"
@@ -2039,6 +2039,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent">
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
@@ -2054,6 +2055,7 @@
                                     android:paddingStart="15dp"
                                     android:paddingEnd="15dp"
                                     android:overScrollMode="never" />
+
                                 <LinearLayout
                                     android:id="@+id/customDotsContainer"
                                     android:layout_width="wrap_content"
@@ -2064,7 +2066,6 @@
                                     android:gravity="center">
                                 </LinearLayout>
                             </LinearLayout>
-
 
                         </LinearLayout>
 
@@ -2084,6 +2085,7 @@
                             android:textSize="16sp"
                             android:layout_marginTop="10dp"
                              />
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -2261,6 +2263,7 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
