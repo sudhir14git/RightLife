@@ -103,7 +103,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                updateButtonVisibility(position);
+             //   updateButtonVisibility(position);
                 updateProgress(position);
             }
         });
@@ -183,6 +183,8 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
     public void navigateToNextPage() {
         if (viewPager.getCurrentItem() < adapter.getItemCount() - 1) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+        }else {
+            updateButtonVisibility(viewPager.getCurrentItem());
         }
     }
 

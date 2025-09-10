@@ -351,6 +351,73 @@
                                     android:background="#F95F50" />
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/scoreBarcardGad7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:cardCornerRadius="10dp"
+                            android:visibility="gone"
+                            android:background="@drawable/roundedcornerblueborder">
+
+                            <LinearLayout
+                                android:id="@+id/scoreBar1"
+                                android:layout_width="match_parent"
+                                android:layout_height="21dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvMinimal1"
+                                    android:layout_weight="1"
+                                    android:layout_height="match_parent"
+                                    android:layout_width="match_parent"
+                                    android:text="Minimal"
+                                    android:gravity="center"
+                                    android:textSize="@dimen/textsize_small"
+                                    android:textColor="@color/white"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:background="#23BF7D" />
+
+
+
+                                <TextView
+                                    android:id="@+id/tvModarate1"
+                                    android:layout_weight="1"
+                                    android:layout_height="match_parent"
+                                    android:layout_width="match_parent"
+                                    android:text="Mild"
+                                    android:gravity="center"
+                                    android:textSize="@dimen/textsize_small"
+                                    android:textColor="@color/white"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:background="#6F9EF6" />
+
+                                <TextView
+                                    android:id="@+id/tvSevere1"
+                                    android:layout_weight="1"
+                                    android:layout_height="match_parent"
+                                    android:layout_width="match_parent"
+                                    android:text="Moderate"
+                                    android:gravity="center"
+                                    android:textSize="@dimen/textsize_small"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:background="#F7B334" />
+
+                                <TextView
+                                    android:id="@+id/tvExtSevere1"
+                                    android:layout_weight="1"
+                                    android:layout_height="match_parent"
+                                    android:layout_width="match_parent"
+                                    android:text="Severe"
+                                    android:gravity="center"
+                                    android:textSize="@dimen/textsize_small"
+                                    android:textColor="@color/white"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:background="#F95F50" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
                     <RelativeLayout

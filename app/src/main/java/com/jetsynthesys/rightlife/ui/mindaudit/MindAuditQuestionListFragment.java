@@ -73,7 +73,23 @@ public class MindAuditQuestionListFragment extends Fragment {
             MAAssessmentQuestionaireActivity activity = (MAAssessmentQuestionaireActivity) requireActivity();
             String header = activity.header;
 
+
+                ((MAAssessmentQuestionaireActivity) requireActivity()).addScore(question, scoringPattern);
+                if (question.isContinueFurtherIfTrue()) {
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
+                } else {
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.GONE);
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+
+            /*if (position != adapter.getItemCount() - 1)
+                ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
+            else
+                ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);*/
+                }
+            }, 1000);
+
             String currentOption = scoringPattern.getOption();
+
 
             if (activity.adapter.getItemCount() - 1 == position && "PHQ-9".equalsIgnoreCase(header) && (!currentOption.equalsIgnoreCase("Not difficult at all"))) {
                 isSubmitClickable = false;
