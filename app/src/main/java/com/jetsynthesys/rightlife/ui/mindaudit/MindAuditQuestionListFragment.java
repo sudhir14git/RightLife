@@ -86,7 +86,7 @@ public class MindAuditQuestionListFragment extends Fragment {
             else
                 ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);*/
                 }
-            }, 1000);
+
 
             String currentOption = scoringPattern.getOption();
 
