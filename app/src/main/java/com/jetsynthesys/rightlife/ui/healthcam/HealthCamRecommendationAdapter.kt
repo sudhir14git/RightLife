@@ -15,6 +15,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.Recommendation
+import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -75,17 +76,27 @@ class HealthCamRecommendationAdapter(
         holder.timeLeftTextView.text = text
 
         holder.itemView.setOnClickListener {
-            //Toast.makeText(ctx, "image clicked - " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
-            //val gson = Gson()
-            //val json = gson.toJson(recommendations)
-            if ("SERIES" == recommendation.contentType) {
-                val intent = Intent(holder.itemView.context, SeriesListActivity::class.java)
-                intent.putExtra("contentId", recommendation.id)
-                holder.itemView.context.startActivity(intent)
-            } else {
-                val intent = Intent(holder.itemView.context, ContentDetailsActivity::class.java)
-                intent.putExtra("contentId", recommendation.id)
-                holder.itemView.context.startActivity(intent)
+            val contentType = recommendation.contentType
+            val contentId = recommendation.id
+            if (contentType.equals("TEXT", ignoreCase = true)) {
+                context.startActivity(Intent(context, ArticlesDetailActivity::class.java).apply {
+                    putExtra("contentId", contentId)
+                })
+            } else if (contentType
+                    .equals("VIDEO", ignoreCase = true) || contentType
+                    .equals("AUDIO", ignoreCase = true)
+            ) {
+                context.startActivity(
+                    Intent(
+                        holder.itemView.context,
+                        ContentDetailsActivity::class.java
+                    ).apply {
+                        putExtra("contentId", contentId)
+                    })
+            } else if (contentType.equals("SERIES", ignoreCase = true)) {
+                context.startActivity(Intent(context, SeriesListActivity::class.java).apply {
+                    putExtra("contentId", contentId)
+                })
             }
         }
     }
