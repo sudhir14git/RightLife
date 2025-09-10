@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlHelpLine"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@drawable/roundedcornerbutton_medium"
+    android:backgroundTint="#FDD3D2">
+
+    <LinearLayout
+        android:id="@+id/llHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvOrganizationName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_mind"
+            android:layout_margin="8dp"
+            android:layout_toStartOf="@id/tvTiming" />
+
+        <TextView
+            android:id="@+id/tvTiming"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:gravity="end"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_mind"
+            android:maxLength="25"
+            android:layout_margin="8dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlPhoneNumber1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/llHeader"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/tvPhoneNumber1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Red Flag Alert"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_mind"
+            android:layout_alignParentStart="true"
+            android:layout_marginHorizontal="8dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_phone"
+            android:layout_marginHorizontal="8dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlPhoneNumber2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rlPhoneNumber1"
+        android:layout_marginTop="2dp">
+
+        <TextView
+            android:id="@+id/tvPhoneNumber2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Red Flag Alert"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_mind"
+            android:layout_alignParentStart="true"
+            android:layout_marginHorizontal="8dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_phone"
+            android:layout_marginHorizontal="8dp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
