@@ -74,7 +74,9 @@ public class MindAuditQuestionListFragment extends Fragment {
                 if (question.isContinueFurtherIfTrue()) {
                     ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
                 } else {
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.GONE);
                     ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+
             /*if (position != adapter.getItemCount() - 1)
                 ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
             else
