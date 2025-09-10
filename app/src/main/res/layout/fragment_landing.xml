@@ -579,12 +579,12 @@
 
                                 <View
                                     android:id="@+id/transparentOverlay"
-                                    android:layout_width="90dp"
+                                    android:layout_width="0dp"
                                     android:layout_height="32dp"
                                     android:background="@drawable/border_black"
                                     app:layout_constraintTop_toTopOf="@id/progressBar"
                                     app:layout_constraintBottom_toBottomOf="@id/progressBar"
-                                    app:layout_constraintStart_toStartOf="@id/overlayGuideline" />
+                                    app:layout_constraintStart_toStartOf="parent" />
 
                                 <ImageView
                                     android:id="@+id/imageViewBelowOverlay"
@@ -593,8 +593,9 @@
                                     android:layout_marginTop="8dp"
                                     android:src="@drawable/weigth_loss_icon"
                                     app:layout_constraintTop_toBottomOf="@id/transparentOverlay"
-                                    app:layout_constraintStart_toStartOf="@id/overlayGuideline"
-                                    app:layout_constraintEnd_toEndOf="@id/transparentOverlay" />
+                                    app:layout_constraintStart_toStartOf="@id/transparentOverlay"
+                                    app:layout_constraintEnd_toEndOf="@id/transparentOverlay"
+                                    app:layout_constraintHorizontal_bias="0.5" />
 
                                 <TextView
                                     android:id="@+id/weightLossZoneText"
@@ -603,10 +604,12 @@
                                     android:text="Weight Loss Zone"
                                     android:textColor="@color/black"
                                     android:textSize="8sp"
-                                    app:layout_constraintTop_toBottomOf="@+id/imageViewBelowOverlay"
-                                    app:layout_constraintStart_toStartOf="@id/overlayGuideline"
+                                    app:layout_constraintTop_toBottomOf="@id/imageViewBelowOverlay"
+                                    app:layout_constraintStart_toStartOf="@id/transparentOverlay"
                                     app:layout_constraintEnd_toEndOf="@id/transparentOverlay"
+                                    app:layout_constraintHorizontal_bias="0.5"
                                     tools:ignore="HardcodedText" />
+
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
                             <!-- <ProgressBar

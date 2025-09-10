@@ -1715,9 +1715,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun fetchWakeupData() {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val today = LocalDate.now()
+        val tomorrow = today.plusDays(1)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val todayStr = today.format(formatter)
+        val tomorrowStr = tomorrow.format(formatter)
         val date = getCurrentDate()
         val source = "android"
-        val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source)
+        val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source, tomorrowStr)
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
                 if (response.isSuccessful) {
@@ -1725,7 +1730,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val sixPM = 18 * 60 // 1080 minutes (06:00 PM)
                     val twoAM = 2 * 60 // 120 minutes (02:00 AM next day)
                     val currentMinutes = currentTime.hour * 60 + currentTime.minute
-
 // Check if current time is between 06:00 PM and 02:00 AM
                     if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
                         cardSleepTimeRequirementTop.visibility = View.VISIBLE
@@ -1743,7 +1747,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val sixPM = 18 * 60 // 1080 minutes (06:00 PM)
                     val twoAM = 2 * 60 // 120 minutes (02:00 AM next day)
                     val currentMinutes = currentTime.hour * 60 + currentTime.minute
-
 // Check if current time is between 06:00 PM and 02:00 AM
                     if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
                         //view.visibility = View.GONE
@@ -1760,7 +1763,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val sixPM = 18 * 60
                     val twoAM = 2 * 60
                     val currentMinutes = currentTime.hour * 60 + currentTime.minute
-
                     if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
                         //view.visibility = View.GONE
                         cardSleepTimeRequirementTop.visibility = View.VISIBLE
