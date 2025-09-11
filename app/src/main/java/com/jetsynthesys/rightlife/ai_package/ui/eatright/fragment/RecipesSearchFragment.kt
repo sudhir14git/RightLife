@@ -119,7 +119,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         }
                     }
 
-                        "Food Type" -> {
+                    "Food Type" -> {
                     if (isClose) {
                         tabContentAdapter.deselectedUpdateItems(foodTypeList, -1)
                         selectedFoodType = null
@@ -149,7 +149,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     }
                 }
                 tabContentAdapter.setSelectedPosition(if (isClose) -1 else position)
-                refreshRecipesList()
             }
         }
         tabContentRecyclerView.adapter = tabContentAdapter
@@ -178,22 +177,59 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         "Cuisine" -> selectedCuisine != null
                         else -> false
                     }
+                    val customView = tab?.customView
+                    val tabLayoutRoot = customView?.findViewById<View>(R.id.rootTabLayout)
+                    val tabText = customView?.findViewById<TextView>(R.id.tabText)
+                    val tabUpDownIcon = customView?.findViewById<ImageView>(R.id.imageArrow)
+                    tabLayoutRoot?.setBackgroundResource(R.drawable.tab_selected_bg)
+                    tabUpDownIcon?.setImageResource(R.drawable.ic_chevron_up)
+                    tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    val typeface = resources.getFont(R.font.dmsans_bold)
+                    tabText?.typeface = typeface
+                    tabSelectedTitle.text = tabText?.text.toString()
                     updateTabColors(isContentSelected)
                     tabContentCard.visibility = View.VISIBLE
                     updateCardViewContent(tag)
                 }
             }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                tab?.let {
+                    val customView = it.customView
+                    val tabLayoutRoot = customView?.findViewById<View>(R.id.rootTabLayout)
+                    val tabText = customView?.findViewById<TextView>(R.id.tabText)
+                    val tabUpDownIcon = customView?.findViewById<ImageView>(R.id.imageArrow)
+                    tabLayoutRoot?.setBackgroundResource(R.drawable.tab_unselected_bg)
+                    tabUpDownIcon?.setImageResource(R.drawable.ic_chevron_down)
+                    val typeface = resources.getFont(R.font.dmsans_regular)
+                    tabText?.typeface = typeface
+                    tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
+                }
+            }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 tab?.position?.let { position ->
                     val tag = tabTitles[position]
                     currentFragmentTag = tag
+                    val customView = tab?.customView
+                    val tabLayoutRoot = customView?.findViewById<View>(R.id.rootTabLayout)
+                    val tabText = customView?.findViewById<TextView>(R.id.tabText)
+                    val tabUpDownIcon = customView?.findViewById<ImageView>(R.id.imageArrow)
                     if (tabContentCard.isVisible) {
                         tabContentCard.visibility = View.GONE
+                        val typeface = resources.getFont(R.font.dmsans_regular)
+                        tabText?.typeface = typeface
+                        tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
+                        tabUpDownIcon?.setImageResource(R.drawable.ic_chevron_down)
+                        tabLayoutRoot?.setBackgroundResource(R.drawable.tab_unselected_bg)
                     } else {
+                        tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                        val typeface = resources.getFont(R.font.dmsans_bold)
+                        tabText?.typeface = typeface
+                        tabSelectedTitle.text = tabText?.text.toString()
                         tabContentCard.visibility = View.VISIBLE
+                        tabUpDownIcon?.setImageResource(R.drawable.ic_chevron_up)
+                        tabLayoutRoot?.setBackgroundResource(R.drawable.tab_selected_bg)
                         updateCardViewContent(tag)
                     }
                     // Check if the reselected tab has content selected
@@ -264,10 +300,10 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
         if (searchType.contentEquals("HomeTabMeal")) {
             getSnapMealRecipesList()
-            onSnapSearchDishItemRefresh()
+           // onSnapSearchDishItemRefresh()
         } else {
             getSnapMealRecipesList()
-            onSnapSearchDishItemRefresh()
+           // onSnapSearchDishItemRefresh()
         }
     }
 
@@ -332,11 +368,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             }
 
             if (tab?.isSelected == true) {
-                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-                val typeface = resources.getFont(R.font.dmsans_bold)
-                tabText?.typeface = typeface
-                tabSelectedTitle.text = tabText?.text.toString()
-                imageArrow?.setImageResource(R.drawable.ic_chevron_up)
+//                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+//                val typeface = resources.getFont(R.font.dmsans_bold)
+//                tabText?.typeface = typeface
+//                tabSelectedTitle.text = tabText?.text.toString()
+              //  imageArrow?.setImageResource(R.drawable.ic_chevron_up)
 
                 // Show circle only if content is selected for this tab
                 if (isContentSelected) {
@@ -346,10 +382,10 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     circleText?.visibility = View.GONE
                 }
             } else {
-                val typeface = resources.getFont(R.font.dmsans_regular)
-                tabText?.typeface = typeface
-                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
-                imageArrow?.setImageResource(R.drawable.ic_chevron_down)
+//                val typeface = resources.getFont(R.font.dmsans_regular)
+//                tabText?.typeface = typeface
+//                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
+           //     imageArrow?.setImageResource(R.drawable.ic_chevron_down)
 
                 // Show circle for unselected tabs if they have selected content
                 if (isContentSelected) {
@@ -367,6 +403,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         valueLists.addAll(snapRecipesList as Collection<SnapRecipeList>)
         val mealLogDateData: SnapRecipeList? = null
         recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        refreshRecipesList()
     }
 
     private fun onSnapSearchDishItem(recipesModel: SnapRecipeList, position: Int, isRefresh: Boolean) {
@@ -391,7 +428,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val matchesCuisine = selectedCuisine?.let { recipe.cuisine == it } ?: true
             matchesQuery && matchesMealType && matchesFoodType && matchesCuisine
         }
-        recipeSearchAdapter.updateList(filteredList)
+        val valueLists: ArrayList<SnapRecipeList> = ArrayList()
+        valueLists.addAll(filteredList as Collection<SnapRecipeList>)
+        val mealLogDateData: SnapRecipeList? = null
+        recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
+      //  recipeSearchAdapter.updateList(filteredList)
         if (query.isNotEmpty()) {
             cancel.visibility = View.VISIBLE
         }else{
@@ -530,5 +571,22 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Restore search text
+        dishesViewModel.searchQuery.value?.let {
+            searchEditText.setText(it)
+            filterDishes(it)
+        }
+        // Restore tab selections
+        selectedMealType = dishesViewModel.selectedMealType.value
+        selectedFoodType = dishesViewModel.selectedFoodType.value
+        selectedCuisine = dishesViewModel.selectedCuisine.value
+        // Repaint tab UI (circle indicators, colors)
+        updateTabColors(false)
+        // Re-apply filter if needed
+        refreshRecipesList()
     }
 }

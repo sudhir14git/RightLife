@@ -23,7 +23,7 @@
             android:src="@drawable/poha_image" />
 
         <!-- Green dot -->
-        <View
+        <ImageView
             android:id="@+id/statusDot"
             android:layout_width="15dp"
             android:layout_height="15dp"
