@@ -1351,7 +1351,8 @@ class AssessmentPagerAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = assessments[position]
         holder.title.text = item.assessment
-        holder.scoreText.text = "Your Score: ${item.score}"
+        val result = item.score.substringBefore(".")
+        holder.scoreText.text = "Your Score: ${result}"
         when (item?.assessment) {
             "DASS-21" -> {
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)

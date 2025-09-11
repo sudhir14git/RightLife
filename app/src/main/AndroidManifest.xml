@@ -490,6 +490,7 @@
         <activity
             android:name=".ai_package.ui.MainAIActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize|stateHidden"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />

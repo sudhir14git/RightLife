@@ -280,14 +280,21 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     // Function to map ActivityModel to WorkoutSessionRecord
     private fun mapActivityModelToWorkoutSessionRecord(activityList: ArrayList<ActivityModel>) {
         activityList.forEach { activity ->
-            val durationValue = activity.duration?.replace(Regex("[^0-9]"), "")?.toIntOrNull() ?: 0
+            val regex = Regex("(\\d+) hr (\\d+) mins")
+            val matchResult = activity?.duration?.let { regex.find(it) }
+
+            var totalMinutes = 0
+            if (matchResult != null) {
+                val (hours, minutes) = matchResult.destructured
+                totalMinutes = hours.toInt() * 60 + minutes.toInt()
+            }
             val caloriesValue = activity.caloriesBurned?.replace(Regex("[^0-9.]"), "")?.toDoubleOrNull()
 
             val workoutRecord = WorkoutSessionRecord(
                 userId = activity.userId!!,
                 activityId = activity.activityId!!,
                 moduleIcon = activity.icon!!,
-                durationMin = durationValue,
+                durationMin = totalMinutes,
                 intensity = activity.intensity!!,
                 sessions = 1,
                 moduleName = activity.workoutType!!,

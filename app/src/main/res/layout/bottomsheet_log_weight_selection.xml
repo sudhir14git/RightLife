@@ -132,6 +132,7 @@
             android:layout_marginStart="15dp"
             android:layout_gravity="center"
             android:gravity="center"
+            android:visibility="invisible"
             android:orientation="horizontal">
 
             <TextView

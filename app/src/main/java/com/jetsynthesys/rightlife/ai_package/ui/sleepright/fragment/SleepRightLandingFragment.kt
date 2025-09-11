@@ -80,6 +80,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.MPPointF
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
@@ -2524,6 +2525,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 performCardView.visibility = View.VISIBLE
                 tvPerformStartTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
                 tvPerformWakeTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
+            val dialog = LogYourNapDialogFragment(
+                requireContext = requireContext(),
+                listener = object : OnLogYourNapSelectedListener {
+                    override fun onLogTimeSelected(time: String) {
+                        fetchSleepLandingData()
+                    }
+                }
+            )
             if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == 0.0){
                 tvPerformSleepPercent.text = "0"
                 tvPerformAction.visibility = View.GONE
@@ -2544,20 +2553,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     tvPerformIdealDuration.text = "7 hr 30 min"
                 }
                 if (!isRepeat && !bottomSeatName.contentEquals("LogLastNightSleep") && sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == 0.0) {
-                    val dialog = LogYourNapDialogFragment(
-                        requireContext = requireContext(),
-                        listener = object : OnLogYourNapSelectedListener {
-                            override fun onLogTimeSelected(time: String) {
-                                fetchSleepLandingData()
-                            }
-                        }
-                    )
                     val args = Bundle()
                     args.putString("BottomSeatName", bottomSeatName)
                     dialog.arguments = args
                     dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
                 }
             }else{
+                if (dialog.isVisible) dialog.dismiss()
                 tvPerformAction.visibility = View.VISIBLE
                 tvPerformMessage.visibility = View.VISIBLE
                 tvSleepAnalysis.visibility = View.GONE

@@ -351,7 +351,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
        dialogBinding.rulerView.layoutManager = layoutManager
        // Generate numbers with increments of 0.1
 
-       for (i in 0..1000) {
+       for (i in 0..2000) {
            numbers.add(i / 10f) // Increment by 0.1
        }
 
@@ -521,7 +521,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
    }
     private fun setKgsValue() {
         numbers.clear()
-        for (i in 0..1000) {
+        for (i in 0..2000) {
             numbers.add(i / 10f) // Increment by 0.1
         }
         logWeightRulerAdapter.notifyDataSetChanged()
@@ -529,7 +529,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
 
     private fun setLbsValue() {
         numbers.clear()
-        for (i in 0..2204) {
+        for (i in 0..4410) {
             numbers.add(i / 10f)
         }
         logWeightRulerAdapter.notifyDataSetChanged()
