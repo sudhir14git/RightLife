@@ -33,4 +33,11 @@ class DishesViewModel : ViewModel() {
     fun setSelectedCuisine(type: String?) {
         _selectedCuisine.value = type
     }
+
+    // In DishesViewModel
+    private val _selectedTabIndex = MutableLiveData<Int?>()
+    val selectedTabIndex: LiveData<Int?> get() = _selectedTabIndex
+    fun setSelectedTabIndex(index: Int?) {
+        _selectedTabIndex.value = index
+    }
 }
