@@ -101,7 +101,7 @@ public class LineGrapghViewSteps extends View {
         float paddingBottom = 60f; // Increased space for X-axis labels to prevent overlap
         float paddingTop = 40f; // Increased padding at the top to prevent clipping
         float paddingLeft = 40f; // Increased left padding for graph
-        float paddingRight = 80f; // Increased right padding for Y-axis labels
+        float paddingRight = 120f; // Increased right padding for Y-axis labels
         float graphHeight = height - paddingBottom - paddingTop; // Adjusted graph height
         float effectiveWidth = width - paddingLeft - paddingRight; // Effective width after padding
 
