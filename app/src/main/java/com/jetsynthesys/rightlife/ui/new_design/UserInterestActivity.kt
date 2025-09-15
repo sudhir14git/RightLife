@@ -271,7 +271,7 @@ class UserInterestActivity : BaseActivity() {
                             })
                     } else {
                         val intent =
-                            Intent(this@UserInterestActivity, PersonalisationActivity::class.java)
+                            Intent(this@UserInterestActivity, EnableNotificationActivity::class.java)
                         intent.putExtra("WellnessFocus", header)
                         sharedPreferenceManager.interest = true
                         startActivity(intent)

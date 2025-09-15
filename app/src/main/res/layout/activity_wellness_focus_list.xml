@@ -22,6 +22,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:gravity="center">
 
             <ImageView
@@ -49,21 +50,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/ll_header"
-        android:layout_margin="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/merriweather_bold"
-        android:text="@string/your_journey_your_way"
+        android:text="Choose Your Goals"
         android:textColor="@color/txt_color_header"
-        android:textSize="20sp" />
+        android:textSize="24sp" />
 
     <TextView
         android:id="@+id/tv_choose_str"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_ur_journey"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginHorizontal="20dp"
         android:fontFamily="@font/dmsans_regular"
-        android:text="@string/choose_goals"
+        android:text="Choose 2 to 4 goals you want to focus on, and we'll be with you every step of the way."
         android:textColor="@color/txt_color_header"
         android:textSize="16sp" />
 
