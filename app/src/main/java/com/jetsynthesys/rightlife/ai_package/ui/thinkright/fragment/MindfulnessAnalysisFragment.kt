@@ -98,9 +98,10 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         mindfullDesc = view.findViewById(R.id.tv_mindfull_desc)
         average = view.findViewById(R.id.tv_average_number)
         radioGroup.check(R.id.rbWeek)
+        val backBtn = view.findViewById<ImageView>(R.id.img_back)
         // Show Week data by default
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        mStartDate = getOneWeekEarlierDate().format(dateFormatter)
+        mStartDate = getOneWeekWindowStart().format(dateFormatter)
         mEndDate = getTodayDate().format(dateFormatter)
         val endOfWeek = currentDateWeek
         val startOfWeek = endOfWeek.minusDays(6)
@@ -111,31 +112,30 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
        // updateChart(getWeekData(), getWeekLabels())
         fetchMindfullnessData(mStartDate, mEndDate)
 
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
-
             }
         })
-
-        val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
             navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
-
     }
 
     fun getTodayDate(): LocalDate {
         return LocalDate.now()
     }
 
+    fun getOneWeekWindowStart(): LocalDate {
+        return LocalDate.now().minusDays(6) // today included, so 7 days total
+    }
+
     fun getOneWeekEarlierDate(): LocalDate {
         return LocalDate.now().minusWeeks(1)
     }
     fun getOneMonthEarlierDate(): LocalDate {
-        return LocalDate.now().minusMonths(1)
+        return LocalDate.now().minusDays(29)
     }
     fun getSixMonthsEarlierDate(): LocalDate {
         return LocalDate.now().minusMonths(6)
@@ -153,10 +153,10 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     rbWeek.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                     rbMonth.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
                     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
+                    val startDate = getOneWeekWindowStart().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
+                    dateRangeText.text = "${getOneWeekWindowStart().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
                     fetchMindfullnessData(startDate,endDate)
                 }
                 R.id.rbMonth -> {
@@ -195,7 +195,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     loadWeekData()
                 }
                 1 -> {
-                    currentDateMonth = currentDateMonth.minusMonths(1)
+                    currentDateMonth = currentDateMonth.minusDays(29)
                     loadMonthData()
                 }
                 2 -> {
@@ -215,7 +215,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                 }
                 1 -> {
                     if (currentDateMonth < LocalDate.now()){
-                        currentDateMonth = currentDateMonth.plusMonths(1)
+                        currentDateMonth = currentDateMonth.plusDays(29)
                         loadMonthData()
                     }
                 }
@@ -237,10 +237,8 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         fetchMindfullnessData(startOfWeek.format(formatter1),endOfWeek.format(formatter1))
-
     //    val entries = mutableListOf<BarEntry>()
     //    updateChart(entries, listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
-
     }
 
     private fun formatDateToDayMonth(inputDate: String): String {
@@ -252,7 +250,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
 
     private fun loadMonthData() {
         val endOfMonth = currentDateMonth
-        val startOfMonth = endOfMonth.minusMonths(1)
+        val startOfMonth = endOfMonth.minusDays(29)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
 
@@ -378,7 +376,6 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     private fun fetchMindfullnessData(startDate: String, endDate: String) {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.fetchMindFull(token,startDate, endDate)
         call.enqueue(object : Callback<MindfullResponse> {
             override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
@@ -388,7 +385,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     mindfullTitle.text = mindfullResponse?.data?.title
                     mindfullDesc.text = mindfullResponse?.data?.description
                     if (mindfullResponse?.data?.averageDuration != null) {
-                        average.text = mindfullResponse?.data?.averageDuration.toString()
+                        average.text = formatMinutesToHours(mindfullResponse?.data?.averageDuration!!.toInt())
                     }
                     if (mindfullResponse.data?.formattedData?.isNotEmpty() == true) {
                         if (mindfullResponse.data?.formattedData?.size!! > 8){
@@ -409,6 +406,18 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                 progressDialog.dismiss()
             }
         })
+    }
+
+    fun formatMinutesToHours(minutes: Int): String {
+        val hours = minutes / 60
+        val mins = minutes % 60
+        return if (hours > 0) {
+            // Show hours and minutes (with leading zeros for minutes)
+            String.format("%d hr %02d mins", hours, mins)
+        } else {
+            // Only minutes
+            String.format("%d mins", mins)
+        }
     }
 
 

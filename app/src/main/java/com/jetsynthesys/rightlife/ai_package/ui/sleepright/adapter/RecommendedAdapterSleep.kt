@@ -186,6 +186,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
                     .into(holder.overlay)
             }
             "SERIES" ->{
+                holder.overlay.visibility = View.GONE
                 Glide.with(context)
                     .load( R.drawable.book_mini_icon)
                     .placeholder(R.drawable.book_mini_icon)

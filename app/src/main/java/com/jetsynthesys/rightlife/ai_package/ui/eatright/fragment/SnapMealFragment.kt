@@ -275,7 +275,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (moduleName.equals("HomeDashboard")){
-                    startActivity(Intent(context, HomeNewActivity::class.java))
+                   // startActivity(Intent(context, HomeNewActivity::class.java))
                     requireActivity().finish()
                 }else if (homeTab.equals("homeTab")){
                     val fragment = HomeTabMealFragment()
@@ -305,7 +305,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
         backButton.setOnClickListener {
             if (moduleName.equals("HomeDashboard")){
-                startActivity(Intent(context, HomeNewActivity::class.java))
+               // startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }else if (homeTab.equals("homeTab")){
                 val fragment = HomeTabMealFragment()
@@ -456,7 +456,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             Activity.RESULT_CANCELED -> {
                 // ✅ Only here when user presses back or closes camera
                 if (moduleName.equals("HomeDashboard")){
-                    startActivity(Intent(context, HomeNewActivity::class.java))
+                   // startActivity(Intent(context, HomeNewActivity::class.java))
                     requireActivity().finish()
                 }else{
                     val fragment = HomeBottomTabFragment()
