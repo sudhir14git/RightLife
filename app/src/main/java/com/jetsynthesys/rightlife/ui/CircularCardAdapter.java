@@ -65,7 +65,7 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                 // Start new activity here
 
                 if (item.getCategory().equalsIgnoreCase("daily") ||
-                        item.getCategory().equalsIgnoreCase("CONTENT")) {
+                        item.getCategory().equalsIgnoreCase("CONTENT") || item.getCategory().equalsIgnoreCase("Test Category")) {
                     Intent intent = new Intent(mContext, ContentDetailsActivity.class);
                     intent.putExtra("contentId", item.getSeriesId());
                     mContext.startActivity(intent);

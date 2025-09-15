@@ -30,6 +30,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityTodaysAffirmationBinding
 import com.jetsynthesys.rightlife.databinding.LayoutDiscardBottomsheetBinding
+import com.jetsynthesys.rightlife.ui.BalloonAlignment
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.AffirmationCardPagerAdapter
@@ -288,9 +289,13 @@ class TodaysAffirmationActivity : BaseActivity() {
             when (affirmationPlaylist.size) {
                 1 -> {
                     //Toast.makeText(this, "Great choice, keep going.", Toast.LENGTH_SHORT).show()
-                    showBalloon(
+                    /*showBalloon(
                         binding.addAffirmation, "Great choice, keep going.",
-                        xOff = xOff, yOff = yOff
+                        BalloonAlignment.BOTTOM,0.5f, xOff = 10, yOff = -100
+                    )*/
+                    showBalloonWithDim(
+                        binding.addAffirmation, "Great choice, keep going.","AffirmationAddButton",
+                        BalloonAlignment.BOTTOM,0.5f, xOff = 10, yOff = -100
                     )
                 }
 
@@ -729,7 +734,7 @@ class TodaysAffirmationActivity : BaseActivity() {
                     showBalloonWithDim(
                         binding.addAffirmation,
                         "Save to your Playlist",
-                        "AffirmationAddButton", xOff = 10, yOff = -200
+                        "AffirmationAddButton", BalloonAlignment.BOTTOM,0.5f, xOff = 10, yOff = -100
                     )
                 }
         }

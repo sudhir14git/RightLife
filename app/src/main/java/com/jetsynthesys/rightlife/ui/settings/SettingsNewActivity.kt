@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.settings
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -200,7 +201,7 @@ class SettingsNewActivity : BaseActivity() {
         })
     }
 
-    private fun clearUserDataAndFinish() {
+ /*   private fun clearUserDataAndFinish() {
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.USER_SIGN_OUT
@@ -216,6 +217,56 @@ class SettingsNewActivity : BaseActivity() {
         startActivity(intent)
 
         finishAffinity()
+    }*/
+
+    private fun clearUserDataAndFinish() {
+        val keysToKeep = setOf(
+            SharedPreferenceConstants.ALL_IN_ONE_PLACE,
+            SharedPreferenceConstants.AFFIRMATION_CONTEXT_SCREEN,
+            SharedPreferenceConstants.BREATH_WORK_CONTEXT_SCREEN,
+            SharedPreferenceConstants.FACE_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.JOURNAL_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MEAL_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MIND_AUDIT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MRER_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_SOUND_CONTEXT_SCREEN,
+            SharedPreferenceConstants.TRSR_CONTEXT_SCREEN,
+            SharedPreferenceConstants.EAT_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MOVE_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.THINK_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN
+        )
+
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.USER_SIGN_OUT
+        )
+
+        // Clear shared preferences selectively - remove only keys not in the keep list
+        val sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
+        removeKeysNotInKeepList(sharedPreferences, keysToKeep)
+
+        val intent = Intent(this, DataControlActivity::class.java)
+        startActivity(intent)
+
+        finishAffinity()
+    }
+
+    private fun removeKeysNotInKeepList(sharedPreferences: SharedPreferences, keysToKeep: Set<String>) {
+        val editor = sharedPreferences.edit()
+
+        // Get all current preference keys
+        val allKeys = sharedPreferences.all.keys
+
+        // Remove keys that are not in the keysToKeep list
+        allKeys.forEach { key ->
+            if (key !in keysToKeep) {
+                editor.remove(key)
+            }
+        }
+
+        editor.apply()
     }
 
     private fun showToast(message: String) {
