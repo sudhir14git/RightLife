@@ -41,7 +41,8 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_margin="12dp"
-                    android:scaleType="fitXY"
+                    android:scaleType="centerCrop"
+                    android:padding="5dp"
                     android:src="@drawable/mr_er1" />
 
                 <LinearLayout

@@ -297,7 +297,7 @@
                                     android:layout_width="match_parent"
                                     android:text="Minimal"
                                     android:gravity="center"
-                                    android:textSize="@dimen/textsize_small"
+                                    android:textSize="@dimen/textsize_extrasmall"
                                     android:textColor="@color/white"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:background="#23BF7D" />
@@ -309,7 +309,7 @@
                                     android:layout_width="match_parent"
                                     android:text="Mild"
                                     android:gravity="center"
-                                    android:textSize="@dimen/textsize_small"
+                                    android:textSize="@dimen/textsize_extrasmall"
                                     android:textColor="@color/black"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:background="#43C6E0" />
@@ -321,7 +321,7 @@
                                     android:layout_width="match_parent"
                                     android:text="Moderate"
                                     android:gravity="center"
-                                    android:textSize="@dimen/textsize_small"
+                                    android:textSize="@dimen/textsize_extrasmall"
                                     android:textColor="@color/white"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:background="#6F9EF6" />
@@ -333,7 +333,7 @@
                                     android:layout_width="match_parent"
                                     android:text="Severe"
                                     android:gravity="center"
-                                    android:textSize="@dimen/textsize_small"
+                                    android:textSize="@dimen/textsize_extrasmall"
                                     android:textColor="@color/black"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:background="#F7B334" />
@@ -345,7 +345,7 @@
                                     android:layout_width="match_parent"
                                     android:text="Ext Severe"
                                     android:gravity="center"
-                                    android:textSize="@dimen/textsize_small"
+                                    android:textSize="@dimen/textsize_extrasmall"
                                     android:textColor="@color/white"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:background="#F95F50" />
@@ -438,14 +438,23 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
                                 android:weightSum="5">
-
                                 <TextView
                                     style="@style/ScoreStepLabel"
                                     android:layout_height="wrap_content"
                                     android:layout_width="wrap_content"
                                     android:gravity="start"
                                     android:textColor="@color/text_color_app"
+                                    android:background="@drawable/grey_border_bg"
+                                    android:paddingHorizontal="3dp"
                                     android:text="1"
+                                     />
+                                <TextView
+                                    style="@style/ScoreStepLabel"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"
+                                    android:gravity="start"
+                                    android:textColor="@color/text_color_app"
+                                    android:text=""
                                     android:layout_weight="1" />
 
                                 <TextView
@@ -455,7 +464,18 @@
                                     android:gravity="start"
                                     android:textColor="@color/text_color_app"
                                     android:text="2"
+                                    android:background="@drawable/grey_border_bg"
+                                    android:paddingHorizontal="3dp"
+                                     />
+                                <TextView
+                                    style="@style/ScoreStepLabel"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"
+                                    android:gravity="start"
+                                    android:textColor="@color/text_color_app"
+                                    android:text=""
                                     android:layout_weight="1" />
+
 
                                 <TextView
                                     style="@style/ScoreStepLabel"
@@ -464,6 +484,16 @@
                                     android:gravity="start"
                                     android:textColor="@color/text_color_app"
                                     android:text="3"
+                                    android:background="@drawable/grey_border_bg"
+                                    android:paddingHorizontal="3dp"
+                                     />
+                                <TextView
+                                    style="@style/ScoreStepLabel"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"
+                                    android:gravity="start"
+                                    android:textColor="@color/text_color_app"
+                                    android:text=""
                                     android:layout_weight="1" />
 
                                 <TextView
@@ -473,6 +503,16 @@
                                     android:gravity="start"
                                     android:textColor="@color/text_color_app"
                                     android:text="4"
+                                    android:background="@drawable/grey_border_bg"
+                                    android:paddingHorizontal="3dp"
+                                     />
+                                <TextView
+                                    style="@style/ScoreStepLabel"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"
+                                    android:gravity="start"
+                                    android:textColor="@color/text_color_app"
+                                    android:text=""
                                     android:layout_weight="1" />
 
                                 <TextView
@@ -482,6 +522,15 @@
                                     android:gravity="start"
                                     android:textColor="@color/text_color_app"
                                     android:text="5"
+                                    android:background="@drawable/grey_border_bg"
+                                    android:paddingHorizontal="3dp" />
+                                <TextView
+                                    style="@style/ScoreStepLabel"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"
+                                    android:gravity="start"
+                                    android:textColor="@color/text_color_app"
+                                    android:text=""
                                     android:layout_weight="1" />
 
                                 <TextView
@@ -491,6 +540,15 @@
                                     android:gravity="start"
                                     android:textColor="@color/text_color_app"
                                     android:text="6"
+                                    android:background="@drawable/grey_border_bg"
+                                    android:paddingHorizontal="3dp" />
+                                <TextView
+                                    style="@style/ScoreStepLabel"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"
+                                    android:gravity="start"
+                                    android:textColor="@color/text_color_app"
+                                    android:text=""
                                     android:layout_weight="0" />
                             </LinearLayout>
 

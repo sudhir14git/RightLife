@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.PointerIcon
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -787,9 +788,31 @@ class MindAuditResultActivity : BaseActivity() {
             }
         }
 
-        for (assessment in suggestedAssessments) {
+    /*    for (assessment in suggestedAssessments) {
             addChip(assessment, assessment == selectedAssessment)
+        }*/
+
+        for (assessmentName in suggestedAssessments) {
+            var isCompleted = false
+
+            // check in savedAssessment list
+            for (saved in assessments?.savedAssessment ?: emptyList()) {
+                if (saved.assessmentType == assessmentName && saved.isCompleted) {
+                    isCompleted = true
+                    break
+                }
+            }
+
+            if (isCompleted) {
+                // completed → green chip
+                addChip(assessmentName, assessmentName == selectedAssessment, false)
+            } else {
+                // not completed → blue chip
+                addChip(assessmentName, assessmentName == selectedAssessment, true)
+            }
         }
+
+
         //if (allAssessments.isNotEmpty()) {
         addChip("Other")
         //}
@@ -818,7 +841,8 @@ class MindAuditResultActivity : BaseActivity() {
 
     private fun addChip(
         name: String,
-        isSelected: Boolean = false
+        isSelected: Boolean = false,
+        isShowIcon: Boolean = false
     ) {
         val chip = Chip(this)
         chip.id = View.generateViewId() // Generate unique ID
