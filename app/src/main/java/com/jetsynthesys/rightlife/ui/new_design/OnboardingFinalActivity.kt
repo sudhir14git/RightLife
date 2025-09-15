@@ -8,8 +8,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
@@ -40,6 +41,25 @@ class OnboardingFinalActivity : BaseActivity() {
         llOnboardingFinal2 = findViewById(R.id.ll_final_onboarding2)
         llOnboardingFinal3 = findViewById(R.id.ll_final_onboarding3)
         llOnboardingFinal4 = findViewById(R.id.ll_final_onboarding4)
+
+        val loggedInUsers = sharedPreferenceManager.loggedUserList
+
+        var loggedInUser: LoggedInUser? = null
+        val iterator = loggedInUsers.iterator()
+        while (iterator.hasNext()) {
+            val user = iterator.next()
+            if (sharedPreferenceManager.email == user.email) {
+                iterator.remove() // Safe removal
+                user.isOnboardingComplete = true
+                loggedInUser = user
+            }
+        }
+
+        if (loggedInUser != null) {
+            loggedInUsers.add(loggedInUser)
+            sharedPreferenceManager.setLoggedInUsers(loggedInUsers)
+        }
+        sharedPreferenceManager.clearOnboardingData()
 
         AnalyticsLogger.logEvent(
             AnalyticsEvent.CRAFTING_PERSONALISE_VISIT,
