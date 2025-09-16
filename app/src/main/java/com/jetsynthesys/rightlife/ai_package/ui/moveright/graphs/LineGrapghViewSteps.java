@@ -122,17 +122,25 @@ public class LineGrapghViewSteps extends View {
         }
         // Set a default max value if no valid data
         if (globalMaxValue == Float.MIN_VALUE) {
-            globalMaxValue = 2500f; // Changed default max to 2500
+            globalMaxValue = 2500f; // Default max to 2500
         }
 
-        // Calculate dynamic maxValue (ceiling to nearest multiple of 2500) - Changed from 5000 to 2500
-        float maxValue = (float) (Math.ceil(globalMaxValue / 2500f) * 2500f);
-        if (maxValue < 2500f) maxValue = 2500f; // Ensure at least one increment - Changed to 2500
+        // Calculate dynamic maxValue (ceiling to nearest multiple of interval)
+        float interval;
+        if (globalMaxValue <= 2500f) {
+            interval = 500f; // Interval of 500 for max value <= 2500
+        } else if (globalMaxValue <= 5000f) {
+            interval = 1000f; // Interval of 1000 for max value > 2500 and <= 5000
+        } else {
+            interval = 2500f; // Interval of 2500 for max value > 5000
+        }
+        float maxValue = (float) (Math.ceil(globalMaxValue / interval) * interval);
+        if (maxValue < interval) maxValue = interval; // Ensure at least one increment
         float scaleY = graphHeight / (maxValue - minValue); // Scale for Y-axis
 
-        // Generate dynamic Y-axis values (0, 2500, 5000, 7500, 10000...) with improved spacing
+        // Generate dynamic Y-axis values based on interval
         List<Float> yAxisValues = new ArrayList<>();
-        for (float value = 0f; value <= maxValue; value += 2500f) { // Changed increment to 2500
+        for (float value = 0f; value <= maxValue; value += interval) {
             yAxisValues.add(value);
         }
 
