@@ -3150,7 +3150,6 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val sleepSegments = mutableListOf<Segment>()
-
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
     private data class Segment(
