@@ -3047,7 +3047,6 @@ private fun showTimePickerAgain(
     timePickerDialog.show()
 }
 
-
 class SleepChartViewLanding(
     context: android.content.Context,
     attrs: android.util.AttributeSet? = null
@@ -3100,10 +3099,8 @@ class SleepMarkerView1(context: Context, private val data: List<SleepEntry>) : M
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
         if (e != null) {
             val xIndex = e.x.toInt()
-
             // Find the corresponding data entry by index
             val selectedData = data.getOrNull(xIndex)
-
             selectedData?.let {
               //  val ideal = it.idealSleep
               //  val actual = it.actualSleep
@@ -3133,14 +3130,11 @@ class SleepMarkerView(context: Context, private val data: List<SleepGraphData>) 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
         if (e != null) {
             val xIndex = e.x.toInt()
-
             // Find the corresponding data entry by index
             val selectedData = data.getOrNull(xIndex)
-
             selectedData?.let {
                 val ideal = it.idealSleep
                 val actual = it.actualSleep
-
                 tvContent.text = "Ideal: $ideal hrs\nActual: $actual hrs"
             }
         }
@@ -3167,9 +3161,7 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
 
     fun setSleepData(data: List<SleepStagesData>) {
         sleepSegments.clear()
-
         if (data.isEmpty()) return
-
         // Parse timestamps and calculate total duration
         val parsedData = data.mapNotNull {
             try {
@@ -3189,33 +3181,26 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
             val color = getColorForRecordType(recordType!!)
             sleepSegments.add(Segment(position, fraction, color))
         }
-
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         val w = width.toFloat()
         val h = height.toFloat()
-
         // Set the background color (replace with desired color)
         canvas.drawColor(Color.parseColor("#F5F9FF")) // Example: light gray
-
         val barHeight = h * 0.25f
         val cornerRadius = barHeight / 4
         var currentX = 0f
-
         sleepSegments.forEach { segment ->
             paint.color = segment.color
-
             val top = when (segment.position) {
                 Position1.UPPER -> h * 0.1f
                 Position1.LOWER -> h * 0.35f
             }
             val bottom = top + barHeight
             val right = currentX + (segment.widthFraction * w)
-
             canvas.drawRoundRect(RectF(currentX, top, right, bottom), cornerRadius, cornerRadius, paint)
             currentX = right
         }
