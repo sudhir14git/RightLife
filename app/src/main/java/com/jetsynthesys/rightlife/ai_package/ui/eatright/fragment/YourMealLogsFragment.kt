@@ -294,6 +294,16 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                         addToBackStack("landing")
                         commit()
                     }
+                }else if (moduleName.contentEquals("EatRightLandingWithoutPopup")){
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", "EatRight")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
                 }else if (moduleName.contentEquals("HomeDashboard")){
                     activity?.finish()
                 }else{
@@ -420,6 +430,16 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         backButton.setOnClickListener {
 
             if (moduleName.contentEquals("EatRightLanding")){
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else if (moduleName.contentEquals("EatRightLandingWithoutPopup")){
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
                 args.putString("ModuleName", "EatRight")
