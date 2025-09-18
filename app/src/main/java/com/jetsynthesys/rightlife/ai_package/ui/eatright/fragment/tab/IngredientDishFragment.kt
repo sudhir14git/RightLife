@@ -241,7 +241,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         }else{
             if (ingredientLocalListModel != null){
                 for (item in ingredientLocalListModel!!.data) {
-                    if (item.ingredient_name.contentEquals(ingredientName)) {
+                    if (item.food_name.contentEquals(ingredientName)) {
                         setDishData(item, false)
                         onMacroNutrientsList(item, 1.0, 1.0)
                         onMicroNutrientsList(item, 1.0, 1.0)
@@ -269,7 +269,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                         }else{
                             if (ingredientLocalListModel != null){
                                 for (item in ingredientLocalListModel!!.data) {
-                                    if (item.ingredient_name.contentEquals(ingredientName)) {
+                                    if (item.food_name.contentEquals(ingredientName)) {
                                         setDishData(item, true)
                                         var ingredientQuantity = 0.0
                                         if (item.quantity > 0.0){
@@ -317,28 +317,36 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                             }
                             val ingredientData = IngredientDetail(
                                 id = foodData.id,
-                                ingredient_code = foodData.ingredient_code,
-                                ingredient_name = foodData.ingredient_name,
-                                ingredient_category = foodData.ingredient_category,
+                                food_code = foodData.food_code,
+                                food_name = foodData.food_name,
+                                food_category = foodData.food_category,
                                 photo_url = foodData.photo_url,
-                                calories = calculateValue(foodData.calories, ingredientQuantity, targetValue),
-                                carbs = calculateValue(foodData.carbs, ingredientQuantity, targetValue),
-                                sugar = calculateValue(foodData.sugar, ingredientQuantity, targetValue),
-                                fiber = calculateValue(foodData.fiber, ingredientQuantity, targetValue),
-                                protein = calculateValue(foodData.protein, ingredientQuantity, targetValue),
-                                fat = calculateValue(foodData.fat, ingredientQuantity, targetValue),
-                                cholesterol = calculateValue(foodData.cholesterol, ingredientQuantity, targetValue),
-                                vitamin_a = calculateValue(foodData.vitamin_a, ingredientQuantity, targetValue),
-                                vitamin_c = calculateValue(foodData.vitamin_c, ingredientQuantity, targetValue),
-                                vitamin_k = calculateValue(foodData.vitamin_k, ingredientQuantity, targetValue),
-                                vitamin_d = calculateValue(foodData.vitamin_d, ingredientQuantity, targetValue),
-                                folate = calculateValue(foodData.folate, ingredientQuantity, targetValue),
-                                iron = calculateValue(foodData.iron, ingredientQuantity, targetValue),
-                                calcium = calculateValue(foodData.calcium, ingredientQuantity, targetValue),
-                                magnesium = calculateValue(foodData.magnesium, ingredientQuantity, targetValue),
-                                sodium = calculateValue(foodData.sodium, ingredientQuantity, targetValue),
-                                potassium = calculateValue(foodData.potassium, ingredientQuantity, targetValue),
-                                zinc = calculateValue(foodData.zinc, ingredientQuantity, targetValue),
+                                standard_serving_size = foodData.standard_serving_size,
+                                calories_kcal = calculateValue(foodData.calories_kcal, ingredientQuantity, targetValue),
+                                carbs_g = calculateValue(foodData.carbs_g, ingredientQuantity, targetValue),
+                                fiber_g = calculateValue(foodData.fiber_g, ingredientQuantity, targetValue),
+                                sugars_g = calculateValue(foodData.sugars_g, ingredientQuantity, targetValue),
+                                vit_b6_mg = calculateValue(foodData.vit_b6_mg, ingredientQuantity, targetValue),
+                                vit_b12_mcg = calculateValue(foodData.vit_b12_mcg, ingredientQuantity, targetValue),
+                                protein_g = calculateValue(foodData.protein_g, ingredientQuantity, targetValue),
+                                fat_g = calculateValue(foodData.fat_g, ingredientQuantity, targetValue),
+                                vit_a_mcg = calculateValue(foodData.vit_a_mcg, ingredientQuantity, targetValue),
+                                vit_c_mg = calculateValue(foodData.vit_c_mg, ingredientQuantity, targetValue),
+                                vit_d_mcg = calculateValue(foodData.vit_d_mcg, ingredientQuantity, targetValue),
+                                vit_e_mg = calculateValue(foodData.vit_e_mg, ingredientQuantity, targetValue),
+                                folate_b9_mcg = calculateValue(foodData.folate_b9_mcg, ingredientQuantity, targetValue),
+                                vit_k_mcg = calculateValue(foodData.vit_k_mcg, ingredientQuantity, targetValue),
+                                thiamin_b1_mg = calculateValue(foodData.thiamin_b1_mg, ingredientQuantity, targetValue),
+                                riboflavin_b2_mg = calculateValue(foodData.riboflavin_b2_mg, ingredientQuantity, targetValue),
+                                niacin_b3_mg = calculateValue(foodData.niacin_b3_mg, ingredientQuantity, targetValue),
+                                iron_mg = calculateValue(foodData.iron_mg, ingredientQuantity, targetValue),
+                                calcium_mg = calculateValue(foodData.calcium_mg, ingredientQuantity, targetValue),
+                                magnesium_mg = calculateValue(foodData.magnesium_mg, ingredientQuantity, targetValue),
+                                zinc_mg = calculateValue(foodData.zinc_mg, ingredientQuantity, targetValue),
+                                potassium_mg = calculateValue(foodData.potassium_mg, ingredientQuantity, targetValue),
+                                sodium_mg = calculateValue(foodData.sodium_mg, ingredientQuantity, targetValue),
+                                phosphorus_mg = calculateValue(foodData.phosphorus_mg, ingredientQuantity, targetValue),
+                                omega3_g = calculateValue(foodData.omega3_g, ingredientQuantity, targetValue),
                                 quantity =  quantityEdit.text.toString().toDouble(),
                                 measure = tvMeasure.text.toString()
                             )
@@ -365,7 +373,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                         if (ingredientLocalListModel != null) {
                             if (ingredientLocalListModel!!.data.size > 0) {
                                 for (item in ingredientLocalListModel!!.data) {
-                                    if (item.ingredient_name.contentEquals(ingredientName)) {
+                                    if (item.food_name.contentEquals(ingredientName)) {
                                         val foodData = item
                                         var targetValue = 0.0
                                         if (quantityEdit.text.toString().toDouble() > 0.0){
@@ -373,7 +381,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                                         }else{
                                             targetValue = 0.0
                                         }
-                                        val index = ingredientLocalListModel!!.data.indexOfFirst { it.ingredient_name == ingredientName }
+                                        val index = ingredientLocalListModel!!.data.indexOfFirst { it.food_name == ingredientName }
                                         var ingredientQuantity = 0.0
                                         if (foodData.quantity != null && foodData.quantity > 0.0){
                                             ingredientQuantity = foodData.quantity
@@ -382,28 +390,36 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                                         }
                                         val ingredientData = IngredientDetail(
                                             id = foodData.id,
-                                            ingredient_code = foodData.ingredient_code,
-                                            ingredient_name = foodData.ingredient_name,
-                                            ingredient_category = foodData.ingredient_category,
+                                            food_code = foodData.food_code,
+                                            food_name = foodData.food_name,
+                                            food_category = foodData.food_category,
                                             photo_url = foodData.photo_url,
-                                            calories = calculateValue(foodData.calories, ingredientQuantity, targetValue),
-                                            carbs = calculateValue(foodData.carbs, ingredientQuantity, targetValue),
-                                            sugar = calculateValue(foodData.sugar, ingredientQuantity, targetValue),
-                                            fiber = calculateValue(foodData.fiber, ingredientQuantity, targetValue),
-                                            protein = calculateValue(foodData.protein, ingredientQuantity, targetValue),
-                                            fat = calculateValue(foodData.fat, ingredientQuantity, targetValue),
-                                            cholesterol = calculateValue(foodData.cholesterol, ingredientQuantity, targetValue),
-                                            vitamin_a = calculateValue(foodData.vitamin_a, ingredientQuantity, targetValue),
-                                            vitamin_c = calculateValue(foodData.vitamin_c, ingredientQuantity, targetValue),
-                                            vitamin_k = calculateValue(foodData.vitamin_k, ingredientQuantity, targetValue),
-                                            vitamin_d = calculateValue(foodData.vitamin_d, ingredientQuantity, targetValue),
-                                            folate = calculateValue(foodData.folate, ingredientQuantity, targetValue),
-                                            iron = calculateValue(foodData.iron, ingredientQuantity, targetValue),
-                                            calcium = calculateValue(foodData.calcium, ingredientQuantity, targetValue),
-                                            magnesium = calculateValue(foodData.magnesium, ingredientQuantity, targetValue),
-                                            sodium = calculateValue(foodData.sodium, ingredientQuantity, targetValue),
-                                            potassium = calculateValue(foodData.potassium, ingredientQuantity, targetValue),
-                                            zinc = calculateValue(foodData.zinc, ingredientQuantity, targetValue),
+                                            standard_serving_size = foodData.standard_serving_size,
+                                            calories_kcal = calculateValue(foodData.calories_kcal, ingredientQuantity, targetValue),
+                                            carbs_g = calculateValue(foodData.carbs_g, ingredientQuantity, targetValue),
+                                            fiber_g = calculateValue(foodData.fiber_g, ingredientQuantity, targetValue),
+                                            sugars_g = calculateValue(foodData.sugars_g, ingredientQuantity, targetValue),
+                                            vit_b6_mg = calculateValue(foodData.vit_b6_mg, ingredientQuantity, targetValue),
+                                            vit_b12_mcg = calculateValue(foodData.vit_b12_mcg, ingredientQuantity, targetValue),
+                                            protein_g = calculateValue(foodData.protein_g, ingredientQuantity, targetValue),
+                                            fat_g = calculateValue(foodData.fat_g, ingredientQuantity, targetValue),
+                                            vit_a_mcg = calculateValue(foodData.vit_a_mcg, ingredientQuantity, targetValue),
+                                            vit_c_mg = calculateValue(foodData.vit_c_mg, ingredientQuantity, targetValue),
+                                            vit_d_mcg = calculateValue(foodData.vit_d_mcg, ingredientQuantity, targetValue),
+                                            vit_e_mg = calculateValue(foodData.vit_e_mg, ingredientQuantity, targetValue),
+                                            folate_b9_mcg = calculateValue(foodData.folate_b9_mcg, ingredientQuantity, targetValue),
+                                            vit_k_mcg = calculateValue(foodData.vit_k_mcg, ingredientQuantity, targetValue),
+                                            thiamin_b1_mg = calculateValue(foodData.thiamin_b1_mg, ingredientQuantity, targetValue),
+                                            riboflavin_b2_mg = calculateValue(foodData.riboflavin_b2_mg, ingredientQuantity, targetValue),
+                                            niacin_b3_mg = calculateValue(foodData.niacin_b3_mg, ingredientQuantity, targetValue),
+                                            iron_mg = calculateValue(foodData.iron_mg, ingredientQuantity, targetValue),
+                                            calcium_mg = calculateValue(foodData.calcium_mg, ingredientQuantity, targetValue),
+                                            magnesium_mg = calculateValue(foodData.magnesium_mg, ingredientQuantity, targetValue),
+                                            zinc_mg = calculateValue(foodData.zinc_mg, ingredientQuantity, targetValue),
+                                            potassium_mg = calculateValue(foodData.potassium_mg, ingredientQuantity, targetValue),
+                                            sodium_mg = calculateValue(foodData.sodium_mg, ingredientQuantity, targetValue),
+                                            phosphorus_mg = calculateValue(foodData.phosphorus_mg, ingredientQuantity, targetValue),
+                                            omega3_g = calculateValue(foodData.omega3_g, ingredientQuantity, targetValue),
                                             quantity =  quantityEdit.text.toString().toDouble(),
                                             measure = tvMeasure.text.toString()
                                         )
@@ -445,7 +461,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
 
     private fun setDishData(snapRecipeData: IngredientDetail , isEdit: Boolean) {
         addToTheMealTV.text = "Add To The Recipe"
-        val capitalized = snapRecipeData.ingredient_name.toString().replaceFirstChar { it.uppercase() }
+        val capitalized = snapRecipeData.food_name.toString().replaceFirstChar { it.uppercase() }
         tvMealName.text = capitalized
         if (snapRecipeData.measure != null){
             tvMeasure.text = snapRecipeData.measure
@@ -484,10 +500,10 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
 
     private fun onMacroNutrientsList(mealDetails: IngredientDetail,defaultValue: Double, targetValue: Double) {
 
-        val calories = calculateValue(mealDetails.calories, defaultValue, targetValue)
-        val protein = calculateValue(mealDetails.protein, defaultValue, targetValue)
-        val carbs = calculateValue(mealDetails.carbs, defaultValue, targetValue)
-        val fats = calculateValue(mealDetails.fat, defaultValue, targetValue)
+        val calories = calculateValue(mealDetails.calories_kcal, defaultValue, targetValue)
+        val protein = calculateValue(mealDetails.protein_g, defaultValue, targetValue)
+        val carbs = calculateValue(mealDetails.carbs_g, defaultValue, targetValue)
+        val fats = calculateValue(mealDetails.fat_g, defaultValue, targetValue)
         val calories_kcal : String = calories.toInt().toString()?: "NA"
         val protein_g : String = protein.toInt().toString()?: "NA"
         val carb_g : String = carbs.toInt().toString()?: "NA"
@@ -508,105 +524,126 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
 
     private fun onMicroNutrientsList(mealDetails: IngredientDetail, defaultValue: Double, targetValue: Double) {
 
-        val cholesterol = if (mealDetails.cholesterol != null){
-            calculateValue( mealDetails.cholesterol, defaultValue, targetValue).toInt().toString()
+//        val cholesterol = if (mealDetails.cholesterol != null){
+//            calculateValue( mealDetails.cholesterol, defaultValue, targetValue).toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+        val vitamin_A = if (mealDetails.vit_a_mcg != null){
+            calculateValue( mealDetails.vit_a_mcg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val vitamin_A = if (mealDetails.vitamin_a != null){
-            calculateValue( mealDetails.vitamin_a, defaultValue, targetValue).toInt().toString()
+        val vitamin_C = if (mealDetails.vit_c_mg != null){
+            calculateValue( mealDetails.vit_c_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val vitamin_C = if (mealDetails.vitamin_c != null){
-            calculateValue( mealDetails.vitamin_c, defaultValue, targetValue).toInt().toString()
+        val vitamin_k = if (mealDetails.vit_k_mcg != null){
+            calculateValue( mealDetails.vit_k_mcg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val vitamin_k = if (mealDetails.vitamin_k != null){
-            calculateValue( mealDetails.vitamin_k, defaultValue, targetValue).toInt().toString()
+        val vitaminD = if (mealDetails.vit_d_mcg != null){
+            calculateValue( mealDetails.vit_d_mcg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminD = if (mealDetails.vitamin_d != null){
-            calculateValue( mealDetails.vitamin_d, defaultValue, targetValue).toInt().toString()
+        val folate = if (mealDetails.folate_b9_mcg != null){
+            calculateValue( mealDetails.folate_b9_mcg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val folate = if (mealDetails.folate != null){
-            calculateValue( mealDetails.folate, defaultValue, targetValue).toInt().toString()
+        val iron_mg = if (mealDetails.iron_mg != null){
+            calculateValue( mealDetails.iron_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val iron_mg = if (mealDetails.iron != null){
-            calculateValue( mealDetails.iron, defaultValue, targetValue).toInt().toString()
+        val calcium = if (mealDetails.calcium_mg != null){
+            calculateValue( mealDetails.calcium_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val calcium = if (mealDetails.calcium != null){
-            calculateValue( mealDetails.calcium, defaultValue, targetValue).toInt().toString()
+        val magnesium = if (mealDetails.magnesium_mg != null){
+            calculateValue( mealDetails.magnesium_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val magnesium = if (mealDetails.magnesium != null){
-            calculateValue( mealDetails.magnesium, defaultValue, targetValue).toInt().toString()
+        val potassium_mg = if (mealDetails.potassium_mg != null){
+            calculateValue( mealDetails.potassium_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val potassium_mg = if (mealDetails.potassium != null){
-            calculateValue( mealDetails.potassium, defaultValue, targetValue).toInt().toString()
+//        val fiber_mg = if (mealDetails.fiber != null){
+//            calculateValue( mealDetails.fiber, defaultValue, targetValue).toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+        val zinc = if (mealDetails.zinc_mg != null){
+            calculateValue( mealDetails.zinc_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val fiber_mg = if (mealDetails.fiber != null){
-            calculateValue( mealDetails.fiber, defaultValue, targetValue).toInt().toString()
+        val sodium = if (mealDetails.sodium_mg != null){
+            calculateValue( mealDetails.sodium_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val zinc = if (mealDetails.zinc != null){
-            calculateValue( mealDetails.zinc, defaultValue, targetValue).toInt().toString()
+//        val sugar_mg = if (mealDetails.sugar != null){
+//            calculateValue( mealDetails.sugar, defaultValue, targetValue).toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+        val vitB6 = if (mealDetails.vit_b6_mg != null){
+            calculateValue( mealDetails.vit_b6_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val sodium = if (mealDetails.sodium != null){
-            calculateValue( mealDetails.sodium, defaultValue, targetValue).toInt().toString()
+        val vitB12 = if (mealDetails.vit_b12_mcg != null){
+            calculateValue( mealDetails.vit_b12_mcg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
-        val sugar_mg = if (mealDetails.sugar != null){
-            calculateValue( mealDetails.sugar, defaultValue, targetValue).toInt().toString()
+        val phosphorus = if (mealDetails.phosphorus_mg != null){
+            calculateValue( mealDetails.phosphorus_mg, defaultValue, targetValue).toInt().toString()
         }else{
             "0"
         }
 
         val mealLogs = listOf(
-            MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
-            MicroNutrientsModel(vitamin_A, "mg", "Vitamin A", R.drawable.ic_fats),
+         //   MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
+            MicroNutrientsModel(vitamin_A, "mcg", "Vitamin A", R.drawable.ic_fats),
             MicroNutrientsModel(vitamin_C, "mg", "Vitamin C", R.drawable.ic_fats),
-            MicroNutrientsModel(vitamin_k, "mg", "Vitamin K", R.drawable.ic_fats),
-            MicroNutrientsModel(vitaminD, "mg", "Vitamin D", R.drawable.ic_fats),
-            MicroNutrientsModel(folate, "mg", "Folate", R.drawable.ic_fats),
+            MicroNutrientsModel(vitamin_k, "mcg", "Vitamin K", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminD, "mcg", "Vitamin D", R.drawable.ic_fats),
+            MicroNutrientsModel(vitB6, "mg", "Vitamin B6", R.drawable.ic_fats),
+            MicroNutrientsModel(vitB12, "mcg", "Vitamin B12", R.drawable.ic_fats),
+            MicroNutrientsModel(folate, "mcg", "Folate", R.drawable.ic_fats),
             MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_fats),
             MicroNutrientsModel(calcium, "mg", "Calcium", R.drawable.ic_fats),
             MicroNutrientsModel(magnesium, "mg", "Magnesium", R.drawable.ic_fats),
             MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
-            MicroNutrientsModel(fiber_mg, "mg", "Fiber", R.drawable.ic_fats),
+     //       MicroNutrientsModel(fiber_mg, "mg", "Fiber", R.drawable.ic_fats),
             MicroNutrientsModel(zinc, "mg", "Zinc", R.drawable.ic_fats),
             MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
-            MicroNutrientsModel(sugar_mg, "g", "Sugar", R.drawable.ic_fats)
+    //        MicroNutrientsModel(sugar_mg, "g", "Sugar", R.drawable.ic_fats)
+            MicroNutrientsModel(phosphorus, "mg", "Phosphorus", R.drawable.ic_fats)
         )
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
         for (item in mealLogs){

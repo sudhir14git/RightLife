@@ -205,7 +205,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
 
     private fun filterDishes(query: String) {
         val filteredList = if (query.isEmpty()) searchIngredientList
-        else searchIngredientList.filter { it.ingredient_name.contains(query, ignoreCase = true) }
+        else searchIngredientList.filter { it.food_name.contains(query, ignoreCase = true) }
         snapSearchDishAdapter.updateList(filteredList)
         if (query.isNotEmpty()) {
             searchResultLayout.visibility = View.VISIBLE
@@ -225,7 +225,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getSearchIngredientList(limit)
+        val call = ApiClient.apiServiceFastApiV2.getSearchIngredientList(limit)
         call.enqueue(object : Callback<IngredientResponse> {
             override fun onResponse(call: Call<IngredientResponse>, response: Response<IngredientResponse>) {
                 if (response.isSuccessful) {

@@ -149,7 +149,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
                     for (item in myRecipeList) {
                         // check if this item matches ANY meal in mealDataList
                         val matchFound = mealDataList.any { meal ->
-                            item._id == meal.meal_id && item.recipe_name == meal.recipe_name
+                            item._id == meal.meal_id && item.recipe == meal.recipe_name
                         }
                         if (matchFound) {
                             item.isRecipeLog = true
@@ -186,33 +186,34 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
 
     private fun onEditRecipeItem(myRecipe: MyRecipe, position: Int, isRefresh: Boolean) {
         if (myRecipe != null){
-            val ingredientList = myRecipe.ingredients_per_serving
+            val ingredientList = myRecipe.ingredients
             val ingredientLists : ArrayList<IngredientDetail> = ArrayList()
             ingredientList?.forEach { foodData ->
                 val ingredientData = IngredientDetail(
                     id = foodData.ingredient_id,
-                    ingredient_code = "",
-                    ingredient_name = foodData.ingredient_name,
-                    ingredient_category = foodData.ingredient_category,
+                    food_code = "",
+                    food_name = foodData.ingredient_name,
+                    food_category = foodData.food_category,
                     photo_url = foodData.photo_url,
-                    calories = foodData.calories,
-                    carbs = foodData.carbs,
-                    sugar = foodData.sugar,
-                    fiber = foodData.fiber,
-                    protein = foodData.protein,
-                    fat = foodData.fat,
-                    cholesterol = foodData.calories,
-                    vitamin_a = foodData.vitamin_a,
-                    vitamin_c = foodData.vitamin_c,
-                    vitamin_k = foodData.vitamin_k,
-                    vitamin_d = foodData.vitamin_d,
-                    folate = foodData.folate,
-                    iron = foodData.iron,
-                    calcium = foodData.calcium,
-                    magnesium = foodData.magnesium,
-                    sodium = foodData.sodium,
-                    potassium = foodData.potassium,
-                    zinc = foodData.zinc,
+                    standard_serving_size = foodData.,
+                    calories_kcal = foodData.calories,
+                    carbs_g = foodData.carbs,
+                    vit_b6_mg = "",
+                    vit_b12_mcg = "",
+                    protein_g = foodData.protein,
+                    fat_g = foodData.fat,
+                    phosphorus_mg = "",
+                    vit_a_mcg = foodData.vitamin_a,
+                    vit_c_mg = foodData.vitamin_c,
+                    vit_k_mcg = foodData.vitamin_k,
+                    vit_d_mcg = foodData.vitamin_d,
+                    folate_b9_mcg = foodData.folate,
+                    iron_mg = foodData.iron,
+                    calcium_mg = foodData.calcium,
+                    magnesium_mg = foodData.magnesium,
+                    sodium_mg = foodData.sodium,
+                    potassium_mg = foodData.potassium,
+                    zinc_mg = foodData.zinc,
                     quantity =  foodData.quantity,
                     measure = foodData.measure
                 )

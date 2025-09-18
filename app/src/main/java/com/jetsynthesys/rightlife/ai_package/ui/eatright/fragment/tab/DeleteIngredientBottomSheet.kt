@@ -72,7 +72,7 @@ class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
             if (ingredientLocalListModels != null) {
                 if (ingredientLocalListModels.data.size > 0) {
                     for (item in ingredientLocalListModels.data) {
-                        if (item.ingredient_name.contentEquals(ingredientName)) {
+                        if (item.food_name.contentEquals(ingredientName)) {
                             ingredientLocalListModels.data.remove(item)
                             dismiss()
                             Toast.makeText(view.context, "Ingredient Removed", Toast.LENGTH_SHORT).show()

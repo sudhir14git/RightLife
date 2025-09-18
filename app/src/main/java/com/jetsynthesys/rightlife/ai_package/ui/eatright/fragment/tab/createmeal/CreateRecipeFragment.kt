@@ -337,7 +337,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             args.putString("recipeId", recipeId)
             args.putDouble("serving", servingTv.text.toString().toDouble())
             args.putString("recipeName", addedNameTv.text.toString())
-            args.putString("ingredientName", mealItem.ingredient_name)
+            args.putString("ingredientName", mealItem.food_name)
             args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
             fragment.arguments = args
             replace(R.id.flFragment, fragment, "Steps")
@@ -356,7 +356,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         args.putString("recipeId", recipeId)
         args.putDouble("serving", servingTv.text.toString().toDouble())
         args.putString("recipeName", addedNameTv.text.toString())
-        args.putString("ingredientName", ingredientItem.ingredient_name)
+        args.putString("ingredientName", ingredientItem.food_name)
         args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
         deleteDishBottomSheet.arguments = args
         activity?.supportFragmentManager?.let { deleteDishBottomSheet.show(it, "DeleteDishBottomSheet") }

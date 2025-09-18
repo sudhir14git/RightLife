@@ -18,8 +18,6 @@ class IngredientSearchAdapter(private val context: Context, private var dataList
                               private var isClickView : Boolean, val onSearchIngredientItem: (IngredientLists, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<IngredientSearchAdapter.ViewHolder>() {
 
-    private var selectedItem = -1
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dish_search_ai, parent, false)
         return ViewHolder(view)
@@ -28,7 +26,7 @@ class IngredientSearchAdapter(private val context: Context, private var dataList
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.dishName.text = item.ingredient_name
+        holder.dishName.text = item.food_name
         var imageUrl : String? = ""
         if (item.photo_url != null){
             imageUrl = if (item.photo_url.contains("drive.google.com")) {

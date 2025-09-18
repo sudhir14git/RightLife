@@ -22,8 +22,6 @@ class IngredientListAdapter(private val context: Context, private var dataLists:
                             val onIngredientEditItem: (IngredientDetail, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<IngredientListAdapter.ViewHolder>() {
 
-    private var selectedItem = -1
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_ingredient_ai, parent, false)
         return ViewHolder(view)
@@ -33,7 +31,7 @@ class IngredientListAdapter(private val context: Context, private var dataLists:
         val item = dataLists[position]
 
       //  holder.mealTitle.text = item.mealType
-        val capitalized = item.ingredient_name.toString().replaceFirstChar { it.uppercase() }
+        val capitalized = item.food_name.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
         if (item.quantity.toInt() > 0){
             holder.servesCount.text = item.quantity.toInt().toString()
@@ -46,10 +44,10 @@ class IngredientListAdapter(private val context: Context, private var dataLists:
 //            val mealTime = item.cooking_time_in_seconds.toString()
 //            holder.mealTime.text = mealTime
 //        }
-        holder.calValue.text = item.calories?.toInt().toString()
-        holder.subtractionValue.text = item.carbs?.toInt().toString()
-        holder.baguetteValue.text = item.protein?.toInt().toString()
-        holder.dewpointValue.text = item.fat?.toInt().toString()
+        holder.calValue.text = item.calories_kcal?.toInt().toString()
+        holder.subtractionValue.text = item.carbs_g?.toInt().toString()
+        holder.baguetteValue.text = item.protein_g?.toInt().toString()
+        holder.dewpointValue.text = item.fat_g?.toInt().toString()
         var imageUrl : String? = ""
         if (item.photo_url != null){
             imageUrl = if (item.photo_url.contains("drive.google.com")) {
