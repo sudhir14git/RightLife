@@ -273,11 +273,20 @@ public class ArticlesDetailActivity extends BaseActivity {
             binding.txtLikeCount.setText(articleDetailsResponse.getData().getLikeCount().toString());
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             binding.txtKeytakeawayDesc.setText(Html.fromHtml(articleDetailsResponse.getData().getSummary(), Html.FROM_HTML_MODE_COMPACT));
         } else {
             binding.txtKeytakeawayDesc.setText(Html.fromHtml(articleDetailsResponse.getData().getSummary()));
+        }*/
+        Spanned spanned;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            spanned = Html.fromHtml(articleDetailsResponse.getData().getSummary(), Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            spanned = Html.fromHtml(articleDetailsResponse.getData().getSummary());
         }
+
+        binding.txtKeytakeawayDesc.setText(spanned);
 
         // article consumed
         EpisodeTrackRequest episodeTrackRequest = new EpisodeTrackRequest(sharedPreferenceManager.getUserId(), articleDetailsResponse.getData().getModuleId(),
