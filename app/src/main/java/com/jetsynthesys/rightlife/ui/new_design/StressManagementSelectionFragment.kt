@@ -22,7 +22,6 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.StressManagement
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
-import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import retrofit2.Call
@@ -186,7 +185,7 @@ class StressManagementSelectionFragment : Fragment() {
     }
 
     private fun setList() {
-        when (header) {
+        /*when (header) {
             AppConstants.EAT_RIGHT, "EAT_RIGHT" -> {
                 tvStressManagementHeader.text = "How would you describe your current eating?"
                 stressManagementList.add(
@@ -332,7 +331,43 @@ class StressManagementSelectionFragment : Fragment() {
             else -> {
 
             }
-        }
+        }*/
+
+
+        tvStressManagementHeader.text = "How active are you on a regular basis?"
+
+        stressManagementList.add(
+            StressManagement(
+                "Beginner",
+                "I’m unsure how to start and often feel stuck.",
+                R.drawable.beginer
+            )
+        )
+
+        stressManagementList.add(
+            StressManagement(
+                "Intermediate",
+                "I believe I can improve but need more guidance.",
+                R.drawable.intermediate
+            )
+        )
+
+        stressManagementList.add(
+            StressManagement(
+                "Advanced",
+                "I feel confident about making progress with the right tools.",
+                R.drawable.advance
+            )
+        )
+
+        stressManagementList.add(
+            StressManagement(
+                "Expert",
+                "I’m very confident and motivated to keep improving my health habits.",
+                R.drawable.expert
+            )
+        )
+
         adapter.notifyDataSetChanged()
     }
 }

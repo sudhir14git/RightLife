@@ -930,6 +930,19 @@ class MindAuditResultActivity : BaseActivity() {
             binding.chipGroup1.addView(chip, 0)
         else
             binding.chipGroup1.addView(chip)
+
+
+        if (isShowIcon) {
+            chip.closeIcon = ContextCompat.getDrawable(this, R.drawable.ic_exclamation_1)
+            chip.isCloseIconVisible = true
+            chip.closeIconTint = ColorStateList.valueOf(
+                ContextCompat.getColor(
+                    this,
+                    R.color.menuselected
+                )
+            )
+
+        }
     }
 
     private fun getColorResForScore(score: Int): Int {
@@ -943,6 +956,7 @@ class MindAuditResultActivity : BaseActivity() {
     }
     private fun getColorResForScore(score: String): Int {
         return when (score.lowercase()) {
+            "normal" -> R.color.green_minimal
             "minimal" -> R.color.green_minimal
             "mild" -> R.color.cyan_mild
             "moderate" -> R.color.blue_moderate
