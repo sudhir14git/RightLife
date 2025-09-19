@@ -662,14 +662,14 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             spannable.setSpan(
-                AbsoluteSizeSpan(18, true), // 18sp
+                AbsoluteSizeSpan(14, true), // 18sp
                 0,
                 hours.toString().length,
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             // Style the "hr" unit (normal, 12sp, no bold)
             spannable.setSpan(
-                AbsoluteSizeSpan(12, true), // 12sp
+                AbsoluteSizeSpan(10, true), // 12sp
                 hours.toString().length,
                 hours.toString().length + 3, // " hr "
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -688,14 +688,14 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             spannable.setSpan(
-                AbsoluteSizeSpan(18, true), // 18sp
+                AbsoluteSizeSpan(14, true), // 18sp
                 minutesStart,
                 minutesEnd,
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             // Style the "mins" unit (normal, 12sp, no bold)
             spannable.setSpan(
-                AbsoluteSizeSpan(12, true), // 12sp
+                AbsoluteSizeSpan(10, true), // 12sp
                 minutesEnd,
                 formattedText.length, // " mins"
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
