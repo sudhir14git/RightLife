@@ -933,12 +933,12 @@ class MindAuditResultActivity : BaseActivity() {
 
 
         if (isShowIcon) {
-            chip.closeIcon = ContextCompat.getDrawable(this, R.drawable.ms_cs_info)
+            chip.closeIcon = ContextCompat.getDrawable(this, R.drawable.ic_exclamation_1)
             chip.isCloseIconVisible = true
             chip.closeIconTint = ColorStateList.valueOf(
                 ContextCompat.getColor(
                     this,
-                    R.color.extremely_severe_red
+                    R.color.menuselected
                 )
             )
 
