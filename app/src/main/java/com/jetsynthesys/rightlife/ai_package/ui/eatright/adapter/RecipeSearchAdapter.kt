@@ -32,7 +32,7 @@ class RecipeSearchAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.dishName.text = item.name
+        holder.dishName.text = item.recipe
         val imageUrl = getDriveImageUrl(item.photo_url)
         Glide.with(context)
             .load(imageUrl)
@@ -40,7 +40,7 @@ class RecipeSearchAdapter(
             .error(R.drawable.ic_view_meal_place)
             .into(holder.dishImage)
 
-        val type = item.food_type
+        val type = item.tags
             ?.substringBefore("_")
             ?.trim()
             ?.lowercase()

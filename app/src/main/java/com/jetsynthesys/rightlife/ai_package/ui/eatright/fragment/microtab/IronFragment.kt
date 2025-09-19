@@ -478,7 +478,7 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedIron(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedIron(
                     userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){

@@ -104,6 +104,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
@@ -170,8 +171,12 @@ interface ApiService {
         @Path("foodId") foodId: String): Call<RecipeResponse>
 
     @GET("eat/fetch_ingredient_detail/")
-    fun getRecipesDetails(
+    fun getIngredientDetails(
         @Query("ingredient_id") ingredientId: String): Call<IngredientDetailResponse>
+
+    @GET("eat/recipes/my_recipes_detail_byId")
+    fun getMyRecipesDetails( @Query("user_id") userId: String,
+        @Query("recipe_id") recipesId: String): Call<MyRecipeDetailsResponse>
 
     @GET("eat/recipes/frequently_more_than_five/{userId}")
     fun getFrequentlyLog(

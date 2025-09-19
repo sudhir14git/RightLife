@@ -543,7 +543,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                     }
                 }
                 // Proceed with API call
-                val response = ApiClient.apiServiceFastApi.getConsumedCarbs(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedCarbs(
                     userId = userId,
                     period = period,
                     date = selectedDate

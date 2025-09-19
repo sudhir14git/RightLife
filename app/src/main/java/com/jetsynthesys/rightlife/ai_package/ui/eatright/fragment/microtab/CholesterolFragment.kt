@@ -545,7 +545,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedCholesterol(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedCholesterol(
                     userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){

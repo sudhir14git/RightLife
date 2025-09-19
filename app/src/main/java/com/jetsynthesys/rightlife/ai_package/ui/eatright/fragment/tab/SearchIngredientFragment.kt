@@ -272,7 +272,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getRecipesDetails(ingredientId)
+        val call = ApiClient.apiServiceFastApiV2.getIngredientDetails(ingredientId)
         call.enqueue(object : Callback<IngredientDetailResponse> {
             override fun onResponse(call: Call<IngredientDetailResponse>, response: Response<IngredientDetailResponse>) {
                 if (response.isSuccessful) {

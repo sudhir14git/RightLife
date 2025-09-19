@@ -465,7 +465,7 @@ class CalciumFragment : BaseFragment<FragmentSugarBinding>() {
                         setSelectedDate(selectedWeekDate)
                     }
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedCalcium(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedCalcium(
                     userId = userId,
                     period = period,
                     date = selectedDate

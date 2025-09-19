@@ -12,12 +12,12 @@ data class SnapMealRecipeResponseModel(
 @Parcelize
 data class SnapRecipeList(
     val id: String,
-    val name: String,
+    val recipe: String,
     val photo_url: String,
     val servings: Int,
-    val cooking_time_in_seconds: Double,
-    val calories: Double,
+    val active_cooking_time_min: Double,
+    val calories_kcal: Double,
     val meal_type: String,
-    val food_type: String,
+    val tags: String,
     val cuisine: String
 ):Parcelable

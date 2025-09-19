@@ -478,7 +478,7 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
 
-                val response = ApiClient.apiServiceFastApi.getConsumedMagnesium(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedMagnesium(
                     userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){

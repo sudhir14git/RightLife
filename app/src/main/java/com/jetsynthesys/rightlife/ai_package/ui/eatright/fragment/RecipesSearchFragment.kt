@@ -519,9 +519,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
     private fun filterDishes(query: String) {
         val filteredList = snapRecipesList.filter { recipe ->
-            val matchesQuery = if (query.isEmpty()) true else recipe.name.contains(query, ignoreCase = true)
+            val matchesQuery = if (query.isEmpty()) true else recipe.recipe.contains(query, ignoreCase = true)
             val matchesMealType = selectedMealType?.let { recipe.meal_type == it } ?: true
-            val matchesFoodType = selectedFoodType?.let { recipe.food_type == it } ?: true
+            val matchesFoodType = selectedFoodType?.let { selected ->
+                recipe.tags?.split(",")?.map { it.trim() }?.contains(selected)
+            } ?: true
+           // val matchesFoodType = selectedFoodType?.let { recipe.tags == it } ?: true
             val matchesCuisine = selectedCuisine?.let { recipe.cuisine == it } ?: true
             matchesQuery && matchesMealType && matchesFoodType && matchesCuisine
         }
@@ -552,7 +555,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getRecipesList(
+        val call = ApiClient.apiServiceFastApiV2.getRecipesList(
             mealType = mealType,
             foodType = foodType,
             cuisine = cuisine
@@ -600,7 +603,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getSnapMealRecipesList()
+        val call = ApiClient.apiServiceFastApiV2.getSnapMealRecipesList()
         call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
             override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
                 if (response.isSuccessful) {
@@ -616,7 +619,10 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     foodTypeList.clear()
                     cuisineList.clear()
                     mealTypeList.addAll(snapRecipesList.map { it.meal_type }.filterNotNull().distinct().sorted())
-                    foodTypeList.addAll(snapRecipesList.map { it.food_type }.filterNotNull().distinct().sorted())
+                    // Assuming snapRecipesList is your recipe list
+                    foodTypeList.addAll(snapRecipesList.mapNotNull { it.tags }.flatMap { it.split(",") }.map { it.trim() }
+                        .filter { it.isNotEmpty() }.distinct().sorted())
+                    // foodTypeList.addAll(snapRecipesList.map { it.tags }.filterNotNull().distinct().sorted())
                     cuisineList.addAll(snapRecipesList.map { it.cuisine }.filterNotNull().distinct().sorted())
                     Log.d("RecipesSearchFragment", "Meal Types: $mealTypeList")
                     Log.d("RecipesSearchFragment", "Food Types: $foodTypeList")

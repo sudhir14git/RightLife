@@ -463,8 +463,8 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         addToTheMealTV.text = "Add To The Recipe"
         val capitalized = snapRecipeData.food_name.toString().replaceFirstChar { it.uppercase() }
         tvMealName.text = capitalized
-        if (snapRecipeData.measure != null){
-            tvMeasure.text = snapRecipeData.measure
+        if (snapRecipeData.standard_serving_size != null){
+            tvMeasure.text = snapRecipeData.standard_serving_size
         }
         if (!isEdit){
             if (snapRecipeData.quantity != null ){
