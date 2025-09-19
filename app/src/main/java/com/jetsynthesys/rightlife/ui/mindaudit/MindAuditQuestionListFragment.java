@@ -23,6 +23,7 @@ import java.util.ArrayList;
 public class MindAuditQuestionListFragment extends Fragment {
     private static final String ARG_QUESTION = "QUESTION";
     private static final String ARG_POSITION = "POSITION";
+    public static boolean isSubmitClickable = true;
     private Question question;
     private TextView txt_question;
     private RecyclerView recyclerView;
@@ -68,20 +69,25 @@ public class MindAuditQuestionListFragment extends Fragment {
         recyclerView.setLayoutManager(gridLayoutManager);
 
         adapter = new MindAuditOptionsAdapter(requireContext(), (ArrayList<ScoringPattern>) question.getScoringPattern(), scoringPattern -> {
-            new Handler().postDelayed(() -> {
+            ((MAAssessmentQuestionaireActivity) requireActivity()).addScore(question, scoringPattern);
+            MAAssessmentQuestionaireActivity activity = (MAAssessmentQuestionaireActivity) requireActivity();
+            String header = activity.header;
 
-                ((MAAssessmentQuestionaireActivity) requireActivity()).addScore(question, scoringPattern);
-                if (question.isContinueFurtherIfTrue()) {
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
-                } else {
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
-            /*if (position != adapter.getItemCount() - 1)
-                ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
-            else
-                ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);*/
-                }
-            }, 1000);
+            String currentOption = scoringPattern.getOption();
 
+            if (activity.adapter.getItemCount() - 1 == position && "PHQ-9".equalsIgnoreCase(header) && (!currentOption.equalsIgnoreCase("Not difficult at all"))) {
+                isSubmitClickable = false;
+                activity.openSecondActivity();
+            } else {
+                isSubmitClickable = true;
+                new Handler().postDelayed(() -> {
+                    if (question.isContinueFurtherIfTrue()) {
+                        activity.submitButton.setVisibility(View.VISIBLE);
+                    } else {
+                        activity.navigateToNextPage();
+                    }
+                }, 800);
+            }
         });
         recyclerView.setAdapter(adapter);
 

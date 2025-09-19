@@ -46,6 +46,11 @@ class BreathworkSessionActivity : BaseActivity() {
 
         setupUI()
         setupListeners(breathingData!!)
+        if (breathingData?.title == "Custom") {
+            breathingData?.breathInhaleTime = "4"
+            breathingData?.breathHoldTime = "4"
+            breathingData?.breathExhaleTime = "4"
+        }
         calculateSessiontime()
         setBreathingTypeColors()
     }
@@ -142,9 +147,11 @@ class BreathworkSessionActivity : BaseActivity() {
         }
 
         binding.btnPlus.setOnClickListener {
-            sessionCount++
-            binding.tvSessionCount.text = sessionCount.toString()
-            calculateSessiontime()
+            if (sessionCount < 100) {
+                sessionCount++
+                binding.tvSessionCount.text = sessionCount.toString()
+                calculateSessiontime()
+            }
         }
 
         binding.btnContinue.setOnClickListener {
@@ -153,9 +160,8 @@ class BreathworkSessionActivity : BaseActivity() {
             intent.putExtra("BREATHWORK", breathingData)
             intent.putExtra("StartDate", startDate)
             //intent.putExtra("ITEM_DESCRIPTION", selectedItem.description)
-
             startActivity(intent)
-
+            finish()
         }
 
         binding.switchHaptic.setOnCheckedChangeListener { _, isChecked ->
@@ -177,18 +183,18 @@ class BreathworkSessionActivity : BaseActivity() {
         }
     }
 
-    fun calculateSessiontime() {
-        var totalSets = sessionCount
-        var inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
-        var exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
-        var holdTime = breathingData?.breathHoldTime?.toLong()!! * 1000
+    private fun calculateSessiontime() {
+        val totalSets = sessionCount
+        val inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
+        val exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
+        val holdTime = breathingData?.breathHoldTime?.toLong()!! * 1000
 
         // Calculate session duration based on the selected practice
         val cycleDuration = inhaleTime +
                 holdTime +
                 exhaleTime +
                 (if (breathingData?.title == "Box Breathing") holdTime else 0L)
-        var sessionDurationSeconds = (totalSets * cycleDuration / 1000).toInt()
+        val sessionDurationSeconds = (totalSets * cycleDuration / 1000).toInt()
 
         // Set initial values
 
@@ -198,7 +204,7 @@ class BreathworkSessionActivity : BaseActivity() {
     private fun updateSessionTimer(millisUntilFinished: Long) {
         val minutes = (millisUntilFinished / 1000) / 60
         val seconds = (millisUntilFinished / 1000) % 60
-        binding.tvSettime.text = String.format("%02d:%02d", minutes, seconds)
+        binding.tvSettime.text = String.format("%02d:%02d", minutes, seconds) + " mins"
     }
 
 
@@ -242,6 +248,9 @@ class BreathworkSessionActivity : BaseActivity() {
         binding.tvInhale.setTextColor(resources.getColor(colorResourceText, null))
         binding.tvhold.setTextColor(resources.getColor(colorResourceText, null))
         binding.tvExhale.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvInhaleSeconds.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvholdSeconds.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvExhaleSeconds.setTextColor(resources.getColor(colorResourceText, null))
 
     }
 }

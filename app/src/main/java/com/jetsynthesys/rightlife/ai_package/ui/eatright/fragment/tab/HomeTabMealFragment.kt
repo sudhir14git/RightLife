@@ -1074,4 +1074,11 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
         })
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        sharedViewModel.recipeLogAndFrequentlyLogUpdateMealData(emptyList())
+        sharedViewModel.mealLogUpdateMealData(emptyList())
+        sharedViewModel.snapMealLogUpdateMealData(emptyList())
+    }
 }

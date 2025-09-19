@@ -745,6 +745,8 @@ class HomeExploreFragment : BaseFragment() {
                 promotionResponse.promotiondata.promotionList[i].category,
                 promotionResponse.promotiondata.promotionList[i].views.toString(),
                 promotionResponse.promotiondata.promotionList[i].seriesId,
+                promotionResponse.promotiondata.promotionList[i].seriesType,
+                promotionResponse.promotiondata.promotionList[i].selectedContentType,
                 promotionResponse.promotiondata.promotionList[i].titleImage,
                 promotionResponse.promotiondata.promotionList[i].buttonImage
             )
@@ -1043,29 +1045,22 @@ class HomeExploreFragment : BaseFragment() {
     }
 
     private fun callRlEditDetailActivity(position: Int) {
-        if (rightLifeEditResponse?.data?.topList?.get(position)?.contentType
-                .equals("TEXT", ignoreCase = true)
+        val contentType = rightLifeEditResponse?.data?.topList?.get(position)?.contentType
+        val contentId = rightLifeEditResponse?.data?.topList?.get(position)?.id
+        if (contentType.equals("TEXT", ignoreCase = true)) {
+            startActivity(Intent(requireContext(), ArticlesDetailActivity::class.java).apply {
+                putExtra("contentId", contentId)
+            })
+        } else if (contentType.equals("VIDEO", ignoreCase = true) || contentType
+                .equals("AUDIO", ignoreCase = true)
         ) {
-            val intent = Intent(requireContext(), ArticlesDetailActivity::class.java)
-            intent.putExtra(
-                "contentId",
-                rightLifeEditResponse?.data?.topList?.get(position)?.id
-            )
-            startActivity(intent)
-        } else {
-            val gson = Gson()
-            val json = gson.toJson(rightLifeEditResponse)
-            val intent = Intent(requireContext(), ContentDetailsActivity::class.java)
-            intent.putExtra(
-                "Categorytype",
-                rightLifeEditResponse?.data?.topList?.get(position)?.id
-            )
-            intent.putExtra("position", position)
-            intent.putExtra(
-                "contentId",
-                rightLifeEditResponse?.data?.topList?.get(position)?.id
-            )
-            startActivity(intent)
+            startActivity(Intent(requireContext(), ContentDetailsActivity::class.java).apply {
+                putExtra("contentId", contentId)
+            })
+        } else if (contentType.equals("SERIES", ignoreCase = true)) {
+            startActivity(Intent(requireContext(), SeriesListActivity::class.java).apply {
+                putExtra("contentId", contentId)
+            })
         }
     }
 

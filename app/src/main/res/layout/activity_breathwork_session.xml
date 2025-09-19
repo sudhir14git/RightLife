@@ -94,7 +94,9 @@
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:padding="16dp"
-                    android:visibility="visible">
+                    android:visibility="visible"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+                    android:backgroundTint="@color/custom_breathing_card_color">
 
                     <!-- Inhale -->
                     <LinearLayout
@@ -108,17 +110,31 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Inhale\n(Seconds)"
+                            android:text="Inhale"
                             android:id="@+id/tvInhale"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textColor="@color/text_color_breathwork" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="(Seconds)"
+                            android:id="@+id/tvInhaleSeconds"
                             android:textColor="@color/text_color_breathwork"
-                            android:textStyle="bold" />
+                            android:fontFamily="@font/dmsans_regular"
+                            android:textSize="12sp" />
 
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/pickerInhale"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            app:np_textSize="@dimen/textsize_small" />
+                            app:np_textSize="@dimen/textsize_small"
+                            app:np_dividerColor="@android:color/transparent"
+                            app:np_textColor="@color/custom_breathing_card_color_text"
+                            app:np_selectedTextColor="@color/custom_breathing_card_color_text" />
                     </LinearLayout>
 
                     <!-- Hold -->
@@ -134,16 +150,30 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:id="@+id/tvhold"
-                            android:text="Hold\n(Seconds)"
+                            android:text="Hold"
                             android:textColor="@color/text_color_breathwork"
-                            android:textStyle="bold" />
+                            android:textSize="14sp"
+                            android:fontFamily="@font/dmsans_bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:id="@+id/tvholdSeconds"
+                            android:text="(Seconds)"
+                            android:textColor="@color/text_color_breathwork"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/dmsans_regular" />
 
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/pickerHold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            app:np_textSize="@dimen/textsize_small" />
+                            app:np_textSize="@dimen/textsize_small"
+                            app:np_dividerColor="@android:color/transparent"
+                            app:np_textColor="@color/custom_breathing_card_color_text"
+                            app:np_selectedTextColor="@color/custom_breathing_card_color_text" />
                     </LinearLayout>
 
                     <!-- Exhale -->
@@ -158,17 +188,31 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Exhale\n(Seconds)"
+                            android:text="Exhale"
                             android:id="@+id/tvExhale"
                             android:textColor="@color/text_color_breathwork"
-                            android:textStyle="bold" />
+                            android:textSize="14sp"
+                            android:fontFamily="@font/dmsans_bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:id="@+id/tvExhaleSeconds"
+                            android:text="(Seconds)"
+                            android:textColor="@color/text_color_breathwork"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/dmsans_regular" />
 
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/pickerExhale"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            app:np_textSize="@dimen/textsize_small" />
+                            app:np_textSize="@dimen/textsize_small"
+                            app:np_dividerColor="@android:color/transparent"
+                            app:np_textColor="@color/custom_breathing_card_color_text"
+                            app:np_selectedTextColor="@color/custom_breathing_card_color_text" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -289,7 +333,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:backgroundTint="#FFDD80"
-                android:text="Continue"
+                android:text="Begin"
                 android:textColor="@color/text_color_breathwork" />
         </RelativeLayout>
 

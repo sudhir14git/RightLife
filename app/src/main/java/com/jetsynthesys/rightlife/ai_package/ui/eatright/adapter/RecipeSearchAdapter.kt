@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter
 
 import android.content.Context
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.bumptech.glide.Glide
@@ -38,6 +40,18 @@ class RecipeSearchAdapter(
             .error(R.drawable.ic_view_meal_place)
             .into(holder.dishImage)
 
+        val type = item.food_type
+            ?.substringBefore("_")
+            ?.trim()
+            ?.lowercase()
+        holder.statusDot.visibility = View.VISIBLE
+        when (type) {
+            "veg", "vegan" -> holder.statusDot.setImageResource(R.drawable.green_circle)
+            "non-veg", "nonveg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
+            "egg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
+            else -> holder.statusDot.visibility = View.INVISIBLE
+        }
+
         holder.itemView.setOnClickListener {
             onSearchDishItem(item, position, true)
         }
@@ -50,6 +64,7 @@ class RecipeSearchAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dishName: TextView = itemView.findViewById(R.id.recipeName)
         val dishImage: ImageView = itemView.findViewById(R.id.imageView)
+        val statusDot : ImageView = itemView.findViewById(R.id.statusDot)
     }
 
     fun addAll(item: ArrayList<SnapRecipeList>?, pos: Int, mealLogItem: SnapRecipeList?, isClick: Boolean) {
@@ -59,11 +74,12 @@ class RecipeSearchAdapter(
             clickPos = pos
             mealLogListData = mealLogItem
             isClickView = isClick
+            notifyDataSetChanged()
         }
-        notifyDataSetChanged()
     }
 
     fun updateList(newList: List<SnapRecipeList>) {
+        dataLists.clear()
         dataLists = newList as ArrayList<SnapRecipeList>
         notifyDataSetChanged()
     }

@@ -41,16 +41,18 @@
 
         <!-- Score Marker -->
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/lyt_score"
-            android:layout_marginTop="12dp">
+            android:layout_gravity="right"
+            android:layout_marginTop="-20dp">
 
             <!-- Vertical line -->
             <View
                 android:id="@+id/scoreLine"
                 android:layout_width="2dp"
                 android:layout_height="100dp"
+                android:visibility="invisible"
                 android:layout_gravity="center_horizontal|top"
                 android:layout_marginTop="30dp"
                 android:background="@android:color/darker_gray" />
@@ -58,25 +60,51 @@
             <!-- Score Box -->
             <TextView
                 android:id="@+id/tvScore"
-                android:layout_width="105dp"
+                android:layout_width="107dp"
                 android:layout_height="wrap_content"
                 android:text="Your Score: 7"
-                android:textColor="@android:color/black"
+                android:textColor="#D9994C"
                 android:paddingHorizontal="5dp"
                 android:paddingVertical="6dp"
-                android:layout_gravity="top|center_horizontal"
+                android:layout_gravity="top|right"
+                android:fontFamily="@font/dmsans_semibold"
                 android:background="@drawable/score_outline_bg"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
         </FrameLayout>
 
         <!-- PHQ-9 Scale Layout -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+           >
         <LinearLayout
             android:id="@+id/scoreScaleLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:layout_marginTop="16dp"
             android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/endValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="end|top"
+            android:textSize="8dp"
+            android:visibility="gone"
+            android:paddingEnd="5dp"
+            android:text="27"
+        />
+
+            <ImageView
+                android:id="@+id/scoreScaleImage"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_mind_ohq" />
+    </FrameLayout>
 
     </LinearLayout>
 

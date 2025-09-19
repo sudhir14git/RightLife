@@ -105,21 +105,17 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         if (mealDetailsLogResponse != null){
             mealDetailsLog = mealDetailsLogResponse
           //  setDishData(foodDetailsResponse)
-
             mealNutritionSummary.addAll(mealDetailsLog!!.meal_nutrition_summary)
             if (mealNutritionSummary.size > 0){
                 onMacroNutrientsList(mealNutritionSummary.get(0), 1)
                 onMicroNutrientsList(mealNutritionSummary.get(0), 1)
             }
-
             val breakfastRecipes = mealDetailsLog!!.regular_receipes
             if (breakfastRecipes != null){
                 if (breakfastRecipes.isNotEmpty()){
                     mealCombinedList.addAll(breakfastRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                     mealNames = breakfastRecipes.map { it.receipe.recipe_name }
-
                     val imageUrl = breakfastRecipes.get(0).receipe.photo_url
-
                     setDishData(imageUrl)
                 }
             }
@@ -128,7 +124,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
                 if (breakfastSnapMeals.isNotEmpty()){
                     mealCombinedList.addAll(breakfastSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
                     mealSnapNames = breakfastSnapMeals.map { it.meal_name!! }
-                    setDishData(breakfastSnapMeals?.getOrNull(0)?.image_url)
+                    setSnapDishData(breakfastSnapMeals?.getOrNull(0)?.image_url)
                 }
             }
             setMealLogsList()
@@ -188,14 +184,20 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
     }
 
     private fun setDishData(snapRecipeData: String?) {
+        val imageUrl = snapRecipeData?.let { getDriveImageUrl(it) }
+        Glide.with(this)
+            .load(imageUrl)
+            .placeholder(R.drawable.ic_view_meal_place)
+            .error(R.drawable.ic_view_meal_place)
+            .into(imgFood)
+    }
 
-        //val imageUrl = getDriveImageUrl(snapRecipeData)
+    private fun setSnapDishData(snapRecipeData: String?) {
         Glide.with(this)
             .load(snapRecipeData)
             .placeholder(R.drawable.ic_view_meal_place)
             .error(R.drawable.ic_view_meal_place)
             .into(imgFood)
-
     }
 
     private fun setMealLogsList() {

@@ -214,7 +214,21 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineRecyclerView.adapter = routineWorkoutListAdapter
 
         createRoutineBackButton.setOnClickListener {
-            navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+            if (routine.equals("edit_routine")||editRoutine.equals("edit_routine")){
+                val fragment = SearchWorkoutFragment()
+                val bundle = Bundle().apply {
+                    putInt("selectedTab", 1) // My Routine tab
+                }
+                fragment.arguments = bundle
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack("SearchWorkoutFragment")
+                    commit()
+                }
+            }else{
+                navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+            }
+
         }
 
         editText.addTextChangedListener(object : TextWatcher {
@@ -246,7 +260,21 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 setFragmentResult("workoutListUpdate", Bundle().apply {
                     putParcelableArrayList("workoutList", workoutList)
                 })
-                navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+                if (routine.equals("edit_routine")||editRoutine.equals("edit_routine")){
+                    val fragment = SearchWorkoutFragment()
+                    val bundle = Bundle().apply {
+                        putInt("selectedTab", 1) // My Routine tab
+                    }
+                    fragment.arguments = bundle
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack("SearchWorkoutFragment")
+                        commit()
+                    }
+                }else{
+                    navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+                }
+               // navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
             }
         })
 
@@ -280,14 +308,21 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     // Function to map ActivityModel to WorkoutSessionRecord
     private fun mapActivityModelToWorkoutSessionRecord(activityList: ArrayList<ActivityModel>) {
         activityList.forEach { activity ->
-            val durationValue = activity.duration?.replace(Regex("[^0-9]"), "")?.toIntOrNull() ?: 0
+            val regex = Regex("(\\d+) hr (\\d+) mins")
+            val matchResult = activity?.duration?.let { regex.find(it) }
+
+            var totalMinutes = 0
+            if (matchResult != null) {
+                val (hours, minutes) = matchResult.destructured
+                totalMinutes = hours.toInt() * 60 + minutes.toInt()
+            }
             val caloriesValue = activity.caloriesBurned?.replace(Regex("[^0-9.]"), "")?.toDoubleOrNull()
 
             val workoutRecord = WorkoutSessionRecord(
                 userId = activity.userId!!,
                 activityId = activity.activityId!!,
                 moduleIcon = activity.icon!!,
-                durationMin = durationValue,
+                durationMin = totalMinutes,
                 intensity = activity.intensity!!,
                 sessions = 1,
                 moduleName = activity.workoutType!!,

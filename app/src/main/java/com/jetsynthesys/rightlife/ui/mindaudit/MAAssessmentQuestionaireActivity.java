@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.mindaudit;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -38,6 +41,9 @@ import retrofit2.Response;
 
 public class MAAssessmentQuestionaireActivity extends BaseActivity {
     public Button submitButton, nextButton;
+    public MAAssessmentPagerAdapter adapter;
+    public String header;
+    public ActivityResultLauncher resultLauncher;
     GetAssessmentScoreCASRequest CASRequest = new GetAssessmentScoreCASRequest();
     GetAssessmentScoreGad7Request gad7Request = new GetAssessmentScoreGad7Request();
     GetAssessmentScoreOHQ7Request ohq7Request = new GetAssessmentScoreOHQ7Request();
@@ -47,10 +53,8 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
     private ImageView imgBack;
     private ViewPager2 viewPager;
     private Button prevButton;
-    private MAAssessmentPagerAdapter adapter;
     private ProgressBar progressBar;
     private MindAuditAssessmentQuestions mindAuditAssessmentQuestions;
-    private String header;
     private boolean isFromThinkRight = false;
 
     @Override
@@ -66,6 +70,16 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
         submitButton = findViewById(R.id.submitButton);
         progressBar = findViewById(R.id.progressBar);
 
+        // Register the launcher
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        getAssessmentScoreMethod();
+                    }
+                }
+        );
+
         header = getIntent().getStringExtra("AssessmentType");
         isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT", false);
 
@@ -75,13 +89,19 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> navigateToNextPage());
-        submitButton.setOnClickListener(v -> getAssessmentScoreMethod());
+        submitButton.setOnClickListener(v -> {
+                    if (MindAuditQuestionListFragment.isSubmitClickable)
+                        getAssessmentScoreMethod();
+                    else
+                        openSecondActivity();
+                }
+        );
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                updateButtonVisibility(position);
+                //updateButtonVisibility(position);
                 updateProgress(position);
             }
         });
@@ -161,6 +181,8 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
     public void navigateToNextPage() {
         if (viewPager.getCurrentItem() < adapter.getItemCount() - 1) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+        } else {
+            updateButtonVisibility(viewPager.getCurrentItem());
         }
     }
 
@@ -324,5 +346,10 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
     private void logCompleteEvent() {
         Map<String, Object> params = new HashMap<>();
         AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.MIND_AUDIT_COMPLETED, params);
+    }
+
+    public void openSecondActivity() {
+        Intent intent = new Intent(this, RedFlagAlertActivity.class);
+        resultLauncher.launch(intent);
     }
 }

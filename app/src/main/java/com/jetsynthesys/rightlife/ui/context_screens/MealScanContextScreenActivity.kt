@@ -6,6 +6,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityAffirmationContextScreenBinding
 import com.jetsynthesys.rightlife.databinding.ActivityMealscanContextScreenBinding
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 
 class MealScanContextScreenActivity : BaseActivity() {
     private lateinit var binding: ActivityMealscanContextScreenBinding
@@ -25,7 +26,7 @@ class MealScanContextScreenActivity : BaseActivity() {
         }
 
         binding.btnNext.setOnClickListener {
-
+            ActivityUtils.startMealScanActivity(this, "")
         }
     }
 }

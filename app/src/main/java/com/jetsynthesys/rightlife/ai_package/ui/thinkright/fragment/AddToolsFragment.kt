@@ -518,6 +518,9 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+        val args = Bundle()
+        args.putString("ModuleName", "ThinkRight")
+        fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)

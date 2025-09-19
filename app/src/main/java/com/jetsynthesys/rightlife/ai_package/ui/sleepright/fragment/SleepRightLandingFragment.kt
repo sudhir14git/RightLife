@@ -80,6 +80,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.MPPointF
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
@@ -1715,9 +1716,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun fetchWakeupData() {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val today = LocalDate.now()
+        val tomorrow = today.plusDays(1)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val todayStr = today.format(formatter)
+        val tomorrowStr = tomorrow.format(formatter)
         val date = getCurrentDate()
         val source = "android"
-        val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source)
+        val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source, tomorrowStr)
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
                 if (response.isSuccessful) {
@@ -1725,7 +1731,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val sixPM = 18 * 60 // 1080 minutes (06:00 PM)
                     val twoAM = 2 * 60 // 120 minutes (02:00 AM next day)
                     val currentMinutes = currentTime.hour * 60 + currentTime.minute
-
 // Check if current time is between 06:00 PM and 02:00 AM
                     if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
                         cardSleepTimeRequirementTop.visibility = View.VISIBLE
@@ -1743,7 +1748,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val sixPM = 18 * 60 // 1080 minutes (06:00 PM)
                     val twoAM = 2 * 60 // 120 minutes (02:00 AM next day)
                     val currentMinutes = currentTime.hour * 60 + currentTime.minute
-
 // Check if current time is between 06:00 PM and 02:00 AM
                     if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
                         //view.visibility = View.GONE
@@ -1760,7 +1764,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val sixPM = 18 * 60
                     val twoAM = 2 * 60
                     val currentMinutes = currentTime.hour * 60 + currentTime.minute
-
                     if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
                         //view.visibility = View.GONE
                         cardSleepTimeRequirementTop.visibility = View.VISIBLE
@@ -2522,6 +2525,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 performCardView.visibility = View.VISIBLE
                 tvPerformStartTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
                 tvPerformWakeTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
+            val dialog = LogYourNapDialogFragment(
+                requireContext = requireContext(),
+                listener = object : OnLogYourNapSelectedListener {
+                    override fun onLogTimeSelected(time: String) {
+                        fetchSleepLandingData()
+                    }
+                }
+            )
             if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == 0.0){
                 tvPerformSleepPercent.text = "0"
                 tvPerformAction.visibility = View.GONE
@@ -2542,20 +2553,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     tvPerformIdealDuration.text = "7 hr 30 min"
                 }
                 if (!isRepeat && !bottomSeatName.contentEquals("LogLastNightSleep") && sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == 0.0) {
-                    val dialog = LogYourNapDialogFragment(
-                        requireContext = requireContext(),
-                        listener = object : OnLogYourNapSelectedListener {
-                            override fun onLogTimeSelected(time: String) {
-                                fetchSleepLandingData()
-                            }
-                        }
-                    )
                     val args = Bundle()
                     args.putString("BottomSeatName", bottomSeatName)
                     dialog.arguments = args
                     dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
                 }
             }else{
+                if (dialog.isVisible) dialog.dismiss()
                 tvPerformAction.visibility = View.VISIBLE
                 tvPerformMessage.visibility = View.VISIBLE
                 tvSleepAnalysis.visibility = View.GONE
@@ -3043,7 +3047,6 @@ private fun showTimePickerAgain(
     timePickerDialog.show()
 }
 
-
 class SleepChartViewLanding(
     context: android.content.Context,
     attrs: android.util.AttributeSet? = null
@@ -3096,10 +3099,8 @@ class SleepMarkerView1(context: Context, private val data: List<SleepEntry>) : M
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
         if (e != null) {
             val xIndex = e.x.toInt()
-
             // Find the corresponding data entry by index
             val selectedData = data.getOrNull(xIndex)
-
             selectedData?.let {
               //  val ideal = it.idealSleep
               //  val actual = it.actualSleep
@@ -3129,14 +3130,11 @@ class SleepMarkerView(context: Context, private val data: List<SleepGraphData>) 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
         if (e != null) {
             val xIndex = e.x.toInt()
-
             // Find the corresponding data entry by index
             val selectedData = data.getOrNull(xIndex)
-
             selectedData?.let {
                 val ideal = it.idealSleep
                 val actual = it.actualSleep
-
                 tvContent.text = "Ideal: $ideal hrs\nActual: $actual hrs"
             }
         }
@@ -3152,7 +3150,6 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val sleepSegments = mutableListOf<Segment>()
-
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
     private data class Segment(
@@ -3163,9 +3160,7 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
 
     fun setSleepData(data: List<SleepStagesData>) {
         sleepSegments.clear()
-
         if (data.isEmpty()) return
-
         // Parse timestamps and calculate total duration
         val parsedData = data.mapNotNull {
             try {
@@ -3185,33 +3180,26 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
             val color = getColorForRecordType(recordType!!)
             sleepSegments.add(Segment(position, fraction, color))
         }
-
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         val w = width.toFloat()
         val h = height.toFloat()
-
         // Set the background color (replace with desired color)
         canvas.drawColor(Color.parseColor("#F5F9FF")) // Example: light gray
-
         val barHeight = h * 0.25f
         val cornerRadius = barHeight / 4
         var currentX = 0f
-
         sleepSegments.forEach { segment ->
             paint.color = segment.color
-
             val top = when (segment.position) {
                 Position1.UPPER -> h * 0.1f
                 Position1.LOWER -> h * 0.35f
             }
             val bottom = top + barHeight
             val right = currentX + (segment.widthFraction * w)
-
             canvas.drawRoundRect(RectF(currentX, top, right, bottom), cornerRadius, cornerRadius, paint)
             currentX = right
         }

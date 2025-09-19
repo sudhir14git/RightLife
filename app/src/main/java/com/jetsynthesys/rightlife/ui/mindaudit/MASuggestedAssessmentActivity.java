@@ -3,8 +3,8 @@ package com.jetsynthesys.rightlife.ui.mindaudit;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -15,31 +15,27 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.ui.mindaudit.curated.AssessmentUndertaken;
-import com.jetsynthesys.rightlife.ui.mindaudit.curated.Context;
-import com.jetsynthesys.rightlife.ui.mindaudit.curated.CuratedUserData;
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient;
+import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse;
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.RecommendationAdapter;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MASuggestedAssessmentActivity extends BaseActivity {
+    private final ArrayList<String> suggestedAssessmentString = new ArrayList<>();
+    private final ArrayList<String> allAssessments = new ArrayList<>();
     private ImageView ic_back_dialog, close_dialog;
-    private RecyclerView rvSuggestedAssessment, rvAllAssessment, rvCurated;
-    private TextView tv_curated;
+    private RecyclerView rvSuggestedAssessment, rvAllAssessment, recyclerViewAlsolike;
     private SuggestedAssessmentAdapter suggestedAssessmentAdapter;
     private AllAssessmentAdapter allAssessmentAdapter;
     private Assessments assessments;
-    private final ArrayList<String> suggestedAssessmentString = new ArrayList<>();
-    private final ArrayList<String> allAssessments = new ArrayList<>();
     private String selectedAssessment;
     private boolean isFromThinkRight = false;
 
@@ -60,17 +56,16 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
         rvSuggestedAssessment = findViewById(R.id.rv_suggested_assessment);
         rvAllAssessment = findViewById(R.id.rv_all_assessment);
-        rvCurated = findViewById(R.id.rv_curated);
-        tv_curated = findViewById(R.id.tv_curated);
+        recyclerViewAlsolike = findViewById(R.id.recommendationRecyclerView);
 
         assessments = (Assessments) getIntent().getSerializableExtra("AssessmentData");
         selectedAssessment = getIntent().getStringExtra("SelectedAssessment");
-        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT",false);
+        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT", false);
 
         if (selectedAssessment != null) {
             showDisclaimerDialog(selectedAssessment);
         } else {
-            getCurated();
+            fetchThinkRecomendedData();
         }
 
         if (assessments != null) {
@@ -78,7 +73,6 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
             rvSuggestedAssessment.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvAllAssessment.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            rvCurated.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
             suggestedAssessmentAdapter = new SuggestedAssessmentAdapter(this, suggestedAssessmentString, this::showDisclaimerDialog);
             rvSuggestedAssessment.setAdapter(suggestedAssessmentAdapter);
@@ -169,7 +163,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         btnTakeAssessment.setOnClickListener(view -> {
             Intent intent = new Intent(MASuggestedAssessmentActivity.this, MAAssessmentQuestionaireActivity.class);
             intent.putExtra("AssessmentType", header);
-            intent.putExtra("FROM_THINK_RIGHT",isFromThinkRight);
+            intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
             startActivity(intent);
         });
         // Show the dialog
@@ -218,45 +212,6 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         }
     }
 
-    private void getCurated() {
-        CuratedUserData curatedUserData = new CuratedUserData();
-        Context context = new Context();
-        context.setModule("EAT_RIGHT");
-        AssessmentUndertaken assessmentUndertaken = new AssessmentUndertaken();
-        assessmentUndertaken.setAssessment("MIND_AUDIT");
-        assessmentUndertaken.setTarget(new ArrayList<>());
-        context.setAssessmentUndertaken(assessmentUndertaken);
-        curatedUserData.setContext(context);
-
-        Call<ResponseBody> call = apiService.getCuratedAssessment(sharedPreferenceManager.getAccessToken(), curatedUserData);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    try {
-                        String jsonString = response.body().string();
-                        Gson gson = new Gson();
-                        /*****
-                         * Sudhir will complete this part
-                         */
-                        tv_curated.setVisibility(View.VISIBLE);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    tv_curated.setVisibility(View.GONE);
-                    //Toast.makeText(MASuggestedAssessmentActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                handleNoInternetView(t);
-            }
-        });
-    }
-
     private void showExitDialog() {
         // Create the dialog
         Dialog dialog = new Dialog(this);
@@ -291,4 +246,43 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
         dialog.show();
     }
+
+
+    private void fetchThinkRecomendedData() {
+
+        Call<ThinkRecomendedResponse> call = ApiClient.INSTANCE.getApiService().fetchThinkRecomended(sharedPreferenceManager.getAccessToken(), "HOME", "THINK_RIGHT");
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<ThinkRecomendedResponse> call, Response<ThinkRecomendedResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ThinkRecomendedResponse thinkRecomendedResponse = response.body();
+                    if (thinkRecomendedResponse.getData() != null) {
+                        thinkRecomendedResponse.getData().getContentList();
+                        if (!thinkRecomendedResponse.getData().getContentList().isEmpty()) {
+                            RecommendationAdapter recomendationAdapter = new RecommendationAdapter(
+                                    MASuggestedAssessmentActivity.this,
+                                    thinkRecomendedResponse.getData().getContentList()
+                            );
+                            recyclerViewAlsolike.setLayoutManager(
+                                    new LinearLayoutManager(MASuggestedAssessmentActivity.this)
+                            );
+                            recyclerViewAlsolike.setAdapter(recomendationAdapter);
+                        }
+                    }
+                } else {
+                    try {
+                        Log.e("Error", "Response not successful: " + (response.errorBody() != null ? response.errorBody().string() : "null"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ThinkRecomendedResponse> call, Throwable t) {
+                handleNoInternetView(t);
+            }
+        });
+    }
+
 }

@@ -20,6 +20,7 @@ import com.jetsynthesys.rightlife.apimodel.modulecontentdetails.ModuleContentDet
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse
 import com.jetsynthesys.rightlife.databinding.ActivitySeriesListBinding
+import com.jetsynthesys.rightlife.shortVibrate
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall.updateViewCount
@@ -159,6 +160,7 @@ class SeriesListActivity : BaseActivity() {
             setReadMoreView(contentResponseObj.data.desc)
 
             binding.imageLikeArticle.setOnClickListener { v ->
+                v.shortVibrate()
                 if (contentResponseObj.data.like) {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
                     contentResponseObj.data.like = false
@@ -316,12 +318,10 @@ class SeriesListActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
 
-        val shareText = """
-    Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.
-    Try it and get 7 days for free. Here’s the link:
-     + "Play Store Link  https://play.google.com/store/apps/details?id=${packageName} \n" +
-       "App Store Link https://apps.apple.com/app/rightlife/id6444228850";
-""".trimIndent()
+        val shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
+                "Check it out here. " +
+                "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
+                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
 
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText)

@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -31,6 +32,7 @@ import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.ShortVibrateKt;
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.jetsynthesys.rightlife.databinding.ActivityArticledetailBinding;
@@ -128,6 +130,7 @@ public class ArticlesDetailActivity extends BaseActivity {
         });
 
         binding.imageLikeArticle.setOnClickListener(v -> {
+            ShortVibrateKt.shortVibrate(v, 100);
             binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
             int currentCount = getCurrentCount();
             if (articleDetailsResponse.getData().getIsLike()) {
@@ -154,6 +157,7 @@ public class ArticlesDetailActivity extends BaseActivity {
         contentId = getIntent().getStringExtra("contentId");
         //setVideoPlayerView();
         getArticleDetails(contentId);
+        //getArticleDetails("681c77f13cb497116bfe09db");
         getRecommendedContent(contentId);
 
         binding.tvViewAll.setOnClickListener(view -> {
@@ -269,11 +273,20 @@ public class ArticlesDetailActivity extends BaseActivity {
             binding.txtLikeCount.setText(articleDetailsResponse.getData().getLikeCount().toString());
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             binding.txtKeytakeawayDesc.setText(Html.fromHtml(articleDetailsResponse.getData().getSummary(), Html.FROM_HTML_MODE_COMPACT));
         } else {
             binding.txtKeytakeawayDesc.setText(Html.fromHtml(articleDetailsResponse.getData().getSummary()));
+        }*/
+        Spanned spanned;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            spanned = Html.fromHtml(articleDetailsResponse.getData().getSummary(), Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            spanned = Html.fromHtml(articleDetailsResponse.getData().getSummary());
         }
+
+        binding.txtKeytakeawayDesc.setText(spanned);
 
         // article consumed
         EpisodeTrackRequest episodeTrackRequest = new EpisodeTrackRequest(sharedPreferenceManager.getUserId(), articleDetailsResponse.getData().getModuleId(),
@@ -282,6 +295,55 @@ public class ArticlesDetailActivity extends BaseActivity {
     }
 
     private void handleInThisArticle(List<String> tocItems) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+
+        for (int i = 0; i < tocItems.size(); i++) {
+            String item = tocItems.get(i);
+
+            // Add bullet point
+            builder.append("• ");
+
+            // Remember start position of the item text
+            int itemStart = builder.length();
+
+            // Add the item text
+            builder.append(item);
+            int itemEnd = builder.length();
+
+            // Create and apply ClickableSpan
+            final int position = i;
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    View targetView = binding.recyclerViewArticle.getLayoutManager().findViewByPosition(position);
+                    if (targetView != null) {
+                        binding.scrollviewarticle.smoothScrollTo(0, targetView.getTop());
+                    }
+                }
+
+                @Override
+                public void updateDrawState(android.text.TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setColor(ContextCompat.getColor(ArticlesDetailActivity.this, R.color.color_in_this_article));
+                    ds.setUnderlineText(false);
+                }
+            };
+
+            builder.setSpan(clickableSpan, itemStart, itemEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Add spacing (newlines) except after the last item
+            if (i < tocItems.size() - 1) {
+                builder.append("\n\n");
+            }
+        }
+
+        builder.append("\n"); // Final newline
+
+        binding.txtInthisarticleList.setText(builder);
+        binding.txtInthisarticleList.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /*private void handleInThisArticle(List<String> tocItems) {
         // Create a StringBuilder to build the text with bullet points
         StringBuilder textBuilder = new StringBuilder();
 
@@ -336,7 +398,7 @@ public class ArticlesDetailActivity extends BaseActivity {
         // Set the SpannableString to the TextView
         binding.txtInthisarticleList.setText(spannableString);
         binding.txtInthisarticleList.setMovementMethod(LinkMovementMethod.getInstance()); // Enable link clicks
-    }
+    }*/
 
 
     private void HandleArticleListView(List<Article> articleList) {
@@ -457,6 +519,13 @@ public class ArticlesDetailActivity extends BaseActivity {
                     Log.d("API Response", "Article Bookmark response: " + articleLikeResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
+                    String message = "";
+                    if (isBookmark) {
+                        message = "Added To Bookmarks";
+                    } else {
+                        message = "Removed From Bookmarks";
+                    }
+                    Toast.makeText(ArticlesDetailActivity.this, message, Toast.LENGTH_SHORT).show();
 
 
                 } else {
@@ -476,9 +545,13 @@ public class ArticlesDetailActivity extends BaseActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
 
-        String shareText = "“Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.\n" +
+        /*String shareText = "“Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.\n" +
                 "                     Try it and get 7 days for free. Here’s the link:\n " + "Play Store Link  https://play.google.com/store/apps/details?id=${packageName} \n" +
-                "App Store Link https://apps.apple.com/app/rightlife/id6444228850";
+                "App Store Link https://apps.apple.com/app/rightlife/id6444228850";*/
+
+        String shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. Check it out here."
+                + "\nPlay Store Link  https://play.google.com/store/apps/details?id=" + getPackageName() +
+                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850";
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText);
 

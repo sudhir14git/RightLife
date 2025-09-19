@@ -259,7 +259,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchAssessmentResult()
         fetchMindfulData()
         fetchThinkRecomendedData()
-        getBreathingData()
+        //getBreathingData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
         tvWellnessDays.text = data.wellnessStreak.toString() + " days"
 
@@ -485,7 +485,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     //   progressDialog.dismiss()
                 }
             }
-
             override fun onFailure(call: Call<JournalAnswerResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -776,7 +775,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     }
                 }
             }
-
             override fun onFailure(call: Call<BreathingResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 breathingCard.visibility = View.GONE
@@ -807,7 +805,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         }
     }
 
-    private fun navigateToBreathworkSession(breathingData: BreathingData) {
+    private fun navigateToBreathworkSession(breathingData: BreathingData?) {
         val intent = Intent(requireContext(), BreathworkSessionActivity::class.java).apply {
             var startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
             putExtra("BREATHWORK", breathingData)
@@ -822,8 +820,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
-        //  val userId = "67a5fae9197992511e71b1c8"
-
         val call = ApiClient.apiService.getToolList(token, userId)
         call.enqueue(object : Callback<ModuleResponse> {
             override fun onResponse(
@@ -854,7 +850,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     //             Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<ModuleResponse>, t: Throwable) {
                 /* Log.e("Error", "API call failed: ${t.message}")
                  Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
@@ -926,16 +921,28 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun onToolItem(toolsData: ModuleData, position: Int, isRefresh: Boolean) {
-
         if (toolsData.title != null) {
-
             if (toolsData.title?.contains("Breathing") == true) {
-                startActivity(
-                    Intent(requireContext(), BreathworkActivity::class.java).apply {
-                        putExtra("IS_FROM_TOOLS", true)
-                        putExtra("TOOLS_VALUE", toolsData._id)
-                    }
-                )
+                val breathingData = BreathingData().apply {
+                    id = toolsData._id ?: ""
+                    title = toolsData.title
+                    subTitle = toolsData.desc
+                    thumbnail = toolsData.image
+                    breathInhaleTime = toolsData.breathInhaleTime
+                    breathExhaleTime = toolsData.breathExhaleTime
+                    breathHoldTime = toolsData.breathHoldTime
+                    createdAt = ""
+                    updatedAt = ""
+                    duration = 0
+                    totalTime = toolsData.totalTime
+                }
+                navigateToBreathworkSession(breathingData)
+//                startActivity(
+//                    Intent(requireContext(), BreathworkActivity::class.java).apply {
+//                        putExtra("IS_FROM_TOOLS", true)
+//                        putExtra("TOOLS_VALUE", toolsData._id)
+//                    }
+//                )
             } else if (toolsData.title.equals("Free Form") || toolsData.title.equals("Bullet") || toolsData.title.equals(
                     "Gratitude"
                 ) || toolsData.title.equals("Grief")
@@ -946,7 +953,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     putExtra("FROM_THINK_RIGHT", true)
                 }
                 )
-
             } else
                 startActivity(
                     Intent(
@@ -978,7 +984,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     // progressDialog.dismiss()
                 }
             }
-
             override fun onFailure(call: Call<ThinkQuoteResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -1001,6 +1006,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchAffirmationsList()
         getBreathingData()
         fetchJournalAnswerData()
+        fetchToolList()
     }
 
     private fun fetchThinkRecomendedData() {
@@ -1086,11 +1092,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchAssessmentResult() {
-        // val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
         val call = ApiClient.apiService.getAssessmentResult(token)
-
         call.enqueue(object : Callback<AssessmentResponse> {
             override fun onResponse(
                 call: Call<AssessmentResponse>,
@@ -1098,7 +1101,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             ) {
                 if (response.isSuccessful) {
                     val assessmentResponse = response.body()
-
                     if (assessmentResponse != null) {
                         if (assessmentResponse.result.isNotEmpty()) {
                             dataFilledMindAudit.visibility = View.VISIBLE
@@ -1111,14 +1113,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                             val transformer = CompositePageTransformer().apply {
                                 // Space between pages
                                 addTransformer(MarginPageTransformer(16))  // <- Adjust this to your desired gap
-
                                 // Optional: slight shrink for visual depth
                                 addTransformer { page, position ->
                                     val scale = 0.95f + (1 - abs(position)) * 0.05f
                                     page.scaleY = scale
                                 }
                             }
-
                             viewPager.setPageTransformer(transformer)
                             viewPager.offscreenPageLimit = 3
                             viewPager.registerOnPageChangeCallback(object :
@@ -1170,7 +1170,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     reassessYourMental.visibility = View.GONE
                 }
             }
-
             override fun onFailure(call: Call<AssessmentResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 //       Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -1339,6 +1338,7 @@ class AssessmentPagerAdapter(
         val scoreText = itemView.findViewById<TextView>(R.id.tvScore)
         val scaleLayout = itemView.findViewById<LinearLayout>(R.id.scoreScaleLayout)
         val pointer = itemView.findViewById<FrameLayout>(R.id.lyt_score)
+        val scoreScaleImage = itemView.findViewById<ImageView>(R.id.scoreScaleImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -1351,16 +1351,30 @@ class AssessmentPagerAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = assessments[position]
-
         holder.title.text = item.assessment
-        holder.scoreText.text = "Your Score: ${item.score}"
-
+        val result = item.score.substringBefore(".")
+        holder.scoreText.text = "Your Score: ${result}"
+        when (item?.assessment) {
+            "DASS-21" -> {
+                holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)
+            }
+            "GAD-7" -> {
+                holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_gad7)
+            }
+            "OHQ" -> {
+                holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_ohq)
+            }
+            "CAS" -> {
+                holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_cas)
+            }
+            "PHQ-9" -> {
+                holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)
+            }
+        }
         // Clear old views if recycled
-        holder.scaleLayout.removeAllViews()
-
+      //  holder.scaleLayout.removeAllViews()
         val context = holder.itemView.context
         val score = item.score.toFloatOrNull() ?: 0f
-
         // Range and labels
         val thresholds = listOf(0, 4, 9, 14, 19, 100)
         val labels = listOf("Minimal", "Mild", "Moderate", "Severe", "Ext Severe")
@@ -1371,106 +1385,87 @@ class AssessmentPagerAdapter(
             Color.parseColor("#F39C12"), // Severe - orange
             Color.parseColor("#E74C3C")  // Ext Severe - red
         )
-
-        holder.scaleLayout.removeAllViews()
-
-        for (i in 0 until labels.size) {
-            val column = LinearLayout(context).apply {
-                orientation = LinearLayout.VERTICAL
-                layoutParams =
-                    LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                gravity = Gravity.CENTER
-            }
-
-            // Number label
-            val numberText = TextView(context).apply {
-                text = thresholds[i].toString()
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
-                setTextColor(Color.DKGRAY)
-            }
-
-            // Category label
-            val radius = 24f
-
-            val bgDrawable = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadii = when (i) {
-                    0 -> floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius) // left round
-                    labels.lastIndex -> floatArrayOf(
-                        0f,
-                        0f,
-                        radius,
-                        radius,
-                        radius,
-                        radius,
-                        0f,
-                        0f
-                    ) // right round
-                    else -> FloatArray(8) { 0f }
-                }
-
-                setColor(colors[i])
-
-                if (score >= thresholds[i] && score < thresholds[i + 1]) {
-                    setStroke(4, Color.BLACK) // 4dp black border
-                }
-            }
-
-            val labelText = TextView(context).apply {
-                text = labels[i]
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
-                setTextColor(Color.WHITE)
-                setTypeface(null, Typeface.BOLD)
-                gravity = Gravity.CENTER
-                setPadding(0, 8, 0, 8)
-                background = bgDrawable
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    topMargin = 4
-                }
-            }
-
-            column.addView(numberText)
-            column.addView(labelText)
-
-            holder.scaleLayout.addView(column)
-
-        }
-
-        holder.scaleLayout.post {
-            val totalWidth = holder.scaleLayout.width
-            val segmentCount = labels.size
-            val segmentWidth = totalWidth / segmentCount
-
-            // Find the correct index based on score
-            var index = 0
-            for (i in 0 until thresholds.size - 1) {
-                if (score >= thresholds[i] && score < thresholds[i + 1]) {
-                    index = i
-                    break
-                }
-            }
-
-            // Calculate position inside the segment (optional: finer placement)
-            val scoreInSegment = score - thresholds[index]
-            val segmentRange = thresholds[index + 1] - thresholds[index]
-            val fractionInSegment = scoreInSegment / segmentRange
-
-            // Final X position (can be center or start of segment)
-            val pointerX = (index + fractionInSegment) * segmentWidth
-
-            // Set X translation (center the pointer if needed)
-            holder.pointer.translationX = pointerX - holder.pointer.width / 2
-        }
-
+      //  holder.scaleLayout.removeAllViews()
+//        for (i in labels.indices) {
+//            val column = LinearLayout(context).apply {
+//                orientation = LinearLayout.VERTICAL
+//                layoutParams =
+//                    LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+//                gravity = Gravity.CENTER
+//            }
+//            // Number label
+//            val numberText = TextView(context).apply {
+//                text = thresholds[i].toString()
+//                setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
+//                setTextColor(Color.DKGRAY)
+//            }
+//            // Category label
+//            val radius = 24f
+//            val bgDrawable = GradientDrawable().apply {
+//                shape = GradientDrawable.RECTANGLE
+//                cornerRadii = when (i) {
+//                    0 -> floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius) // left round
+//                    labels.lastIndex -> floatArrayOf(
+//                        0f,
+//                        0f,
+//                        radius,
+//                        radius,
+//                        radius,
+//                        radius,
+//                        0f,
+//                        0f
+//                    ) // right round
+//                    else -> FloatArray(8) { 0f }
+//                }
+//                setColor(colors[i])
+//                if (score >= thresholds[i] && score < thresholds[i + 1]) {
+//                    setStroke(4, Color.BLACK) // 4dp black border
+//                }
+//            }
+//            val labelText = TextView(context).apply {
+//                text = labels[i]
+//                setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
+//                setTextColor(Color.WHITE)
+//                setTypeface(null, Typeface.BOLD)
+//                gravity = Gravity.CENTER
+//                setPadding(0, 8, 0, 8)
+//                background = bgDrawable
+//                layoutParams = LinearLayout.LayoutParams(
+//                    LinearLayout.LayoutParams.MATCH_PARENT,
+//                    LinearLayout.LayoutParams.WRAP_CONTENT
+//                ).apply {
+//                    topMargin = 4
+//                }
+//            }
+//            column.addView(numberText)
+//            column.addView(labelText)
+//            holder.scaleLayout.addView(column)
+//        }
+//        holder.scaleLayout.post {
+//            val totalWidth = holder.scaleLayout.width
+//            val segmentCount = labels.size
+//            val segmentWidth = totalWidth / segmentCount
+//            // Find the correct index based on score
+//            var index = 0
+//            for (i in 0 until thresholds.size - 1) {
+//                if (score >= thresholds[i] && score < thresholds[i + 1]) {
+//                    index = i
+//                    break
+//                }
+//            }
+//            // Calculate position inside the segment (optional: finer placement)
+//            val scoreInSegment = score - thresholds[index]
+//            val segmentRange = thresholds[index + 1] - thresholds[index]
+//            val fractionInSegment = scoreInSegment / segmentRange
+//            // Final X position (can be center or start of segment)
+//            val pointerX = (index + fractionInSegment) * segmentWidth
+//            // Set X translation (center the pointer if needed)
+//           // holder.pointer.translationX = pointerX - holder.pointer.width / 2
+//        }
     }
-
     fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
-
 }
 
 
@@ -1479,7 +1474,6 @@ data class AssessmentResultData(
     val score: String,
     val level: String
 )
-
 data class Interpretation(
     val score: String,
     val level: String

@@ -12,6 +12,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.constraintlayout.widget.Guideline
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.widget.NestedScrollView
@@ -147,6 +149,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var caloricInfo : ImageView
     private lateinit var viewWorkoutHistory : LinearLayoutCompat
     private lateinit var yourMovementSummary : ImageView
+    private lateinit var overlayGuideline : Guideline
     private lateinit var yourVitals : ImageView
     private lateinit var yourHeartRateZone : ImageView
     private lateinit var recyclerView : RecyclerView
@@ -245,6 +248,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
         viewWorkoutHistory = view.findViewById(R.id.viewWorkoutHistory)
         rightLifeReportCard = view.findViewById(R.id.rightLifeReportCard)
+        overlayGuideline = view.findViewById(R.id.overlayGuideline)
         val displayMetrics = resources.displayMetrics
         val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
         val dottedLine = view.findViewById<View>(R.id.horizontal_dotted_green)
@@ -522,18 +526,26 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 // No data state
                                 calorie_no_data_filled_layout.visibility = View.GONE
                                 calorie_layout_data_filled.visibility = View.VISIBLE
-                                val color = when (it.data.calorieBalance.goal) {
-                                    "weight_loss" -> {
-                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
-                                    }
-                                    "weight_gain" -> {
-                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.red else R.color.color_eat_right
-                                    }
-                                    else -> {
-                                        R.color.color_eat_right
-                                    }
+                                val calorieIntake = it.data.calorieBalance.calorieIntake
+                                val calorieRange = it.data.calorieBalance.calorieRange // or an array [start, end]
+                                val colorRes = if (calorieIntake in calorieRange[0]..calorieRange[1]) {
+                                    R.color.color_eat_right   // ✅ green
+                                } else {
+                                    R.color.red              // ❌ red
                                 }
-                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), color))
+                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), colorRes))
+//                                val color = when (it.data.calorieBalance.goal) {
+//                                    "weight_loss" -> {
+//                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
+//                                    }
+//                                    "weight_gain" -> {
+//                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.red else R.color.color_eat_right
+//                                    }
+//                                    else -> {
+//                                        R.color.color_eat_right
+//                                    }
+//                                }
+//                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), color))
                                 calorie_no_data_filled_layout.visibility = View.GONE
                                 calorie_layout_data_filled.visibility = View.VISIBLE
                                 tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
@@ -545,57 +557,84 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     override fun onGlobalLayout() {
                                         progressBarCalorieBalance.viewTreeObserver.removeOnGlobalLayoutListener(this)
                                         val progressBarWidth = progressBarCalorieBalance.width.toFloat()
+                                        val burnedTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                        var rangeEnd : Double = 0.0
+                                        val rangeStart = it.data.calorieBalance.calorieRange.getOrNull(0) ?: 0.0
+                                        if (it.data.calorieBalance.calorieRange.size > 1){
+                                            rangeEnd = it.data.calorieBalance.calorieRange.getOrNull(1) ?: 0.0
+                                        }
+                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() + rangeEnd.toInt()
                                         val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
                                         //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
                                         val value = (percentage / 10)
                                         val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                                        progressBarCalorieBalance.max = totalCalorie
+                                        val max = progressBarCalorieBalance.max
                                         progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
                                         val progress = progressBarCalorieBalance.progress
-                                        progressBarCalorieBalance.max = it.data.calorieBalance.calorieBurnTarget.toInt()
-                                        val max = progressBarCalorieBalance.max
                                         val progressPercentage = progress.toFloat() / max
                                         val constraintSet = ConstraintSet()
                                         constraintSet.clone(progressBarLayout)
                                         constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
                                         constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
                                         constraintSet.applyTo(progressBarLayout)
-                                        val burnedTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
-                                        val rangeStart = it.data.calorieBalance.calorieRange.getOrNull(0) ?: 0.0
-                                        // transparentOverlay = view?.findViewById(R.id.transparentOverlay)
-                                        transparentOverlay.let { overlay ->
-                                            // Use the progressBarLayout width to calculate proportional widths
-                                            val parentWidth = progressBarLayout.width
-                                            val isWeightGainZone = burnedTarget < rangeStart
-                                            val overlayWidth = if (isWeightGainZone) {
-                                                weightLossZoneText.text = "Weight Gain Zone"
-                                                (parentWidth * 0.6).toInt() // 40% of parent width for Weight Gain Zone
-                                            } else {
-                                                calorieCountText
-                                                weightLossZoneText.text = "Weight Loss Zone"
-                                                (parentWidth * 0.08).toInt() // 20% of parent width for Weight Loss Zone
-                                            }
-                                            // Update the layout params to set the new width
-                                            val layoutParams = overlay.layoutParams
-                                            layoutParams.width = overlayWidth
-                                            overlay.layoutParams = layoutParams
-                                            overlay.visibility = View.VISIBLE // Ensure overlay is visible
+                                        // D) Text Zone Label
+                                        val zoneText = when {
+                                            burnedTarget < rangeStart -> "Weight Gain Zone"
+                                            burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
+                                            else -> "Weight Loss Zone"
+                                        }
+                                        weightLossZoneText.text = zoneText
+                                        progressBarCalorieBalance.post {
+                                            val max = progressBarCalorieBalance.max.toFloat()
+                                            if (max <= 0f) return@post
+                                            val barWidth = progressBarCalorieBalance.width -
+                                                    progressBarCalorieBalance.paddingStart -
+                                                    progressBarCalorieBalance.paddingEnd
+                                            // Fractions (relative positions inside progress bar)
+                                            val startFrac = rangeStart / max
+                                            val endFrac = rangeEnd / max
+                                            // X coordinates
+                                            val startX = (barWidth * startFrac).toInt() + progressBarCalorieBalance.paddingStart
+                                            val endX = (barWidth * endFrac).toInt() + progressBarCalorieBalance.paddingStart
+                                            // Overlay width
+                                            val minWidthPx = TypedValue.applyDimension(
+                                                TypedValue.COMPLEX_UNIT_DIP,
+                                                5f,
+                                                resources.displayMetrics
+                                            ).toInt()
+                                            val overlayWidth = (endX - startX).coerceAtLeast(minWidthPx)
+                                            // Apply layout params
+                                            val lp = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
+                                            lp.width = overlayWidth
+                                            lp.marginStart = startX
+                                            transparentOverlay.layoutParams = lp
+                                            transparentOverlay.visibility = View.VISIBLE
                                         }
                                     }
                                 })
                             } else {
                                 // Data state
-                                val color = when (it.data.calorieBalance.goal) {
-                                    "weight_loss" -> {
-                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
-                                    }
-                                    "weight_gain" -> {
-                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.red else R.color.color_eat_right
-                                    }
-                                    else -> {
-                                        R.color.color_eat_right
-                                    }
+                                val calorieIntake = it.data.calorieBalance.calorieIntake
+                                val calorieRange = it.data.calorieBalance.calorieRange // or an array [start, end]
+                                val colorRes = if (calorieIntake in calorieRange[0]..calorieRange[1]) {
+                                    R.color.color_eat_right   // ✅ green
+                                } else {
+                                    R.color.red              // ❌ red
                                 }
-                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), color))
+                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), colorRes))
+//                                val color = when (it.data.calorieBalance.goal) {
+//                                    "weight_loss" -> {
+//                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
+//                                    }
+//                                    "weight_gain" -> {
+//                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.red else R.color.color_eat_right
+//                                    }
+//                                    else -> {
+//                                        R.color.color_eat_right
+//                                    }
+//                                }
+//                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), color))
                                 calorie_no_data_filled_layout.visibility = View.GONE
                                 calorie_layout_data_filled.visibility = View.VISIBLE
                                 tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
@@ -607,45 +646,83 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     override fun onGlobalLayout() {
                                         progressBarCalorieBalance.viewTreeObserver.removeOnGlobalLayoutListener(this)
                                         val progressBarWidth = progressBarCalorieBalance.width.toFloat()
+                                        val burnedTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                        var rangeEnd : Double = 0.0
+                                        val rangeStart = it.data.calorieBalance.calorieRange.getOrNull(0) ?: 0.0
+                                        if (it.data.calorieBalance.calorieRange.size > 1){
+                                            rangeEnd = it.data.calorieBalance.calorieRange.getOrNull(1) ?: 0.0
+                                        }
+                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() + rangeEnd.toInt()
                                         val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
                                       //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
                                         val value = (percentage / 10)
                                         val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                                        progressBarCalorieBalance.max = totalCalorie
+                                        val max = progressBarCalorieBalance.max
                                         progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
                                         val progress = progressBarCalorieBalance.progress
-                                        progressBarCalorieBalance.max = it.data.calorieBalance.calorieBurnTarget.toInt()
-                                        val max = progressBarCalorieBalance.max
                                         val progressPercentage = progress.toFloat() / max
                                         val constraintSet = ConstraintSet()
                                         constraintSet.clone(progressBarLayout)
                                         constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
                                         constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
                                         constraintSet.applyTo(progressBarLayout)
-                                        val burnedTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
-                                        val rangeStart = it.data.calorieBalance.calorieRange.getOrNull(0) ?: 0.0
-                                       // transparentOverlay = view?.findViewById(R.id.transparentOverlay)
-                                        transparentOverlay.let { overlay ->
-                                            // Use the progressBarLayout width to calculate proportional widths
-                                            val parentWidth = progressBarLayout.width
-                                            val isWeightGainZone = burnedTarget < rangeStart
-                                            val overlayWidth = if (isWeightGainZone) {
-                                                weightLossZoneText.text = "Weight Gain Zone"
-                                                (parentWidth * 0.6).toInt() // 40% of parent width for Weight Gain Zone
-                                            } else {
-                                                calorieCountText
-                                                weightLossZoneText.text = "Weight Loss Zone"
-                                                (parentWidth * 0.08).toInt() // 20% of parent width for Weight Loss Zone
-                                            }
-                                            // Update the layout params to set the new width
-                                            val layoutParams = overlay.layoutParams
-                                            layoutParams.width = overlayWidth
-                                            overlay.layoutParams = layoutParams
-                                            overlay.visibility = View.VISIBLE // Ensure overlay is visible
+                                        // D) Text Zone Label
+                                        val zoneText = when {
+                                            burnedTarget < rangeStart -> "Weight Gain Zone"
+                                            burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
+                                            else -> "Weight Loss Zone"
                                         }
+                                        weightLossZoneText.text = zoneText
+                                        progressBarCalorieBalance.post {
+                                            val max = progressBarCalorieBalance.max.toFloat()
+                                            if (max <= 0f) return@post
+                                            val barWidth = progressBarCalorieBalance.width -
+                                                    progressBarCalorieBalance.paddingStart -
+                                                    progressBarCalorieBalance.paddingEnd
+                                            // Fractions (relative positions inside progress bar)
+                                            val startFrac = rangeStart / max
+                                            val endFrac = rangeEnd / max
+                                            // X coordinates
+                                            val startX = (barWidth * startFrac).toInt() + progressBarCalorieBalance.paddingStart
+                                            val endX = (barWidth * endFrac).toInt() + progressBarCalorieBalance.paddingStart
+                                            // Overlay width
+                                            val minWidthPx = TypedValue.applyDimension(
+                                                TypedValue.COMPLEX_UNIT_DIP,
+                                                5f,
+                                                resources.displayMetrics
+                                            ).toInt()
+                                            val overlayWidth = (endX - startX).coerceAtLeast(minWidthPx)
+                                            // Apply layout params
+                                            val lp = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
+                                            lp.width = overlayWidth
+                                            lp.marginStart = startX
+                                            transparentOverlay.layoutParams = lp
+                                            transparentOverlay.visibility = View.VISIBLE
+                                        }
+//                                        progressBarLayout.post {
+//                                            val total = burnedTarget + rangeEnd
+//                                            val startFrac = if (total > 0) (rangeStart / total).toFloat() else 0f
+//                                            val endFrac = if (total > 0) (rangeEnd / total).toFloat() else 0f
+//                                            val barWidth = progressBarLayout.width
+//                                            // Convert 5dp → pixels
+//                                            val minWidthPx = TypedValue.applyDimension(
+//                                                TypedValue.COMPLEX_UNIT_DIP,
+//                                                5f,
+//                                                resources.displayMetrics
+//                                            ).toInt()
+//                                            val startX = (barWidth * startFrac).toInt()
+//                                            val endX = (barWidth * endFrac).toInt()
+//                                            val overlayWidth = (endX - startX).coerceAtLeast(minWidthPx)
+//                                            val lp = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
+//                                            lp.width = overlayWidth
+//                                            lp.marginStart = startX
+//                                            transparentOverlay.layoutParams = lp
+//                                            transparentOverlay.visibility = View.VISIBLE
+//                                        }
                                     }
                                 })
                             }
-
                             val heartRateZones = it.data.heartRateZones
                             val errorMessages = mutableListOf<String>()
                             if (activityFactorData.isEmpty() || activityFactorData.all { it == 0f }) {

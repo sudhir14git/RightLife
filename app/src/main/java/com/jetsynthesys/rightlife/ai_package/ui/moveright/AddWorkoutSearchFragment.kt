@@ -169,7 +169,28 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         addLog.isEnabled = false
 
         addSearchFragmentBackButton.setOnClickListener {
-            if (edit.equals("edit")) {
+            if (edit == "edit") {
+                navigateToFragment(YourActivityFragment(), "YourActivityFragment")
+            } else if (editWorkoutRoutine == "editworkoutRoutine") {
+                navigateToCreateRoutineFragment()
+            } else if (routine == "routine") {
+                if (workoutListRoutine.isNotEmpty()) {
+                    workoutListRoutine.removeAt(workoutListRoutine.size - 1)
+                    // ya workoutListRoutine.removeLast()
+                }
+                navigateToCreateRoutineFragment()
+            } else if (routine == "edit_routine") {
+                if (workoutListRoutine.isNotEmpty()) {
+                    workoutListRoutine.removeAt(workoutListRoutine.size - 1)
+                    // ya workoutListRoutine.removeLast()
+                }
+                navigateToFragmentData(SearchWorkoutFragment(), "SearchWorkoutFragment")
+            } else if (allworkout == "allworkout") {
+                navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
+            } else {
+                navigateToFragment(YourActivityFragment(), "YourActivityFragment")
+            }
+            /*if (edit.equals("edit")) {
                 navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
             } else if(routine.equals("edit_routine")){
                 navigateToFragmentData(SearchWorkoutFragment(), "SearchWorkoutFragment")
@@ -190,7 +211,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
             }else{
                 navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
-            }
+            }*/
         }
 
         addLog.setOnClickListener {
@@ -279,7 +300,28 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (edit.equals("edit")) {
+                if (edit == "edit") {
+                    navigateToFragment(YourActivityFragment(), "YourActivityFragment")
+                } else if (editWorkoutRoutine == "editworkoutRoutine") {
+                    navigateToCreateRoutineFragment()
+                } else if (routine == "routine") {
+                    if (workoutListRoutine.isNotEmpty()) {
+                        workoutListRoutine.removeAt(workoutListRoutine.size - 1)
+                        // ya workoutListRoutine.removeLast()
+                    }
+                    navigateToCreateRoutineFragment()
+                } else if (routine == "edit_routine") {
+                    if (workoutListRoutine.isNotEmpty()) {
+                        workoutListRoutine.removeAt(workoutListRoutine.size - 1)
+                        // ya workoutListRoutine.removeLast()
+                    }
+                    navigateToFragmentData(SearchWorkoutFragment(), "SearchWorkoutFragment")
+                } else if (allworkout == "allworkout") {
+                    navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
+                } else {
+                    navigateToFragment(YourActivityFragment(), "YourActivityFragment")
+                }
+               /* if (edit.equals("edit")) {
                     navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
                 } else if(routine.equals("edit_routine")){
                     navigateToFragmentData(SearchWorkoutFragment(), "SearchWorkoutFragment")
@@ -300,7 +342,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
                 }else{
                     navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
-                }
+                }*/
             }
         })
 

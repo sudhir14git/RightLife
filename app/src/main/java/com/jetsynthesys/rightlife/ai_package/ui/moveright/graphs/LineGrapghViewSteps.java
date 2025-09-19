@@ -15,9 +15,10 @@ import java.util.List;
 public class LineGrapghViewSteps extends View {
     private Paint linePaint; // Paint for the graph lines
     private Paint circlePaint; // Paint for the circles at the end of each line and intersections
-    private Paint axisPaint; // Paint for the X-axis labels
+    private Paint axisPaint; // Paint for the X-axis and Y-axis labels
     private Paint verticalLinePaint; // Paint for the vertical grey lines at labels
     private Paint maxValueLinePaint; // Paint for the vertical light grey line at max value
+    private Paint gridLinePaint; // Paint for the horizontal grey grid lines
     private List<float[]> dataSets; // List of datasets (each dataset represents a line)
     private List<Integer> lineColors; // Colors for each line
     private Path path;
@@ -42,10 +43,10 @@ public class LineGrapghViewSteps extends View {
         circlePaint = new Paint();
         circlePaint.setStyle(Paint.Style.FILL);
 
-        // Initialize axis paint
+        // Initialize axis paint for X and Y labels
         axisPaint = new Paint();
         axisPaint.setColor(0xFF000000); // Black color for the labels
-        axisPaint.setTextSize(24f); // Reduced text size to fit all labels
+        axisPaint.setTextSize(18f); // Reduced text size to prevent overlap
         axisPaint.setTextAlign(Paint.Align.CENTER); // Default alignment (will adjust dynamically)
 
         // Initialize vertical line paint for labels
@@ -53,14 +54,19 @@ public class LineGrapghViewSteps extends View {
         verticalLinePaint.setColor(0xFFA7A7A7); // Grey color for vertical lines
         verticalLinePaint.setStrokeWidth(4f); // Thicker line
         verticalLinePaint.setStyle(Paint.Style.STROKE);
-        // Solid line (no DashPathEffect)
 
         // Initialize paint for max value vertical line
         maxValueLinePaint = new Paint();
         maxValueLinePaint.setColor(0xFFD9D9D9); // Light grey color
         maxValueLinePaint.setStrokeWidth(3f); // Slightly thinner than graph lines
         maxValueLinePaint.setStyle(Paint.Style.STROKE);
-        // Solid line (no DashPathEffect)
+
+        // Initialize paint for horizontal grid lines
+        gridLinePaint = new Paint();
+        gridLinePaint.setColor(0xFFD9D9D9); // Light grey color for grid lines
+        gridLinePaint.setStrokeWidth(2f); // Thin line for grid
+        gridLinePaint.setStyle(Paint.Style.STROKE);
+        gridLinePaint.setPathEffect(new DashPathEffect(new float[]{5f, 5f}, 0f)); // Dotted pattern for grid lines
 
         // Initialize data sets and colors
         dataSets = new ArrayList<>();
@@ -91,48 +97,73 @@ public class LineGrapghViewSteps extends View {
             return; // Exit if no data to draw
         }
 
-        // Reserve space at the bottom for the X-axis labels
-        float paddingBottom = 50f; // Space for X-axis labels
-        float paddingTop = 10f; // Small padding at the top to avoid clipping
+        // Define padding
+        float paddingBottom = 60f; // Increased space for X-axis labels to prevent overlap
+        float paddingTop = 40f; // Increased padding at the top to prevent clipping
+        float paddingLeft = 40f; // Increased left padding for graph
+        float paddingRight = 120f; // Increased right padding for Y-axis labels
         float graphHeight = height - paddingBottom - paddingTop; // Adjusted graph height
+        float effectiveWidth = width - paddingLeft - paddingRight; // Effective width after padding
 
-        // Add padding at the start and end of the graph
-        float paddingHorizontal = 30f; // Padding on both sides (start and end)
-        float effectiveWidth = width - (2 * paddingHorizontal); // Effective width after padding
-
-        // Find the global minimum, maximum values, and max value index
-        float minValue = Float.MAX_VALUE;
-        float maxValue = Float.MIN_VALUE;
-        int maxValueIndex = 0; // Index of the max value
+        // Find the global maximum value for dynamic Y-axis scaling
+        float minValue = 0f; // Fixed min value
+        float globalMaxValue = Float.MIN_VALUE;
+        int maxValueIndex = 0;
         for (int i = 0; i < dataSets.size(); i++) {
             float[] data = dataSets.get(i);
             if (data != null && data.length > 0) {
                 for (int j = 0; j < data.length; j++) {
-                    float value = data[j];
-                    if (value < minValue) minValue = value;
-                    if (value > maxValue) {
-                        maxValue = value;
-                        maxValueIndex = j; // Update index of max value
+                    if (data[j] > globalMaxValue) {
+                        globalMaxValue = data[j];
+                        maxValueIndex = j;
                     }
                 }
             }
         }
-
-        // Ensure minValue and maxValue are valid
-        if (minValue == Float.MAX_VALUE || maxValue == Float.MIN_VALUE) {
-            minValue = 0f; // Default min if no data
-            maxValue = 100f; // Default max if no data
-            Log.w("LineGrapghViewSteps", "No valid data range, using defaults (0-100).");
+        // Set a default max value if no valid data
+        if (globalMaxValue == Float.MIN_VALUE) {
+            globalMaxValue = 2500f; // Default max to 2500
         }
 
-        // Scale the data points to fit within the graph's height and effective width
-        float scaleY = graphHeight / (maxValue - minValue);
+        // Calculate dynamic maxValue (ceiling to nearest multiple of interval)
+        float interval;
+        if (globalMaxValue <= 2500f) {
+            interval = 500f; // Interval of 500 for max value <= 2500
+        } else if (globalMaxValue <= 5000f) {
+            interval = 1000f; // Interval of 1000 for max value > 2500 and <= 5000
+        } else {
+            interval = 2500f; // Interval of 2500 for max value > 5000
+        }
+        float maxValue = (float) (Math.ceil(globalMaxValue / interval) * interval);
+        if (maxValue < interval) maxValue = interval; // Ensure at least one increment
+        float scaleY = graphHeight / (maxValue - minValue); // Scale for Y-axis
+
+        // Generate dynamic Y-axis values based on interval
+        List<Float> yAxisValues = new ArrayList<>();
+        for (float value = 0f; value <= maxValue; value += interval) {
+            yAxisValues.add(value);
+        }
+
+        // Scale X-axis
         float scaleX = effectiveWidth / (dataSets.get(0).length - 1); // Safe to access now
 
         // Draw the vertical light grey line at the max value's X position
-        float maxLineX = paddingHorizontal + (maxValueIndex * scaleX); // X-coordinate of max value
+        float maxLineX = paddingLeft + (maxValueIndex * scaleX);
         canvas.drawLine(maxLineX, paddingTop, maxLineX, height - paddingBottom, maxValueLinePaint);
-        Log.d("LineGrapghViewSteps", "Max value line at x: " + maxLineX + ", max value: " + maxValue + ", index: " + maxValueIndex);
+        Log.d("LineGrapghViewSteps", "Max value line at x: " + maxLineX + ", max value: " + globalMaxValue + ", index: " + maxValueIndex);
+
+        // Draw Y-axis labels and horizontal grey grid lines
+        for (float yValue : yAxisValues) {
+            // Calculate Y-coordinate for the label and grid line
+            float y = (height - paddingBottom) - ((yValue - minValue) * scaleY);
+
+            // Draw Y-axis label on the right side with better positioning
+            axisPaint.setTextAlign(Paint.Align.LEFT);
+            canvas.drawText(String.valueOf((int) yValue), width - paddingRight + 15f, y + 6f, axisPaint); // Better offset from right edge
+
+            // Draw horizontal grid line
+            canvas.drawLine(paddingLeft, y, width - paddingRight, y, gridLinePaint);
+        }
 
         // Draw each dataset as a separate line
         for (int i = 0; i < dataSets.size(); i++) {
@@ -142,23 +173,26 @@ public class LineGrapghViewSteps extends View {
             // Set the line color
             linePaint.setColor(color);
 
-            // Apply dotted effect for green (0xFF03B27B) and black (0xFF000000) lines
-            if (color == 0xFF03B27B || color == 0xFFA7A7A7) {
-                linePaint.setPathEffect(new DashPathEffect(new float[]{10f, 10f}, 0f)); // Dotted pattern: 10px dash, 10px gap
+            // Apply dotted effect only for green color (0xFF03B27B)
+            if (color == 0xFF03B27B) {
+                linePaint.setPathEffect(new DashPathEffect(new float[]{10f, 10f}, 0f)); // Dotted pattern for green
+                Log.d("LineGrapghViewSteps", "Dotted line for green color: " + Integer.toHexString(color));
             } else {
-                linePaint.setPathEffect(null); // Solid line for other colors
+                linePaint.setPathEffect(null); // Solid line for all other colors
+                Log.d("LineGrapghViewSteps", "Solid line for color: " + Integer.toHexString(color));
             }
 
             // Draw the line
             path.reset();
             float lastX = 0f;
             float lastY = 0f;
+
             if (data != null && data.length > 0) {
                 // For the red line, draw only up to maxValueIndex
                 int drawLimit = (color == 0xFFFD6967) ? Math.min(maxValueIndex + 1, data.length) : data.length;
                 for (int j = 0; j < drawLimit; j++) {
-                    // Adjust the x position to account for the start padding
-                    float x = paddingHorizontal + (j * scaleX);
+                    // Adjust the x position to account for the left padding
+                    float x = paddingLeft + (j * scaleX);
                     float y = (height - paddingBottom) - ((data[j] - minValue) * scaleY); // Adjusted for paddingTop
                     if (j == 0) {
                         path.moveTo(x, y); // Move to the first point
@@ -190,7 +224,7 @@ public class LineGrapghViewSteps extends View {
             }
         }
 
-        // Draw X-axis labels (time in hours) and vertical solid grey lines
+        // Draw X-axis labels (time in hours) and vertical solid grey lines with better spacing
         String[] timeLabels = {"12 am", "6 am", "12 pm", "8 pm", "12 am"};
         float labelSpacing = effectiveWidth / (timeLabels.length - 1); // Space between labels based on effective width
 
@@ -199,29 +233,29 @@ public class LineGrapghViewSteps extends View {
 
         for (int i = 0; i < timeLabels.length; i++) {
             float x;
-            // Adjust the x position to account for the start padding
+            // Adjust the x position to account for the left padding
             if (i == 0) {
                 // First label ("12 am"): Align left
                 axisPaint.setTextAlign(Paint.Align.LEFT);
-                x = paddingHorizontal; // Start at the padding
+                x = paddingLeft; // Start at the left padding
             } else if (i == timeLabels.length - 1) {
                 // Last label ("12 am"): Align right
                 axisPaint.setTextAlign(Paint.Align.RIGHT);
-                x = width - paddingHorizontal; // End at the padding
+                x = width - paddingRight; // End at the right padding
             } else {
                 // Middle labels ("6 am", "12 pm", "8 pm"): Align center
                 axisPaint.setTextAlign(Paint.Align.CENTER);
-                x = paddingHorizontal + (i * labelSpacing); // Center position for middle labels
+                x = paddingLeft + (i * labelSpacing); // Center position for middle labels
             }
 
-            // Draw the label
-            float labelY = height - 10f; // Position labels closer to the bottom
+            // Draw the label with better positioning to prevent overlap
+            float labelY = height - 20f; // More space from bottom to prevent overlap
             canvas.drawText(timeLabels[i], x, labelY, axisPaint);
 
             // Draw a taller and thicker vertical solid grey line at the label's X position
             float lineX = x; // X-coordinate aligned with the label
             float lineStartY = height - paddingBottom; // Start at the bottom of the graph
-            float lineEndY = (height - paddingBottom) - 30f; // Extend 30px upward
+            float lineEndY = (height - paddingBottom) - 35f; // Extended upward for better visibility
             canvas.drawLine(lineX, lineStartY, lineX, lineEndY, verticalLinePaint);
         }
     }

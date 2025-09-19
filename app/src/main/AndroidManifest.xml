@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -200,6 +201,12 @@
             android:name=".ui.mindaudit.MindAuditActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.mindaudit.RedFlagAlertActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".ui.mindaudit.MindAuditResultActivity"
             android:exported="false"
@@ -483,6 +490,7 @@
         <activity
             android:name=".ai_package.ui.MainAIActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize|stateHidden"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />

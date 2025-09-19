@@ -19,7 +19,6 @@ import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
-import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
@@ -34,11 +33,9 @@ import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerWeeklyResponse
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
-import com.jetsynthesys.rightlife.ai_package.model.RoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepIdealActualResponse
-import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
 import com.jetsynthesys.rightlife.ai_package.model.SleepLandingResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
@@ -55,7 +52,6 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveMainResponseRoutin
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
-import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.request.AddWorkoutLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateRecipeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
@@ -107,7 +103,6 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryRespo
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.MoveRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
@@ -611,7 +606,8 @@ interface ApiService {
 
     @GET("sleep/fetch_sleep_time")
     fun fetchWakeupTime(@Query("user_id") userId: String,
-                        @Query("source") source: String): Call<WakeupTimeResponse>
+                        @Query("source") source: String,
+                        @Query("date") date: String): Call<WakeupTimeResponse>
 
     @POST("sleep/set_nap_log/")
     fun logNap(@Query("user_id") userId: String,

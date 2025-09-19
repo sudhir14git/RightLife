@@ -3,6 +3,10 @@ package com.jetsynthesys.rightlife.ui.Articles;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
@@ -55,25 +59,77 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             holder.binding.txtArticleContent.setText(Html.fromHtml("<p>Read more on <a href=\"https://example.com\">this page</a>.</p>"));
         }*/
 
-        Spanned spanned;
+        // --- Render HTML content with images ---
+        Html.ImageGetter imageGetter = new Html.ImageGetter() {
+            @Override
+            public Drawable getDrawable(String source) {
+                final URLDrawable urlDrawable = new URLDrawable();
 
+                // Handle Base64 inline images (data:image/...)
+                if (source.startsWith("data:image")) {
+                    try {
+                        String base64Data = source.substring(source.indexOf(",") + 1);
+                        byte[] decodedString = android.util.Base64.decode(base64Data, android.util.Base64.DEFAULT);
+                        Bitmap bitmap = android.graphics.BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(), bitmap);
+
+                        bitmapDrawable.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
+                        urlDrawable.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
+                        urlDrawable.drawable = bitmapDrawable;
+                        return urlDrawable;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // Handle normal URLs
+                Glide.with(context)
+                        .asBitmap()
+                        .load(source)
+                        .into(new com.bumptech.glide.request.target.CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
+                                BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(), resource);
+                                bitmapDrawable.setBounds(0, 0, bitmapDrawable.getIntrinsicWidth(), bitmapDrawable.getIntrinsicHeight());
+
+                                urlDrawable.setBounds(0, 0, bitmapDrawable.getIntrinsicWidth(), bitmapDrawable.getIntrinsicHeight());
+                                urlDrawable.drawable = bitmapDrawable;
+
+                                // Refresh TextView after image load
+                                holder.binding.txtArticleContent.setText(holder.binding.txtArticleContent.getText());
+                            }
+
+                            @Override
+                            public void onLoadCleared(Drawable placeholder) {
+                            }
+                        });
+
+                return urlDrawable;
+            }
+        };
+
+        Spanned spanned;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            spanned = Html.fromHtml(article.getHtmlContent(), Html.FROM_HTML_MODE_LEGACY);
+            spanned = Html.fromHtml(article.getHtmlContent(), Html.FROM_HTML_MODE_LEGACY, imageGetter, null);
         } else {
-            spanned = Html.fromHtml(article.getHtmlContent());
+            spanned = Html.fromHtml(article.getHtmlContent(), imageGetter, null);
         }
 
         holder.binding.txtArticleContent.setText(spanned);
-
-// VERY IMPORTANT: enable link clicks
         holder.binding.txtArticleContent.setMovementMethod(LinkMovementMethod.getInstance());
         holder.binding.txtArticleContent.setLinksClickable(true);
+
 
         Glide.with(context).load(ApiClient.CDN_URL_QA + article.getThumbnail())
                 .transform(new RoundedCorners(1))
                 .placeholder(R.drawable.rl_placeholder)
                 .error(R.drawable.rl_placeholder)
                 .into(holder.binding.imageView);
+        if (article.getThumbnail() != null && !article.getThumbnail().isEmpty()) {
+            holder.binding.imageView.setVisibility(View.VISIBLE);
+        } else {
+            holder.binding.imageView.setVisibility(View.GONE);
+        }
 
 
         //holder.binding.imageView.setImageResource(article.getImageResId());
@@ -84,7 +140,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             holder.binding.tvProductTitle.setText(article.getRecommendedProduct().getSectionTitle());
             holder.binding.txtDescCardProduct.setText(article.getRecommendedProduct().getDescription());
             holder.binding.txtPriceProduct.setText(String.format("₹ %s", article.getRecommendedProduct().getDiscountedPrice()));
-            holder.binding.txtSavedPriceProduct.setText(String.format("₹ %s you save %s" , article.getRecommendedProduct().getListPrice(), article.getRecommendedProduct().getTotalSavings()));
+            holder.binding.txtSavedPriceProduct.setText(String.format("₹ %s you save %s", article.getRecommendedProduct().getListPrice(), article.getRecommendedProduct().getTotalSavings()));
             //holder.binding.txtBtnBuyNow.setText(article.getRecommendedProduct().getButtonText());
             GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedProduct().getImage())
                     .transform(new RoundedCorners(20))
@@ -117,79 +173,78 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         }
 
 
-
         // Article Card
         if (article.getRecommendedArticle() != null && article.getRecommendedArticle().getTitle() != null) {
 
             /*if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("text")){
 
             }*/
-                holder.binding.card3.setVisibility(View.GONE);
-                holder.binding.card3Series.setVisibility(View.VISIBLE);
-                holder.binding.card3.setVisibility(View.GONE);
-                holder.binding.card3Series.setVisibility(View.VISIBLE);
-                holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
+            holder.binding.card3.setVisibility(View.GONE);
+            holder.binding.card3Series.setVisibility(View.VISIBLE);
+            holder.binding.card3.setVisibility(View.GONE);
+            holder.binding.card3Series.setVisibility(View.VISIBLE);
+            holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
 
-                //holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
-                holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getTitle());
-                if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
-                    GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
-                            .transform(new RoundedCorners(15))
-                            .placeholder(R.drawable.rl_placeholder)
-                            .error(R.drawable.rl_placeholder)
-                            .into(holder.binding.imgThumbnailSeries);
-                }
+            //holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
+            holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getTitle());
+            if (article.getRecommendedArticle().getThumbnail().getUrl() != null) {
+                GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
+                        .transform(new RoundedCorners(15))
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
+                        .into(holder.binding.imgThumbnailSeries);
+            }
 
-                holder.binding.txtTagSeries.setVisibility(View.VISIBLE);
+            holder.binding.txtTagSeries.setVisibility(View.VISIBLE);
 
-                if (article.getRecommendedArticle().getViewCount()!=null) {
-                    holder.binding.txtViewcountSeries.setText(String.valueOf(article.getRecommendedArticle().getViewCount()));
-                    holder.binding.txtViewcountSeries.setVisibility(View.VISIBLE);
-                }
+            if (article.getRecommendedArticle().getViewCount() != null) {
+                holder.binding.txtViewcountSeries.setText(String.valueOf(article.getRecommendedArticle().getViewCount()));
+                holder.binding.txtViewcountSeries.setVisibility(View.VISIBLE);
+            }
 
-                holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_text_content);
-                if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
-                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_audio_content);
-                }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Video")) {
-                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_video_content);
-                }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")) {
-                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_series_content);
-                } else {
-                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_text_content);
-                }
-                int color = Utils.getModuleColor(context,article.getRecommendedArticle().getModuleId());
-                holder.binding.imgTagSeries.setBackgroundTintList(ColorStateList.valueOf(color));
+            holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_text_content);
+            if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
+                holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_audio_content);
+            } else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Video")) {
+                holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_video_content);
+            } else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")) {
+                holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_series_content);
+            } else {
+                holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_text_content);
+            }
+            int color = Utils.getModuleColor(context, article.getRecommendedArticle().getModuleId());
+            holder.binding.imgTagSeries.setBackgroundTintList(ColorStateList.valueOf(color));
 
-                holder.binding.tvName.setText(article.getRecommendedArticle().getArtist().get(0).getFirstName() + " " + article.getRecommendedArticle().getArtist().get(0).getLastName());
-                holder.binding.tvdateTime.setText(DateTimeUtils.convertAPIDateMonthFormat(article.getRecommendedArticle().getCreatedAt()));
-                holder.binding.tvLeftTime.setText(article.getRecommendedArticle().getReadingTime() + " min read");
+            holder.binding.tvName.setText(article.getRecommendedArticle().getArtist().get(0).getFirstName() + " " + article.getRecommendedArticle().getArtist().get(0).getLastName());
+            holder.binding.tvdateTime.setText(DateTimeUtils.convertAPIDateMonthFormat(article.getRecommendedArticle().getCreatedAt()));
+            holder.binding.tvLeftTime.setText(article.getRecommendedArticle().getReadingTime() + " min read");
 
 
-                holder.binding.card3Series.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+            holder.binding.card3Series.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                        if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("text")){
-                            Intent intent = new Intent(holder.itemView.getContext(), ArticlesDetailActivity.class);
-                            intent.putExtra("contentId", article.getRecommendedArticle().getId());
-                            holder.itemView.getContext().startActivity(intent);
-                        }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
-                            Intent intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
-                            intent.putExtra("contentId", article.getRecommendedArticle().getId());
-                            holder.itemView.getContext().startActivity(intent);
-                        }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Video")) {
-                            Intent intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
-                            intent.putExtra("contentId", article.getRecommendedArticle().getId());
-                            holder.itemView.getContext().startActivity(intent);
-                        }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")) {
-                            Intent intent = new Intent(holder.itemView.getContext(), SeriesListActivity.class);
-                            intent.putExtra("contentId",article.getRecommendedArticle().getId());
-                            holder.itemView.getContext().startActivity(intent);
-                        } else {
+                    if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("text")) {
+                        Intent intent = new Intent(holder.itemView.getContext(), ArticlesDetailActivity.class);
+                        intent.putExtra("contentId", article.getRecommendedArticle().getId());
+                        holder.itemView.getContext().startActivity(intent);
+                    } else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
+                        Intent intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
+                        intent.putExtra("contentId", article.getRecommendedArticle().getId());
+                        holder.itemView.getContext().startActivity(intent);
+                    } else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Video")) {
+                        Intent intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
+                        intent.putExtra("contentId", article.getRecommendedArticle().getId());
+                        holder.itemView.getContext().startActivity(intent);
+                    } else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")) {
+                        Intent intent = new Intent(holder.itemView.getContext(), SeriesListActivity.class);
+                        intent.putExtra("contentId", article.getRecommendedArticle().getId());
+                        holder.itemView.getContext().startActivity(intent);
+                    } else {
 
-                        }
                     }
-                });
+                }
+            });
 
 
 
@@ -328,6 +383,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         // funfact Card
         if (article.getFunFacts() != null && article.getFunFacts().getDescription() != null) {
             holder.binding.card4.setVisibility(View.VISIBLE);
+            holder.binding.tvFunfact.setText(article.getFunFacts().getDescription());
         } else {
             holder.binding.card4.setVisibility(View.GONE);
         }
@@ -356,6 +412,17 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         public ArticleViewHolder(ArticleItemRowBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+        }
+    }
+
+    public class URLDrawable extends BitmapDrawable {
+        public Drawable drawable;
+
+        @Override
+        public void draw(Canvas canvas) {
+            if (drawable != null) {
+                drawable.draw(canvas);
+            }
         }
     }
 }

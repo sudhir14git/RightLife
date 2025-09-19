@@ -73,6 +73,8 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private var selectedFoodType: String? = null
     private var selectedCuisine: String? = null
     private var loadingOverlay : FrameLayout? = null
+    // Inside your fragment (class scope)
+    private var expandedTabIndex: Int? = null   // track which tab's card is expanded
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentRecipeSearchBinding
         get() = FragmentRecipeSearchBinding::inflate
@@ -108,25 +110,32 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         if (isClose) {
                             tabContentAdapter.deselectedUpdateItems(mealTypeList, -1)
                             selectedMealType = null
+                            selectedMealType = null
+                            dishesViewModel.setSelectedMealType(null)
                             getFilterRecipesList(null, selectedFoodType, selectedCuisine)
                             updateTabColors(false) // Update colors when deselected
                             Log.d("RecipesSearchFragment", "Deselected Meal Type")
                         } else {
                             selectedMealType = item
+                            selectedMealType = item
+                            dishesViewModel.setSelectedMealType(item)
                             getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
                             updateTabColors(true) // Update colors when selected
                             Log.d("RecipesSearchFragment", "Selected Meal Type: $selectedMealType")
                         }
                     }
-
-                        "Food Type" -> {
+                    "Food Type" -> {
                     if (isClose) {
                         tabContentAdapter.deselectedUpdateItems(foodTypeList, -1)
                         selectedFoodType = null
+                        selectedFoodType = null
+                        dishesViewModel.setSelectedFoodType(null)
                         getFilterRecipesList(selectedMealType, null, selectedCuisine)
                         updateTabColors(false) // Update colors when deselected
                         Log.d("RecipesSearchFragment", "Deselected Food Type")
                     } else {
+                        selectedFoodType = item
+                        dishesViewModel.setSelectedFoodType(item)
                         selectedFoodType = item
                         getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
                         updateTabColors(true) // Update colors when selected
@@ -137,10 +146,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         if (isClose) {
                             tabContentAdapter.deselectedUpdateItems(cuisineList, -1)
                             selectedCuisine = null
+                            selectedCuisine = null
+                            dishesViewModel.setSelectedCuisine(null)
                             getFilterRecipesList(selectedMealType, selectedFoodType, null)
                             updateTabColors(false) // Update colors when deselected
                             Log.d("RecipesSearchFragment", "Deselected Cuisine")
                         } else {
+                            selectedCuisine = item
+                            dishesViewModel.setSelectedCuisine(item)
                             selectedCuisine = item
                             getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
                             updateTabColors(true) // Update colors when selected
@@ -149,7 +162,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     }
                 }
                 tabContentAdapter.setSelectedPosition(if (isClose) -1 else position)
-                refreshRecipesList()
             }
         }
         tabContentRecyclerView.adapter = tabContentAdapter
@@ -169,8 +181,16 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.position?.let { position ->
+                    tabContentCard.visibility = View.VISIBLE
+                    dishesViewModel.setSelectedTabIndex(position) // <-- Save in VM
                     val tag = tabTitles[position]
                     currentFragmentTag = tag
+                    // mark UI for selected tab & others
+                    for (i in 0 until tabLayout.tabCount) {
+                        tabLayout.getTabAt(i)?.let { otherTab ->
+                            if (i == position) setTabSelectedUI(otherTab) else setTabUnselectedUI(otherTab)
+                        }
+                    }
                     // Check if the selected tab has content selected
                     val isContentSelected = when (tag) {
                         "Meal Type" -> selectedMealType != null
@@ -178,22 +198,51 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         "Cuisine" -> selectedCuisine != null
                         else -> false
                     }
+
+                    // if switching to a different tab -> expand the card and load content
+                    if (expandedTabIndex == position) {
+                        // already the expanded tab — just ensure card visible
+                        tabContentCard.visibility = View.VISIBLE
+                    } else {
+                        expandedTabIndex = position
+                        tabContentCard.visibility = View.VISIBLE
+                        updateCardViewContent(tabTitles[position])
+                    }
+
                     updateTabColors(isContentSelected)
-                    tabContentCard.visibility = View.VISIBLE
-                    updateCardViewContent(tag)
+                  //  updateCardViewContent(tag)
                 }
             }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                tab?.let {
+//                    val customView = it.customView
+//                    val tabLayoutRoot = customView?.findViewById<View>(R.id.rootTabLayout)
+//                    val tabText = customView?.findViewById<TextView>(R.id.tabText)
+//                    val tabUpDownIcon = customView?.findViewById<ImageView>(R.id.imageArrow)
+//                    tabLayoutRoot?.setBackgroundResource(R.drawable.tab_unselected_bg)
+//                    tabUpDownIcon?.setImageResource(R.drawable.ic_chevron_down)
+//                    val typeface = resources.getFont(R.font.dmsans_regular)
+//                    tabText?.typeface = typeface
+//                    tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
+                   // tabContentCard.visibility = View.GONE
+                    setTabUnselectedUI(tab)
+                }
+            }
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 tab?.position?.let { position ->
                     val tag = tabTitles[position]
                     currentFragmentTag = tag
-                    if (tabContentCard.isVisible) {
+
+                    if (expandedTabIndex == position && tabContentCard.isVisible) {
                         tabContentCard.visibility = View.GONE
+                        setTabUnselectedUI(tab)
+                        expandedTabIndex = null
                     } else {
+                        dishesViewModel.setSelectedTabIndex(tab.position)
+                        expandedTabIndex = position
                         tabContentCard.visibility = View.VISIBLE
+                        setTabSelectedUI(tab)
+
                         updateCardViewContent(tag)
                     }
                     // Check if the reselected tab has content selected
@@ -218,6 +267,27 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                    dishesViewModel.setSearchQuery("") // use null instead of "" for consistency
+                    dishesViewModel.setSelectedMealType(null)
+                    dishesViewModel.setSelectedFoodType(null)
+                    dishesViewModel.setSelectedCuisine(null)
+                    dishesViewModel.setSelectedTabIndex(null)
+                    // clear local variables
+                    selectedMealType = null
+                    selectedFoodType = null
+                    selectedCuisine = null
+                    expandedTabIndex = null
+                    // clear UI
+                    searchEditText.setText("")
+                    snapRecipesList.clear()
+                    mealTypeList.clear()
+                    foodTypeList.clear()
+                    cuisineList.clear()
+                    tabContentCard.visibility = View.GONE
+                    // reset tab visuals
+                    for (i in 0 until tabLayout.tabCount) {
+                        tabLayout.getTabAt(i)?.let { setTabUnselectedUI(it) }
+                    }
                     val fragment = HomeBottomTabFragment()
                     val args = Bundle()
                     args.putString("ModuleName", "EatRight")
@@ -231,6 +301,27 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             })
 
         backButton.setOnClickListener {
+            dishesViewModel.setSearchQuery("") // use null instead of "" for consistency
+            dishesViewModel.setSelectedMealType(null)
+            dishesViewModel.setSelectedFoodType(null)
+            dishesViewModel.setSelectedCuisine(null)
+            dishesViewModel.setSelectedTabIndex(null)
+            // clear local variables
+            selectedMealType = null
+            selectedFoodType = null
+            selectedCuisine = null
+            expandedTabIndex = null
+            // clear UI
+            searchEditText.setText("")
+            snapRecipesList.clear()
+            mealTypeList.clear()
+            foodTypeList.clear()
+            cuisineList.clear()
+          //  tabContentCard.visibility = View.GONE
+            // reset tab visuals
+            for (i in 0 until tabLayout.tabCount) {
+                tabLayout.getTabAt(i)?.let { setTabUnselectedUI(it) }
+            }
             val fragment = HomeBottomTabFragment()
             val args = Bundle()
             args.putString("ModuleName", "EatRight")
@@ -245,13 +336,38 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
             filterDishes(query)
         }
-
+//        cancel.setOnClickListener {
+//            if (searchEditText.text.toString().isNotEmpty()){
+//                dishesViewModel.setSearchQuery("")
+//                searchEditText.setText("")
+//                snapRecipesList.clear()
+//            }
+//        }
         cancel.setOnClickListener {
-            if (searchEditText.text.toString().isNotEmpty()){
-                dishesViewModel.setSearchQuery("")
-                searchEditText.setText("")
-                snapRecipesList.clear()
+            // clear ViewModel state
+            dishesViewModel.setSearchQuery("") // use null instead of "" for consistency
+            dishesViewModel.setSelectedMealType(null)
+            dishesViewModel.setSelectedFoodType(null)
+            dishesViewModel.setSelectedCuisine(null)
+            dishesViewModel.setSelectedTabIndex(null)
+            // clear local variables
+            selectedMealType = null
+            selectedFoodType = null
+            selectedCuisine = null
+            expandedTabIndex = null
+            // clear UI
+            searchEditText.setText("")
+            snapRecipesList.clear()
+            mealTypeList.clear()
+            foodTypeList.clear()
+            cuisineList.clear()
+            tabContentCard.visibility = View.GONE
+            // reset tab visuals
+            for (i in 0 until tabLayout.tabCount) {
+                tabLayout.getTabAt(i)?.let { setTabUnselectedUI(it) }
             }
+            // fetch fresh data
+            getSnapMealRecipesList()
         }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
@@ -262,19 +378,39 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        if (searchType.contentEquals("HomeTabMeal")) {
-            getSnapMealRecipesList()
-            onSnapSearchDishItemRefresh()
-        } else {
-            getSnapMealRecipesList()
-            onSnapSearchDishItemRefresh()
-        }
+        getSnapMealRecipesList()  // this will handle tab restore on success
+    }
+
+    // Helper: set selected look
+    private fun setTabSelectedUI(tab: TabLayout.Tab) {
+        val customView = tab.customView
+        val tabLayoutRoot = customView?.findViewById<View>(R.id.rootTabLayout)
+        val tabText = customView?.findViewById<TextView>(R.id.tabText)
+        val tabUpDownIcon = customView?.findViewById<ImageView>(R.id.imageArrow)
+
+        tabLayoutRoot?.setBackgroundResource(R.drawable.tab_selected_bg)
+        tabUpDownIcon?.setImageResource(R.drawable.ic_chevron_up)
+        tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        tabText?.typeface = resources.getFont(R.font.dmsans_bold)
+        tabSelectedTitle.text = tabText?.text.toString()
+    }
+
+    // Helper: set unselected look
+    private fun setTabUnselectedUI(tab: TabLayout.Tab) {
+        val customView = tab.customView
+        val tabLayoutRoot = customView?.findViewById<View>(R.id.rootTabLayout)
+        val tabText = customView?.findViewById<TextView>(R.id.tabText)
+        val tabUpDownIcon = customView?.findViewById<ImageView>(R.id.imageArrow)
+
+        tabLayoutRoot?.setBackgroundResource(R.drawable.tab_unselected_bg)
+        tabUpDownIcon?.setImageResource(R.drawable.ic_chevron_down)
+        tabText?.typeface = resources.getFont(R.font.dmsans_regular)
+        tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
     }
 
     private fun updateCardViewContent(tag: String) {
         tabContentRecyclerView.visibility = View.GONE
         spinner.visibility = View.GONE
-
         when (tag) {
             "Meal Type" -> {
                 tabContentRecyclerView.visibility = View.VISIBLE
@@ -322,7 +458,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val tabText = customView?.findViewById<TextView>(R.id.tabText)
             val circleText = customView?.findViewById<TextView>(R.id.circleText)
             val imageArrow = customView?.findViewById<ImageView>(R.id.imageArrow)
-
             // Determine if the tab has selected content
             val isContentSelected = when (tabTitles[i]) {
                 "Meal Type" -> selectedMealType != null
@@ -332,12 +467,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             }
 
             if (tab?.isSelected == true) {
-                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-                val typeface = resources.getFont(R.font.dmsans_bold)
-                tabText?.typeface = typeface
-                tabSelectedTitle.text = tabText?.text.toString()
-                imageArrow?.setImageResource(R.drawable.ic_chevron_up)
-
+//                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+//                val typeface = resources.getFont(R.font.dmsans_bold)
+//                tabText?.typeface = typeface
+//                tabSelectedTitle.text = tabText?.text.toString()
+              //  imageArrow?.setImageResource(R.drawable.ic_chevron_up)
                 // Show circle only if content is selected for this tab
                 if (isContentSelected) {
                     circleText?.setBackgroundResource(R.drawable.circle_white_background)
@@ -346,11 +480,10 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     circleText?.visibility = View.GONE
                 }
             } else {
-                val typeface = resources.getFont(R.font.dmsans_regular)
-                tabText?.typeface = typeface
-                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
-                imageArrow?.setImageResource(R.drawable.ic_chevron_down)
-
+//                val typeface = resources.getFont(R.font.dmsans_regular)
+//                tabText?.typeface = typeface
+//                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
+           //     imageArrow?.setImageResource(R.drawable.ic_chevron_down)
                 // Show circle for unselected tabs if they have selected content
                 if (isContentSelected) {
                     circleText?.setBackgroundResource(R.drawable.green_circle_background)
@@ -367,6 +500,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         valueLists.addAll(snapRecipesList as Collection<SnapRecipeList>)
         val mealLogDateData: SnapRecipeList? = null
         recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        refreshRecipesList()
     }
 
     private fun onSnapSearchDishItem(recipesModel: SnapRecipeList, position: Int, isRefresh: Boolean) {
@@ -391,7 +525,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val matchesCuisine = selectedCuisine?.let { recipe.cuisine == it } ?: true
             matchesQuery && matchesMealType && matchesFoodType && matchesCuisine
         }
-        recipeSearchAdapter.updateList(filteredList)
+        val valueLists: ArrayList<SnapRecipeList> = ArrayList()
+        valueLists.addAll(filteredList as Collection<SnapRecipeList>)
+        val mealLogDateData: SnapRecipeList? = null
+        recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
+      //  recipeSearchAdapter.updateList(filteredList)
         if (query.isNotEmpty()) {
             cancel.visibility = View.VISIBLE
         }else{
@@ -477,13 +615,15 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     mealTypeList.clear()
                     foodTypeList.clear()
                     cuisineList.clear()
-                    mealTypeList.addAll(snapRecipesList.map { it.meal_type }.distinct())
-                    foodTypeList.addAll(snapRecipesList.map { it.food_type }.distinct())
-                    cuisineList.addAll(snapRecipesList.map { it.cuisine }.distinct())
+                    mealTypeList.addAll(snapRecipesList.map { it.meal_type }.filterNotNull().distinct().sorted())
+                    foodTypeList.addAll(snapRecipesList.map { it.food_type }.filterNotNull().distinct().sorted())
+                    cuisineList.addAll(snapRecipesList.map { it.cuisine }.filterNotNull().distinct().sorted())
                     Log.d("RecipesSearchFragment", "Meal Types: $mealTypeList")
                     Log.d("RecipesSearchFragment", "Food Types: $foodTypeList")
                     Log.d("RecipesSearchFragment", "Cuisines: $cuisineList")
                     onSnapSearchDishItemRefresh()
+                    // ✅ restore after data ready
+                    restoreTabStateAfterData()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -504,6 +644,27 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 }
             }
         })
+    }
+
+    private fun restoreTabStateAfterData() {
+        val savedIndex = dishesViewModel.selectedTabIndex.value
+        if (savedIndex != null && savedIndex >= 0 && savedIndex < tabLayout.tabCount) {
+            tabLayout.getTabAt(savedIndex)?.select()
+
+            expandedTabIndex = savedIndex
+            tabContentCard.visibility = View.VISIBLE
+            updateCardViewContent(tabTitles[savedIndex])
+
+            for (i in 0 until tabLayout.tabCount) {
+                tabLayout.getTabAt(i)?.let { t ->
+                    if (i == savedIndex) setTabSelectedUI(t) else setTabUnselectedUI(t)
+                }
+            }
+        } else {
+            expandedTabIndex = null
+            tabContentCard.visibility = View.GONE
+            updateTabColors(false)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -530,5 +691,19 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        dishesViewModel.searchQuery.value?.let {
+            searchEditText.setText(it)
+            filterDishes(it)
+        }
+        selectedMealType = dishesViewModel.selectedMealType.value
+        selectedFoodType = dishesViewModel.selectedFoodType.value
+        selectedCuisine = dishesViewModel.selectedCuisine.value
+
+        refreshRecipesList()
     }
 }
