@@ -41,10 +41,10 @@ class UserInterestActivity : BaseActivity() {
     private lateinit var colorStateListNonSelected: ColorStateList
 
     val iconList = listOf(
-        R.drawable.ic_interest_physical,
-        R.drawable.ic_interest_nutrition,
-        R.drawable.ic_interest_sleep,
-        R.drawable.ic_interest_mind
+        R.drawable.move_interest,
+        R.drawable.eat_interest,
+        R.drawable.sleep_interest,
+        R.drawable.think_interest
     )
 
 
@@ -128,7 +128,7 @@ class UserInterestActivity : BaseActivity() {
                 )
                 gravity = Gravity.CENTER_VERTICAL
             }
-            val iconRes = iconList.getOrElse(index) { R.drawable.ic_interest_mind }
+            val iconRes = iconList.getOrElse(index) { R.drawable.move_interest }
             //section Image
             val iconView = ImageView(this@UserInterestActivity).apply {
                 val sizeInDp = 20
@@ -271,7 +271,7 @@ class UserInterestActivity : BaseActivity() {
                             })
                     } else {
                         val intent =
-                            Intent(this@UserInterestActivity, PersonalisationActivity::class.java)
+                            Intent(this@UserInterestActivity, EnableNotificationActivity::class.java)
                         intent.putExtra("WellnessFocus", header)
                         sharedPreferenceManager.interest = true
                         startActivity(intent)

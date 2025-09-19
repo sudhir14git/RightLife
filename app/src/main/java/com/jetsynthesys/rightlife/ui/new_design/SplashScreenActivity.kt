@@ -85,7 +85,7 @@ class SplashScreenActivity : BaseActivity() {
                         || !sharedPreferenceManager.thirdFiller
                         || !sharedPreferenceManager.interest
                     ) {
-                        val intent = Intent(this, WellnessFocusActivity::class.java)
+                        val intent = Intent(this, WellnessFocusListActivity::class.java)
                         startActivity(intent)
                     } else if (!sharedPreferenceManager.allowPersonalization) {
                         val intent = Intent(this, PersonalisationActivity::class.java)

@@ -25,7 +25,7 @@ class EnableNotificationActivity : BaseActivity() {
 
         findViewById<ImageView>(R.id.imageClose).setOnClickListener {
             sharedPreferenceManager.enableNotification = true
-            startActivity(Intent(this, SyncNowActivity::class.java))
+            startActivity(Intent(this, OnboardingFinalActivity::class.java))
             AnalyticsLogger.logEvent(
                 AnalyticsEvent.ENABLE_NOTIFICATION_CLOSE,
                 mapOf(
@@ -67,13 +67,13 @@ class EnableNotificationActivity : BaseActivity() {
                 return false
             } else {
                 sharedPreferenceManager.enableNotification = true
-                startActivity(Intent(this, SyncNowActivity::class.java))
+                startActivity(Intent(this, OnboardingFinalActivity::class.java))
                 finishAffinity()
                 return true
             }
         } else {
             sharedPreferenceManager.enableNotification = true
-            startActivity(Intent(this, SyncNowActivity::class.java))
+            startActivity(Intent(this, OnboardingFinalActivity::class.java))
             finishAffinity()
             // Permission not required before Android 13
             return true
@@ -98,7 +98,7 @@ class EnableNotificationActivity : BaseActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 sharedPreferenceManager.enableNotification = true
-                startActivity(Intent(this, SyncNowActivity::class.java))
+                startActivity(Intent(this, OnboardingFinalActivity::class.java))
                 finish()
             }
         }
@@ -110,7 +110,7 @@ class EnableNotificationActivity : BaseActivity() {
             showToast(message)
             finishAffinity()
             sharedPreferenceManager.enableNotification = true
-            startActivity(Intent(this, SyncNowActivity::class.java))
+            startActivity(Intent(this, OnboardingFinalActivity::class.java))
         }
     }
 
