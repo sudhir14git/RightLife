@@ -745,6 +745,8 @@ class HomeExploreFragment : BaseFragment() {
                 promotionResponse.promotiondata.promotionList[i].category,
                 promotionResponse.promotiondata.promotionList[i].views.toString(),
                 promotionResponse.promotiondata.promotionList[i].seriesId,
+                promotionResponse.promotiondata.promotionList[i].seriesType,
+                promotionResponse.promotiondata.promotionList[i].selectedContentType,
                 promotionResponse.promotiondata.promotionList[i].titleImage,
                 promotionResponse.promotiondata.promotionList[i].buttonImage
             )
