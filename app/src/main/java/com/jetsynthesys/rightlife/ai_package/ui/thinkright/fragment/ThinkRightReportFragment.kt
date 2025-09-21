@@ -922,7 +922,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun onToolItem(toolsData: ModuleData, position: Int, isRefresh: Boolean) {
         if (toolsData.title != null) {
-            if (toolsData.title?.contains("Breathing") == true) {
+            if (toolsData.title?.contains("Breathing") == true ||toolsData.title?.contains("Custom") == true) {
                 val breathingData = BreathingData().apply {
                     id = toolsData._id ?: ""
                     title = toolsData.title

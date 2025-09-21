@@ -292,8 +292,11 @@ class MindAuditResultActivity : BaseActivity() {
         with(binding) {
             when (assessmentTaken.assessment) {
                 "DASS-21" -> {
+                    cardviewMainscoreHappiness.visibility = View.GONE
+                    cardviewMainscore.visibility = View.VISIBLE
                     assessmentTaken.interpretations.anxiety?.let {
                         cardviewMainscore.visibility = View.VISIBLE
+                        cardviewMainscoreHappiness.visibility = View.GONE
                         binding.mainScoreTitle.text = "Anxiety"
                         binding.mainScoreTitle.visibility = View.VISIBLE
                         binding.mainScoreLevel.text = assessmentTaken.interpretations.anxiety.level
@@ -462,6 +465,8 @@ class MindAuditResultActivity : BaseActivity() {
                     scoreBarcard.visibility = View.VISIBLE
                     scoreBarcardGad7.visibility = View.GONE
                     scoreBarContainerhappiness.visibility = View.GONE
+                    cardviewMainscore.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.GONE
                 }
 
                 "PHQ-9" -> {
@@ -495,6 +500,8 @@ class MindAuditResultActivity : BaseActivity() {
                     scoreBarcard.visibility = View.VISIBLE
                     scoreBarcardGad7.visibility = View.GONE
                     scoreBarContainerhappiness.visibility = View.GONE
+                    cardviewMainscore.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.GONE
 
                     binding.apply {
                         tvRange1.text = "1"
@@ -513,14 +520,15 @@ class MindAuditResultActivity : BaseActivity() {
                 "OHQ" -> {
                     assessmentTaken.interpretations.happiness?.let {
                         binding.mainScoreTitle.text = "Happiness"
-                        binding.mainScoreTitle.visibility = View.VISIBLE
+                        binding.mainScoreTitle.visibility = View.GONE
                         binding.mainScoreLevel.text =
                             assessmentTaken.interpretations.happiness.level
-                        binding.mainScoreLevel.visibility = View.VISIBLE
-                        binding.tvMainScore.text =
+                        binding.mainScoreLevel.visibility = View.GONE
+                        binding.tvMainScoreHappiness.text =
                             assessmentTaken.interpretations.happiness.score.toString()
+                        mainScoreLevelMessage.text =  assessmentTaken.interpretations.happiness.score.toString()
                         setHappinessRainbowView(assessmentTaken.interpretations.happiness.score.toFloat())
-                        binding.cardviewMainscore.setCardBackgroundColor(
+                        binding.cardviewMainscoreHappiness.setCardBackgroundColor(
                             resources.getColor(
                                 getColorForHappinessScore(assessmentTaken.interpretations.happiness.score.toFloat())
                             )
@@ -531,13 +539,20 @@ class MindAuditResultActivity : BaseActivity() {
                         )
                         val explanation =
                             getHappinessExplanation(assessmentTaken.interpretations.happiness.score.toFloat())
-                        binding.tvResultExplanationTitle.text = explanation.first
-                        binding.tvResultExplanation.text = explanation.second
+                        binding.mainScoreLevelMessage.text = explanation.first
+                        binding.mainScoreLevelDesciption.text = explanation.second
+                        tvResultExplanation.text = ""
+                        tvResultExplanationTitle.text = ""
+                        ivMainScoreImage.setImageResource(
+                            getImageForHappinessScore(assessmentTaken.interpretations.happiness.score.toFloat())
+                        )
                     }
                     cardviewMainscore3.visibility = View.GONE
                     cardviewMainscore2.visibility = View.GONE
                     scoreBarContainer.visibility = View.GONE
                     scoreBarContainerhappiness.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.VISIBLE
+                    cardviewMainscore.visibility = View.GONE
 
                     binding.apply {
                         tvRange1.text = "1"
@@ -581,6 +596,8 @@ class MindAuditResultActivity : BaseActivity() {
                     scoreBarcardGad7.visibility = View.VISIBLE
 
                     scoreBarContainerhappiness.visibility = View.GONE
+                    cardviewMainscore.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.GONE
 
                     binding.apply {
                         tvRange1.text = "0"
@@ -627,7 +644,8 @@ class MindAuditResultActivity : BaseActivity() {
                     scoreBarcard.visibility = View.GONE
                     scoreBarcardGad7.visibility = View.VISIBLE
                     scoreBarContainerhappiness.visibility = View.GONE
-
+                    cardviewMainscore.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.GONE
                     binding.apply {
                         tvRange1.text = "0"
                         tvRange2.text = "13"
@@ -652,6 +670,20 @@ class MindAuditResultActivity : BaseActivity() {
 
 
     }
+
+    private fun getImageForHappinessScore(score: Float): Int {
+        return when {
+            score in 1f..1.9999f -> R.drawable.happiness_1   // very low
+            score in 2f..2.9999f -> R.drawable.happiness_2    // low
+            score in 3f..3.9999f -> R.drawable.happiness_3 // neutral
+            score == 4f -> R.drawable.happiness_4          // average
+            score in 4.00001f..4.9999f -> R.drawable.happiness_5 // slightly happy
+            score in 5f..5.9999f -> R.drawable.happiness_6    // happy
+            score >= 6f -> R.drawable.happiness_7              // very happy
+            else -> R.drawable.happiness_7                           // fallback
+        }
+    }
+
 
     private fun setLeftRainbowView(score: Int) {
         binding.leftArc.visibility = View.VISIBLE
