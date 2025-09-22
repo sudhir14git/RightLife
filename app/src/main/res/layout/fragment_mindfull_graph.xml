@@ -297,11 +297,19 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
                 android:text=""
-                android:maxLines="4"
                 android:ellipsize="end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_mindfull_title"
                 app:layout_constraintStart_toStartOf="parent"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_mindfulness_analysis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:clipToPadding="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_mindfull_desc"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

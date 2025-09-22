@@ -22,8 +22,8 @@ class ToolsAdapter( context: Context, private var dataLists: ArrayList<ToolGridD
         val mContext = context
     val imageList = arrayListOf(
         R.drawable.breathwork_icon,    // Replace with actual drawable names
-        R.drawable.journaling_ink_icon,
         R.drawable.quote_grey_icon,
+        R.drawable.journaling_ink_icon,
         R.drawable.meditate_icon
     )
 
@@ -52,8 +52,8 @@ class ToolsAdapter( context: Context, private var dataLists: ArrayList<ToolGridD
 
         when (position % 3) {
             0 -> holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(mContext.resources.getColor(R.color.color_blue))
-            1 -> holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(mContext.resources.getColor(R.color.ql_journaling_color))
-            2 -> holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(mContext.resources.getColor(R.color.ql_affirmation_color))
+            2 -> holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(mContext.resources.getColor(R.color.ql_journaling_color))
+            1 -> holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(mContext.resources.getColor(R.color.ql_affirmation_color))
         }
         if (position == 3){
             holder.itemView.findViewById<CardView>(R.id.mainLayout).visibility = View.GONE
