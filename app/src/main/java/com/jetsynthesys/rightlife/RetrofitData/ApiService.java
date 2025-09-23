@@ -1259,6 +1259,14 @@ public interface ApiService {
             @Query("email") String emailId
     );
 
+    @GET("continue")
+    Call<ResponseBody> getContinueData(
+            @Header("Authorization") String authToken,
+            @Query("pageType") String pageType,
+            @Query("limit") int limit,
+            @Query("skip") int skip
+    );
+
 }
 
 

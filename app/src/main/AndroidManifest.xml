@@ -387,6 +387,17 @@
             android:label="@string/title_activity_homepage"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".newdashboard.BeginMyFreeTrialActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".newdashboard.JumpInBackActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".newdashboard.FacialScanReportDetailsActivity"
             android:exported="false"

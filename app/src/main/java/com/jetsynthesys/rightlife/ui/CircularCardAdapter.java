@@ -17,6 +17,9 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -177,10 +180,14 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         public void bind(CardItem item) {
             // cardTitle.setText(item.getTitle());
             cardImage.setImageResource(item.getImageResId());
+            int radius = 24;
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getImageUrl())
-                        .placeholder(R.drawable.rl_placeholder)
-                        .error(R.drawable.rl_placeholder)
+                Glide.with(itemView.getContext())
+                        .load(ApiClient.CDN_URL_QA + item.getImageUrl())
+                        .apply(new RequestOptions()
+                                .transform(new RoundedCorners(radius))
+                                .placeholder(R.drawable.rl_placeholder)
+                                .error(R.drawable.rl_placeholder))
                         .into(cardImage);
             }
             if (item.getButtonImage() != null && !item.getButtonImage().isEmpty()) {

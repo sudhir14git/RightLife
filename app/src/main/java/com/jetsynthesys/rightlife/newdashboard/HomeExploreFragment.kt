@@ -11,11 +11,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -33,6 +32,8 @@ import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.ContentWellness
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse
 import com.jetsynthesys.rightlife.databinding.FragmentHomeExploreBinding
+import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
+import com.jetsynthesys.rightlife.newdashboard.model.ContentResponse
 import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
@@ -47,6 +48,7 @@ import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.zhpan.bannerview.constants.PageStyle
 import com.zhpan.indicator.enums.IndicatorStyle
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -128,6 +130,9 @@ class HomeExploreFragment : BaseFragment() {
     }
 
     private fun setClickListeners() {
+        binding.imgJumpBackInNext.setOnClickListener {
+            startActivity(Intent(requireContext(), JumpInBackActivity::class.java))
+        }
         binding.relativeRledit3.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
                 callRlEditDetailActivity(2)
@@ -310,6 +315,7 @@ class HomeExploreFragment : BaseFragment() {
         getPromotionList()
         getRightLifeEdit()
         getWellnessPlaylist()
+        getJumpBackInData()
     }
 
     private fun callAPIS() {
@@ -326,6 +332,8 @@ class HomeExploreFragment : BaseFragment() {
         getSubModuleContent("MOVE_RIGHT")
         getSubModuleContent("EAT_RIGHT")
         getSubModuleContent("SLEEP_RIGHT")
+
+        getJumpBackInData()
     }
 
     // get Affirmation list
@@ -767,44 +775,37 @@ class HomeExploreFragment : BaseFragment() {
         val initialPosition = Int.MAX_VALUE / 2
         binding.viewPager.setCurrentItem(initialPosition - initialPosition % cardItems.size, false)
 
+        binding.viewPager.apply {
+            clipToPadding = false
+            clipChildren = false
+            offscreenPageLimit = 5
+            setPadding(60, 0, 60, 0)
+        }
 
         // Set offscreen page limit and page margin
         binding.viewPager.offscreenPageLimit = 5 // Load adjacent pages
         binding.viewPager.clipToPadding = false
         binding.viewPager.clipChildren = false
-        binding.viewPager.setPageTransformer(object : ViewPager2.PageTransformer {
-            private val MIN_SCALE = 0.85f
-            private val MIN_ALPHA = 0.5f
+        binding.viewPager.setPageTransformer { page, position ->
+            val MIN_SCALE = 0.9f     // center = 1.0, side cards smaller
+            val MIN_ALPHA = 0.7f
+            val translationFactor = 4f  // controls overlap/spacing
 
-            override fun transformPage(@NonNull page: View, position: Float) {
-                page.z = 0f
-                // Ensure center card is on top
-                if (position == 0f) {
-                    page.z = 1f // Bring center card to the top
-                } else {
-                    page.z = 0f // Push other cards behind
-                }
-                // Set alpha based on the card's position:
-                if (position <= -1 || position >= 1) {
-                    // Far off-screen cards (adjacent cards)
-                    page.alpha = 0.5f // Make adjacent cards 50% transparent
-                } else if (position == 0f) {
-                    // The center card (focused card)
-                    page.alpha = 1f // Make the center card fully opaque
-                } else {
-                    // Cards between center and adjacent
-                    page.alpha =
-                        (0.9f + (1 - abs(position.toDouble())) * 0.9f).toFloat() // Gradual transparency
-                }
+            // Keep center card on top
+            page.z = 1f - abs(position)
 
-                val scaleFactor = (0.80f + (1 - abs(position.toDouble())) * 0.20f).toFloat()
-                page.scaleY = scaleFactor
-                page.scaleX = scaleFactor
+            // Scale cards
+            val scale = MIN_SCALE + (1 - abs(position)) * (1 - MIN_SCALE)
+            page.scaleX = scale
+            page.scaleY = scale
 
-                // Adjust translation for left/right stacking
-                page.translationX = -position * page.width / 5.9f
-            }
-        })
+            // Fade cards slightly
+            val alpha = MIN_ALPHA + (1 - abs(position)) * (1 - MIN_ALPHA)
+            page.alpha = alpha
+
+            // Adjust horizontal position for peeking
+            page.translationX = -position * page.width / translationFactor
+        }
 
     }
 
@@ -1087,5 +1088,46 @@ class HomeExploreFragment : BaseFragment() {
 
     private fun showInternetError() {
         Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun getJumpBackInData() {
+        val call: Call<ResponseBody> =
+            apiService.getContinueData(sharedPreferenceManager.accessToken, "continue", 10, 0)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonString = response.body()?.string()
+
+                    val responseObj: ContentResponse =
+                        gson.fromJson(jsonString, ContentResponse::class.java)
+
+                    val contentDetails: List<ContentDetails>? = responseObj.data?.contentDetails
+
+                    binding.rlJumpInBack.visibility =
+                        if (contentDetails?.isEmpty() == true) View.GONE else View.VISIBLE
+
+                    val adapter =
+                        contentDetails?.let { ContentDetailsAdapter(requireContext(), it) }
+
+                    // Horizontal LayoutManager
+                    val layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    binding.recyclerViewJumpBackIn.layoutManager = layoutManager
+                    binding.recyclerViewJumpBackIn.adapter = adapter
+
+                } else {
+                    Log.e("API_ERROR", "Response Code: " + response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+
     }
 }

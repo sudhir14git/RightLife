@@ -7,14 +7,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -180,16 +178,20 @@ class HomeNewActivity : BaseActivity() {
         // Load default fragment only on first launch
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                .replace(R.id.fragmentContainer, HomeExploreFragment())
                 .commit()
             updateMenuSelection(R.id.menu_home)
         } else {
             // 🟢 Restore menu highlight based on current fragment
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
             when (currentFragment) {
-                is HomeExploreFragment -> updateMenuSelection(R.id.menu_explore)
-                is HomeDashboardFragment -> updateMenuSelection(R.id.menu_home)
+                is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
+                is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
             }
+        }
+
+        binding.flFreeTrial.setOnClickListener {
+            startActivity(Intent(this, BeginMyFreeTrialActivity::class.java))
         }
 
         binding.scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
@@ -203,8 +205,8 @@ class HomeNewActivity : BaseActivity() {
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
-                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_explore)
-                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_home)
+                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
+                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
                 }
 
                 binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
@@ -222,14 +224,14 @@ class HomeNewActivity : BaseActivity() {
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
-                    is HomeExploreFragment -> {
+                    is HomeDashboardFragment -> {
                         supportFragmentManager.beginTransaction()
-                            .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                            .replace(R.id.fragmentContainer, HomeExploreFragment())
                             .commit()
                         updateMenuSelection(R.id.menu_home)
                     }
 
-                    is HomeDashboardFragment -> finish()
+                    is HomeExploreFragment -> finish()
                 }
             }
         }
@@ -248,8 +250,8 @@ class HomeNewActivity : BaseActivity() {
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
-                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_explore)
-                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_home)
+                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
+                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
                 }
             } else {
                 bottom_sheet.visibility = View.VISIBLE
@@ -326,7 +328,7 @@ class HomeNewActivity : BaseActivity() {
                     }.start()
             } else {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .replace(R.id.fragmentContainer, HomeExploreFragment())
                     .commit()
                 updateMenuSelection(R.id.menu_home)
             }
@@ -364,7 +366,7 @@ class HomeNewActivity : BaseActivity() {
                     }.start()
             } else {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeExploreFragment())
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
                     .commit()
                 updateMenuSelection(R.id.menu_explore)
             }
@@ -412,7 +414,8 @@ class HomeNewActivity : BaseActivity() {
                 ActivityUtils.startEatRightReportsActivity(
                     this@HomeNewActivity,
                     "SnapMealTypeEat",
-                    "")
+                    ""
+                )
             }
 
         }
@@ -694,7 +697,7 @@ class HomeNewActivity : BaseActivity() {
         binding.labelHome.setTextColor(ContextCompat.getColor(this, R.color.gray))
         binding.labelHome.setTypeface(null, Typeface.NORMAL)
 
-        binding.iconExplore.setImageResource(R.drawable.new_explore_unselected_svg)
+        binding.iconExplore.setImageResource(R.drawable.my_health_menu)
         binding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.gray))
         binding.labelExplore.setTypeface(null, Typeface.NORMAL)
 
@@ -707,7 +710,7 @@ class HomeNewActivity : BaseActivity() {
             }
 
             R.id.menu_explore -> {
-                binding.iconExplore.setImageResource(R.drawable.new_explore_selected_svg)
+                binding.iconExplore.setImageResource(R.drawable.my_health_menu_selected)
                 binding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.rightlife))
                 binding.labelExplore.setTypeface(null, Typeface.BOLD)
             }
@@ -959,36 +962,36 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-/*    private fun updateBackendForPurchase(purchase: Purchase) {
-        Log.d(
-            TAG,
-            "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}"
-        )
+    /*    private fun updateBackendForPurchase(purchase: Purchase) {
+            Log.d(
+                TAG,
+                "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}"
+            )
 
-        val paymentSuccessRequest = PaymentSuccessRequest().apply {
-            planId = purchase.products.firstOrNull() ?: ""
-            planName = purchase.products.firstOrNull() ?: ""
-            paymentGateway = "googlePlay"
-            orderId = purchase.orderId ?: ""
-            environment = "payment"
-            notifyType = "SDK"
-            couponId = ""
-            obfuscatedExternalAccountId = ""
-            price = purchase.products.firstOrNull() ?: ""
-
-            sdkDetail = SdkDetail().apply {
-                price = ""
+            val paymentSuccessRequest = PaymentSuccessRequest().apply {
+                planId = purchase.products.firstOrNull() ?: ""
+                planName = purchase.products.firstOrNull() ?: ""
+                paymentGateway = "googlePlay"
                 orderId = purchase.orderId ?: ""
-                title = ""
                 environment = "payment"
-                description = ""
-                currencyCode = "INR"
-                currencySymbol = "₹"
-            }
-        }
+                notifyType = "SDK"
+                couponId = ""
+                obfuscatedExternalAccountId = ""
+                price = purchase.products.firstOrNull() ?: ""
 
-        saveSubscriptionSuccess(paymentSuccessRequest)
-    }*/
+                sdkDetail = SdkDetail().apply {
+                    price = ""
+                    orderId = purchase.orderId ?: ""
+                    title = ""
+                    environment = "payment"
+                    description = ""
+                    currencyCode = "INR"
+                    currencySymbol = "₹"
+                }
+            }
+
+            saveSubscriptionSuccess(paymentSuccessRequest)
+        }*/
 
     private fun updateBackendForPurchase(purchase: Purchase) {
         Log.d(
@@ -1170,7 +1173,8 @@ class HomeNewActivity : BaseActivity() {
 
     private suspend fun fetchAllHealthData() {
         try {
-            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+            val grantedPermissions =
+                healthConnectClient.permissionController.getGrantedPermissions()
             var endTime = Instant.now()
             var startTime = Instant.now()
             val syncTime =
@@ -1201,7 +1205,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     totalCaloriesBurnedRecord = totalCaloroieResponse
-                }else{
+                } else {
                     val caloriesResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = TotalCaloriesBurnedRecord::class,
@@ -1215,7 +1219,10 @@ class HomeNewActivity : BaseActivity() {
                     val burnedCalories = record.energy.inKilocalories
                     val start = record.startTime
                     val end = record.endTime
-                    Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
+                    Log.d(
+                        "HealthData",
+                        "Total Calories Burned: $burnedCalories kcal | From: $start To: $end"
+                    )
                 }
             } else {
                 totalCaloriesBurnedRecord = emptyList()
@@ -1240,7 +1247,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     stepsRecord = stepsResponse
-                }else{
+                } else {
                     val stepsResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = StepsRecord::class,
@@ -1272,7 +1279,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     heartRateRecord = results
-                }else{
+                } else {
                     val response = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = HeartRateRecord::class,
@@ -1282,7 +1289,7 @@ class HomeNewActivity : BaseActivity() {
                     heartRateRecord = response.records
                     Log.d("HealthData", "Total HR records fetched: ${response.records.size}")
                 }
-            }else {
+            } else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1296,7 +1303,9 @@ class HomeNewActivity : BaseActivity() {
                 activeCalorieBurnedRecord = activeCalorieResponse.records
                 activeCalorieBurnedRecord?.forEach { record ->
                     Log.d(
-                        "HealthData", "Active Calories Burned: ${record.energy} kCal, Time: ${record.startTime}")
+                        "HealthData",
+                        "Active Calories Burned: ${record.energy} kCal, Time: ${record.startTime}"
+                    )
                 }
             } else {
                 activeCalorieBurnedRecord = emptyList()
@@ -1491,18 +1500,21 @@ class HomeNewActivity : BaseActivity() {
                     val deviceInfo = record.metadata.device
                     if (deviceInfo != null && deviceInfo.manufacturer != "null") {
                         if (deviceInfo.manufacturer != "") {
-                            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(deviceInfo.manufacturer)
+                            SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                                .saveDeviceName(deviceInfo.manufacturer)
                             Log.d(
                                 "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
                             )
                             break
-                        }else{
-                            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(dataOrigin)
+                        } else {
+                            SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                                .saveDeviceName(dataOrigin)
                             break
                         }
                     } else {
-                        SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(dataOrigin)
+                        SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                            .saveDeviceName(dataOrigin)
                         break
                     }
                 }
@@ -1519,7 +1531,11 @@ class HomeNewActivity : BaseActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@HomeNewActivity, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@HomeNewActivity,
+                    "Error fetching health data: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -1529,9 +1545,9 @@ class HomeNewActivity : BaseActivity() {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(this@HomeNewActivity).userId
-                var activeEnergyBurned : List<EnergyBurnedRequest>? = null
-                if (activeCalorieBurnedRecord!!.isNotEmpty()){
-                     activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
+                var activeEnergyBurned: List<EnergyBurnedRequest>? = null
+                if (activeCalorieBurnedRecord!!.isNotEmpty()) {
+                    activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
                         if (record.energy.inKilocalories > 0) {
                             EnergyBurnedRequest(
                                 start_datetime = convertToTargetFormat(record.startTime.toString()),
@@ -1543,8 +1559,8 @@ class HomeNewActivity : BaseActivity() {
                             )
                         } else null
                     } ?: emptyList()
-                }else{
-                     activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
+                } else {
+                    activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
                         if (record.energy.inKilocalories > 0) {
                             EnergyBurnedRequest(
                                 start_datetime = convertToTargetFormat(record.startTime.toString()),
@@ -1701,7 +1717,7 @@ class HomeNewActivity : BaseActivity() {
                                 record_type = "Asleep",
                                 unit = "stage",
                                 value = "Asleep",
-                                source_name =  SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                             )
                         )
                     } else {
@@ -1721,7 +1737,7 @@ class HomeNewActivity : BaseActivity() {
                                     record_type = it,
                                     unit = "sleep_stage",
                                     value = it,
-                                    source_name =  SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                    source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 )
                             }
                         }
@@ -1746,19 +1762,19 @@ class HomeNewActivity : BaseActivity() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin.let { 5.0 }
-                        WorkoutRequest(
-                            start_datetime = convertToTargetFormat(record.startTime.toString()),
-                            end_datetime = convertToTargetFormat(record.endTime.toString()),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName,
-                            record_type = "Workout",
-                            workout_type = workoutType,
-                            duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = "",
-                            distance = String.format("%.1f", distance),
-                            duration_unit = "minutes",
-                            calories_unit = "kcal",
-                            distance_unit = "km"
-                        )
+                    WorkoutRequest(
+                        start_datetime = convertToTargetFormat(record.startTime.toString()),
+                        end_datetime = convertToTargetFormat(record.endTime.toString()),
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName,
+                        record_type = "Workout",
+                        workout_type = workoutType,
+                        duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
+                        calories_burned = "",
+                        distance = String.format("%.1f", distance),
+                        duration_unit = "minutes",
+                        calories_unit = "kcal",
+                        distance_unit = "km"
+                    )
                 } ?: emptyList()
                 val request = StoreHealthDataRequest(
                     user_id = userid,
@@ -1808,24 +1824,33 @@ class HomeNewActivity : BaseActivity() {
                     val req = StoreHealthDataRequest(
                         user_id = userid,
                         source = "android",
-                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "ActiveEnergyBurned" },
-                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "BasalMetabolic" },
+                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>()
+                            .filter { it.record_type == "ActiveEnergyBurned" },
+                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>()
+                            .filter { it.record_type == "BasalMetabolic" },
                         distance_walking_running = batch.filterIsInstance<Distance>(),
                         step_count = batch.filterIsInstance<StepCountRequest>(),
-                        heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "HeartRate" },
+                        heart_rate = batch.filterIsInstance<HeartRateRequest>()
+                            .filter { it.record_type == "HeartRate" },
                         heart_rate_variability_SDNN = batch.filterIsInstance<HeartRateVariabilityRequest>(),
-                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "RestingHeartRate" },
+                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>()
+                            .filter { it.record_type == "RestingHeartRate" },
                         respiratory_rate = batch.filterIsInstance<RespiratoryRate>(),
                         oxygen_saturation = batch.filterIsInstance<OxygenSaturation>(),
-                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureSystolic" },
-                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureDiastolic" },
+                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>()
+                            .filter { it.record_type == "BloodPressureSystolic" },
+                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>()
+                            .filter { it.record_type == "BloodPressureDiastolic" },
                         body_mass = batch.filterIsInstance<BodyMass>(),
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
                         workout = batch.filterIsInstance<WorkoutRequest>(),
                         time_zone = timeZone
                     )
-                    val response = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(req)
+                    val response =
+                        com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(
+                            req
+                        )
                     if (!response.isSuccessful) {
                         throw Exception("Batch upload failed with code: ${response.code()}")
                     }
@@ -1849,11 +1874,16 @@ class HomeNewActivity : BaseActivity() {
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(this@HomeNewActivity).saveMoveRightSyncTime(syncTime)
+                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                        .saveMoveRightSyncTime(syncTime)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@HomeNewActivity, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@HomeNewActivity,
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -1864,8 +1894,8 @@ class HomeNewActivity : BaseActivity() {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(this@HomeNewActivity).userId
-                var activeEnergyBurned : List<EnergyBurnedRequest>? = null
-                if (activeCalorieBurnedRecord!!.isNotEmpty()){
+                var activeEnergyBurned: List<EnergyBurnedRequest>? = null
+                if (activeCalorieBurnedRecord!!.isNotEmpty()) {
                     activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
                         if (record.energy.inKilocalories > 0) {
                             EnergyBurnedRequest(
@@ -1878,7 +1908,7 @@ class HomeNewActivity : BaseActivity() {
                             )
                         } else null
                     } ?: emptyList()
-                }else{
+                } else {
                     activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
                         if (record.energy.inKilocalories > 0) {
                             EnergyBurnedRequest(
@@ -2093,20 +2123,20 @@ class HomeNewActivity : BaseActivity() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin.let { 5.0 }
-                        WorkoutRequest(
-                            start_datetime = convertToSamsungFormat(record.startTime.toString()),
-                            end_datetime = convertToSamsungFormat(record.endTime.toString()),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
-                                ?: "samsung",
-                            record_type = "Workout",
-                            workout_type = workoutType,
-                            duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = "",
-                            distance = String.format("%.1f", distance),
-                            duration_unit = "minutes",
-                            calories_unit = "kcal",
-                            distance_unit = "km"
-                        )
+                    WorkoutRequest(
+                        start_datetime = convertToSamsungFormat(record.startTime.toString()),
+                        end_datetime = convertToSamsungFormat(record.endTime.toString()),
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                            ?: "samsung",
+                        record_type = "Workout",
+                        workout_type = workoutType,
+                        duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
+                        calories_burned = "",
+                        distance = String.format("%.1f", distance),
+                        duration_unit = "minutes",
+                        calories_unit = "kcal",
+                        distance_unit = "km"
+                    )
                 } ?: emptyList()
                 val request = StoreHealthDataRequest(
                     user_id = userid,
@@ -2156,24 +2186,33 @@ class HomeNewActivity : BaseActivity() {
                     val req = StoreHealthDataRequest(
                         user_id = userid,
                         source = "android",
-                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "ActiveEnergyBurned" },
-                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "BasalMetabolic" },
+                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>()
+                            .filter { it.record_type == "ActiveEnergyBurned" },
+                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>()
+                            .filter { it.record_type == "BasalMetabolic" },
                         distance_walking_running = batch.filterIsInstance<Distance>(),
                         step_count = batch.filterIsInstance<StepCountRequest>(),
-                        heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "HeartRate" },
+                        heart_rate = batch.filterIsInstance<HeartRateRequest>()
+                            .filter { it.record_type == "HeartRate" },
                         heart_rate_variability_SDNN = batch.filterIsInstance<HeartRateVariabilityRequest>(),
-                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "RestingHeartRate" },
+                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>()
+                            .filter { it.record_type == "RestingHeartRate" },
                         respiratory_rate = batch.filterIsInstance<RespiratoryRate>(),
                         oxygen_saturation = batch.filterIsInstance<OxygenSaturation>(),
-                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureSystolic" },
-                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureDiastolic" },
+                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>()
+                            .filter { it.record_type == "BloodPressureSystolic" },
+                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>()
+                            .filter { it.record_type == "BloodPressureDiastolic" },
                         body_mass = batch.filterIsInstance<BodyMass>(),
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
                         workout = batch.filterIsInstance<WorkoutRequest>(),
                         time_zone = timeZone
                     )
-                    val response = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(req)
+                    val response =
+                        com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(
+                            req
+                        )
                     if (!response.isSuccessful) {
                         throw Exception("Batch upload failed with code: ${response.code()}")
                     }
@@ -2197,11 +2236,16 @@ class HomeNewActivity : BaseActivity() {
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(this@HomeNewActivity).saveMoveRightSyncTime(syncTime)
+                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                        .saveMoveRightSyncTime(syncTime)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@HomeNewActivity, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@HomeNewActivity,
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

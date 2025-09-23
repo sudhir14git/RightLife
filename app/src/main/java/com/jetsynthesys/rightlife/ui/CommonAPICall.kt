@@ -260,8 +260,6 @@ object CommonAPICall {
         val authToken = SharedPreferenceManager.getInstance(context).accessToken
         val apiService = ApiClient.getClient(context).create(ApiService::class.java)
 
-        //val episodeTrackRequest = EpisodeTrackRequest()
-
 
         val call = apiService.trackEpisode(
             authToken,
@@ -349,5 +347,36 @@ object CommonAPICall {
         })
     }
 
+    fun postVideoPlayedProgress(
+        context: Context,
+        duration: Double,
+        contentId: String,
+        watchDuration: Double,
+        moduleId: String,
+        contentType: String
+    ) {
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val authToken = sharedPreferenceManager.accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val contentRequest = EpisodeTrackRequest(
+            sharedPreferenceManager.userId,
+            moduleId,
+            contentId,
+            duration.toString(),
+            watchDuration.toString(),
+            contentType
+        )
+        val call = apiService.trackEpisode(authToken, contentRequest)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("API_RESPONSE", "View Count content: ")
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("API_RESPONSE", "View Count content: ")
+            }
+
+        })
+    }
 
 }
