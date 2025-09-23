@@ -30,6 +30,12 @@ class ToolAdapter(context: Context, private val tools: List<ModuleData>, val onT
                     .placeholder(R.drawable.ic_plus)
                     .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
             }
+            "Your Affirmation Playlist" ->{
+                Glide.with(mContext)
+                    .load(R.drawable.quote_icon)
+                    .placeholder(R.drawable.quote_icon)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
             "Box Breathing" ->{
                 Glide.with(mContext)
                     .load("https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/62e1e78cca28251bf83e46bc0018ba0b.png")

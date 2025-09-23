@@ -3,7 +3,6 @@ package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -18,6 +17,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -33,7 +33,6 @@ import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentAllToolsListBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
-import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -54,10 +53,12 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
         val name: TextView = itemView.findViewById(R.id.tool_name)
         val description: TextView = itemView.findViewById(R.id.tool_description)
         val selectButton: ImageView = itemView.findViewById(R.id.tool_select_button)
+
     }
 
     class AffirmationCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        val createPlaylist: TextView = itemView.findViewById(R.id.createPlaylistButton)
+        var createPlaylist: AppCompatButton = itemView.findViewById(R.id.createPlaylistButton)
+        val selectButton2: ImageView = itemView.findViewById(R.id.tool_select_button_affirmation)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -153,6 +154,7 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                         R.drawable.add_think_brown_icon
                 )
 
+
                 toolHolder.selectButton.setOnClickListener {
                     onItemClick(position, tool)
                 }
@@ -170,7 +172,36 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
             }
 
             is ToolDisplayItem.AffirmationCard -> {
+                val affirmation = item
                 val toolHolder = holder as AffirmationCardViewHolder
+
+                toolHolder.selectButton2.setImageResource(
+                    if (affirmation.isSelectedModule)
+                        R.drawable.green_check_item
+                    else
+                        R.drawable.add_think_brown_icon
+                )
+
+                toolHolder.createPlaylist.setVisibility(
+                    if (affirmation.isPlaylist) View.GONE else View.VISIBLE
+                )
+                toolHolder.selectButton2.setOnClickListener {
+                    val toolsData = ToolsData(
+                        _id = affirmation.moduleId,
+                        title = affirmation.title,
+                        desc = affirmation.description,
+                        isSelectedModule = affirmation.isSelectedModule ,
+                        isPlaylist = affirmation.isPlaylist?:false,
+                        image = affirmation.image
+                    // Toggle selection state
+                    )
+                    onItemClick(position, toolsData)
+                }
+
+
+
+
+
                 toolHolder.createPlaylist.setOnClickListener {
                     onItemClick(position, null)
                 }
@@ -218,15 +249,25 @@ fun transformTools(tools: List<ToolsData>): List<ToolDisplayItem> {
     var hasInsertedAffirmationCard = false
 
     for (tool in tools) {
-        val isAffirmation = tool.title?.contains("affirmation", ignoreCase = true)
+        val isAffirmation = tool.title?.contains("affirmation", ignoreCase = true) == true
 
-        // If it's an affirmation, insert the card once and skip the actual tool item
-        if (isAffirmation == true) {
+        // If it's an affirmation, insert the card once with data and skip the original tool
+        if (isAffirmation) {
             if (!hasInsertedAffirmationCard) {
-                result.add(ToolDisplayItem.AffirmationCard)
+                result.add(
+                    ToolDisplayItem.AffirmationCard(
+                        isPlaylist = tool.isPlaylist?:false,
+                        isSelectedModule = tool.isSelectedModule ?: false,
+                        title = tool.title,
+                        description = tool.desc,
+                        moduleId = tool._id,
+                        image = tool.image
+
+                    )
+                )
                 hasInsertedAffirmationCard = true
             }
-            continue // skip adding the original tool
+            continue // Skip adding the original tool
         }
 
         result.add(ToolDisplayItem.ToolItem(tool))
@@ -237,7 +278,14 @@ fun transformTools(tools: List<ToolsData>): List<ToolDisplayItem> {
 
 sealed class ToolDisplayItem {
     data class ToolItem(val data: ToolsData) : ToolDisplayItem()
-    object AffirmationCard : ToolDisplayItem()
+    data class AffirmationCard(
+        val isSelectedModule: Boolean = false,
+        val isPlaylist: Boolean = false,
+        val title: String? = null,
+        val description: String? = null,
+        val image: String? = null,
+        val moduleId: String? = null // Optional: for API calls
+    ) : ToolDisplayItem()
 }
 
 class FilterAdapter(private val filters: List<FilterItem>, private val onFilterClick: (Int,FilterItem) -> Unit) :

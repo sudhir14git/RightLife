@@ -1014,8 +1014,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:paddingBottom="20dp"
+                android:layout_marginTop="10dp"
+                android:paddingBottom="10dp"
                 android:orientation="vertical">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -1031,7 +1031,7 @@
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/eatright_text_color"
                         android:textSize="18sp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginStart="20dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -1053,7 +1053,7 @@
                     android:layout_marginStart="15dp"
                     android:id="@+id/card_add_tools"
                     android:visibility="gone"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp"
                     android:padding="16dp">
@@ -1076,14 +1076,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp">
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/add_tools_think_right"
                         android:layout_marginEnd="10dp"
                         android:layout_width="100dp"
-                        android:layout_marginTop="22dp"
+                        android:layout_marginTop="10dp"
                         app:cardCornerRadius="10dp"
                         android:visibility="visible"
                         android:layout_height="140dp"
@@ -1103,8 +1103,7 @@
                             android:clipChildren="false"
                             android:clipToPadding="false"
                             android:paddingEnd="20dp"
-                            android:paddingBottom="10dp"
-                            android:layout_marginTop="10dp"/>
+                           />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -1114,8 +1113,10 @@
                     android:layout_height="wrap_content"
                     android:visibility="visible"
                     android:scrollbars="none"
-                    android:layout_marginTop="10dp"
-                    android:padding="16dp"
+                   android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -1124,7 +1125,6 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:visibility="visible"
                     android:orientation="horizontal">
 
@@ -1136,7 +1136,7 @@
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/eatright_text_color"
                         android:textSize="18sp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginStart="20dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
