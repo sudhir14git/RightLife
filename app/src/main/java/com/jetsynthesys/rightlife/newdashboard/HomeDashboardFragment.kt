@@ -36,7 +36,6 @@ import androidx.health.connect.client.records.OxygenSaturationRecord
 import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
@@ -48,9 +47,6 @@ import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
-import com.jetsynthesys.rightlife.ai_package.model.SleepStagesData
-import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.FragmentHomeDashboardBinding
@@ -87,7 +83,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToInt
-import kotlin.math.roundToLong
 
 class HomeDashboardFragment : BaseFragment() {
     private var _binding: FragmentHomeDashboardBinding? = null
@@ -209,7 +204,7 @@ class HomeDashboardFragment : BaseFragment() {
                 activity = requireActivity(), // or just `this` in Activity
                 launcher = permissionLauncher,
                 onPermissionGranted = {
-                    ActivityUtils.startMealScanActivity(requireContext(), snapMealId ?: "")
+                    ActivityUtils.startMealScanActivity(requireContext(), snapMealId)
                 },
                 onPermissionDenied = {
                     // ❌ Show user-facing message or disable features
@@ -243,94 +238,29 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
 
-        binding.cardThinkrightMain.setOnClickListener {
+        binding.cardThinkRight.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 ActivityUtils.startThinkRightReportsActivity(requireContext(), "Not")
             }
         }
-        binding.cardEatrightMain.setOnClickListener {
+        binding.cardEatRight.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 ActivityUtils.startEatRightReportsActivity(requireContext(), "Not")
             }
         }
 
-        binding.cardMoverightMain.setOnClickListener {
+        binding.cardMoveRight.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 ActivityUtils.startMoveRightReportsActivity(requireContext(), "Not")
             }
         }
-        binding.cardSleeprightMain.setOnClickListener {
+        binding.cardSleepRight.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
-            }
-        }
-        binding.cardSleepMainIdeal.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
-            if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
-            }
-        }
-        binding.cardSleepMainLog.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
-            if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
-            }
-        }
-
-
-        // for no data card
-        binding.cardThinkrightMainNodata.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
-            if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startThinkRightReportsActivity(requireContext(), "Not")
-            }
-        }
-        binding.cardEatrightMainNodata.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
-            if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startEatRightReportsActivity(requireContext(), "Not")
-            }
-        }
-
-        binding.cardMoverightMainNodata.setOnClickListener {
-            if (checkTrailEndedAndShowDialog()) {
-                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
-                ActivityUtils.startMoveRightReportsActivity(requireContext(), "Not")
-            }
-        }
-        binding.cardSleeprightMainNodata.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
-            if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
-            }
-        }
-
-        binding.cardEatright.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
-            if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startEatRightReportsActivity(requireContext(), "Not")
-            }
-        }
-        binding.cardSleepright.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
-            if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
-            }
-        }
-        binding.cardThinkright.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
-            if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startThinkRightReportsActivity(requireContext(), "Not")
-            }
-        }
-        binding.cardMoveright.setOnClickListener {
-            if (checkTrailEndedAndShowDialog()) {
-                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
-                ActivityUtils.startMoveRightReportsActivity(requireContext(), "Not")
             }
         }
 
@@ -487,9 +417,9 @@ class HomeDashboardFragment : BaseFragment() {
                 AnalyticsEvent.CHECKLIST_COMPLETE,
                 mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true)
             )
-/*
-            val activity = requireActivity() as HomeNewActivity
-            activity.getUserDetails()*/
+            /*
+                        val activity = requireActivity() as HomeNewActivity
+                        activity.getUserDetails()*/
         } else {
             binding.llDashboardMainData.visibility = View.GONE
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
@@ -579,7 +509,7 @@ class HomeDashboardFragment : BaseFragment() {
                         promotionResponse2, AiDashboardResponseMain::class.java
                     )
                     runWhenAttached {
-                        handleSelectedModule(aiDashboardResponseMain)
+                        //handleSelectedModule(aiDashboardResponseMain)
                         handleDescoverList(aiDashboardResponseMain)
                         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
                         binding.recyclerView.adapter =
@@ -629,8 +559,8 @@ class HomeDashboardFragment : BaseFragment() {
                                 (requireActivity() as? HomeNewActivity)?.showSubsribeLayout(
                                     DashboardChecklistManager.paymentStatus
                                 )
-                                (requireActivity() as? HomeNewActivity)?.showSubsribeLayout(DashboardChecklistManager.paymentStatus)
                                 (requireActivity() as? HomeNewActivity)?.getUserDetails()
+                                setChecklistRowArrow(DashboardChecklistManager.paymentStatus)
                             } else {
                                 Toast.makeText(
                                     requireContext(),
@@ -647,268 +577,6 @@ class HomeDashboardFragment : BaseFragment() {
                 }
 
             })
-    }
-
-    private fun handleSelectedModule(aiDashboardResponseMain: AiDashboardResponseMain?) {
-        val modules = aiDashboardResponseMain?.data?.updatedModules
-
-        binding.cardMoverightMain.visibility = View.GONE
-        binding.cardSleeprightMain.visibility = View.GONE
-        binding.cardSleepMainIdeal.visibility = View.GONE
-        binding.cardSleepMainLog.visibility = View.GONE
-
-        binding.cardEatrightMain.visibility = View.GONE
-        binding.cardThinkrightMain.visibility = View.GONE
-
-        if (modules.isNullOrEmpty()) {
-            binding.llNodataMain.visibility = View.VISIBLE
-            var moduleId = sharedPreferenceManager.selectedOnboardingModule
-            sharedPreferenceManager.selectedOnboardingModule = moduleId
-            if (moduleId.isEmpty()) {
-                moduleId = "EAT_RIGHT"
-            }
-            when (moduleId) {
-                "MOVE_RIGHT" -> {
-                    // MOVE_RIGHT logic here
-                    binding.cardMoverightMainNodata.visibility = View.VISIBLE
-                    binding.cardMoveright.visibility = View.GONE
-                    binding.cardEatright.visibility = View.VISIBLE
-                    binding.cardThinkright.visibility = View.VISIBLE
-                    binding.cardSleepright.visibility = View.VISIBLE
-                }
-
-                "THINK_RIGHT" -> {
-                    // THINK_RIGHT logic here
-                    binding.cardThinkrightMainNodata.visibility = View.VISIBLE
-                    binding.cardThinkright.visibility = View.GONE
-                    binding.cardMoveright.visibility = View.VISIBLE
-                    binding.cardEatright.visibility = View.VISIBLE
-                    binding.cardSleepright.visibility = View.VISIBLE
-                }
-
-                "EAT_RIGHT" -> {
-                    // EAT_RIGHT logic here
-                    binding.cardEatrightMainNodata.visibility = View.VISIBLE
-                    binding.cardEatright.visibility = View.GONE
-                    binding.cardThinkright.visibility = View.VISIBLE
-                    binding.cardMoveright.visibility = View.VISIBLE
-                    binding.cardSleepright.visibility = View.VISIBLE
-                }
-
-                "SLEEP_RIGHT" -> {
-                    // SLEEP_RIGHT logic here
-                    binding.cardSleeprightMainNodata.visibility = View.VISIBLE
-                    binding.cardSleepright.visibility = View.GONE
-                    binding.cardEatright.visibility = View.VISIBLE
-                    binding.cardThinkright.visibility = View.VISIBLE
-                    binding.cardMoveright.visibility = View.VISIBLE
-                }
-
-                else -> {
-                    // Default case logic here
-                }
-            }
-
-        } else {
-            binding.llNodataMain.visibility = View.GONE
-            binding.cardThinkright.visibility = View.VISIBLE
-            binding.cardMoveright.visibility = View.VISIBLE
-            binding.cardEatright.visibility = View.VISIBLE
-            binding.cardSleepright.visibility = View.VISIBLE
-
-
-            //for (module in aiDashboardResponseMain?.data?.updatedModules!!) {
-            aiDashboardResponseMain.data.updatedModules.forEach { module ->
-                val moduleId = module.moduleId
-                val isSelected = module.isSelectedModule
-                if (isSelected == true)
-                    sharedPreferenceManager.selectedWellnessFocus = moduleId
-
-                when (moduleId) {
-                    "MOVE_RIGHT" -> {
-
-                        if (isSelected == true) {
-                            binding.cardMoverightMain.visibility = View.VISIBLE
-                            binding.cardMoveright.visibility = View.GONE
-                            binding.cardEatright.visibility = View.VISIBLE
-                            binding.cardThinkright.visibility = View.VISIBLE
-                            binding.cardSleepright.visibility = View.VISIBLE
-                        }
-                        //set data on card once response works
-                        binding.tvCaloryValue.text = module.calorieBalance.toString()
-                        binding.tvCaloryIntake.text = module.intake.toString()
-                        binding.tvCaloryBurn.text = module.burned.toString()
-
-                        setIfNotNullOrBlankWithCalories(
-                            binding.tvModuleValueEatright,
-                            module.calories?.toString()
-                        )
-                        setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright,
-                            module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
-                                DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr 0 min"
-                        )
-
-
-                        setIfNotNullOrBlank(
-                            binding.tvModuleValueThinkright, module.mindfulTime?.toString()
-                        )
-                        setIfNotNullOrBlankWithCalories(
-                            binding.tvModuleValueMoveright, module.activeBurn?.toString()
-                        )
-
-                        setProgressBarMoveright(module)
-
-                    }
-
-                    "THINK_RIGHT" -> {
-                        if (isSelected == true) {
-                            binding.cardThinkrightMain.visibility = View.VISIBLE
-                            binding.cardThinkright.visibility = View.GONE
-                            binding.cardMoveright.visibility = View.VISIBLE
-                            binding.cardEatright.visibility = View.VISIBLE
-                            binding.cardSleepright.visibility = View.VISIBLE
-                        }
-                        binding.tvMinutesTextValue.text = module.mindfulnessMinutes
-                        binding.tvDaysTextValue.text = module.wellnessDays
-
-                        setIfNotNullOrBlankWithCalories(
-                            binding.tvModuleValueEatright,
-                            module.calories?.toString()
-                        )
-                        setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright,
-                            module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
-                                DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr 0 min"
-
-                        )
-                        setIfNotNullOrBlank(
-                            binding.tvModuleValueThinkright, module.mindfulTime?.toString()
-                        )
-                        setIfNotNullOrBlankWithCalories(
-                            binding.tvModuleValueMoveright, module.activeBurn?.toString()
-                        )
-                    }
-
-                    "EAT_RIGHT" -> {
-                        if (isSelected == true) {
-                            binding.cardEatrightMain.visibility = View.VISIBLE
-                            binding.cardEatright.visibility = View.GONE
-                            binding.cardThinkright.visibility = View.VISIBLE
-                            binding.cardMoveright.visibility = View.VISIBLE
-                            binding.cardSleepright.visibility = View.VISIBLE
-                        }
-
-                        val (proteinValue, proteinTotal) = extractNumericValues(module.protein.toString())
-                        val (carbsValue, carbsTotal) = extractNumericValues(module.carbs.toString())
-                        val (fatsValue, fatsTotal) = extractNumericValues(module.fats.toString())
-
-                        binding.tvProtienValue.text =  formatValue(proteinValue.toDouble())// "" + proteinValue.toDouble().roundToLong().toInt()
-                        binding.proteinUnitTv.text = "/" + proteinTotal.toDoubleOrNull()?.roundToInt()?.toString() +"g" ?: "0" + " g"
-                        binding.proteinProgressBar.max = proteinTotal.toDouble().toInt()
-                        binding.proteinProgressBar.progress = proteinValue.toDouble().toInt()
-
-
-                        binding.tvCarbsValue.text = formatValue(carbsValue.toDouble())//"" + carbsValue.toDouble().roundToLong().toInt()
-                        binding.carbsUnitTv.text = "/" + carbsTotal.toDoubleOrNull()?.roundToInt()?.toString() +"g" ?: "0" + " g"
-                        binding.carbsProgressBar.max = carbsTotal.toDouble().toInt()
-                        binding.carbsProgressBar.progress = carbsValue.toDouble().toInt()
-
-                        binding.tvFatsValue.text = formatValue(fatsValue.toDouble())//"" + fatsValue.toDouble().roundToLong().toInt()
-                        binding.fatsUnitTv.text = "/" + fatsTotal.toDoubleOrNull()?.roundToInt()?.toString() +"g" ?: "0" + " g"
-                        binding.fatsProgressBar.max = fatsTotal.toDouble().toInt()
-                        binding.fatsProgressBar.progress = fatsValue.toDouble().toInt()
-
-
-                        binding.halfCurveProgressBar.setProgress(0f)
-                        binding.halfCurveProgressBar.setValues(0, 0)
-                        // value is wrong for eatright progress let backend correct then uncomment below
-                        /*val (curent, max) = extractNumericValues(module.calories.toString())
-                            binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
-                            val percentage = calculatePercentage(curent.toInt(), max.toInt())
-                            binding.halfCurveProgressBar.setProgress(percentage.toFloat())*/
-                        val (curentStr, maxStr) = extractNumericValues(module.calories.toString())
-
-                        val current = curentStr.toDoubleOrNull()?.toInt() ?: 0
-                        val max = maxStr.toDoubleOrNull()?.toInt() ?: 0
-
-                        binding.halfCurveProgressBar.setValues(current, max)
-
-                        val percentage = calculatePercentage(current, max)
-                        binding.halfCurveProgressBar.setProgress(percentage.toFloat())
-
-
-                        setIfNotNullOrBlankWithCalories(
-                            binding.tvModuleValueEatright,
-                            module.calories?.toString()
-                        )
-                        setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright,
-                            module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
-                                DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr 0 min"
-                        )
-                        setIfNotNullOrBlank(
-                            binding.tvModuleValueThinkright, module.mindfulTime?.toString()
-                        )
-                        setIfNotNullOrBlankWithCalories(
-                            binding.tvModuleValueMoveright, module.activeBurn?.toString()
-                        )
-                    }
-
-                    "SLEEP_RIGHT" -> {
-                        if (isSelected == true) {
-                            binding.cardSleeprightMain.visibility = View.VISIBLE
-                            binding.cardSleepright.visibility = View.GONE
-                            binding.cardEatright.visibility = View.VISIBLE
-                            binding.cardThinkright.visibility = View.VISIBLE
-                            binding.cardMoveright.visibility = View.VISIBLE
-                            checkTimeAndSetVisibility(module)
-                        }
-
-
-                        setIfNotNullOrBlankWithCalories(
-                            binding.tvModuleValueEatright,
-                            module.calories?.toString()
-                        )
-                        setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright,
-                            module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
-                                DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr 0 min"
-                        )
-                        setIfNotNullOrBlank(
-                            binding.tvModuleValueThinkright, module.mindfulTime?.toString()
-                        )
-                        setIfNotNullOrBlankWithCalories(
-                            binding.tvModuleValueMoveright, module.activeBurn?.toString()
-                        )
-
-                        aiDashboardResponseMain.data.updatedModules
-
-                        val sleepModule =
-                            aiDashboardResponseMain.data.updatedModules.find { it.moduleId == "SLEEP_RIGHT" }
-                        sleepModule?.let {
-                            setStageGraphFromSleepRightModule(
-                                rem = (it.rem ?: "0min").toString(),
-                                core = (it.core ?: "0min").toString(),
-                                deep = (it.deep ?: "0min").toString(),
-                                awake = (it.awake ?: "0min").toString()
-                            )
-                        }
-                    }
-
-                    else -> {
-                        binding.cardMoverightMain.visibility = View.VISIBLE
-                        binding.cardMoveright.visibility = View.GONE
-                    }
-                }
-
-
-            }
-        }
     }
 
     private fun setIfNotNullOrBlank(textView: TextView, value: String?) {
@@ -990,329 +658,6 @@ class HomeDashboardFragment : BaseFragment() {
         }
     }
 
-    private fun setProgressBarMoveright(module: UpdatedModule) {
-        val intakeStr = module.intake ?: "0.0"
-        val burnedStr = module.burned ?: "0.0"
-
-        val intake = intakeStr.toFloatOrNull() ?: 0f
-        val burned = burnedStr.toFloatOrNull() ?: 0f
-
-        binding.progressBarOnboarding.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                binding.progressBarOnboarding.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val progressBarWidth = binding.progressBarOnboarding.width.toFloat()
-
-                val maxValue = (intake + burned).toInt()
-                val progressValue = intake.toInt()
-
-                binding.progressBarOnboarding.max = maxValue
-                binding.progressBarOnboarding.progress = progressValue
-
-                val calorieBurnTarget = module.burned?.toDouble() ?: 0.0
-
-                val rangeStart = module.calorieRange?.getOrNull(0)?.toDouble()
-                val rangeEnd = module.calorieRange?.getOrNull(1)?.toDouble()
-
-                val percentage =
-                    if (rangeStart != null && rangeEnd != null && rangeEnd != rangeStart) {
-                        ((calorieBurnTarget - rangeStart) / (rangeEnd - rangeStart)).toFloat()
-                    } else {
-                        0f
-                    }
-
-
-                //val percentage = binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
-                val value = (percentage / 10)
-                val overlayPositionPercentage: Float = String.format("%.1f", value).toFloat()
-
-                val progress = binding.progressBarOnboarding.progress
-                val max = binding.progressBarOnboarding.max
-                val progressPercentage = progress.toFloat() / max
-
-                val constraintSet = ConstraintSet()
-                constraintSet.clone(binding.progressBarLayout)
-                constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
-                constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
-                constraintSet.applyTo(binding.progressBarLayout)
-
-                binding.transparentOverlay.let { overlay ->
-                    // Use the progressBarLayout width to calculate proportional widths
-                    val parentWidth = binding.progressBarOnboarding.width
-                    var isWeightGainZone = false
-                    if (rangeStart != null) {
-                        val isWeightGainZone = calorieBurnTarget < rangeStart
-                    }
-                    val overlayWidth = if (isWeightGainZone) {
-                        binding.weightLossZoneText.text = "Weight Gain Zone"
-                        (parentWidth * 0.6).toInt() // 40% of parent width for Weight Gain Zone
-                    } else {
-                        binding.weightLossZoneText.text = "Weight Loss Zone"
-                        (parentWidth * 0.08).toInt() // 20% of parent width for Weight Loss Zone
-                    }
-                    // Update the layout params to set the new width
-                    val layoutParams = overlay.layoutParams
-                    layoutParams.width = overlayWidth
-                    overlay.layoutParams = layoutParams
-                    overlay.visibility = View.VISIBLE // Ensure overlay is visible
-                }
-            }
-        })
-
-        val balance = module.calorieBalance?.toString()?.toFloatOrNull()?.toInt() ?: 0
-        val upperRange =
-            module.calorieRange?.getOrNull(1)?.toString()?.toFloatOrNull()?.toInt() ?: 0
-
-        val color = when (module.goal) {
-            "weight_loss" -> {
-                binding.weightLossZoneText.text = "Weight Loss Zone"
-                if (intake < upperRange) R.color.color_eat_right else R.color.red
-            }
-
-            "weight_gain" -> {
-                binding.weightLossZoneText.text = "Weight Gain Zone"
-                if (intake < upperRange) R.color.red else R.color.color_eat_right
-            }
-
-            else -> {
-                binding.weightLossZoneText.text = "Weight Loss Zone"
-                R.color.color_eat_right
-            }
-        }
-
-        binding.tvCaloryValue.setTextColor(ContextCompat.getColor(requireContext(), color))
-    }
-
-    // new sleep time implementation
-    private fun checkTimeAndSetVisibility(module: UpdatedModule) {
-        val calendar = Calendar.getInstance()
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY) // Get hour in 24-hour format (0-23)
-
-        // Check if currentHour is between 18 (6 PM) and 1 (1 AM)
-        // OR if currentHour is 0 (12 AM) or 1 (1 AM) or 2 (2 AM) for the next day
-        val isVisible = (currentHour >= 18 && currentHour <= 23) || // 6 PM to 11 PM
-                (currentHour >= 0 && currentHour <= 3)      // 12 AM (midnight) to 2 AM
-
-        if (isVisible) {
-            binding.cardSleepMainIdeal.visibility = View.VISIBLE
-            if (module.sleepTime.equals("00:00")) {
-                binding.tvTodaysSleepStartTime.text =
-                    DateTimeUtils.getSleepTime12HourFormat("2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
-            } else {
-                binding.tvTodaysSleepStartTime.text = DateTimeUtils.getSleepTime12HourFormat(
-                    module.idealSleepRequirementData?.sleepDatetime ?: "2025-05-14T15:30:00.000Z"
-                )  //module.sleepTime ?: "00:00"
-            }
-            if (module.wakeUpTime.equals("00:00")) {
-                binding.tvTodaysWakeupTime.text =
-                    DateTimeUtils.getSleepTime12HourFormat("2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
-            } else {
-                binding.tvTodaysWakeupTime.text = DateTimeUtils.getSleepTime12HourFormat(
-                    module.idealSleepRequirementData?.wakeupDatetime ?: "2025-05-15T23:30:00.000Z"
-                )
-            }
-
-            binding.tvTodaysSleepTimeRequirement.text =
-                DateTimeUtils.convertDecimalHoursToHrMinFormat(
-                    module.idealSleepRequirementData?.currentRequirement ?: 0.0
-                )
-
-            binding.cardSleepMainLog.visibility = View.GONE
-            binding.cardSleeprightMain.visibility = View.GONE
-        } else {
-            try {
-                // Check if all specified sleep-related fields are "0min"
-                var isAllZero = module.rem == 0.toDouble() &&
-                        module.core == 0.toDouble() &&
-                        module.deep == 0.toDouble() &&
-                        module.awake == 0.toDouble()
-
-                if (isAllZero) {
-                    binding.cardSleepMainIdeal.visibility = View.GONE
-                    binding.cardSleepMainLog.visibility = View.VISIBLE
-                    binding.cardSleeprightMain.visibility = View.GONE
-                    // sleeo log card is visible, you can show a message or prompt the user to log their sleep
-                    binding.tvPerformSleepDuration.text =
-                        module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
-                            DateTimeUtils.formatSleepDuration(it)
-                        } ?: "0 hr 0 min"// (module.sleepDuration ?: "0min").toString()
-                    binding.tvPerformIdealDuration.text =
-                        module.sleepPerformanceDetail?.idealSleepDuration?.let {
-                            DateTimeUtils.formatSleepDuration(
-                                it
-                            )
-                        } ?: (module.totalSleepDurationMinutes?.let {
-                            DateTimeUtils.formatSleepDurationforidealSleep(
-                                it
-                            )
-                        }
-                            ?: "0min").toString()
-                    binding.tvPerformSleepPercent.text =
-                        (module.sleepPerformanceDetail?.sleepPerformanceData?.sleepPerformance
-                            ?: "0").toString()
-                    //(module.sleepDuration ?: "0").toString()
-                } else {
-                    // sleep data available  // For example, update your UI elements with sleepData.rem, sleepData.core, etc.
-                    binding.cardSleepMainIdeal.visibility = View.GONE
-                    binding.cardSleepMainLog.visibility = View.GONE
-                    // Update UI elements here
-                    binding.cardSleeprightMain.visibility = View.VISIBLE
-                    binding.tvRem.text = DateTimeUtils.formatSleepDurationforidealSleep(
-                        module.rem ?: 0.0
-                    )//module.rem.toString()
-                    binding.tvCore.text = DateTimeUtils.formatSleepDurationforidealSleep(
-                        module.core ?: 0.0
-                    )//module.core.toString()
-                    binding.tvDeep.text = DateTimeUtils.formatSleepDurationforidealSleep(
-                        module.deep ?: 0.0
-                    )//module.deep.toString()
-                    binding.tvAwake.text =
-                        DateTimeUtils.formatSleepDurationforidealSleep(module.awake ?: 0.0)
-                    //module.awake.toString()
-                    binding.tvSleepTime.text =
-                        convertTo12HourZoneFormat(module.sleepTime.toString())
-                    binding.tvWakeupTime.text =
-                        convertTo12HourZoneFormat(module.wakeUpTime.toString())
-
-                    val sleepData = listOf(
-                        SleepSegmentModel(
-                            0.001f, 0.100f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.151f, 0.300f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.301f, 0.400f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.401f, 0.450f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.451f, 0.550f, resources.getColor(R.color.sky_blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.551f, 0.660f, resources.getColor(R.color.sky_blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.661f, 0.690f, resources.getColor(R.color.sky_blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f
-                        ), SleepSegmentModel(
-                            0.751f, 0.860f, resources.getColor(R.color.deep_purple_bar), 110f
-                        ), SleepSegmentModel(
-                            0.861f, 0.990f, resources.getColor(R.color.red_orange_bar), 110f
-                        )
-                    )
-
-                    //binding.sleepStagesView.setSleepData(sleepData)
-                    // newSleepStagesHandling(module.sleepStages ?: emptyList())
-// Set Sleep Stages Data
-                    val sleepStageData: ArrayList<SleepStage> = arrayListOf()
-                    if (module.sleepStages != null) {
-                        for (i in 0 until module.sleepStages.size) {
-                            module.sleepStages.getOrNull(i)?.let {
-                                sleepStageData.add(it)
-                            }
-                        }
-                        setSleepRightStageData(sleepStageData)
-
-                    }
-
-                    //setSleepRightStageData(module.sleepStages ?: emptyList())
-                }
-            } catch (e: Exception) {
-                // Handle JSON parsing errors (e.g., malformed JSON)
-                Toast.makeText(
-                    requireContext(),
-                    "Error parsing sleep data: ${e.message}",
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-                e.printStackTrace() // Log the error for debugging
-            }
-
-        }
-    }
-
-
-    private fun setSleepRightStageData(sleepStageResponse: ArrayList<SleepStage>) {
-        if (sleepStageResponse.size > 0) {
-
-            remData.clear()
-            awakeData.clear()
-            coreData.clear()
-            deepData.clear()
-
-            var totalRemDuration = 0f
-            var totalAwakeDuration = 0f
-            var totalCoreDuration = 0f
-            var totalDeepDuration = 0f
-
-            for (i in 0 until sleepStageResponse.size) {
-                val startDateTime =
-                    LocalDateTime.parse(sleepStageResponse[i].startDatetime, formatters)
-                val endDateTime = LocalDateTime.parse(sleepStageResponse[i].endDatetime, formatters)
-                val duration = Duration.between(startDateTime, endDateTime).toMinutes()
-                    .toFloat() / 60f // Convert to hours
-
-                when (sleepStageResponse[i].stage) {
-                    "REM Sleep" -> {
-                        remData.add(duration)
-                        totalRemDuration += duration
-                    }
-
-                    "Deep Sleep" -> {
-                        deepData.add(duration)
-                        totalDeepDuration += duration
-                    }
-
-                    "Light Sleep" -> {
-                        coreData.add(duration)
-                        totalCoreDuration += duration
-                    }
-
-                    "Awake" -> {
-                        awakeData.add(duration)
-                        totalAwakeDuration += duration
-                    }
-                }
-            }
-            binding.tvCore.text = formatDuration(totalCoreDuration)
-            binding.tvAwake.text = formatDuration(totalAwakeDuration)
-            binding.tvDeep.text = formatDuration(totalDeepDuration)
-            binding.tvRem.text = formatDuration(totalRemDuration)
-
-            setStageGraph(sleepStageResponse)
-        }
-    }
-
-
-    private fun setStageGraph(sleepStageResponse: ArrayList<SleepStage>) {
-        val sleepData: ArrayList<SleepSegmentModel> = arrayListOf()
-        var currentPosition = 0f
-        val totalDuration = sleepStageResponse.sumOf {
-            Duration.between(
-                LocalDateTime.parse(it.startDatetime, formatters),
-                LocalDateTime.parse(it.endDatetime, formatters)
-            ).toMinutes().toDouble()
-        }.toFloat()
-
-        sleepStageResponse.forEach { stage ->
-            val startDateTime = LocalDateTime.parse(stage.startDatetime, formatters)
-            val endDateTime = LocalDateTime.parse(stage.endDatetime, formatters)
-            val duration = Duration.between(startDateTime, endDateTime).toMinutes().toFloat()
-            val start = currentPosition / totalDuration
-            val end = (currentPosition + duration) / totalDuration
-            val color = when (stage.stage) {
-                "REM Sleep" -> resources.getColor(R.color.light_blue_bar) // Light blue
-                "Deep Sleep" -> resources.getColor(R.color.purple_bar) // Dark blue
-                "Light Sleep" -> resources.getColor(R.color.blue_bar) // Medium blue
-                "Awake" -> resources.getColor(R.color.red_orange_bar) // Red
-                else -> Color.GRAY
-            }
-            sleepData.add(SleepSegmentModel(start, end, color, 110f))
-            currentPosition += duration
-        }
-
-        binding.sleepStagesView.setSleepData(sleepData)
-    }
-
     private fun formatDuration(durationHours: Float): String {
         val hours = durationHours.toInt()
         val minutes = ((durationHours - hours) * 60).toInt()
@@ -1321,53 +666,6 @@ class HomeDashboardFragment : BaseFragment() {
         } else {
             "$minutes mins"
         }
-    }
-
-    private fun newSleepStagesHandling(sleepStages: List<SleepStage>?) {
-        val totalDuration = sleepStages?.sumOf {
-            it.durationMinutes ?: 0.0
-        }
-        println("Total Sleep Duration (in minutes): $totalDuration")
-
-
-        val sleepData = mutableListOf<SleepSegmentModel>()
-        var currentPosition = 0f
-
-        sleepStages?.forEach { stageData ->
-            var duration = stageData.durationMinutes?.toFloat() ?: 0f
-            var start = currentPosition / (totalDuration?.toFloat() ?: 1f)
-            var end = (currentPosition + duration) / (totalDuration?.toFloat() ?: 1f)
-
-            val color = when {
-                stageData.stage?.contains(
-                    "REM",
-                    ignoreCase = true
-                ) == true -> Color.parseColor("#63D4FE")
-
-                stageData.stage?.contains(
-                    "Deep",
-                    ignoreCase = true
-                ) == true -> Color.parseColor("#5E5CE6")
-
-                stageData.stage?.contains(
-                    "Light",
-                    ignoreCase = true
-                ) == true -> Color.parseColor("#FF6650")
-
-                stageData.stage?.contains(
-                    "Awake",
-                    ignoreCase = true
-                ) == true -> Color.parseColor("#0B84FF")
-
-                else -> Color.GRAY
-            }
-
-            sleepData.add(SleepSegmentModel(start, end, color, 110f))
-            currentPosition += duration
-        }
-
-        binding.sleepStagesView.setSleepData(sleepData)
-
     }
 
     private fun extractNumericValues(input: String): Pair<String, String> {
@@ -1477,6 +775,24 @@ class HomeDashboardFragment : BaseFragment() {
             String.format("%.1fk", value / 1000) // 1 decimal ke saath
         } else {
             value.toInt().toString() // normal integer
+        }
+    }
+
+    private fun setChecklistRowArrow(isAccessible: Boolean) {
+        if (isAccessible) {
+            binding.includeChecklist.imgChecklistProfileArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistSleepRightArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistSnapMealArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistEatRightArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistSyncDataArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistFaceScanArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+        } else {
+            binding.includeChecklist.imgChecklistProfileArrow.setImageResource(R.drawable.checklist_lock)
+            binding.includeChecklist.imgChecklistSleepRightArrow.setImageResource(R.drawable.checklist_lock)
+            binding.includeChecklist.imgChecklistSnapMealArrow.setImageResource(R.drawable.checklist_lock)
+            binding.includeChecklist.imgChecklistEatRightArrow.setImageResource(R.drawable.checklist_lock)
+            binding.includeChecklist.imgChecklistSyncDataArrow.setImageResource(R.drawable.checklist_lock)
+            binding.includeChecklist.imgChecklistFaceScanArrow.setImageResource(R.drawable.checklist_lock)
         }
     }
 }

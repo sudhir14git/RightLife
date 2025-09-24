@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_layout_checklist"
     android:layout_width="match_parent"
-    android:visibility="gone"
+    android:visibility="visible"
     android:orientation="vertical"
 
 
@@ -115,11 +115,12 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:id="@+id/imgChecklistProfileArrow"
+            android:layout_width="7dp"
+            android:layout_height="10dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="28dp"
             android:src="@drawable/ic_checklist_smallarrow" />
     </RelativeLayout>
 
@@ -187,6 +188,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/imgChecklistSnapMealArrow"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_alignParentEnd="true"
@@ -261,6 +263,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/imgChecklistEatRightArrow"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_alignParentEnd="true"
@@ -334,6 +337,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/imgChecklistFaceScanArrow"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_alignParentEnd="true"
@@ -407,6 +411,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/imgChecklistSleepRightArrow"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_alignParentEnd="true"
@@ -480,6 +485,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/imgChecklistSyncDataArrow"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_alignParentEnd="true"

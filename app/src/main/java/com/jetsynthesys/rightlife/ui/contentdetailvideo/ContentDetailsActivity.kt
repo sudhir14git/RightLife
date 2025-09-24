@@ -2,8 +2,6 @@ package com.jetsynthesys.rightlife.ui.contentdetailvideo
 
 import android.content.Intent
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnCompletionListener
-import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -38,10 +36,8 @@ import com.jetsynthesys.rightlife.shortVibrate
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall
-import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
 import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
-import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -67,24 +63,25 @@ class ContentDetailsActivity : BaseActivity() {
     private var watchProgessDurationAudio: String = "0"
     private lateinit var binding: ActivityContentDetailsBinding
     private var contentTypeForTrack: String = ""
-    private var contentId: String? = null
+    private lateinit var contentId: String
+    private lateinit var contentResponseObj: ModuleContentDetail
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityContentDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        var contentId = intent.getStringExtra("contentId")
+        contentId = intent.getStringExtra("contentId").toString()
         //API Call
         if (contentId != null) {
             getContendetails(contentId)
             // get morelike content
             getMoreLikeContent(contentId)
-            binding.tvViewAll.setOnClickListener(View.OnClickListener { view: View? ->
+            binding.tvViewAll.setOnClickListener {
                 val intent1 = Intent(this, ViewAllActivity::class.java)
                 intent1.putExtra("ContentId", contentId)
                 startActivity(intent1)
-            })
+            }
         }
         binding.icBackDialog.setOnClickListener {
             finish()
@@ -117,7 +114,7 @@ class ContentDetailsActivity : BaseActivity() {
                             val successMessage = response.body()!!.string()
                             val gson = Gson()
                             val jsonResponse = gson.toJson(response.body().toString())
-                            val contentResponseObj = gson.fromJson<ModuleContentDetail>(
+                            contentResponseObj = gson.fromJson<ModuleContentDetail>(
                                 successMessage,
                                 ModuleContentDetail::class.java
                             )
@@ -225,23 +222,6 @@ class ContentDetailsActivity : BaseActivity() {
         if (contentResponseObj?.data?.bookmarked == true) {
             binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
         }
-
-        callContentTracking(contentResponseObj, "1.0", "1.0")
-
-    }
-
-    private fun callContentTracking(
-        contentResponseObj: ModuleContentDetail?,
-        duration: String,
-        watchDuration: String
-    ) {
-// article consumed
-        val episodeTrackRequest = EpisodeTrackRequest(
-            sharedPreferenceManager.userId, contentResponseObj?.data?.moduleId ?: "",
-            contentResponseObj?.data?.id ?: "", duration, watchDuration, contentTypeForTrack
-        )
-
-        trackEpisodeOrContent(this, episodeTrackRequest)
     }
 
     private fun setReadMoreView(desc: String?) {
@@ -482,7 +462,7 @@ class ContentDetailsActivity : BaseActivity() {
             Toast.makeText(this, "Failed to load audio", Toast.LENGTH_SHORT).show()
         }
 
-        mediaPlayer.setOnPreparedListener(OnPreparedListener { mp: MediaPlayer? ->
+        mediaPlayer.setOnPreparedListener { mp: MediaPlayer? ->
             mediaPlayer.start()
             binding.seekBar.max = mediaPlayer.duration
             isPlaying = true
@@ -491,9 +471,9 @@ class ContentDetailsActivity : BaseActivity() {
             handler.post(updateProgress)
             watchProgessDurationAudio = "0"
             logContentOpenedEventAudio()
-        })
+        }
         // Play/Pause Button Listener
-        binding.playPauseButton.setOnClickListener(View.OnClickListener { v: View? ->
+        binding.playPauseButton.setOnClickListener {
             if (isPlaying) {
                 mediaPlayer.pause()
                 binding.playPauseButton.setImageResource(R.drawable.ic_sound_play)
@@ -505,13 +485,13 @@ class ContentDetailsActivity : BaseActivity() {
                 handler.post(updateProgress)
             }
             isPlaying = !isPlaying
-        })
-        mediaPlayer.setOnCompletionListener(OnCompletionListener { mp: MediaPlayer? ->
+        }
+        mediaPlayer.setOnCompletionListener { mp: MediaPlayer? ->
             Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
             handler.removeCallbacks(updateProgress)
             watchProgessDurationAudio = "100"
             logContentWatchedEventAudio()
-        })
+        }
 
         binding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -612,10 +592,11 @@ class ContentDetailsActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
 
-        val shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
-                "Check it out here. " +
-                "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
-                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
+        val shareText =
+            "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
+                    "Check it out here. " +
+                    "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
+                    "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
 
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText)
@@ -691,25 +672,41 @@ class ContentDetailsActivity : BaseActivity() {
 
     private fun releasePlayer() {
         if (::player.isInitialized) {
+            callTrackAPI(player.currentPosition.toDouble() / 1000)
             player.release()
         }
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (::mediaPlayer.isInitialized) {
+            callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
             mediaPlayer.release()
         }
         handler.removeCallbacks(updateProgress)
         Log.d("contentDetails", "onDestroyCalled")
     }
-    // analytics logger
 
+
+    private fun callTrackAPI(watchDuration: Double) {
+        val contentData = contentResponseObj.data
+        CommonAPICall.postVideoPlayedProgress(
+            this,
+            contentData.meta.duration.toDouble(),
+            contentId,
+            watchDuration,
+            contentData.moduleId,
+            contentData.contentType
+        )
+    }
+
+    // analytics logger
     private fun logContentOpenedEvent() {
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.VIDEO_OPENED, mapOf(
-                AnalyticsParam.VIDEO_ID to (contentId ?: "")
+                AnalyticsParam.VIDEO_ID to contentId
             )
         )
     }
@@ -718,7 +715,7 @@ class ContentDetailsActivity : BaseActivity() {
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.VIDEO_WATCHED_PERCENT, mapOf(
-                AnalyticsParam.VIDEO_ID to (contentId ?: ""),
+                AnalyticsParam.VIDEO_ID to contentId,
                 AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration // % watched
             )
         )
@@ -728,7 +725,7 @@ class ContentDetailsActivity : BaseActivity() {
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.AUDIO_LISTENED_PERCENT, mapOf(
-                AnalyticsParam.VIDEO_ID to (contentId ?: ""),
+                AnalyticsParam.VIDEO_ID to contentId,
                 AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDurationAudio // % watched
             )
         )
@@ -738,7 +735,7 @@ class ContentDetailsActivity : BaseActivity() {
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.AUDIO_OPENED, mapOf(
-                AnalyticsParam.VIDEO_ID to (contentId ?: "")
+                AnalyticsParam.VIDEO_ID to contentId
             )
         )
     }
