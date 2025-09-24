@@ -307,9 +307,10 @@
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="14dp"
+                                        android:layout_height="14dp"
                                         android:src="@drawable/spoon"
+                                        android:layout_marginTop="4dp"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
@@ -347,9 +348,10 @@
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="14dp"
+                                        android:layout_height="14dp"
                                         android:src="@drawable/run"
+                                        android:layout_marginTop="4dp"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
@@ -699,9 +701,10 @@
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="14dp"
+                                        android:layout_height="14dp"
                                         android:src="@drawable/spoon"
+                                        android:layout_marginTop="4dp"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
@@ -739,9 +742,10 @@
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="14dp"
+                                        android:layout_height="14dp"
                                         android:src="@drawable/run"
+                                        android:layout_marginTop="4dp"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
