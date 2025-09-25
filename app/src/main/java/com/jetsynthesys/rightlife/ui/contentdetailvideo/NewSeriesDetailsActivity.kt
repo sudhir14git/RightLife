@@ -54,6 +54,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
     private var contentTypeForTrack: String = ""
     private lateinit var ContentResponseObj: EpisodeDetailContentResponse
     private lateinit var seriesId: String
+    private var lastPosition: Float = 0f
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -535,16 +536,18 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
     private fun releasePlayer() {
         if (::player.isInitialized) {
-            player.release()
             callTrackAPI(player.currentPosition.toDouble() / 1000)
+            player.release()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (::mediaPlayer.isInitialized) {
-            mediaPlayer.release()
             callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
+            mediaPlayer.release()
+        } else{
+            callTrackAPI((lastPosition).toDouble())
         }
         handler.removeCallbacks(updateProgress)
         Log.d("contentDetails", "onDestroyCalled")
@@ -552,13 +555,14 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
     private fun callTrackAPI(watchDuration: Double){
         val contentData = ContentResponseObj.data
-        CommonAPICall.postVideoPlayedProgress(
+        CommonAPICall.postSeriesContentPlayedProgress(
             this,
             contentData.meta.duration.toDouble(),
             contentData.contentId,
             watchDuration,
             contentData.moduleId,
-            contentData.type
+            "SERIES",
+            contentData._id
         )
     }
 
@@ -612,6 +616,10 @@ class NewSeriesDetailsActivity : BaseActivity() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 youTubePlayer.loadVideo(videoId, 0f)
                 Log.d("YouTube", "Video loaded: $videoId")
+            }
+            override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
+                // This is called every second during playback
+                lastPosition = second
             }
 
             override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerState) {

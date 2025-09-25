@@ -12,7 +12,7 @@ import com.jetsynthesys.rightlife.databinding.RowJumpBackInHorrizontalBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
-import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 
 class JumpInBackAdapter(
@@ -49,15 +49,20 @@ class JumpInBackAdapter(
             )
 
             // Calculate progress
-            val duration = item.meta?.duration ?: 0 // total duration in seconds
-            val left = item.leftDurationINT ?: 0
+            if ("SERIES".equals(item.contentType, ignoreCase = true)) {
+                val progress = item.leftDuration?.let { calculateProgress(it) } ?: 0
+                binding.progressBar.progress = progress
+            } else {
 
-            val progress = if (duration > 0) {
-                val completed = (duration - left).coerceAtLeast(0)
-                ((completed.toFloat() / duration) * 100).toInt().coerceIn(0, 100)
-            } else 0
+                val duration = item.meta?.duration ?: 0 // total duration in seconds
+                val left = item.leftDurationINT ?: 0
+                val progress = if (duration > 0) {
+                    val completed = (duration - left).coerceAtLeast(0)
+                    ((completed.toFloat() / duration) * 100).toInt().coerceIn(0, 100)
+                } else 0
 
-            binding.progressBar.progress = progress
+                binding.progressBar.progress = progress
+            }
 
             // Click listener
             binding.root.setOnClickListener {
@@ -80,9 +85,14 @@ class JumpInBackAdapter(
                             putExtra("contentId", item.id)
                         })
                 } else if (item.contentType.equals("SERIES", ignoreCase = true)) {
-                    context.startActivity(Intent(context, SeriesListActivity::class.java).apply {
-                        putExtra("contentId", item.id)
-                    })
+                    context.startActivity(
+                        Intent(
+                            context,
+                            NewSeriesDetailsActivity::class.java
+                        ).apply {
+                            putExtra("seriesId", item.episodeDetails?.contentId)
+                            putExtra("episodeId", item.episodeDetails?.id)
+                        })
                 }
             }
         }
@@ -103,4 +113,22 @@ class JumpInBackAdapter(
     override fun onBindViewHolder(holder: JumpInBackViewHolder, position: Int) {
         holder.bind(contentDetails[position])
     }
+
+    private fun calculateProgress(value: String): Int {
+        return try {
+            val parts = value.split("/")
+            if (parts.size == 2) {
+                val completed = parts[0].trim().toFloatOrNull() ?: 0f
+                val total = parts[1].trim().toFloatOrNull() ?: 0f
+                if (total > 0) {
+                    ((completed / total) * 100).toInt().coerceIn(0, 100)
+                } else 0
+            } else {
+                0
+            }
+        } catch (e: Exception) {
+            0
+        }
+    }
+
 }

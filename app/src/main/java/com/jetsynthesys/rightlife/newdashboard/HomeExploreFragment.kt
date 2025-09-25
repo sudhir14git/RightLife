@@ -1092,7 +1092,7 @@ class HomeExploreFragment : BaseFragment() {
 
     private fun getJumpBackInData() {
         val call: Call<ResponseBody> =
-            apiService.getContinueData(sharedPreferenceManager.accessToken, "continue", 10, 0)
+            apiService.getContinueData(sharedPreferenceManager.accessToken, "continue", 10, 0,"all")
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(
                 call: Call<ResponseBody?>,

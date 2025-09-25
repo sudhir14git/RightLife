@@ -494,13 +494,14 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
 
     private void callTrackAPI(double watchDuration) {
         ContentData contentData = ContentResponseObj.data;
-        CommonAPICall.INSTANCE.postVideoPlayedProgress(
+        CommonAPICall.INSTANCE.postSeriesContentPlayedProgress(
                 this,
                 contentData.meta.duration,
                 contentData.moduleId,
                 watchDuration,
                 contentData.moduleId,
-                contentData.type
+                contentData.type,
+                contentData._id
         );
     }
 }
