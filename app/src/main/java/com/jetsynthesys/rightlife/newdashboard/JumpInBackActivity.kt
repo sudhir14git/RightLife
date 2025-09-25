@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityJumpBackInBinding
 import com.jetsynthesys.rightlife.databinding.PopupJumpBackInBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
 import com.jetsynthesys.rightlife.newdashboard.model.ContentResponse
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,6 +31,8 @@ class JumpInBackActivity : BaseActivity() {
     private val limit = 10
     private val pageType = "continue"
     private var selectedText = "All"
+    private var selectedContentType = "all"
+    private var totalCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +61,7 @@ class JumpInBackActivity : BaseActivity() {
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val lastVisible = layoutManager.findLastCompletelyVisibleItemPosition()
 
-                if (!isLoading && lastVisible == contentDetails.size - 1) {
+                if (!isLoading && lastVisible == contentDetails.size - 1 && contentDetails.size < totalCount) {
                     loadMoreData()
                 }
             }
@@ -70,16 +73,18 @@ class JumpInBackActivity : BaseActivity() {
         contentDetails.clear()
         allContentDetails.clear()
         skip = 0
-        fetchContent(skip)
+        fetchContent(skip, selectedContentType)
     }
 
-    private fun fetchContent(skipValue: Int) {
+    private fun fetchContent(skipValue: Int, contentType: String) {
+        Utils.showLoader(this)
         isLoading = true
         val call = apiService.getContinueData(
             sharedPreferenceManager.accessToken,
             pageType,
             limit,
-            skipValue
+            skipValue,
+            contentType
         )
 
         call.enqueue(object : Callback<ResponseBody?> {
@@ -87,6 +92,7 @@ class JumpInBackActivity : BaseActivity() {
                 call: Call<ResponseBody?>,
                 response: Response<ResponseBody?>
             ) {
+                Utils.dismissLoader(this@JumpInBackActivity)
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonString = response.body()?.string()
@@ -94,9 +100,11 @@ class JumpInBackActivity : BaseActivity() {
                     val responseObj: ContentResponse =
                         gson.fromJson(jsonString, ContentResponse::class.java)
 
+                    totalCount = responseObj.data?.count ?: 0
+
                     val newItems = responseObj.data?.contentDetails ?: emptyList()
                     contentDetails.addAll(newItems)
-                    allContentDetails.addAll(newItems)
+                    //allContentDetails.addAll(newItems)
                     adapter.notifyDataSetChanged()
                     skip += newItems.size
                 }
@@ -105,13 +113,14 @@ class JumpInBackActivity : BaseActivity() {
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
                 isLoading = false
+                Utils.dismissLoader(this@JumpInBackActivity)
                 handleNoInternetView(t)
             }
         })
     }
 
     private fun loadMoreData() {
-        fetchContent(skip)
+        fetchContent(skip, selectedContentType)
     }
 
     private fun showCustomPopup(anchorView: View) {
@@ -223,15 +232,22 @@ class JumpInBackActivity : BaseActivity() {
 
     private fun filterContent(type: String) {
         contentDetails.clear()
+        selectedContentType = if (type.equals("All", ignoreCase = true))
+            type.lowercase()
+        else
+            type.uppercase()
+        skip = 0
+        fetchContent(skip, selectedContentType)
 
-        if (type == "All") {
+        //local filter
+        /*if (type == "All") {
             contentDetails.addAll(allContentDetails)
         } else {
             contentDetails.addAll(
                 allContentDetails.filter { it.contentType.equals(type, ignoreCase = true) }
             )
         }
-        adapter.notifyDataSetChanged()
+        adapter.notifyDataSetChanged()*/
     }
 
 

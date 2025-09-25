@@ -5,6 +5,7 @@ import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest;
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse;
 import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest;
 import com.jetsynthesys.rightlife.apimodel.CheckRegistrationResponse;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeSeriesTrackRequest;
 import com.jetsynthesys.rightlife.apimodel.LoginRequest;
 import com.jetsynthesys.rightlife.apimodel.LoginResponse;
 import com.jetsynthesys.rightlife.apimodel.LoginResponseMobile;
@@ -1264,8 +1265,14 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Query("pageType") String pageType,
             @Query("limit") int limit,
-            @Query("skip") int skip
+            @Query("skip") int skip,
+            @Query("contentType") String contentType
     );
+
+    @POST("userWellnessTrack")
+    Call<ResponseBody> trackSeriesEpisode(
+            @Header("Authorization") String authToken,
+            @Body EpisodeSeriesTrackRequest request);
 
 }
 

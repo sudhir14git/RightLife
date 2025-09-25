@@ -10,6 +10,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeSeriesTrackRequest
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
@@ -367,6 +368,40 @@ object CommonAPICall {
             contentType
         )
         val call = apiService.trackEpisode(authToken, contentRequest)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("API_RESPONSE", "View Count content: ")
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("API_RESPONSE", "View Count content: ")
+            }
+
+        })
+    }
+
+    fun postSeriesContentPlayedProgress(
+        context: Context,
+        duration: Double,
+        contentId: String,
+        watchDuration: Double,
+        moduleId: String,
+        contentType: String,
+        episodeId: String
+    ) {
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val authToken = sharedPreferenceManager.accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val contentRequest = EpisodeSeriesTrackRequest(
+            watchDuration.toString(),
+            episodeId,
+            contentId,
+            sharedPreferenceManager.userId,
+            moduleId,
+            duration.toString(),
+            contentType
+        )
+        val call = apiService.trackSeriesEpisode(authToken, contentRequest)
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Log.d("API_RESPONSE", "View Count content: ")
