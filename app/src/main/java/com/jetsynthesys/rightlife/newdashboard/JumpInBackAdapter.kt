@@ -17,7 +17,8 @@ import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 
 class JumpInBackAdapter(
     private val context: Context,
-    private val contentDetails: MutableList<ContentDetails>
+    private val contentDetails: MutableList<ContentDetails>,
+    val onBookMarkedClick: (ContentDetails) -> Unit
 ) :
     RecyclerView.Adapter<JumpInBackAdapter.JumpInBackViewHolder>() {
 
@@ -37,7 +38,7 @@ class JumpInBackAdapter(
             binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.date)
             binding.tvName.text = item.categoryName
 
-            binding.imgSave.setImageResource(if (item.isFavourited) R.drawable.save_jump_in_back else R.drawable.unsave_jump_in_back)
+            binding.imgSave.setImageResource(if (item.isBookmarked) R.drawable.save_jump_in_back else R.drawable.unsave_jump_in_back)
 
             binding.imgIconview.setImageResource(
                 if ("VIDEO".equals(item.contentType, ignoreCase = true))
@@ -64,6 +65,10 @@ class JumpInBackAdapter(
                 binding.progressBar.progress = progress
             }
 
+            binding.imgSave.setOnClickListener {
+                onBookMarkedClick(item)
+            }
+
             // Click listener
             binding.root.setOnClickListener {
                 if (item.contentType.equals("TEXT", ignoreCase = true)) {
@@ -74,7 +79,10 @@ class JumpInBackAdapter(
                         ).apply {
                             putExtra("contentId", item.id)
                         })
-                } else if (item.contentType.equals("VIDEO", ignoreCase = true) || item.contentType
+                } else if (item.contentType.equals(
+                        "VIDEO",
+                        ignoreCase = true
+                    ) || item.contentType
                         .equals("AUDIO", ignoreCase = true)
                 ) {
                     context.startActivity(

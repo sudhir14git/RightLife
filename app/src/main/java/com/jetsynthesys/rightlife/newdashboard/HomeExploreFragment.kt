@@ -38,7 +38,7 @@ import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.CardItem
-import com.jetsynthesys.rightlife.ui.CategoryListActivity
+import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.CircularCardAdapter
 import com.jetsynthesys.rightlife.ui.ServicePaneAdapter
 import com.jetsynthesys.rightlife.ui.TestAdapter
@@ -173,7 +173,7 @@ class HomeExploreFragment : BaseFragment() {
         // set click listener
         binding.llThinkrightCategory1.setOnClickListener {
             if (ThinkRSubModuleResponse?.data?.isNotEmpty() == true) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", ThinkRSubModuleResponse?.data?.get(0)?.categoryId)
                 intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(0)?.moduleId)
                 startActivity(intent)
@@ -182,7 +182,7 @@ class HomeExploreFragment : BaseFragment() {
         binding.llThinkrightCategory2.setOnClickListener {
             if (ThinkRSubModuleResponse?.data?.size!! > 1) {
                 ThinkRSubModuleResponse?.data?.get(1)?.name
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", ThinkRSubModuleResponse?.data?.get(1)?.categoryId)
                 intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(1)?.moduleId)
                 startActivity(intent)
@@ -191,7 +191,7 @@ class HomeExploreFragment : BaseFragment() {
         binding.llThinkrightCategory3.setOnClickListener {
             if (ThinkRSubModuleResponse?.data?.size!! > 2) {
                 ThinkRSubModuleResponse?.data?.get(2)?.name
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", ThinkRSubModuleResponse?.data?.get(2)?.categoryId)
                 intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(2)?.moduleId)
                 startActivity(intent)
@@ -200,7 +200,7 @@ class HomeExploreFragment : BaseFragment() {
         binding.llThinkrightCategory4.setOnClickListener {
             if (ThinkRSubModuleResponse?.data?.size!! > 3) {
                 ThinkRSubModuleResponse?.data?.get(3)?.name
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", ThinkRSubModuleResponse?.data?.get(3)?.categoryId)
                 intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(3)?.moduleId)
                 startActivity(intent)
@@ -209,7 +209,7 @@ class HomeExploreFragment : BaseFragment() {
 
         binding.llMoverightCategory1.setOnClickListener {
             if (MoveRSubModuleResponse?.data?.isNotEmpty() == true) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", MoveRSubModuleResponse?.data?.get(0)?.categoryId)
                 intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(0)?.moduleId)
                 startActivity(intent)
@@ -217,7 +217,7 @@ class HomeExploreFragment : BaseFragment() {
         }
         binding.llMoverightCategor2.setOnClickListener {
             if (MoveRSubModuleResponse?.data?.size!! > 1) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", MoveRSubModuleResponse?.data?.get(1)?.categoryId)
                 intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(1)?.moduleId)
                 startActivity(intent)
@@ -225,7 +225,7 @@ class HomeExploreFragment : BaseFragment() {
         }
         binding.llMoverightCategory3.setOnClickListener {
             if (MoveRSubModuleResponse?.data?.size!! > 2) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", MoveRSubModuleResponse?.data?.get(2)?.categoryId)
                 intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(2)?.moduleId)
                 startActivity(intent)
@@ -234,7 +234,7 @@ class HomeExploreFragment : BaseFragment() {
 
         binding.llEatrightCategory1.setOnClickListener {
             if (EatRSubModuleResponse?.data?.isNotEmpty() == true) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(0)?.categoryId)
                 intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(0)?.moduleId)
                 startActivity(intent)
@@ -242,7 +242,7 @@ class HomeExploreFragment : BaseFragment() {
         }
         binding.llEatrightCategory2.setOnClickListener {
             if (EatRSubModuleResponse?.data?.size!! > 1) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(1)?.categoryId)
                 intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(1)?.moduleId)
                 startActivity(intent)
@@ -250,7 +250,7 @@ class HomeExploreFragment : BaseFragment() {
         }
         binding.llEatrightCategory3.setOnClickListener {
             if (EatRSubModuleResponse?.data?.size!! > 2) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(2)?.categoryId)
                 intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(2)?.moduleId)
                 startActivity(intent)
@@ -258,7 +258,7 @@ class HomeExploreFragment : BaseFragment() {
         }
         binding.llEatrightCategory4.setOnClickListener {
             if (EatRSubModuleResponse?.data?.size!! > 3) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(3)?.categoryId)
                 intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(3)?.moduleId)
                 startActivity(intent)
@@ -267,7 +267,7 @@ class HomeExploreFragment : BaseFragment() {
 
         binding.llSleeprightCategory1.setOnClickListener {
             if (SleepRSubModuleResponse?.data?.isNotEmpty() == true) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(0)?.categoryId)
                 intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(0)?.moduleId)
                 startActivity(intent)
@@ -275,7 +275,7 @@ class HomeExploreFragment : BaseFragment() {
         }
         binding.llSleeprightCategory2.setOnClickListener {
             if (SleepRSubModuleResponse?.data?.size!! > 1) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(1)?.categoryId)
                 intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(1)?.moduleId)
                 startActivity(intent)
@@ -283,7 +283,7 @@ class HomeExploreFragment : BaseFragment() {
         }
         binding.llSleeprightCategory3.setOnClickListener {
             if (SleepRSubModuleResponse?.data?.size!! > 2) {
-                val intent = Intent(requireContext(), CategoryListActivity::class.java)
+                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(2)?.categoryId)
                 intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(2)?.moduleId)
                 startActivity(intent)
@@ -1081,7 +1081,7 @@ class HomeExploreFragment : BaseFragment() {
     }
 
     private fun callExploreModuleActivity(responseJson: SubModuleResponse) {
-        val intent = Intent(requireContext(), CategoryListActivity::class.java)
+        val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
         intent.putExtra("moduleId", responseJson.data[0].moduleId)
         startActivity(intent)
     }

@@ -1,28 +1,12 @@
-package com.jetsynthesys.rightlife.ui.Articles.requestmodels;
+package com.jetsynthesys.rightlife.ui.Articles.requestmodels
 
-public class ArticleBookmarkRequest {
-    private String contentId;
-    private boolean isBookmarked;
-
-    public ArticleBookmarkRequest(String contentId, boolean isBookmarked) {
-        this.contentId = contentId;
-        this.isBookmarked = isBookmarked;
+class ArticleBookmarkRequest(var contentId: String, private val isBookmarked: Boolean) {
+    fun isBookmarked(): Boolean {
+        return isBookmarked
     }
 
-    public String getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(String contentId) {
-        this.contentId = contentId;
-    }
-
-    public boolean isBookmarked() {
-        return isBookmarked;
-    }
-
-    public void setIsBookmarked(boolean isBookmarked) {
-
-        isBookmarked = isBookmarked;
+    fun setIsBookmarked(isBookmarked: Boolean) {
+        var isBookmarked = isBookmarked
+        isBookmarked = isBookmarked
     }
 }

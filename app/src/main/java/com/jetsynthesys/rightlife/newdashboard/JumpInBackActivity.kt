@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityJumpBackInBinding
 import com.jetsynthesys.rightlife.databinding.PopupJumpBackInBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
 import com.jetsynthesys.rightlife.newdashboard.model.ContentResponse
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -47,7 +49,24 @@ class JumpInBackActivity : BaseActivity() {
             showCustomPopup(it)
         }
 
-        adapter = JumpInBackAdapter(this, contentDetails)
+        adapter = JumpInBackAdapter(this, contentDetails, onBookMarkedClick = {
+            it.id?.let { it1 ->
+                CommonAPICall.contentBookMark(this, it1, true) { success, message ->
+                    if (success) {
+                        it.isBookmarked = !it.isBookmarked
+                        val msg = if (it.isBookmarked) {
+                            "Added To Bookmarks"
+                        } else {
+                            "Removed From Bookmarks"
+                        }
+                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                        adapter.notifyDataSetChanged()
+                    } else {
+                        Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        })
 
         binding.rvJumpBackIn.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
