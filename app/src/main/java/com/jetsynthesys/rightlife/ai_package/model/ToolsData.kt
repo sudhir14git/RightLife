@@ -11,6 +11,8 @@ data class ToolsData(
     var desc       : String?,
     @SerializedName("isSelectedModule" )
     var isSelectedModule : Boolean? ,
+    @SerializedName("isPlaylist" )
+    var isPlaylist : Boolean? ,
     @SerializedName("image"        )
     var image        : String?
 )

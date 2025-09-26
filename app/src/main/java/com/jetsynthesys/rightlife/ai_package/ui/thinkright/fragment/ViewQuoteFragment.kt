@@ -141,16 +141,41 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
         call.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
-                    navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle().apply {
+                        putString("ModuleName", "ThinkRight")
+                    }
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack(null)
+                        commit()
+                    }
                    // Toast.makeText(activity, "OK", Toast.LENGTH_SHORT).show()
                 } else {
-                    navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
-                  //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle().apply {
+                        putString("ModuleName", "ThinkRight")
+                    }
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack(null)
+                        commit()
+                    }                  //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
-                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
-              //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "ThinkRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }              //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
             }
         })
     }

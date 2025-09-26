@@ -19,6 +19,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.buffer.BarBuffer
 import com.github.mikephil.charting.charts.BarChart
@@ -69,6 +71,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     private lateinit var dateRangeText: TextView
     private lateinit var mindfullTitle: TextView
     private lateinit var mindfullDesc: TextView
+    private lateinit var recyclerView_mindfulness_analysis: RecyclerView
     private lateinit var average: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
@@ -92,6 +95,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
         btnPrevious = view.findViewById(R.id.btn_prev)
+        recyclerView_mindfulness_analysis = view.findViewById(R.id.recyclerView_mindfulness_analysis)
         btnNext = view.findViewById(R.id.btn_next)
         dateRangeText = view.findViewById(R.id.tv_date_range)
         mindfullTitle = view.findViewById(R.id.tv_mindfull_title)
@@ -112,14 +116,33 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
        // updateChart(getWeekData(), getWeekLabels())
         fetchMindfullnessData(mStartDate, mEndDate)
 
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "ThinkRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
             }
         })
 
         backBtn.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "ThinkRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
     }
 
@@ -382,6 +405,23 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                 if (response.isSuccessful) {
                     mindfullResponse = response.body()!!
                     progressDialog.dismiss()
+                    val recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerView_mindfulness_analysis)
+                    recyclerView?.layoutManager = GridLayoutManager(requireContext(), 2) // 2 columns
+
+                    val dataList = listOf(
+                        MindfullChartRenderer.StatCard(
+                            "Affirmations",
+                            "Your Playlist",
+                            mindfullResponse.data?.affirmationCount!!,
+                            "affirmations practiced",
+                            R.drawable.mindfulness_affirmation
+                        ),
+                        MindfullChartRenderer.StatCard("Journaling", "Your Entries", mindfullResponse.data?.journalCount!!, "entries saved",
+                            R.drawable.journaling_ink_icon)
+                    )
+
+                    val adapter = StatCardAdapter(dataList)
+                    recyclerView?.adapter = adapter
                     mindfullTitle.text = mindfullResponse?.data?.title
                     mindfullDesc.text = mindfullResponse?.data?.description
                     if (mindfullResponse?.data?.averageDuration != null) {
@@ -658,7 +698,10 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         return listOf("1-7 Jan", "8-14 Jan", "15-21 Jan", "22-28 Jan", "29-31 Jan")
     }
 
-    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String, moduleName: String = "Think") {
+        val args = Bundle()
+        args.putString("ModuleName", moduleName) // Pass the moduleName parameter
+        fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)
@@ -724,4 +767,11 @@ class MindfullChartRenderer(
             }
         }
     }
+    data class StatCard(
+        val title: String,
+        val subtitle: String,
+        val count: Int,
+        val footer: String,
+        val imageResId: Int
+    )
 }

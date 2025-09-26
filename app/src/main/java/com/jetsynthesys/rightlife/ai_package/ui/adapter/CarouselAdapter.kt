@@ -62,16 +62,22 @@ class CarouselAdapter(
             cardTitle.text = item.title
             //durationText.text = item.duration
             val durationStr = item.duration
-            val spannable = SpannableString(durationStr)
-            val hrIndex = durationStr.indexOf("hr")
-            val minsIndex = durationStr.indexOf("mins")
+            val spannable = if (!durationStr.contains("hr") && durationStr.contains("mins")) {
+                // If only minutes are present, prepend "0 hr "
+                SpannableString("0 hr $durationStr")
+            } else {
+                // Use original string if it contains "hr" or other cases
+                SpannableString(durationStr)
+            }
+            val hrIndex = spannable.toString().indexOf("hr")
+            val minsIndex = spannable.toString().indexOf("mins")
             if (hrIndex != -1) {
                 spannable.setSpan(AbsoluteSizeSpan(10, true), hrIndex, hrIndex + 2, 0) // "hr" 10sp
             }
             if (minsIndex != -1) {
                 spannable.setSpan(AbsoluteSizeSpan(10, true), minsIndex, minsIndex + 4, 0) // "mins" 10sp
             }
-            // Rest of the text (numbers) will remain 19sp (default or set in XML)
+// Rest of the text (numbers) will remain 19sp (default or set in XML)
             durationText.text = spannable
 
            // caloriesText.text = item.caloriesBurned

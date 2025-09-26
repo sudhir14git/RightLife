@@ -722,7 +722,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             lastLoggedNoData.visibility = View.GONE
             weightIntake.visibility = View.VISIBLE
             weightIntakeUnit.visibility = View.VISIBLE
-            newImprovementLayout.visibility = View.VISIBLE
+            newImprovementLayout.visibility = View.GONE
             weightLastLogDateTv.visibility = View.VISIBLE
         }else{
             lastLoggedNoData.visibility = View.VISIBLE
@@ -1054,7 +1054,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             lastLoggedNoData.visibility = View.GONE
             weightIntake.visibility = View.VISIBLE
             weightIntakeUnit.visibility = View.VISIBLE
-            newImprovementLayout.visibility = View.VISIBLE
+            newImprovementLayout.visibility = View.GONE
             weightLastLogDateTv.visibility = View.VISIBLE
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())

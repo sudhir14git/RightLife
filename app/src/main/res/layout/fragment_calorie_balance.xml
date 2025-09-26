@@ -17,13 +17,13 @@
 
         <ImageView
             android:id="@+id/back_button_calorie_balance"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/back"
+            android:layout_width="18dp"
+            android:layout_height="20dp"
             android:layout_marginStart="22dp"
             android:layout_marginTop="20dp"
+            android:src="@drawable/back"
             app:layout_constraintStart_toStartOf="parent"
-           app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:layout_width="wrap_content"
