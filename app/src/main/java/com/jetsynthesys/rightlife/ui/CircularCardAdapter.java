@@ -17,10 +17,15 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
@@ -64,11 +69,13 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                 // Toast.makeText(view.getContext(), "Clicked on: " + item.getTitle()+ holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
                 // Start new activity here
 
-                if (item.getCategory().equalsIgnoreCase("daily") ||
+                if (item.getSeriesType().equalsIgnoreCase("daily") ||
                         item.getCategory().equalsIgnoreCase("CONTENT") || item.getCategory().equalsIgnoreCase("Test Category")) {
-                    Intent intent = new Intent(mContext, ContentDetailsActivity.class);
+                    /*Intent intent = new Intent(mContext, ContentDetailsActivity.class);
                     intent.putExtra("contentId", item.getSeriesId());
-                    mContext.startActivity(intent);
+                    mContext.startActivity(intent);*/
+                    //Call Content Activity here
+                    callRlEditDetailActivity(item);
                 } else if (item.getCategory().equalsIgnoreCase("live")) {
                     Toast.makeText(mContext, "Live Content", Toast.LENGTH_SHORT).show();
                 } else if (item.getCategory().equalsIgnoreCase("MIND_AUDIT") ||
@@ -173,10 +180,14 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         public void bind(CardItem item) {
             // cardTitle.setText(item.getTitle());
             cardImage.setImageResource(item.getImageResId());
+            int radius = 24;
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getImageUrl())
-                        .placeholder(R.drawable.rl_placeholder)
-                        .error(R.drawable.rl_placeholder)
+                Glide.with(itemView.getContext())
+                        .load(ApiClient.CDN_URL_QA + item.getImageUrl())
+                        .apply(new RequestOptions()
+                                .transform(new RoundedCorners(radius))
+                                .placeholder(R.drawable.rl_placeholder)
+                                .error(R.drawable.rl_placeholder))
                         .into(cardImage);
             }
             if (item.getButtonImage() != null && !item.getButtonImage().isEmpty()) {
@@ -222,4 +233,26 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
         }
     }
+
+private void callRlEditDetailActivity(CardItem item) {
+    // Assuming rightLifeEditResponse is accessible in this class
+    String contentType = null;
+    String contentId = null;
+    contentType = item.getSelectedContentType();
+    contentId = item.getSeriesId();
+
+    if (contentType != null && contentType.equalsIgnoreCase("TEXT")) {
+        Intent intent = new Intent(mContext, ArticlesDetailActivity.class);
+        intent.putExtra("contentId", contentId);
+        mContext.startActivity(intent);
+    } else if (contentType != null && (contentType.equalsIgnoreCase("VIDEO") || contentType.equalsIgnoreCase("AUDIO"))) {
+        Intent intent = new Intent(mContext, ContentDetailsActivity.class);
+        intent.putExtra("contentId", contentId);
+        mContext.startActivity(intent);
+    } else if (contentType != null && contentType.equalsIgnoreCase("SERIES")) {
+        Intent intent = new Intent(mContext, SeriesListActivity.class);
+        intent.putExtra("contentId", contentId);
+        mContext.startActivity(intent);
+    }
+}
 }

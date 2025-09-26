@@ -20,8 +20,6 @@ class WellnessFocusListAdapter(
     private val context: Context,
     private val wellnessFocusList: ArrayList<ModuleTopic>,
     private val onItemClickListener: OnItemClickListener,
-    private val module: String,
-    private var selectedPosition: Int = -1
 ) : RecyclerView.Adapter<WellnessFocusListAdapter.WellnessFocusViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WellnessFocusViewHolder {
@@ -50,21 +48,30 @@ class WellnessFocusListAdapter(
             AppCompatResources.getDrawable(context, R.drawable.bg_gray_border_radius_small)
 
         val unwrappedDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray_radius_small)
+            AppCompatResources.getDrawable(
+                context,
+                R.drawable.rounded_corder_border_gray_radius_small
+            )
         val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
         DrawableCompat.setTint(
             wrappedDrawable,
-            Utils.getModuleColor(context, module)
+            Utils.getModuleColor(context, wellnessFocus.moduleName)
         )
 
         holder.llWellnessFocus.background =
-            if (selectedPosition == position) wrappedDrawable else bgDrawable
+            if (wellnessFocus.isSelected) wrappedDrawable else bgDrawable
+        var count = 0
+        wellnessFocusList.forEach {
+            if (it.isSelected)
+                count++
+        }
 
         holder.itemView.setOnClickListener {
-            selectedPosition = position
-            onItemClickListener.onItemClick(wellnessFocus)
-            wellnessFocus.isSelected = !wellnessFocus.isSelected
-            notifyDataSetChanged()
+            if (count < 4 || wellnessFocus.isSelected) {
+                onItemClickListener.onItemClick(wellnessFocus)
+                wellnessFocus.isSelected = !wellnessFocus.isSelected
+                notifyDataSetChanged()
+            }
         }
     }
 

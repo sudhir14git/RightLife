@@ -360,7 +360,9 @@ class NewHealthCamReportActivity : BaseActivity() {
             binding!!.txtBoosterCount.visibility = View.GONE
             binding!!.txtRemainingMsg.text = "Need More Scans? \nBuy booster packs anytime."
             binding!!.viewDivider.visibility = View.GONE
+            binding!!.btnBuyFacescan.text = "Buy"
         } else if (boosterLimit > 0 && boosterUsed < boosterLimit) {
+            binding!!.txtBoosterCount.visibility = View.VISIBLE
             binding!!.btnBuyFacescan.text = "Scan Again"
             binding!!.txtBoosterCount.text = (boosterLimit - boosterUsed).toString()
             binding!!.viewDivider.visibility = View.VISIBLE

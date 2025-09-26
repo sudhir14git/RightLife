@@ -578,6 +578,86 @@
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="@dimen/margin_card_16dp"
+                        android:elevation="5dp"
+                        android:id="@+id/cardview_mainscore_happiness"
+                        app:cardBackgroundColor="#4EC6DE">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_card_16dp"
+                            android:gravity="center_vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginStart="@dimen/margin_card_16dp"
+                                android:id="@+id/ll_title_message_main"
+                                android:layout_toLeftOf="@+id/iv_main_score_image">
+
+                                <TextView
+                                    android:id="@+id/main_score_title_happiness"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Happiness Score"
+                                    android:textColor="@color/txt_color_journal_date"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:textSize="18sp" />
+
+                                <TextView
+                                    android:id="@+id/main_score_level_message"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Balancing joy like a happiness pro"
+                                    android:textColor="@color/txt_color_mind"
+                                    android:paddingEnd="10dp"
+                                    android:fontFamily="@font/dmsans_regular"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_main_score_happiness"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_below="@+id/ll_title_message_main"
+                                android:gravity="center"
+                                android:text="5"
+                                android:textColor="#06142E"
+                                android:textSize="16sp"
+                                android:layout_marginStart="@dimen/margin_card_16dp"
+                                android:layout_marginTop="@dimen/margin_card_16dp"
+                                android:textStyle="bold"
+                                android:backgroundTint="@color/white"
+                                android:background="@drawable/circle_shape" />
+
+                            <ImageView
+                                android:id="@+id/iv_main_score_image"
+                                android:layout_width="60dp"
+                                android:src="@drawable/rounded_corder_border_gray"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginTop="30dp"
+                                android:layout_height="60dp"/>
+
+
+                            <TextView
+                                android:id="@+id/main_score_level_desciption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Balancing joy like a happiness pro"
+                                android:textColor="@color/txt_color_mind"
+                                android:layout_margin="@dimen/margin_card_16dp"
+                                android:layout_below="@+id/tv_main_score_happiness"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="14sp" />
+                        </RelativeLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:layout_margin="12dp"
                         app:cardCornerRadius="@dimen/margin_card_16dp"

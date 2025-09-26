@@ -2,8 +2,6 @@ package com.jetsynthesys.rightlife.ui.contentdetailvideo
 
 import android.content.Intent
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnCompletionListener
-import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -29,10 +27,9 @@ import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailC
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode
 import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
-import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonAPICall.updateViewCount
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
-import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
@@ -45,7 +42,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 import java.net.URI
-import java.net.URISyntaxException
 import java.util.concurrent.TimeUnit
 
 class NewSeriesDetailsActivity : BaseActivity() {
@@ -56,21 +52,21 @@ class NewSeriesDetailsActivity : BaseActivity() {
     private lateinit var player: ExoPlayer
     private lateinit var binding: ActivityNewSeriesDetailsBinding
     private var contentTypeForTrack: String = ""
+    private lateinit var ContentResponseObj: EpisodeDetailContentResponse
+    private lateinit var seriesId: String
+    private var lastPosition: Float = 0f
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityNewSeriesDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         var contentId = intent.getStringExtra("contentId")
-        var seriesId = intent.getStringExtra("seriesId")
+        seriesId = intent.getStringExtra("seriesId").toString()
         var episodeId = intent.getStringExtra("episodeId")
         //API Call
         if (seriesId != null) {
-
-            if (seriesId != null) {
-                if (episodeId != null) {
-                    getSeriesDetails(seriesId, episodeId)
-                }
+            if (episodeId != null) {
+                getSeriesDetails(seriesId, episodeId)
             }
         }
 
@@ -108,7 +104,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                             val gson = Gson()
                             val jsonResponse = gson.toJson(response.body().toString())
                             Log.d("API Response", "Content Details: $jsonResponse")
-                            val ContentResponseObj = gson.fromJson<EpisodeDetailContentResponse>(
+                            ContentResponseObj = gson.fromJson<EpisodeDetailContentResponse>(
                                 successMessage,
                                 EpisodeDetailContentResponse::class.java
                             )
@@ -248,23 +244,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
         }
-        callContentTracking(contentResponseObj, "1.0", "1.0")
     }
-
-    private fun callContentTracking(
-        contentResponseObj: EpisodeDetailContentResponse,
-        duration: String,
-        watchDuration: String
-    ) {
-// article consumed
-        val episodeTrackRequest = EpisodeTrackRequest(
-            sharedPreferenceManager.userId, contentResponseObj.data?.moduleId ?: "",
-            contentResponseObj.data?._id ?: "", duration, watchDuration, contentTypeForTrack
-        )
-
-        trackEpisodeOrContent(this, episodeTrackRequest)
-    }
-
 
     private fun setReadMoreView(desc: String?) {
         if (desc.isNullOrEmpty()) {
@@ -366,16 +346,16 @@ class NewSeriesDetailsActivity : BaseActivity() {
             Toast.makeText(this, "Failed to load audio", Toast.LENGTH_SHORT).show()
         }
 
-        mediaPlayer.setOnPreparedListener(OnPreparedListener { mp: MediaPlayer? ->
+        mediaPlayer.setOnPreparedListener { mp: MediaPlayer? ->
             mediaPlayer.start()
             binding.seekBar.max = mediaPlayer.duration
             isPlaying = true
             binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
             // Update progress every second
             handler.post(updateProgress)
-        })
+        }
         // Play/Pause Button Listener
-        binding.playPauseButton.setOnClickListener(View.OnClickListener { v: View? ->
+        binding.playPauseButton.setOnClickListener { v: View? ->
             if (isPlaying) {
                 mediaPlayer.pause()
                 binding.playPauseButton.setImageResource(R.drawable.ic_sound_play)
@@ -387,11 +367,11 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 handler.post(updateProgress)
             }
             isPlaying = !isPlaying
-        })
-        mediaPlayer.setOnCompletionListener(OnCompletionListener { mp: MediaPlayer? ->
+        }
+        mediaPlayer.setOnCompletionListener { mp: MediaPlayer? ->
             Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
             handler.removeCallbacks(updateProgress)
-        })
+        }
 
         binding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -463,10 +443,11 @@ class NewSeriesDetailsActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
 
-        val shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
-                "Check it out here. " +
-                "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
-                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
+        val shareText =
+            "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
+                    "Check it out here. " +
+                    "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
+                    "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
 
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText)
@@ -555,6 +536,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
     private fun releasePlayer() {
         if (::player.isInitialized) {
+            callTrackAPI(player.currentPosition.toDouble() / 1000)
             player.release()
         }
     }
@@ -562,10 +544,26 @@ class NewSeriesDetailsActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if (::mediaPlayer.isInitialized) {
+            callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
             mediaPlayer.release()
+        } else{
+            callTrackAPI((lastPosition).toDouble())
         }
         handler.removeCallbacks(updateProgress)
         Log.d("contentDetails", "onDestroyCalled")
+    }
+
+    private fun callTrackAPI(watchDuration: Double){
+        val contentData = ContentResponseObj.data
+        CommonAPICall.postSeriesContentPlayedProgress(
+            this,
+            contentData.meta.duration.toDouble(),
+            contentData.contentId,
+            watchDuration,
+            contentData.moduleId,
+            "SERIES",
+            contentData._id
+        )
     }
 
 
@@ -579,6 +577,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     // Example: https://youtu.be/VIDEO_ID
                     uri.path?.substring(1)
                 }
+
                 host.contains("youtube.com") -> {
                     val query = uri.query
                     if (query != null) {
@@ -600,6 +599,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
                     null
                 }
+
                 else -> null
             }
         } catch (e: Exception) {
@@ -616,6 +616,10 @@ class NewSeriesDetailsActivity : BaseActivity() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 youTubePlayer.loadVideo(videoId, 0f)
                 Log.d("YouTube", "Video loaded: $videoId")
+            }
+            override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
+                // This is called every second during playback
+                lastPosition = second
             }
 
             override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerState) {

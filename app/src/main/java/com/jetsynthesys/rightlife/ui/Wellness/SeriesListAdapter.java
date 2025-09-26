@@ -81,20 +81,10 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (contentList.get(position).getType().equalsIgnoreCase("YOUTUBE"))
-                {
-                    Intent intent = new Intent(holder.itemView.getContext(), NewSeriesDetailsActivity.class);
-                    intent.putExtra("seriesId", contentList.get(position).getContentId());
-                    intent.putExtra("episodeId", contentList.get(position).get_id());
-                    holder.itemView.getContext().startActivity(intent);
-                } else {
-                    Intent intent = new Intent(holder.itemView.getContext(), NewSeriesDetailsActivity.class);
-                    intent.putExtra("seriesId", contentList.get(position).getContentId());
-                    intent.putExtra("episodeId", contentList.get(position).get_id());
-                    holder.itemView.getContext().startActivity(intent);
-                }
-
-
+                Intent intent = new Intent(holder.itemView.getContext(), NewSeriesDetailsActivity.class);
+                intent.putExtra("seriesId", contentList.get(position).getContentId());
+                intent.putExtra("episodeId", contentList.get(position).get_id());
+                holder.itemView.getContext().startActivity(intent);
             }
         });
 

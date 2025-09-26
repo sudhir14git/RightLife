@@ -13,6 +13,28 @@ public class CardItem {
     private String viewCount;
     private String titleImage;
     private String ButtonImage;
+    private String seriesType;
+    private String selectedContentType;
+
+    public String getSeriesType() {
+        return seriesType;
+    }
+
+    public void setSeriesType(String seriesType) {
+        seriesType = seriesType;
+    }
+
+
+
+    public String getSelectedContentType() {
+        return selectedContentType;
+    }
+
+    public void setSelectedContentType(String selectedContentType) {
+        this.selectedContentType = selectedContentType;
+    }
+
+
 
     public String getTitleImage() {
         return titleImage;
@@ -30,7 +52,7 @@ public class CardItem {
         ButtonImage = buttonImage;
     }
 
-    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount, String seriesId, String titleImage, String ButtonImage) {
+    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount, String seriesId,String seriesType,String selectedContentType, String titleImage, String ButtonImage) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -40,6 +62,8 @@ public class CardItem {
         this.category = category;
         this.viewCount = viewCount;
         this.seriesId = seriesId;
+        this.seriesType = seriesType;
+        this.selectedContentType = selectedContentType;
         this.titleImage = titleImage;
         this.ButtonImage = ButtonImage;
     }
