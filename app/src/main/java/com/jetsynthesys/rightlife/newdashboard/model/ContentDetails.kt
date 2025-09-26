@@ -74,6 +74,9 @@ class ContentDetails {
     @SerializedName("isSubscribed")
     val isSubscribed = false
 
+    @SerializedName("isBookmarked")
+    var isBookmarked = false
+
     @SerializedName("isAffirmation")
     val isAffirmation = false
 

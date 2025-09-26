@@ -227,6 +227,11 @@
             android:name=".ui.CategoryListActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.NewCategoryListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.healthaudit.HealthAuditFormActivity"
             android:exported="false"

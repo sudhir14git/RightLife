@@ -11,6 +11,7 @@ import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeSeriesTrackRequest
+import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
@@ -413,5 +414,31 @@ object CommonAPICall {
 
         })
     }
+
+    fun contentBookMark(
+        context: Context,
+        contentId: String,
+        isBookmark: Boolean,
+        onResult: (Boolean, String) -> Unit
+    ) {
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val request = ArticleBookmarkRequest(contentId, isBookmark)
+        val call = apiService.ArticleBookmarkRequest(
+            sharedPreferenceManager.accessToken,
+            request
+        )
+
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                onResult(response.isSuccessful, response.message())
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                onResult(false, "Error: ${t.localizedMessage}")
+            }
+        })
+    }
+
 
 }
