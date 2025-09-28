@@ -22,10 +22,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
-            android:text="What interests you?"
+            android:fontFamily="@font/merriweather_bold"
+            android:text="Follow Your Curiosity"
             android:textColor="@color/txt_color_header"
-            android:textSize="22sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -33,7 +33,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/dmsans_regular"
             android:text="Select at least 2 to continue"
-            android:textColor="@color/txt_color_header"
+            android:textColor="@color/workout_textcolor"
             android:textSize="14sp" />
     </LinearLayout>
 
