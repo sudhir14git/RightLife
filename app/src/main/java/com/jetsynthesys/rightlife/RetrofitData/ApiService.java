@@ -1274,6 +1274,13 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body EpisodeSeriesTrackRequest request);
 
+    @GET("content/bookmark/data")
+    Call<ResponseBody> getBookmarkedContent(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip
+    );
+
 }
 
 

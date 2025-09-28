@@ -1,4 +1,4 @@
-package com.jetsynthesys.rightlife.newdashboard
+package com.jetsynthesys.rightlife.ui.profile_new
 
 import android.os.Bundle
 import android.view.View
@@ -11,56 +11,56 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.databinding.ActivityJumpBackInBinding
-import com.jetsynthesys.rightlife.databinding.PopupJumpBackInBinding
-import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
-import com.jetsynthesys.rightlife.newdashboard.model.ContentResponse
+import com.jetsynthesys.rightlife.databinding.ActivitySavedItemListBinding
+import com.jetsynthesys.rightlife.databinding.PopupCategoryListBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.profile_new.adapter.SavedItemsAdapter
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.BookMarkContentDetails
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.BookmarkResponse
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class JumpInBackActivity : BaseActivity() {
-    private lateinit var binding: ActivityJumpBackInBinding
-    private lateinit var adapter: JumpInBackAdapter
-    private val contentDetails = mutableListOf<ContentDetails>()
-    private val allContentDetails = mutableListOf<ContentDetails>()
+class SavedItemListActivity : BaseActivity() {
+    private lateinit var binding: ActivitySavedItemListBinding
+    private val contentDetails = mutableListOf<BookMarkContentDetails>()
+    private val allContentDetails = mutableListOf<BookMarkContentDetails>()
+    private lateinit var adapter: SavedItemsAdapter
 
     private var isLoading = false
     private var skip = 0
     private val limit = 10
-    private val pageType = "continue"
-    private var selectedText = "All"
     private var selectedContentType = "all"
+    private var selectedText = "All"
     private var totalCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityJumpBackInBinding.inflate(layoutInflater)
-        setChildContentView(binding.root)
-
-        binding.iconBack.setOnClickListener {
-            finish()
-        }
+        binding = ActivitySavedItemListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         binding.rlSelectedCategory.setOnClickListener {
             showCustomPopup(it)
         }
 
-        adapter = JumpInBackAdapter(this, contentDetails, onBookMarkedClick = {
-            it.id?.let { it1 ->
-                CommonAPICall.contentBookMark(this, it1, !it.isBookmarked) { success, message ->
+        binding.iconBack.setOnClickListener {
+            finish()
+        }
+
+        adapter = SavedItemsAdapter(this, contentDetails, onBookMarkedClick = { item,position->
+            item.id?.let { it1 ->
+                CommonAPICall.contentBookMark(this, it1, !item.isBookmarked) { success, message ->
                     if (success) {
-                        it.isBookmarked = !it.isBookmarked
-                        val msg = if (it.isBookmarked) {
+                        item.isBookmarked = !item.isBookmarked
+                        val msg = if (item.isBookmarked) {
                             "Added To Bookmarks"
                         } else {
                             "Removed From Bookmarks"
                         }
                         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                        adapter.notifyDataSetChanged()
+                        adapter.notifyItemChanged(position)
                     } else {
                         Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT).show()
                     }
@@ -68,12 +68,12 @@ class JumpInBackActivity : BaseActivity() {
             }
         })
 
-        binding.rvJumpBackIn.layoutManager =
+        binding.rvSavedItems.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        binding.rvJumpBackIn.adapter = adapter
+        binding.rvSavedItems.adapter = adapter
 
         // Add scroll listener for pagination
-        binding.rvJumpBackIn.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rvSavedItems.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
@@ -81,7 +81,7 @@ class JumpInBackActivity : BaseActivity() {
                 val lastVisible = layoutManager.findLastCompletelyVisibleItemPosition()
 
                 if (!isLoading && lastVisible == contentDetails.size - 1 && contentDetails.size < totalCount) {
-                    loadMoreData()
+                    fetchContent(skip, selectedContentType)
                 }
             }
         })
@@ -89,61 +89,12 @@ class JumpInBackActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        contentDetails.clear()
-        allContentDetails.clear()
         skip = 0
         fetchContent(skip, selectedContentType)
     }
 
-    private fun fetchContent(skipValue: Int, contentType: String) {
-        Utils.showLoader(this)
-        isLoading = true
-        val call = apiService.getContinueData(
-            sharedPreferenceManager.accessToken,
-            pageType,
-            limit,
-            skipValue,
-            contentType
-        )
-
-        call.enqueue(object : Callback<ResponseBody?> {
-            override fun onResponse(
-                call: Call<ResponseBody?>,
-                response: Response<ResponseBody?>
-            ) {
-                Utils.dismissLoader(this@JumpInBackActivity)
-                if (response.isSuccessful && response.body() != null) {
-                    val gson = Gson()
-                    val jsonString = response.body()?.string()
-
-                    val responseObj: ContentResponse =
-                        gson.fromJson(jsonString, ContentResponse::class.java)
-
-                    totalCount = responseObj.data?.count ?: 0
-
-                    val newItems = responseObj.data?.contentDetails ?: emptyList()
-                    contentDetails.addAll(newItems)
-                    //allContentDetails.addAll(newItems)
-                    adapter.notifyDataSetChanged()
-                    skip += newItems.size
-                }
-                isLoading = false
-            }
-
-            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                isLoading = false
-                Utils.dismissLoader(this@JumpInBackActivity)
-                handleNoInternetView(t)
-            }
-        })
-    }
-
-    private fun loadMoreData() {
-        fetchContent(skip, selectedContentType)
-    }
-
     private fun showCustomPopup(anchorView: View) {
-        val bindingDialog = PopupJumpBackInBinding.inflate(layoutInflater)
+        val bindingDialog = PopupCategoryListBinding.inflate(layoutInflater)
         val widthInPx = (250 * resources.displayMetrics.density).toInt() // 280dp → px
 
         val popupWindow = PopupWindow(
@@ -172,6 +123,27 @@ class JumpInBackActivity : BaseActivity() {
                 bindingDialog.tvSeries.setTextColor(
                     ContextCompat.getColor(this, R.color.txt_color_header)
                 )
+                bindingDialog.tvArticles.setTextColor(
+                    ContextCompat.getColor(this, R.color.txt_color_header)
+                )
+            }
+
+            "Articles" -> {
+                bindingDialog.tvAll.setTextColor(
+                    ContextCompat.getColor(this, R.color.txt_color_header)
+                )
+                bindingDialog.tvAudio.setTextColor(
+                    ContextCompat.getColor(this, R.color.txt_color_header)
+                )
+                bindingDialog.tvVideo.setTextColor(
+                    ContextCompat.getColor(this, R.color.txt_color_header)
+                )
+                bindingDialog.tvSeries.setTextColor(
+                    ContextCompat.getColor(this, R.color.txt_color_header)
+                )
+                bindingDialog.tvArticles.setTextColor(
+                    ContextCompat.getColor(this, R.color.menuselected)
+                )
             }
 
             "Series" -> {
@@ -186,6 +158,9 @@ class JumpInBackActivity : BaseActivity() {
                 )
                 bindingDialog.tvSeries.setTextColor(
                     ContextCompat.getColor(this, R.color.menuselected)
+                )
+                bindingDialog.tvArticles.setTextColor(
+                    ContextCompat.getColor(this, R.color.txt_color_header)
                 )
             }
 
@@ -202,6 +177,9 @@ class JumpInBackActivity : BaseActivity() {
                 bindingDialog.tvSeries.setTextColor(
                     ContextCompat.getColor(this, R.color.txt_color_header)
                 )
+                bindingDialog.tvArticles.setTextColor(
+                    ContextCompat.getColor(this, R.color.txt_color_header)
+                )
             }
 
             else -> {
@@ -215,6 +193,9 @@ class JumpInBackActivity : BaseActivity() {
                     ContextCompat.getColor(this, R.color.txt_color_header)
                 )
                 bindingDialog.tvSeries.setTextColor(
+                    ContextCompat.getColor(this, R.color.txt_color_header)
+                )
+                bindingDialog.tvArticles.setTextColor(
                     ContextCompat.getColor(this, R.color.txt_color_header)
                 )
             }
@@ -239,6 +220,11 @@ class JumpInBackActivity : BaseActivity() {
             popupWindow.dismiss()
         }
 
+        bindingDialog.tvArticles.setOnClickListener {
+            popupOptionClicked(bindingDialog.tvArticles.text.toString())
+            popupWindow.dismiss()
+        }
+
         // Show popup below the anchor view
         popupWindow.showAsDropDown(anchorView, 0, -100)
     }
@@ -251,23 +237,65 @@ class JumpInBackActivity : BaseActivity() {
 
     private fun filterContent(type: String) {
         contentDetails.clear()
-        selectedContentType = if (type.equals("All", ignoreCase = true))
+        /*selectedContentType = if (type.equals("All", ignoreCase = true))
             type.lowercase()
         else
             type.uppercase()
         skip = 0
-        fetchContent(skip, selectedContentType)
+        fetchContent(skip, selectedContentType)*/
 
         //local filter
-        /*if (type == "All") {
+        if (type == "All") {
             contentDetails.addAll(allContentDetails)
         } else {
             contentDetails.addAll(
                 allContentDetails.filter { it.contentType.equals(type, ignoreCase = true) }
             )
         }
-        adapter.notifyDataSetChanged()*/
+        adapter.notifyDataSetChanged()
     }
 
+    private fun fetchContent(skipValue: Int, contentType: String) {
+        if (skipValue == 0) {
+            contentDetails.clear()
+            allContentDetails.clear()
+        }
+        Utils.showLoader(this)
+        isLoading = true
+        val call = apiService.getBookmarkedContent(
+            sharedPreferenceManager.accessToken,
+            limit,
+            skipValue
+        )
 
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                Utils.dismissLoader(this@SavedItemListActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonString = response.body()?.string()
+
+                    val responseObj: BookmarkResponse =
+                        gson.fromJson(jsonString, BookmarkResponse::class.java)
+                    totalCount = responseObj.data?.count ?: 0
+
+                    val newItems = responseObj.data?.contentDetails ?: emptyList()
+                    contentDetails.addAll(newItems)
+                    allContentDetails.addAll(newItems)
+                    adapter.notifyDataSetChanged()
+                    skip += newItems.size
+                }
+                isLoading = false
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                isLoading = false
+                Utils.dismissLoader(this@SavedItemListActivity)
+                handleNoInternetView(t)
+            }
+        })
+    }
 }
