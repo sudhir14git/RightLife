@@ -26,10 +26,12 @@
             android:layout_height="wrap_content"
             android:text="Current Plan"
             android:background="@drawable/roundedcornershape"
-            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@id/planName"
             android:textColor="@color/white"
             android:paddingHorizontal="16dp"
+            android:textSize="12sp"
             android:paddingVertical="4dp"
+            android:layout_marginStart="4dp"
             android:backgroundTint="@color/color_green"/>
 
         <TextView
@@ -55,7 +57,6 @@
             android:layout_marginVertical="8dp"
             android:fontFamily="@font/dmsans_bold"
             android:textColor="@color/txt_color_mind"
-            android:layout_toStartOf="@+id/tvCurrentPlan"
             android:layout_alignParentStart="true"
             android:textSize="16sp" />
 

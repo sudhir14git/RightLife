@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.jetsynthesys.rightlife.BaseActivity
@@ -151,7 +152,8 @@ class UserInterestActivity : BaseActivity() {
                 text = userInterest.title
                 setTextAppearance(android.R.style.TextAppearance_Medium)
                 setPadding(0, 24, 0, 12)
-                setTypeface(typeface, Typeface.BOLD)
+                val customFont = ResourcesCompat.getFont(context, R.font.dmsans_bold)
+                setTypeface(customFont, Typeface.BOLD)
                 textSize = 18F
             }
 

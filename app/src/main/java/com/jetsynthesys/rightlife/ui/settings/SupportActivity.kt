@@ -31,7 +31,7 @@ class SupportActivity : BaseActivity() {
     private fun setupSupportRecyclerView() {
         val settingsItems = listOf(
             SettingItem("FAQ"),
-            SettingItem("Write to us!")
+            SettingItem("Write To Us!")
         )
 
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
