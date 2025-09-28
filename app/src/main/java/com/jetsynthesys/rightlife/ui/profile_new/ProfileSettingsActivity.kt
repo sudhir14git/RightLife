@@ -100,6 +100,7 @@ class ProfileSettingsActivity : BaseActivity() {
         val items = listOf(
             SettingItem("Goals"),
             SettingItem("Interests"),
+            SettingItem("Saved Items"),
             //SettingItem("Meal Customisations")
         )
 
@@ -114,6 +115,9 @@ class ProfileSettingsActivity : BaseActivity() {
                     startActivity(Intent(this, UserInterestActivity::class.java).apply {
                         putExtra("FROM", "ProfileSetting")
                     })
+
+                "Saved Items" ->
+                    startActivity(Intent(this, SavedItemListActivity::class.java))
 
                 "Meal Customisations" ->
                     startActivity(Intent(this, SupportActivity::class.java))

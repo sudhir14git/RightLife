@@ -1,30 +1,31 @@
-package com.jetsynthesys.rightlife.newdashboard
+package com.jetsynthesys.rightlife.ui.profile_new.adapter
 
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.databinding.RowJumpBackInHorrizontalBinding
-import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
+import com.jetsynthesys.rightlife.databinding.RowCategoryListNewBinding
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.BookMarkContentDetails
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 
-class JumpInBackAdapter(
+class SavedItemsAdapter(
     private val context: Context,
-    private val contentDetails: MutableList<ContentDetails>,
-    val onBookMarkedClick: (ContentDetails) -> Unit
+    private val contentDetails: MutableList<BookMarkContentDetails>,
+    val onBookMarkedClick: (BookMarkContentDetails, Int) -> Unit
 ) :
-    RecyclerView.Adapter<JumpInBackAdapter.JumpInBackViewHolder>() {
+    RecyclerView.Adapter<SavedItemsAdapter.SavedItemViewHolder>() {
 
-    inner class JumpInBackViewHolder(val binding: RowJumpBackInHorrizontalBinding) :
+    inner class SavedItemViewHolder(val binding: RowCategoryListNewBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: ContentDetails) {
+        fun bind(item: BookMarkContentDetails, position: Int) {
             // Load image using Glide
             Glide.with(binding.root.context)
                 .load(ApiClient.CDN_URL_QA + (item.thumbnail?.url ?: ""))
@@ -53,6 +54,8 @@ class JumpInBackAdapter(
             if ("SERIES".equals(item.contentType, ignoreCase = true)) {
                 val progress = item.leftDuration?.let { calculateProgress(it) } ?: 0
                 binding.progressBar.progress = progress
+                binding.imgCompleteTick.visibility =
+                    if (progress == 100) View.VISIBLE else View.GONE
             } else {
 
                 val duration = item.meta?.duration ?: 0 // total duration in seconds
@@ -61,18 +64,24 @@ class JumpInBackAdapter(
                 else if (duration > 0) {
                     val completed = (duration - left).coerceAtLeast(0)
                     ((completed.toFloat() / duration) * 100).toInt().coerceIn(0, 100)
-                } else 0
-
+                } else
+                    0
                 binding.progressBar.progress = progress
+                binding.imgCompleteTick.visibility =
+                    if (left == duration) View.VISIBLE else View.GONE
             }
 
             binding.imgSave.setOnClickListener {
-                onBookMarkedClick(item)
+                onBookMarkedClick(item, position)
             }
 
             // Click listener
             binding.root.setOnClickListener {
-                if (item.contentType.equals("TEXT", ignoreCase = true)) {
+                if (item.contentType.equals(
+                        "TEXT",
+                        ignoreCase = true
+                    ) || item.contentType.equals("Articles", ignoreCase = true)
+                ) {
                     context.startActivity(
                         Intent(
                             context,
@@ -107,20 +116,20 @@ class JumpInBackAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JumpInBackViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedItemViewHolder {
         val binding =
-            RowJumpBackInHorrizontalBinding.inflate(
+            RowCategoryListNewBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        return JumpInBackViewHolder(binding)
+        return SavedItemViewHolder(binding)
     }
 
     override fun getItemCount(): Int = contentDetails.size
 
-    override fun onBindViewHolder(holder: JumpInBackViewHolder, position: Int) {
-        holder.bind(contentDetails[position])
+    override fun onBindViewHolder(holder: SavedItemViewHolder, position: Int) {
+        holder.bind(contentDetails[position], position)
     }
 
     private fun calculateProgress(value: String): Int {
