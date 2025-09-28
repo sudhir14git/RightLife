@@ -26,15 +26,22 @@
                 android:textSize="22sp"
                 android:layout_marginTop="80dp"
                 android:gravity="center_horizontal"
-                android:fontFamily="@font/merriweather_bold"
+                android:fontFamily="@font/dmsans_bold"
                 android:textColor="@color/txt_color_mind" />
 
+            <ImageView
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/rightlife_pro_image"
+                android:layout_centerInParent="true" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="RightLife"
                 android:textSize="30sp"
                 android:gravity="center_horizontal"
+                android:visibility="gone"
                 android:fontFamily="@font/merriweather_bold"
                 android:textColor="@color/menuselected" />
 
@@ -101,7 +108,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Explore Smarter Content"
+                        android:text="AI Health Report"
                         android:textSize="18sp"
                         android:layout_marginEnd="12dp"
                         android:fontFamily="@font/dmsans_bold"
@@ -110,7 +117,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Get insights and tools matched to your goals and habits."
+                        android:text="Get your full health snapshot with deep insights and actionable goals."
                         android:textSize="14sp"
                         android:layout_marginEnd="12dp"
                         android:fontFamily="@font/dmsans_regular"
@@ -141,7 +148,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="QuickLinks for Ease"
+                        android:text="Full Module Access"
                         android:textSize="18sp"
                         android:layout_marginEnd="12dp"
                         android:fontFamily="@font/dmsans_bold"
@@ -150,7 +157,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Log food, activity, hydration, and access app features in one click."
+                        android:text="All our modules and features are unlocked for you."
                         android:textSize="14sp"
                         android:layout_marginEnd="12dp"
                         android:fontFamily="@font/dmsans_regular"

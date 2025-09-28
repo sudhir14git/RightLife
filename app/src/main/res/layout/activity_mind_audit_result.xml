@@ -16,10 +16,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Your result"
-            android:textSize="18sp"
+            android:text="Your Results"
+            android:textSize="20sp"
             android:layout_centerInParent="true"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:gravity="center"
             android:textColor="@color/txt_color_mind"
             android:layout_marginStart="4dp" />

@@ -93,33 +93,94 @@
                         android:orientation="horizontal"
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="20dp"
-                        android:padding="6dp"
+                        android:paddingHorizontal="5dp"
+                        android:paddingVertical="2dp"
                         android:gravity="center_vertical"
                         android:background="@drawable/roundedcornerborderred"
                         android:layout_height="wrap_content">
-
-                        <ImageView
+                        <LinearLayout
+                            android:id="@+id/countdownLayout"
                             android:layout_width="wrap_content"
-                            android:src="@drawable/ic_db_flash"
                             android:layout_height="wrap_content"
-                            app:tint="@color/days_border_trialdays" />
+                            android:paddingHorizontal="8dp"
+                            android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tvCountDown"
-                            android:layout_width="wrap_content"
-                            android:text="1/7"
-                            android:fontFamily="@font/dmsans_semibold"
-                            android:textSize="@dimen/textsize_large"
-                            android:textColor="@color/days_border_trialdays"
-                            android:layout_height="wrap_content" />
+                            <!-- Days -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:layout_marginEnd="12dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:text="days"
-                            android:layout_marginEnd="5dp"
-                            android:textColor="@color/days_border_trialdays"
-                            android:textSize="@dimen/textsize_extrasmall"
-                            android:layout_height="wrap_content" />
+                                <TextView
+                                    android:id="@+id/tvDays"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="06"
+                                    android:textSize="@dimen/textsize_large"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:textColor="@android:color/black" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="days"
+                                    android:textSize="@dimen/textsize_smallest"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                            <!-- Hours -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:layout_marginEnd="12dp">
+
+                                <TextView
+                                    android:id="@+id/tvHours"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="23"
+                                    android:textSize="@dimen/textsize_large"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:textColor="@android:color/black" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="hours"
+                                    android:textSize="@dimen/textsize_smallest"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                            <!-- Minutes -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:id="@+id/tvMinutes"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="59"
+                                    android:textSize="@dimen/textsize_large"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:textColor="@android:color/black" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="mins"
+                                    android:textSize="@dimen/textsize_smallest"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </RelativeLayout>
@@ -201,7 +262,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:layout_marginVertical="16dp">
 
                     <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
