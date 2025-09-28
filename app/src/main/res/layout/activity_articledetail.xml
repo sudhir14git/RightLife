@@ -308,6 +308,7 @@
                                 android:paddingEnd="30dp"
                                 android:text="Key Takeaways"
                                 android:textColor="@color/txt_color_header"
+                                android:visibility="gone"
                                 android:textSize="@dimen/textsize_large" />
 
                         </RelativeLayout>
@@ -325,9 +326,8 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/merriweather_regular"
                                 android:gravity="center_vertical"
-                                android:paddingStart="32dp"
-                                android:paddingEnd="30dp"
-                                android:paddingBottom="10dp"
+                                android:paddingHorizontal="30dp"
+                                android:paddingVertical="@dimen/margin_card_16dp"
                                 android:text="In This Article"
 
                                 android:textSize="@dimen/textsize_medium"

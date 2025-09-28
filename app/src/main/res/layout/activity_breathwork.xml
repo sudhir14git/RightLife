@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="@dimen/margin_card_16dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:text="When things feel too fast, breathing helps slow it all down. Pick a technique to begin."
             android:textSize="@dimen/textsize_large"
-            android:fontFamily="@font/dmsans_medium"
+            android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/txt_color_journal_gray"
             android:layout_height="wrap_content"/>
 
@@ -67,7 +67,8 @@
         android:layout_height="match_parent"
         android:layout_marginTop="16dp"
         android:clipToPadding="false"
-        android:paddingBottom="16dp"
+        android:paddingVertical="@dimen/margin_card_16dp"
+        android:layout_gravity="center_vertical"
         android:overScrollMode="never"/>
     </LinearLayout>
 </LinearLayout>

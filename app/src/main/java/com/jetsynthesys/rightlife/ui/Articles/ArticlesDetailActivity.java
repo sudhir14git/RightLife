@@ -179,7 +179,7 @@ public class ArticlesDetailActivity extends BaseActivity {
         }
     }
 
-
+    // API call to get article details
     private void getArticleDetails(String contentId) {
         //-----------
         Utils.showLoader(this);
