@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -19,8 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
@@ -55,8 +52,6 @@ import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
-import com.jetsynthesys.rightlife.newdashboard.model.SleepStage
-import com.jetsynthesys.rightlife.newdashboard.model.UpdatedModule
 import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.ActivityUtils
@@ -76,13 +71,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
-import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.roundToInt
 
 class HomeDashboardFragment : BaseFragment() {
     private var _binding: FragmentHomeDashboardBinding? = null
@@ -160,10 +153,18 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
-            ActivityUtils.startEatRightQuestionnaireActivity(requireContext())
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
+            } else {
+                ActivityUtils.startEatRightQuestionnaireActivity(requireContext())
+            }
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
-            ActivityUtils.startThinkRightQuestionnaireActivity(requireContext())
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
+            } else {
+                ActivityUtils.startThinkRightQuestionnaireActivity(requireContext())
+            }
         }
 
         binding.rlViewPastReports.setOnClickListener {
@@ -183,58 +184,76 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
-            val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
-            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-                healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
-                lifecycleScope.launch {
-                    requestPermissionsAndReadAllData()
-
-                }
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
             } else {
-                installHealthConnect(requireContext())
+                val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                    healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                    lifecycleScope.launch {
+                        requestPermissionsAndReadAllData()
+
+                    }
+                } else {
+                    installHealthConnect(requireContext())
+                }
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
-            val intent = Intent(requireContext(), OnboardingQuestionnaireActivity::class.java)
-            intent.putExtra("forProfileChecklist", true)
-            startActivity(intent)
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
+            } else {
+                val intent = Intent(requireContext(), OnboardingQuestionnaireActivity::class.java)
+                intent.putExtra("forProfileChecklist", true)
+                startActivity(intent)
+            }
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
-            permissionManager = PermissionManager(
-                activity = requireActivity(), // or just `this` in Activity
-                launcher = permissionLauncher,
-                onPermissionGranted = {
-                    ActivityUtils.startMealScanActivity(requireContext(), snapMealId)
-                },
-                onPermissionDenied = {
-                    // ❌ Show user-facing message or disable features
-                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            )
-            permissionManager.checkAndRequestPermissions()
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
+            } else {
+                permissionManager = PermissionManager(
+                    activity = requireActivity(), // or just `this` in Activity
+                    launcher = permissionLauncher,
+                    onPermissionGranted = {
+                        ActivityUtils.startMealScanActivity(requireContext(), snapMealId)
+                    },
+                    onPermissionDenied = {
+                        // ❌ Show user-facing message or disable features
+                        Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                )
+                permissionManager.checkAndRequestPermissions()
+            }
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
-            val activity = requireActivity() as HomeNewActivity
-            /*val isHealthCamFree = activity.isHealthCamFree*/
-
-            var isHealthCamFree = sharedPreferenceManager.userProfile?.homeServices
-                ?.find { it.title == "HealthCam" }
-                ?.isFree ?: false
-
-            val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService ?: false
-
-            if (isFacialScanService) {
-                if (DashboardChecklistManager.facialScanStatus) {
-                    startActivity(
-                        Intent(
-                            requireContext(), NewHealthCamReportActivity::class.java
-                        )
-                    )
-                } else {
-                    ActivityUtils.startFaceScanActivity(requireContext())
-                }
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
             } else {
-                activity.showSwitchAccountDialog(requireContext(), "", "")
+                val activity = requireActivity() as HomeNewActivity
+                /*val isHealthCamFree = activity.isHealthCamFree*/
+
+                var isHealthCamFree = sharedPreferenceManager.userProfile?.homeServices
+                    ?.find { it.title == "HealthCam" }
+                    ?.isFree ?: false
+
+                val isFacialScanService =
+                    sharedPreferenceManager.userProfile.facialScanService ?: false
+
+                if (isFacialScanService) {
+                    if (DashboardChecklistManager.facialScanStatus) {
+                        startActivity(
+                            Intent(
+                                requireContext(), NewHealthCamReportActivity::class.java
+                            )
+                        )
+                    } else {
+                        ActivityUtils.startFaceScanActivity(requireContext())
+                    }
+                } else {
+                    activity.showSwitchAccountDialog(requireContext(), "", "")
+                }
             }
         }
 
@@ -779,20 +798,25 @@ class HomeDashboardFragment : BaseFragment() {
     }
 
     private fun setChecklistRowArrow(isAccessible: Boolean) {
-        if (isAccessible) {
-            binding.includeChecklist.imgChecklistProfileArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
-            binding.includeChecklist.imgChecklistSleepRightArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
-            binding.includeChecklist.imgChecklistSnapMealArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
-            binding.includeChecklist.imgChecklistEatRightArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
-            binding.includeChecklist.imgChecklistSyncDataArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
-            binding.includeChecklist.imgChecklistFaceScanArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
-        } else {
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             binding.includeChecklist.imgChecklistProfileArrow.setImageResource(R.drawable.checklist_lock)
             binding.includeChecklist.imgChecklistSleepRightArrow.setImageResource(R.drawable.checklist_lock)
             binding.includeChecklist.imgChecklistSnapMealArrow.setImageResource(R.drawable.checklist_lock)
             binding.includeChecklist.imgChecklistEatRightArrow.setImageResource(R.drawable.checklist_lock)
             binding.includeChecklist.imgChecklistSyncDataArrow.setImageResource(R.drawable.checklist_lock)
             binding.includeChecklist.imgChecklistFaceScanArrow.setImageResource(R.drawable.checklist_lock)
+        } else {
+            binding.includeChecklist.imgChecklistProfileArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistSleepRightArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistSnapMealArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistEatRightArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistSyncDataArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
+            binding.includeChecklist.imgChecklistFaceScanArrow.setImageResource(R.drawable.ic_checklist_smallarrow)
         }
+    }
+
+    private fun freeTrialDialogActivity() {
+        val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
+        startActivity(intent)
     }
 }

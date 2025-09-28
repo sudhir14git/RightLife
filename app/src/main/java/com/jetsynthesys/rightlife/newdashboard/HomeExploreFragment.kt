@@ -38,8 +38,8 @@ import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.CardItem
-import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.CircularCardAdapter
+import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.ServicePaneAdapter
 import com.jetsynthesys.rightlife.ui.TestAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
@@ -172,135 +172,200 @@ class HomeExploreFragment : BaseFragment() {
 
         // set click listener
         binding.llThinkrightCategory1.setOnClickListener {
-            if (ThinkRSubModuleResponse?.data?.isNotEmpty() == true) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", ThinkRSubModuleResponse?.data?.get(0)?.categoryId)
-                intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(0)?.moduleId)
-                startActivity(intent)
-            }
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                if (ThinkRSubModuleResponse?.data?.isNotEmpty() == true) {
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        ThinkRSubModuleResponse?.data?.get(0)?.categoryId
+                    )
+                    intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(0)?.moduleId)
+                    startActivity(intent)
+                }
+            } else showInternetError()
+
         }
         binding.llThinkrightCategory2.setOnClickListener {
-            if (ThinkRSubModuleResponse?.data?.size!! > 1) {
-                ThinkRSubModuleResponse?.data?.get(1)?.name
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", ThinkRSubModuleResponse?.data?.get(1)?.categoryId)
-                intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(1)?.moduleId)
-                startActivity(intent)
-            }
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                if (ThinkRSubModuleResponse?.data?.size!! > 1) {
+                    ThinkRSubModuleResponse?.data?.get(1)?.name
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        ThinkRSubModuleResponse?.data?.get(1)?.categoryId
+                    )
+                    intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(1)?.moduleId)
+                    startActivity(intent)
+                }
+            } else showInternetError()
         }
         binding.llThinkrightCategory3.setOnClickListener {
-            if (ThinkRSubModuleResponse?.data?.size!! > 2) {
-                ThinkRSubModuleResponse?.data?.get(2)?.name
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", ThinkRSubModuleResponse?.data?.get(2)?.categoryId)
-                intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(2)?.moduleId)
-                startActivity(intent)
-            }
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                if (ThinkRSubModuleResponse?.data?.size!! > 2) {
+                    ThinkRSubModuleResponse?.data?.get(2)?.name
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        ThinkRSubModuleResponse?.data?.get(2)?.categoryId
+                    )
+                    intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(2)?.moduleId)
+                    startActivity(intent)
+                }
+            } else showInternetError()
         }
         binding.llThinkrightCategory4.setOnClickListener {
-            if (ThinkRSubModuleResponse?.data?.size!! > 3) {
-                ThinkRSubModuleResponse?.data?.get(3)?.name
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", ThinkRSubModuleResponse?.data?.get(3)?.categoryId)
-                intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(3)?.moduleId)
-                startActivity(intent)
-            }
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                if (ThinkRSubModuleResponse?.data?.size!! > 3) {
+                    ThinkRSubModuleResponse?.data?.get(3)?.name
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        ThinkRSubModuleResponse?.data?.get(3)?.categoryId
+                    )
+                    intent.putExtra("moduleId", ThinkRSubModuleResponse?.data?.get(3)?.moduleId)
+                    startActivity(intent)
+                }
+            } else showInternetError()
         }
 
         binding.llMoverightCategory1.setOnClickListener {
-            if (MoveRSubModuleResponse?.data?.isNotEmpty() == true) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", MoveRSubModuleResponse?.data?.get(0)?.categoryId)
-                intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(0)?.moduleId)
-                startActivity(intent)
-            }
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                if (MoveRSubModuleResponse?.data?.isNotEmpty() == true) {
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        MoveRSubModuleResponse?.data?.get(0)?.categoryId
+                    )
+                    intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(0)?.moduleId)
+                    startActivity(intent)
+                }
+            } else showInternetError()
         }
         binding.llMoverightCategor2.setOnClickListener {
-            if (MoveRSubModuleResponse?.data?.size!! > 1) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (MoveRSubModuleResponse?.data?.size!! > 1) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", MoveRSubModuleResponse?.data?.get(1)?.categoryId)
                 intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(1)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
         binding.llMoverightCategory3.setOnClickListener {
-            if (MoveRSubModuleResponse?.data?.size!! > 2) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (MoveRSubModuleResponse?.data?.size!! > 2) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", MoveRSubModuleResponse?.data?.get(2)?.categoryId)
                 intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(2)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
 
         binding.llEatrightCategory1.setOnClickListener {
-            if (EatRSubModuleResponse?.data?.isNotEmpty() == true) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (EatRSubModuleResponse?.data?.isNotEmpty() == true) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(0)?.categoryId)
                 intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(0)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
         binding.llEatrightCategory2.setOnClickListener {
-            if (EatRSubModuleResponse?.data?.size!! > 1) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (EatRSubModuleResponse?.data?.size!! > 1) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(1)?.categoryId)
                 intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(1)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
         binding.llEatrightCategory3.setOnClickListener {
-            if (EatRSubModuleResponse?.data?.size!! > 2) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (EatRSubModuleResponse?.data?.size!! > 2) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(2)?.categoryId)
                 intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(2)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
         binding.llEatrightCategory4.setOnClickListener {
-            if (EatRSubModuleResponse?.data?.size!! > 3) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (EatRSubModuleResponse?.data?.size!! > 3) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(3)?.categoryId)
                 intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(3)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
 
         binding.llSleeprightCategory1.setOnClickListener {
-            if (SleepRSubModuleResponse?.data?.isNotEmpty() == true) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (SleepRSubModuleResponse?.data?.isNotEmpty() == true) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(0)?.categoryId)
                 intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(0)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
         binding.llSleeprightCategory2.setOnClickListener {
-            if (SleepRSubModuleResponse?.data?.size!! > 1) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (SleepRSubModuleResponse?.data?.size!! > 1) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(1)?.categoryId)
                 intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(1)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
         binding.llSleeprightCategory3.setOnClickListener {
-            if (SleepRSubModuleResponse?.data?.size!! > 2) {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (SleepRSubModuleResponse?.data?.size!! > 2) {
                 val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                 intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(2)?.categoryId)
                 intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(2)?.moduleId)
                 startActivity(intent)
             }
+            } else showInternetError()
         }
 
         binding.btnSrExplore.setOnClickListener {
-            callExploreModuleActivity(SleepRSubModuleResponse!!)
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                callExploreModuleActivity(SleepRSubModuleResponse!!)
+                } else showInternetError()
         }
         binding.btnTrExplore.setOnClickListener {
-            callExploreModuleActivity(ThinkRSubModuleResponse!!)
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                callExploreModuleActivity(ThinkRSubModuleResponse!!)
+            } else showInternetError()
         }
         binding.btnErExplore.setOnClickListener {
-            callExploreModuleActivity(EatRSubModuleResponse!!)
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                callExploreModuleActivity(EatRSubModuleResponse!!)
+            } else showInternetError()
         }
         binding.btnMrExplore.setOnClickListener {
-            callExploreModuleActivity(MoveRSubModuleResponse!!)
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                callExploreModuleActivity(MoveRSubModuleResponse!!)
+            } else showInternetError()
         }
 
         binding.btnWellnessPreference.setOnClickListener {
@@ -345,6 +410,7 @@ class HomeExploreFragment : BaseFragment() {
         )
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     response.body()
                     val gson = Gson()
@@ -361,6 +427,7 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                if (!isFragmentSafe()) return
                 handleNoInternetView(t)
             }
         })
@@ -375,6 +442,7 @@ class HomeExploreFragment : BaseFragment() {
         )
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
@@ -397,6 +465,7 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                if (!isFragmentSafe()) return
                 handleNoInternetView(t)
             }
         })
@@ -406,6 +475,7 @@ class HomeExploreFragment : BaseFragment() {
         val call = apiService.getPromotionList2(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
@@ -421,6 +491,7 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                if (!isFragmentSafe()) return
                 handleNoInternetView(t)
             }
         })
@@ -430,6 +501,7 @@ class HomeExploreFragment : BaseFragment() {
         val call = apiService.getRightlifeEdit(sharedPreferenceManager.accessToken, "HOME")
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
@@ -459,6 +531,7 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                if (!isFragmentSafe()) return
                 handleNoInternetView(t)
             }
         })
@@ -469,6 +542,7 @@ class HomeExploreFragment : BaseFragment() {
             apiService.getWelnessPlaylist(sharedPreferenceManager.accessToken, "SERIES", "WELLNESS")
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
@@ -490,6 +564,7 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                if (!isFragmentSafe()) return
                 handleNoInternetView(t)
             }
         })
@@ -499,6 +574,7 @@ class HomeExploreFragment : BaseFragment() {
         val call = apiService.getmodule(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
@@ -511,6 +587,7 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                if (!isFragmentSafe()) return
                 handleNoInternetView(t)
             }
         })
@@ -522,6 +599,7 @@ class HomeExploreFragment : BaseFragment() {
             apiService.getsubmodule(sharedPreferenceManager.accessToken, moduleid, "CATEGORY")
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     val affirmationsResponse = response.body()
                     val gson = Gson()
@@ -559,6 +637,7 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                if (!isFragmentSafe()) return
                 handleNoInternetView(t)
             }
         })
@@ -765,48 +844,51 @@ class HomeExploreFragment : BaseFragment() {
             binding.viewPager.visibility = View.VISIBLE
             adapter = CircularCardAdapter(requireActivity(), cardItems)
             binding.viewPager.adapter = adapter
+            adapter?.notifyDataSetChanged()
+
+
+            // Set up the initial position for circular effect
+            val initialPosition = Int.MAX_VALUE / 2
+            binding.viewPager.setCurrentItem(
+                initialPosition - initialPosition % cardItems.size,
+                false
+            )
+
+            binding.viewPager.apply {
+                clipToPadding = false
+                clipChildren = false
+                offscreenPageLimit = 5
+                setPadding(60, 0, 60, 0)
+            }
+
+            // Set offscreen page limit and page margin
+            binding.viewPager.offscreenPageLimit = 5 // Load adjacent pages
+            binding.viewPager.clipToPadding = false
+            binding.viewPager.clipChildren = false
+            binding.viewPager.setPageTransformer { page, position ->
+                val MIN_SCALE = 0.9f     // center = 1.0, side cards smaller
+                val MIN_ALPHA = 0.7f
+                val translationFactor = 4f  // controls overlap/spacing
+
+                // Keep center card on top
+                page.z = 1f - abs(position)
+
+                // Scale cards
+                val scale = MIN_SCALE + (1 - abs(position)) * (1 - MIN_SCALE)
+                page.scaleX = scale
+                page.scaleY = scale
+
+                // Fade cards slightly
+                val alpha = MIN_ALPHA + (1 - abs(position)) * (1 - MIN_ALPHA)
+                page.alpha = alpha
+
+                // Adjust horizontal position for peeking
+                page.translationX = -position * page.width / translationFactor
+            }
+
         } else {
             binding.viewPager.visibility = View.GONE
         }
-        adapter!!.notifyDataSetChanged()
-
-
-        // Set up the initial position for circular effect
-        val initialPosition = Int.MAX_VALUE / 2
-        binding.viewPager.setCurrentItem(initialPosition - initialPosition % cardItems.size, false)
-
-        binding.viewPager.apply {
-            clipToPadding = false
-            clipChildren = false
-            offscreenPageLimit = 5
-            setPadding(60, 0, 60, 0)
-        }
-
-        // Set offscreen page limit and page margin
-        binding.viewPager.offscreenPageLimit = 5 // Load adjacent pages
-        binding.viewPager.clipToPadding = false
-        binding.viewPager.clipChildren = false
-        binding.viewPager.setPageTransformer { page, position ->
-            val MIN_SCALE = 0.9f     // center = 1.0, side cards smaller
-            val MIN_ALPHA = 0.7f
-            val translationFactor = 4f  // controls overlap/spacing
-
-            // Keep center card on top
-            page.z = 1f - abs(position)
-
-            // Scale cards
-            val scale = MIN_SCALE + (1 - abs(position)) * (1 - MIN_SCALE)
-            page.scaleX = scale
-            page.scaleY = scale
-
-            // Fade cards slightly
-            val alpha = MIN_ALPHA + (1 - abs(position)) * (1 - MIN_ALPHA)
-            page.alpha = alpha
-
-            // Adjust horizontal position for peeking
-            page.translationX = -position * page.width / translationFactor
-        }
-
     }
 
     private fun handleServicePaneResponse(responseObj: ServicePaneResponse) {
@@ -1092,12 +1174,19 @@ class HomeExploreFragment : BaseFragment() {
 
     private fun getJumpBackInData() {
         val call: Call<ResponseBody> =
-            apiService.getContinueData(sharedPreferenceManager.accessToken, "continue", 10, 0,"all")
+            apiService.getContinueData(
+                sharedPreferenceManager.accessToken,
+                "continue",
+                10,
+                0,
+                "all"
+            )
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(
                 call: Call<ResponseBody?>,
                 response: Response<ResponseBody?>
             ) {
+                if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonString = response.body()?.string()
@@ -1125,9 +1214,15 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                if (!isFragmentSafe()) return
                 handleNoInternetView(t)
             }
         })
 
+    }
+
+
+    private fun isFragmentSafe(): Boolean {
+        return isAdded && activity != null && !requireActivity().isFinishing && !requireActivity().isDestroyed
     }
 }

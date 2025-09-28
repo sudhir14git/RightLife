@@ -11,6 +11,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -106,6 +107,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -114,6 +116,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class HomeNewActivity : BaseActivity() {
@@ -556,7 +559,7 @@ class HomeNewActivity : BaseActivity() {
                     tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
 
                     val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
-                    if (countDown < 7) {
+            /*        if (countDown < 7) {
                         binding.tvCountDown.text = "${countDown + 1}/7"
                         binding.llCountDown.visibility = View.VISIBLE
                         binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
@@ -572,7 +575,7 @@ class HomeNewActivity : BaseActivity() {
                             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                             isTrialExpired = false
                         }
-                    }
+                    }*/
 
                     if (ResponseObj.isReportGenerated && !ResponseObj.reportView) {
                         binding.rightLifeReportCard.visibility = View.VISIBLE
@@ -597,19 +600,26 @@ class HomeNewActivity : BaseActivity() {
                         ?.find { it.title == "HealthCam" }
                         ?.isFree ?: false
                     Log.d("isHealthCamFree", isHealthCamFree.toString())
+                    handleUserSubscriptionStatus(ResponseObj.user_sub_status)
+                    if (ResponseObj.freeServiceDate.isNotEmpty()) {
+                        binding.llCountDown.visibility = View.VISIBLE
+                        showSevenDayCountdown(ResponseObj.freeServiceDate,binding.tvDays)
+                    }else{
+                        binding.tvDays.text = ""
+                        binding.llCountDown.visibility = View.GONE
+                    }
+
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
 
-                if (!DashboardChecklistManager.paymentStatus) {
+              /*  if (!DashboardChecklistManager.paymentStatus) {
                     binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
                     isTrialExpired = true
                 } else {
                     binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                     isTrialExpired = false
-                }
-
-
+                }*/
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
@@ -710,7 +720,7 @@ class HomeNewActivity : BaseActivity() {
             }
 
             R.id.menu_explore -> {
-                binding.iconExplore.setImageResource(R.drawable.my_health_menu_selected)
+                binding.iconExplore.setImageResource(R.drawable.my_health_menu_selected_new)
                 binding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.rightlife))
                 binding.labelExplore.setTypeface(null, Typeface.BOLD)
             }
@@ -2398,5 +2408,107 @@ class HomeNewActivity : BaseActivity() {
         return planId
     }
 
+    private fun handleUserSubscriptionStatus(userSubStatus: Int) {
+        when (userSubStatus) {
+            0 -> {
+                //Toast.makeText(this, "Welcome! Start your free trial.", Toast.LENGTH_LONG).show()
+                // maybe trigger free trial flow here
+                binding.flFreeTrial.visibility = View.VISIBLE
+                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+            }
+            1 -> {
+                //Toast.makeText(this, "You are subscribed. Enjoy premium features!", Toast.LENGTH_LONG).show()
+                binding.flFreeTrial.visibility = View.GONE
+                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+            }
+            2 -> {
+             //   Toast.makeText(this, "Your free trial has expired. Subscribe to continue.", Toast.LENGTH_LONG).show()
+                // navigate to subscription screen if needed
+                binding.flFreeTrial.visibility = View.GONE
+                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+            }
+            3 -> {
+               // Toast.makeText(this, "Your subscription has ended. Renew to regain access.", Toast.LENGTH_LONG).show()
+                binding.flFreeTrial.visibility = View.GONE
+                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+            }
+            else -> {
+                Toast.makeText(this, "Unknown subscription status. Please contact support.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    // handle user subsciption Status Code Explanation
+    /*USER_SUB_STATUS = 0
+
+    0 - New User(Free Trail Not Started) -  trial starts on API Hit
+    1 - SUbribed (Subscribed using payment)
+    2 - Free Trial expired
+    3 - Subscription Ended*/
+
+    // Trial countdown timer logic
+    private var countDownTimer: CountDownTimer? = null
+
+    /**
+     * Shows a 7-day reverse countdown in a TextView based on API date.
+     * If expired, shows "Trial expired".
+     */
+    private fun showSevenDayCountdown(apiDate: String, textView: TextView) {
+        // Cancel any existing timer
+        countDownTimer?.cancel()
+
+        try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val startDate = dateFormat.parse(apiDate) ?: return
+
+            // Add 7 days to start date
+            val endTime = startDate.time + (7 * 24 * 60 * 60 * 1000L)
+            val currentTime = System.currentTimeMillis()
+            val timeRemaining = endTime - currentTime
+
+            if (timeRemaining > 0) {
+                countDownTimer = object : CountDownTimer(timeRemaining, 1000L) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        val days = millisUntilFinished / (1000 * 60 * 60 * 24)
+                        val hours = (millisUntilFinished % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                        val minutes = (millisUntilFinished % (1000 * 60 * 60)) / (1000 * 60)
+                        val seconds = (millisUntilFinished % (1000 * 60)) / 1000
+
+                        /*textView.text = String.format(
+                            Locale.getDefault(),
+                            "%d Days %02d:%02d:%02d",
+                            days, hours, minutes, seconds
+                        )*/
+                        binding.tvDays.text = String.format(
+                            Locale.getDefault(),
+                            "%02d",
+                            days
+                        )
+                        binding.tvHours.text = String.format(
+                            Locale.getDefault(),
+                            "%02d",
+                            hours
+                        )
+                        binding.tvMinutes.text = String.format(
+                            Locale.getDefault(),
+                            "%02d",
+                            minutes
+                        )
+                    }
+
+                    override fun onFinish() {
+                        textView.text = "Trial expired"
+                    }
+                }.start()
+            } else {
+                // Already expired
+                textView.text = "Trial expired"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            textView.text = "Invalid date"
+        }
+    }
 
 }
+

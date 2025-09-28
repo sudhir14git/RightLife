@@ -315,7 +315,7 @@ object ActivityUtils {
     }
 
     fun startRightLifeContextScreenActivity(context: Context) {
-        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        /*val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
 
         if (sharedPreferenceManager.getFirstTimeView(SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN)) {
             sharedPreferenceManager.setFirstTimeView(SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN)
@@ -325,7 +325,7 @@ object ActivityUtils {
                     WelcomeRightLifeContextScreenActivity::class.java
                 )
             )
-        } else
+        } else*/
             context.startActivity(Intent(context, HomeNewActivity::class.java))
     }
 

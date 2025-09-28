@@ -69,6 +69,34 @@ public class UserProfileResponse {
     @Expose
     private Boolean isReportGenerated;
 
+
+    public String getFreeServiceDate() {
+        return freeServiceDate;
+    }
+
+    public void setFreeServiceDate(String freeServiceDate) {
+        this.freeServiceDate = freeServiceDate;
+    }
+
+    @SerializedName("freeServiceDate")
+    @Expose
+    private String freeServiceDate;
+
+    public Integer getUser_sub_status() {
+        return user_sub_status;
+    }
+
+    public void setUser_sub_status(Integer user_sub_status) {
+        this.user_sub_status = user_sub_status;
+    }
+
+    @SerializedName("user_sub_status")
+    @Expose
+    private Integer user_sub_status;
+
+
+
+
     public Boolean getFacialScanService() {
         return isFacialScanService;
     }

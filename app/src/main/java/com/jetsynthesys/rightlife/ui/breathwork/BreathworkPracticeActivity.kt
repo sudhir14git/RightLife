@@ -84,7 +84,10 @@ class BreathworkPracticeActivity : BaseActivity() {
         updateSessionTimer(sessionDurationSeconds * 1000L)
 
         // Set click listeners
-        binding.backButton.setOnClickListener { onBackPressed() }
+        binding.backButton.setOnClickListener {
+            //onBackPressed()
+            showDeleteBottomSheet()
+        }
         binding.finishEarlyButton.setOnClickListener {
             showDeleteBottomSheet()
         }
