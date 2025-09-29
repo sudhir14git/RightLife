@@ -35,6 +35,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentHomeExploreBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
 import com.jetsynthesys.rightlife.newdashboard.model.ContentResponse
 import com.jetsynthesys.rightlife.runWhenAttached
+import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.CardItem
@@ -905,8 +906,38 @@ class HomeExploreFragment : BaseFragment() {
                 "Mind Audit" -> {
                     ActivityUtils.startMindAuditActivity(requireContext())
                 }
+                "Meal Snap" -> {
+                    if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                        if (NetworkUtils.isInternetAvailable(requireContext())) {
+                            startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
+                                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                            })
+                        } else {
+                            showInternetError()
+                        }
+                    }
+                    else {
+                        ActivityUtils.startEatRightReportsActivity(
+                            requireContext(),
+                            "SnapMealTypeEat",
+                            ""
+                        )
+                    }
+                }
 
-                "Health Cam" -> ActivityUtils.startFaceScanActivity(requireContext())
+                "Health Cam" ->{
+                    if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                        if (NetworkUtils.isInternetAvailable(requireContext())) {
+                            startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
+                                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                            })
+                        } else {
+                            showInternetError()
+                        }
+                    }else {
+                        ActivityUtils.startFaceScanActivity(requireContext())
+                    }
+                }
 
                 else -> {
                     ActivityUtils.startFaceScanActivity(requireContext())

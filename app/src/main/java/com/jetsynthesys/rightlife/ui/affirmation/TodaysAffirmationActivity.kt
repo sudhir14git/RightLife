@@ -13,6 +13,7 @@ import android.util.DisplayMetrics
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
@@ -25,6 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -93,7 +95,7 @@ class TodaysAffirmationActivity : BaseActivity() {
             finish()
         }
 
-        if (sharedPreferenceManager.firstTimeUserForAffirmation)
+        if (sharedPreferenceManager.firstTimeUserAffirmationInfoShown)
             showInfoDialog()
 
         binding.llCategorySelection.setOnClickListener {
@@ -407,7 +409,17 @@ class TodaysAffirmationActivity : BaseActivity() {
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
         }
-
+        bottomSheetView.post {
+            val bottomSheet =
+                categoryBottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+                it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                it.requestLayout()
+            }
+        }
         val ivClose = bottomSheetView.findViewById<ImageView>(R.id.ivClose)
         ivClose.setOnClickListener {
             categoryBottomSheetDialog.dismiss()
@@ -739,6 +751,7 @@ class TodaysAffirmationActivity : BaseActivity() {
                 }
         }
         dialog.show()
+        sharedPreferenceManager.firstTimeUserAffirmationInfoShown = false
     }
 
     private fun showCreatedUpdatedDialog(message: String) {

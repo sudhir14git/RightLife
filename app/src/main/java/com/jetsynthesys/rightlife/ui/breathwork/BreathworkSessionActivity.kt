@@ -161,7 +161,7 @@ class BreathworkSessionActivity : BaseActivity() {
             intent.putExtra("StartDate", startDate)
             //intent.putExtra("ITEM_DESCRIPTION", selectedItem.description)
             startActivity(intent)
-            finish()
+
         }
 
         binding.switchHaptic.setOnCheckedChangeListener { _, isChecked ->

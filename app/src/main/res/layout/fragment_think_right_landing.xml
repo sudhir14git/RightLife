@@ -2114,6 +2114,7 @@
                             android:layout_marginTop="15dp"
                             android:gravity="center"
                             android:background="@drawable/yellow_btn_bg"
+                            android:backgroundTint="@color/think_tab_background"
                             android:orientation="horizontal">
 
                             <ImageView

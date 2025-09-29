@@ -80,7 +80,7 @@ public class MindAuditReasonsFragment extends Fragment implements MindAuditBasic
 
         recyclerView = view.findViewById(R.id.recyclerView);
         tvHeader = view.findViewById(R.id.dobPrompt);
-        tvHeader.setText("Any specific reason you feel " + emotion + "?");
+        tvHeader.setText("Any specific reason you feel " + emotion.toLowerCase() + "?");
         userEmotionsString.add(emotion);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 1);

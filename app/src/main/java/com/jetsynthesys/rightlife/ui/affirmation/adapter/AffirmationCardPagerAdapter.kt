@@ -88,7 +88,9 @@ class AffirmationCardPagerAdapter(
         }
 
 
-        tvAffirmationTitle.text = item.title
+
+        tvAffirmationTitle.text = "\"${item.title}\""
+
         tvAffirmationAuthor.text = "${item.artist}"
 
 

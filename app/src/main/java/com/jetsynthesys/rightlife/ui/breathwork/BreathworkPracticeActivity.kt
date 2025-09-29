@@ -26,8 +26,12 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 class BreathworkPracticeActivity : BaseActivity() {
+    var breathInText = ""
+    var holdText = ""
+    var breathOutText = ""
 
     private lateinit var binding: ActivityBreathworkPracticeBinding
+    var lastClickTime = 0L
 
     private var totalSets = 3
     private var currentSet = 1
@@ -89,7 +93,12 @@ class BreathworkPracticeActivity : BaseActivity() {
             showDeleteBottomSheet()
         }
         binding.finishEarlyButton.setOnClickListener {
-            showDeleteBottomSheet()
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime > 500) { // 500ms debounce
+                lastClickTime = currentTime
+                showDeleteBottomSheet()
+            }
+
         }
 
         // Start the breathing session
@@ -109,8 +118,8 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.circleView.visibility = View.GONE
         binding.circleViewbase.visibility = View.GONE
         // Hide breathing-specific UI elements during countdown
-        binding.setIndicator.alpha = 0.3f
-        binding.sessionTimer.alpha = 0.3f
+        //binding.setIndicator.alpha = 0.3f
+        //binding.sessionTimer.alpha = 0.3f
 
         // Make the countdown very prominent
         binding.breathingPhase.text = "Get Ready"
@@ -602,6 +611,38 @@ class BreathworkPracticeActivity : BaseActivity() {
         val green = ((Color.green(color) * (1 - factor) + 255 * factor)).toInt()
         val blue = ((Color.blue(color) * (1 - factor) + 255 * factor)).toInt()
         return Color.argb(Color.alpha(color), red, green, blue)
+    }
+
+
+    // Function to set texts based on breathing type
+    fun setBreathingTexts(breathingType: String) {
+        when (breathingType) {
+            "Box Breathing" -> {
+                breathInText = "Breathe In"
+                holdText = "Hold"
+                breathOutText = "Breathe Out"
+            }
+            "Alternate Nostril Breathing" -> {
+                breathInText = "Inhale slowly through your left nostril..."
+                holdText = "Hold"
+                breathOutText = "Exhale through your right nostril.."
+            }
+            "4-7-8 Breathing" -> {
+                breathInText = "Slow Inhale"
+                holdText = "Hold Breath"
+                breathOutText = "Long Exhale"
+            }
+            "Custom" -> {
+                breathInText = "Inhale"
+                holdText = "Exhale"
+                breathOutText = "Hold Still"
+            }
+            else -> {
+                breathInText = ""
+                holdText = ""
+                breathOutText = ""
+            }
+        }
     }
 
 }

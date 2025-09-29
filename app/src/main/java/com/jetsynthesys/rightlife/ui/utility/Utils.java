@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -308,6 +309,28 @@ public class Utils {
         // Set the message text
         TextView toastText = layout.findViewById(R.id.tvMessage);
         toastText.setText(message);
+
+        // Create the Toast
+        Toast toast = new Toast(context.getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
+    public static void showNewDesignToast(Context context, String message,boolean isSuccess) {
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View layout = inflater.inflate(R.layout.custom_toast_new, null);
+
+        // Set the message text
+        TextView toastText = layout.findViewById(R.id.tvMessage);
+        toastText.setText(message);
+        // set icon based on isSuccess
+        ImageView imgIcon = layout.findViewById(R.id.ivIcon);
+        if(isSuccess)
+            imgIcon.setImageResource(R.drawable.breathing_green_tick);
+        else
+        imgIcon.setImageResource(R.drawable.close_journal);
 
         // Create the Toast
         Toast toast = new Toast(context.getApplicationContext());

@@ -85,6 +85,8 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
+import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
@@ -501,6 +503,7 @@ class HomeNewActivity : BaseActivity() {
         checkForUpdate()
         getUserDetails()
         initBillingAndRecover()
+        getDashboardChecklistStatus()
     }
 
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -2510,5 +2513,27 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
+
+    // Dashboard Checklist API call
+    private fun getDashboardChecklistStatus() {
+        apiService.getdashboardChecklistStatus(sharedPreferenceManager.accessToken)
+            .enqueue(object : Callback<DashboardChecklistResponse> {
+                override fun onResponse(
+                    call: Call<DashboardChecklistResponse>,
+                    response: Response<DashboardChecklistResponse>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        response.body()?.data?.let {
+                            DashboardChecklistManager.updateFrom(it)
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<DashboardChecklistResponse>, t: Throwable) {
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
 }
 
