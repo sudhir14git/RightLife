@@ -46,11 +46,11 @@ object CommonAPICall {
                 response: Response<CommonResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
+                    /*Toast.makeText(
                         context,
                         response.body()!!.successMessage,
                         Toast.LENGTH_SHORT
-                    ).show()
+                    ).show()*/
                 } else {
                     Toast.makeText(
                         context,

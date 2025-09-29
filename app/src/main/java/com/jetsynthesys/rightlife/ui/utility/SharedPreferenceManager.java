@@ -446,6 +446,16 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
+    public Boolean getFirstTimeUserAffirmationInfoShown() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, true);
+    }
+
+    public void setFirstTimeUserAffirmationInfoShown(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, isUnlock);
+        editor.apply();
+    }
+
     public void saveTooltip(String prefKey, boolean isShowed) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(prefKey, isShowed);

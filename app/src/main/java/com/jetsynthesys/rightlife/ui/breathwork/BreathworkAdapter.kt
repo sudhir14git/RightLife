@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.databinding.ItemBreathworkBinding
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
 
 class BreathworkAdapter(
     private val items: List<BreathingData>,
@@ -85,6 +86,11 @@ class BreathworkAdapter(
                     onItemClick.onAddToolTip(item)
                     item.isAddedToToolKit = !item.isAddedToToolKit
                     notifyDataSetChanged()
+                    if (item.isAddedToToolKit) {
+                    Utils.showNewDesignToast(holder.itemView.context, "Added to toolkit",true)
+                    } else {
+                        Utils.showNewDesignToast(holder.itemView.context, "Removed from toolkit",false)
+                    }
                 }
             }
 
