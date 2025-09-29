@@ -39,7 +39,6 @@ class StressManagementSelectionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: StressManagementAdapter
     private val stressManagementList = ArrayList<StressManagement>()
-    private lateinit var header: String
 
     companion object {
         fun newInstance(pageIndex: Int, header: String): StressManagementSelectionFragment {
@@ -84,11 +83,6 @@ class StressManagementSelectionFragment : Fragment() {
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
 
-        header = arguments?.getString("HEADER").toString()
-
-        if (header.isNullOrEmpty()) {
-            header = SharedPreferenceManager.getInstance(requireContext()).selectedWellnessFocus
-        }
 
         recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
 
@@ -101,9 +95,6 @@ class StressManagementSelectionFragment : Fragment() {
                 btnContinue.backgroundTintList = colorStateList
             }
 
-        if (header.isNullOrEmpty())
-            getModuleList()
-        else
             setList()
 
         recyclerView.adapter = adapter
@@ -149,39 +140,6 @@ class StressManagementSelectionFragment : Fragment() {
         super.onPause()
         llSelectedStressManagement.visibility = GONE
         rlStressManagement.visibility = VISIBLE
-    }
-
-    private fun getModuleList() {
-        val authToken = SharedPreferenceManager.getInstance(requireContext()).accessToken
-        val apiService = ApiClient.getClient(requireContext()).create(ApiService::class.java)
-
-        val call = apiService.getOnboardingModule(authToken)
-
-        call.enqueue(object : Callback<OnBoardingModuleResponse> {
-            override fun onResponse(
-                call: Call<OnBoardingModuleResponse>,
-                response: Response<OnBoardingModuleResponse>
-            ) {
-                if (response.isSuccessful && response.body() != null) {
-                    val apiResponse = response.body()
-                    // Access the 'data' and 'services' fields
-                    val data = apiResponse?.data
-                    data?.services?.forEach { item ->
-                        if (item.isSelected) {
-                            header = item.moduleName.toString()
-                            setList()
-                            return
-                        }
-                    }
-
-                }
-            }
-
-            override fun onFailure(call: Call<OnBoardingModuleResponse>, t: Throwable) {
-
-            }
-
-        })
     }
 
     private fun setList() {
