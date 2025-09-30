@@ -29,6 +29,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityJournalAnswerBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetAddTagBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
@@ -83,6 +84,49 @@ class Journal4QuestionsActivity : BaseActivity() {
 
         onBackPressedDispatcher.addCallback {
             closeActivity()
+        }
+
+        binding.btnInfo.setOnClickListener {
+
+            val htmlText = when (journalItem?.title) {
+                "Gratitude" -> {
+                    """
+    <p>This practice centers on noticing what’s going well—no matter how big or small.</p>
+    <p>Gratitude Journaling has been shown to boost mood, shift perspective, and build emotional resilience.</p>
+    <p>Even a few simple entries can help rewire your focus toward the positive.</p>
+""".trimIndent()
+                }
+
+                "Grief" -> {
+                    """
+    <p>Grief Journaling is a safe place to hold pain, memories, questions, or anger.</p>
+    <p>It’s for anyone navigating loss, change, or heartache.</p>
+    <p>There’s no right way to grieve—this space is here to let your feelings breathe, however they show up.</p>
+""".trimIndent()
+                }
+
+                "Bullet" -> {
+                    """
+    <p>Bullet Journaling helps organize your inner world in small, manageable pieces.</p>
+    <p>Use it to list your moods, wins, worries, intentions—or anything else on your mind.</p>
+    <p>It’s a great option when you don’t feel like writing full paragraphs but still want to check in with yourself.</p>
+""".trimIndent()
+                }
+
+                else -> {
+                    """
+        <p>Free Form Journaling is all about flow. There are no rules, no structure—just your thoughts, as they come.</p>
+        <p>You can write a few lines or fill a page. It’s your space to vent, dream, reflect, or ramble.</p>
+        <p>Let go of how it should sound and focus on what you feel.</p>
+    """.trimIndent()
+                }
+            }
+            journalItem?.title?.let { it1 ->
+                DialogUtils.showJournalCommonDialog(
+                    this,
+                    it1, htmlText
+                )
+            }
         }
 
         binding.tvEntryDate.text = DateTimeUtils.formatCurrentDate()
@@ -343,7 +387,7 @@ class Journal4QuestionsActivity : BaseActivity() {
 
         chip.textSize = 12f
 
-        val heightInDp = 60 // or whatever height you want
+        val heightInDp = 50 // or whatever height you want
         val heightInPx = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             heightInDp.toFloat(),
@@ -389,16 +433,16 @@ class Journal4QuestionsActivity : BaseActivity() {
             true
         }
 
-/*
-        chip.setOnClickListener { view ->
-            val position = chipGroup.indexOfChild(view) - 1
-            when (type) {
-                1 -> selectedTags.add(tagsList1[position])
-                2 -> selectedTags.add(tagsList2[position])
-                3 -> selectedTags.add(tagsList3[position])
-            }
-        }
-*/
+        /*
+                chip.setOnClickListener { view ->
+                    val position = chipGroup.indexOfChild(view) - 1
+                    when (type) {
+                        1 -> selectedTags.add(tagsList1[position])
+                        2 -> selectedTags.add(tagsList2[position])
+                        3 -> selectedTags.add(tagsList3[position])
+                    }
+                }
+        */
 
         chip.setOnClickListener { view ->
             val position = chipGroup.indexOfChild(view) - 1
@@ -406,9 +450,11 @@ class Journal4QuestionsActivity : BaseActivity() {
                 1 -> if (selectedTags.contains(tagsList1[position])) selectedTags.remove(tagsList1[position]) else selectedTags.add(
                     tagsList1[position]
                 )
+
                 2 -> if (selectedTags.contains(tagsList2[position])) selectedTags.remove(tagsList2[position]) else selectedTags.add(
                     tagsList2[position]
                 )
+
                 3 -> if (selectedTags.contains(tagsList3[position])) selectedTags.remove(tagsList3[position]) else selectedTags.add(
                     tagsList3[position]
                 )
@@ -441,7 +487,7 @@ class Journal4QuestionsActivity : BaseActivity() {
             }
         }
 
-        val heightInDp = 60 // or whatever height you want
+        val heightInDp = 50 // or whatever height you want
         val heightInPx = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             heightInDp.toFloat(),
