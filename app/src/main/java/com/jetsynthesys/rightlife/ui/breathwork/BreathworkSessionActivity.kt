@@ -155,11 +155,12 @@ class BreathworkSessionActivity : BaseActivity() {
         }
 
         binding.btnContinue.setOnClickListener {
-            val intent = Intent(this, BreathworkPracticeActivity::class.java)
-            intent.putExtra("sessionCount", sessionCount * 4)
-            intent.putExtra("BREATHWORK", breathingData)
-            intent.putExtra("StartDate", startDate)
-            //intent.putExtra("ITEM_DESCRIPTION", selectedItem.description)
+            val intent = Intent(this, BreathworkPracticeActivity::class.java).apply {
+                putExtra("sessionCount", sessionCount * 4)
+                putExtra("BREATHWORK", breathingData)
+                putExtra("StartDate", startDate)
+                putExtra("HAPTIC_FEEDBACK", binding.switchHaptic.isChecked)
+            }
             startActivity(intent)
 
         }

@@ -229,49 +229,53 @@ class TodaysAffirmationActivity : BaseActivity() {
     }
 
     private fun onSwipeUp() {
-        // Animate both
         if (selectedCategoryPosition < categoryList.size - 1) {
-            binding.cardViewPager.animate()
-                .translationYBy(-(binding.cardViewPager.height.toFloat() + 100))
-                .setDuration(300)
-                .withEndAction {
+            val currentPage = binding.cardViewPager.getChildAt(0) // current visible page view
+
+            currentPage?.animate()
+                ?.translationYBy(-(currentPage.height.toFloat() + 100))
+                ?.setDuration(300)
+                ?.withEndAction {
                     selectedCategoryPosition += 1
                     getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
                     binding.tvCategory.text = categoryList[selectedCategoryPosition].title
-                    binding.cardViewPager.translationY =
-                        binding.cardViewPager.height.toFloat() + 100
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        binding.cardViewPager.animate()
-                            .translationY(0f)
-                            .setDuration(300)
-                            .start()
-                    }, 1000)
+
+                    // Reset below screen
+                    currentPage.translationY = currentPage.height.toFloat() + 100
+
+                    currentPage.animate()
+                        .translationY(0f)
+                        .setDuration(300)
+                        .start()
                 }
-                .start()
+                ?.start()
         }
     }
 
     private fun onSwipeDown() {
         if (selectedCategoryPosition > 0) {
-            binding.cardViewPager.animate()
-                .translationYBy(binding.cardViewPager.height.toFloat() + 100)
-                .setDuration(300)
-                .withEndAction {
+            val currentPage = binding.cardViewPager.getChildAt(0) // current visible page view
+
+            currentPage?.animate()
+                ?.translationYBy(currentPage.height.toFloat() + 100)
+                ?.setDuration(300)
+                ?.withEndAction {
                     selectedCategoryPosition -= 1
                     getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
                     binding.tvCategory.text = categoryList[selectedCategoryPosition].title
-                    binding.cardViewPager.translationY =
-                        -(binding.cardViewPager.height.toFloat() + 100)
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        binding.cardViewPager.animate()
-                            .translationY(0f)
-                            .setDuration(300)
-                            .start()
-                    }, 1000)
+
+                    // Reset above screen
+                    currentPage.translationY = -(currentPage.height.toFloat() + 100)
+
+                    currentPage.animate()
+                        .translationY(0f)
+                        .setDuration(300)
+                        .start()
                 }
-                .start()
+                ?.start()
         }
     }
+
 
 
     private fun addCardToPlaylist() {

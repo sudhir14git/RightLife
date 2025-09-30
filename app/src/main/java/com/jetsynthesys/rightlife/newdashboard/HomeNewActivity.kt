@@ -398,9 +398,9 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llBreathwork.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
-                if (checkTrailEndedAndShowDialog()) {
+                //if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startBreathWorkActivity(this@HomeNewActivity)
-                }
+                //}
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)

@@ -53,6 +53,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     private var holdSound: MediaPlayer? = null
     private var isSoundEnabled = true
     private var isPreparationPhase = true  // Starts as true
+    private var isHapticFeedBack = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +70,7 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         val sessionCount = intent.getIntExtra("sessionCount", 3)
         totalSets = sessionCount
+        isHapticFeedBack = intent.getBooleanExtra("HAPTIC_FEEDBACK", false)
         inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
         exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
         holdTime = breathingData?.breathHoldTime?.toLong()!! * 1000
@@ -132,7 +134,6 @@ class BreathworkPracticeActivity : BaseActivity() {
         } else {
             binding.tvPrepareMessage.text = "Relax and Settle In"
         }
-
 
 
         var countdownValue = 4
@@ -239,10 +240,12 @@ class BreathworkPracticeActivity : BaseActivity() {
                     stopAllSounds()
                     inhaleSound?.start()
                 }
+
                 BreathingPhase.EXHALE -> {
                     stopAllSounds()
                     exhaleSound?.start()
                 }
+
                 BreathingPhase.HOLD -> {
                     stopAllSounds()
                     holdSound?.start()
@@ -332,10 +335,15 @@ class BreathworkPracticeActivity : BaseActivity() {
     private fun showCompletedBottomSheetNew() {
         binding.rlPracticeComplete.visibility = View.VISIBLE
         binding.rlBreathingPracticeMain.visibility = View.GONE
-        binding.btnExit.setOnClickListener() {
-            showCompletedBottomSheet()
+        binding.btnExit.setOnClickListener {
+            if (isHapticFeedBack)
+                showCompletedBottomSheet()
+            else {
+                callPostMindFullDataAPI()
+                finish()
+            }
         }
-        binding.btnRepeat.setOnClickListener() {
+        binding.btnRepeat.setOnClickListener {
             // Reset for a new session
             currentSet = 1
             binding.rlPracticeComplete.visibility = View.GONE
@@ -622,21 +630,25 @@ class BreathworkPracticeActivity : BaseActivity() {
                 holdText = "Hold"
                 breathOutText = "Breathe Out"
             }
+
             "Alternate Nostril Breathing" -> {
                 breathInText = "Inhale slowly through your left nostril..."
                 holdText = "Hold"
                 breathOutText = "Exhale through your right nostril.."
             }
+
             "4-7-8 Breathing" -> {
                 breathInText = "Slow Inhale"
                 holdText = "Hold Breath"
                 breathOutText = "Long Exhale"
             }
+
             "Custom" -> {
                 breathInText = "Inhale"
                 holdText = "Exhale"
                 breathOutText = "Hold Still"
             }
+
             else -> {
                 breathInText = ""
                 holdText = ""
