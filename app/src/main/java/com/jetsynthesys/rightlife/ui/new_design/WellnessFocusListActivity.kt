@@ -113,6 +113,7 @@ class WellnessFocusListActivity : BaseActivity() {
         btnContinue.setOnClickListener {
 
             if (selectedWellnessFocus.size in 2..4) {
+                Utils.showNewDesignToast(this, "Goals Updated", true)
                 val selectedOptions = ArrayList<String>()
                 selectedWellnessFocus.forEach {
                     it.id?.let { it1 -> selectedOptions.add(it1) }
@@ -139,6 +140,7 @@ class WellnessFocusListActivity : BaseActivity() {
                         .setWellnessFocusTopics(selectedWellnessFocus)
                     startActivity(intent)
                 }
+
             } else if (selectedWellnessFocus.size < 2) {
                 Toast.makeText(
                     this,

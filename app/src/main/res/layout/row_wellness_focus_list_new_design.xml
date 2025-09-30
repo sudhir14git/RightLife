@@ -33,6 +33,6 @@
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/image_row_wellness_focus"
         android:textColor="@color/txt_color_header"
-        android:textSize="@dimen/textsize_large18sp" />
+        android:textSize="@dimen/textsize_large" />
     </RelativeLayout>
 </LinearLayout>

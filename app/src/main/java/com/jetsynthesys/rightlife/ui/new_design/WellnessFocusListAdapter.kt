@@ -67,10 +67,26 @@ class WellnessFocusListAdapter(
         }
 
         holder.itemView.setOnClickListener {
+
+            // 🚫 Block conflicting pair
+            if ((wellnessFocus.moduleTopic == "Weight Loss & Calorie Management" &&
+                        wellnessFocusList.any { it.moduleTopic == "Bulk and Build Muscle" && it.isSelected }) ||
+                (wellnessFocus.moduleTopic == "Bulk and Build Muscle" &&
+                        wellnessFocusList.any { it.moduleTopic == "Weight Loss & Calorie Management" && it.isSelected })
+            ) {
+                Utils.showNewDesignToast(context,
+                    "You cannot select Weight Loss & Calorie Management with Bulk and Build Muscle together.",
+                    false
+                )
+                return@setOnClickListener
+            }
+
             if (count < 4 || wellnessFocus.isSelected) {
                 onItemClickListener.onItemClick(wellnessFocus)
                 wellnessFocus.isSelected = !wellnessFocus.isSelected
                 notifyDataSetChanged()
+            }else{
+                Utils.showNewDesignToast(context, "You can select up to 4 goals only.",false)
             }
         }
     }

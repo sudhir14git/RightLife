@@ -938,6 +938,19 @@ class HomeExploreFragment : BaseFragment() {
                         ActivityUtils.startFaceScanActivity(requireContext())
                     }
                 }
+                "Face Scan" ->{
+                    if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                        if (NetworkUtils.isInternetAvailable(requireContext())) {
+                            startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
+                                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                            })
+                        } else {
+                            showInternetError()
+                        }
+                    }else {
+                        ActivityUtils.startFaceScanActivity(requireContext())
+                    }
+                }
 
                 else -> {
                     ActivityUtils.startFaceScanActivity(requireContext())

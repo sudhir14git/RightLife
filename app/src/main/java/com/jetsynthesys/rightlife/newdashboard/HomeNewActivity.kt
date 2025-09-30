@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -119,6 +120,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class HomeNewActivity : BaseActivity() {
@@ -2456,7 +2458,7 @@ class HomeNewActivity : BaseActivity() {
      * Shows a 7-day reverse countdown in a TextView based on API date.
      * If expired, shows "Trial expired".
      */
-    private fun showSevenDayCountdown(apiDate: String, textView: TextView) {
+    /*private fun showSevenDayCountdown(apiDate: String, textView: TextView) {
         // Cancel any existing timer
         countDownTimer?.cancel()
 
@@ -2477,11 +2479,11 @@ class HomeNewActivity : BaseActivity() {
                         val minutes = (millisUntilFinished % (1000 * 60 * 60)) / (1000 * 60)
                         val seconds = (millisUntilFinished % (1000 * 60)) / 1000
 
-                        /*textView.text = String.format(
+                        *//*textView.text = String.format(
                             Locale.getDefault(),
                             "%d Days %02d:%02d:%02d",
                             days, hours, minutes, seconds
-                        )*/
+                        )*//*
                         binding.tvDays.text = String.format(
                             Locale.getDefault(),
                             "%02d",
@@ -2497,6 +2499,56 @@ class HomeNewActivity : BaseActivity() {
                             "%02d",
                             minutes
                         )
+                    }
+
+                    override fun onFinish() {
+                        textView.text = "Trial expired"
+                    }
+                }.start()
+            } else {
+                // Already expired
+                textView.text = "Trial expired"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            textView.text = "Invalid date"
+        }
+    }*/
+
+
+    private fun showSevenDayCountdown(apiDate: String, textView: TextView) {
+        // Cancel any existing timer
+        countDownTimer?.cancel()
+
+        try {
+            val startDateMillis: Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // API 26+ → use java.time
+                Instant.parse(apiDate).toEpochMilli()
+            } else {
+                // API < 26 → fallback to SimpleDateFormat
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+                dateFormat.parse(apiDate)?.time ?: return
+            }
+
+            // Add 7 days to start date
+            val endTime = startDateMillis + (7 * 24 * 60 * 60 * 1000L)
+            val currentTime = System.currentTimeMillis()
+            val timeRemaining = endTime - currentTime
+
+            if (timeRemaining > 0) {
+                countDownTimer = object : CountDownTimer(timeRemaining, 1000L) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        val days = millisUntilFinished / (1000 * 60 * 60 * 24)
+                        val hours = (millisUntilFinished % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                        val minutes = (millisUntilFinished % (1000 * 60 * 60)) / (1000 * 60)
+                        val seconds = (millisUntilFinished % (1000 * 60)) / 1000
+
+                        // Update your UI
+                        binding.tvDays.text = String.format(Locale.getDefault(), "%02d", days)
+                        binding.tvHours.text = String.format(Locale.getDefault(), "%02d", hours)
+                        binding.tvMinutes.text = String.format(Locale.getDefault(), "%02d", minutes)
+                        // If you need seconds: binding.tvSeconds.text = "%02d".format(seconds)
                     }
 
                     override fun onFinish() {
