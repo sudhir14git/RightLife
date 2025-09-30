@@ -443,7 +443,11 @@ class HomeDashboardFragment : BaseFragment() {
             binding.llDashboardMainData.visibility = View.GONE
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
         }
-        checklistResponse.data.snap_mealId.let { snapMealId ->
+        /*checklistResponse.data.snap_mealId.let { snapMealId ->
+            sharedPreferenceManager.saveSnapMealId(snapMealId)
+            this.snapMealId = snapMealId
+        }*/
+        checklistResponse.data.snap_mealId?.let { snapMealId ->
             sharedPreferenceManager.saveSnapMealId(snapMealId)
             this.snapMealId = snapMealId
         }
