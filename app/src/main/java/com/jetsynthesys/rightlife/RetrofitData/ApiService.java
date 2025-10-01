@@ -1281,6 +1281,25 @@ public interface ApiService {
             @Query("skip") int skip
     );
 
+    @GET("content/list")
+    Call<ResponseBody> fetchCategoryList(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("moduleId") String moduleId,
+            @Query("contentType") String contentType
+    );
+
+    @GET("content/list")
+    Call<ResponseBody> fetchCategoryList(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("moduleId") String moduleId,
+            @Query("categoryId") String categoryId,
+            @Query("contentType") String contentType
+    );
+
 }
 
 

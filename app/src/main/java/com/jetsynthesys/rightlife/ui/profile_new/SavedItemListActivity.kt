@@ -49,7 +49,7 @@ class SavedItemListActivity : BaseActivity() {
             finish()
         }
 
-        adapter = SavedItemsAdapter(this, contentDetails, onBookMarkedClick = { item,position->
+        adapter = SavedItemsAdapter(this, contentDetails, onBookMarkedClick = { item, position ->
             item.id?.let { it1 ->
                 CommonAPICall.contentBookMark(this, it1, !item.isBookmarked) { success, message ->
                     if (success) {
@@ -60,7 +60,8 @@ class SavedItemListActivity : BaseActivity() {
                             "Removed From Bookmarks"
                         }
                         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                        adapter.notifyItemChanged(position)
+                        contentDetails.removeAt(position)
+                        adapter.notifyDataSetChanged()
                     } else {
                         Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT).show()
                     }
