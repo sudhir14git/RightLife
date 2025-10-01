@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.profile_new.pojo
 
 import com.google.gson.annotations.SerializedName
+import com.jetsynthesys.rightlife.apimodel.rlpagemodels.continuemodela.EpisodeDetails
 import java.io.Serializable
 
 data class BookmarkResponse(
@@ -11,10 +12,10 @@ data class BookmarkResponse(
     val statusCode: Int?,
 
     @SerializedName("data")
-    val data: BookMarkContentData?
+    val data: BookmarkData?
 ) : Serializable
 
-data class BookMarkContentData(
+data class BookmarkData(
     @SerializedName("contentDetails")
     val contentDetails: List<BookMarkContentDetails>?,
 
@@ -65,8 +66,9 @@ data class BookMarkContentDetails(
     @SerializedName("desc")
     val desc: String?,
 
+    // Article can be [] (empty array) or list of objects → use List<ArticleItem>
     @SerializedName("article")
-    val article: List<String>?,
+    val article: List<Article>?,
 
     @SerializedName("tags")
     val tags: List<Tag>?,
@@ -133,25 +135,22 @@ data class BookMarkContentDetails(
 ) : Serializable
 
 data class SubCategory(
-    @SerializedName("_id")
-    val id: String?,
-
     @SerializedName("name")
-    val name: String?
+    val name: String?,
+
+    @SerializedName("_id")
+    val id: String?
 ) : Serializable
 
 data class Artist(
-    @SerializedName("_id")
-    val id: String?,
-
     @SerializedName("firstName")
     val firstName: String?,
 
     @SerializedName("lastName")
     val lastName: String?,
 
-    @SerializedName("profilePicture")
-    val profilePicture: String?
+    @SerializedName("_id")
+    val id: String?
 ) : Serializable
 
 data class Thumbnail(
@@ -160,6 +159,43 @@ data class Thumbnail(
 
     @SerializedName("title")
     val title: String?
+) : Serializable
+
+data class Article(
+    @SerializedName("htmlContent")
+    val htmlContent: String?,
+
+    @SerializedName("thumbnail")
+    val thumbnail: String?,
+
+    @SerializedName("recommendedProduct")
+    val recommendedProduct: String?,
+
+    @SerializedName("recommendedService")
+    val recommendedService: String?,
+
+    @SerializedName("recommendedArticle")
+    val recommendedArticle: String?,
+
+    @SerializedName("recommendedLive")
+    val recommendedLive: String?,
+
+    @SerializedName("funFacts")
+    val funFacts: FunFacts?,
+
+    @SerializedName("_id")
+    val id: String?
+) : Serializable
+
+data class FunFacts(
+    @SerializedName("heading")
+    val heading: String?,
+
+    @SerializedName("description")
+    val description: String?,
+
+    @SerializedName("_id")
+    val id: String?
 ) : Serializable
 
 data class Tag(
@@ -197,69 +233,4 @@ data class Meta(
 
     @SerializedName("sizeBytes")
     val sizeBytes: Long?
-) : Serializable
-
-data class EpisodeDetails(
-    @SerializedName("_id")
-    val id: String?,
-
-    @SerializedName("contentId")
-    val contentId: String?,
-
-    @SerializedName("type")
-    val type: String?,
-
-    @SerializedName("title")
-    val title: String?,
-
-    @SerializedName("episodeNumber")
-    val episodeNumber: Int?,
-
-    @SerializedName("desc")
-    val desc: String?,
-
-    @SerializedName("artist")
-    val artist: List<String>?,
-
-    @SerializedName("thumbnail")
-    val thumbnail: Thumbnail?,
-
-    @SerializedName("youtubeUrl")
-    val youtubeUrl: String?,
-
-    @SerializedName("pricingTier")
-    val pricingTier: String?,
-
-    @SerializedName("tags")
-    val tags: List<String>?,
-
-    @SerializedName("isDeleted")
-    val isDeleted: Boolean?,
-
-    @SerializedName("meta")
-    val meta: Meta?,
-
-    @SerializedName("viewCount")
-    val viewCount: Int?,
-
-    @SerializedName("order")
-    val order: Int?,
-
-    @SerializedName("isActive")
-    val isActive: Boolean?,
-
-    @SerializedName("createdAt")
-    val createdAt: String?,
-
-    @SerializedName("updatedAt")
-    val updatedAt: String?,
-
-    @SerializedName("__v")
-    val v: Int?,
-
-    @SerializedName("tagDetails")
-    val tagDetails: List<Tag>?,
-
-    @SerializedName("artistDetails")
-    val artistDetails: List<Artist>?
 ) : Serializable

@@ -9,7 +9,10 @@ import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
@@ -17,6 +20,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.chipsmodulefilter.ModuleChipCategory
 import com.jetsynthesys.rightlife.databinding.ActivityNewCategorylistBinding
 import com.jetsynthesys.rightlife.databinding.PopupCategoryListBinding
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.Utils
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,9 +30,17 @@ import retrofit2.Response
 class NewCategoryListActivity : BaseActivity() {
 
     private lateinit var binding: ActivityNewCategorylistBinding
+    private val contentDetails = mutableListOf<CategoryListItem>()
+    private lateinit var adapter: NewCategoryListAdapter
     private var selectedModuleId = ""
     private var selectedCategoryId = ""
+    private var isLoading = false
+    private var skip = 0
+    private val limit = 10
+    private var selectedContentType = "all"
     private var selectedText = "All"
+    private var totalCount = 0
+    private lateinit var responseObj: ModuleChipCategory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +54,94 @@ class NewCategoryListActivity : BaseActivity() {
             showCustomPopup(it)
         }
 
+        binding.iconBack.setOnClickListener {
+            finish()
+        }
+
+        binding.tvHeader.text = getModuleText(selectedModuleId)
+
         getContentList(selectedModuleId)
+
+
+        adapter =
+            NewCategoryListAdapter(this, contentDetails, onBookMarkedClick = { item, position ->
+                item.id?.let { it1 ->
+                    CommonAPICall.contentBookMark(
+                        this,
+                        it1,
+                        !item.isBookmarked
+                    ) { success, message ->
+                        if (success) {
+                            item.isBookmarked = !item.isBookmarked
+                            val msg = if (item.isBookmarked) {
+                                "Added To Bookmarks"
+                            } else {
+                                "Removed From Bookmarks"
+                            }
+                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                            adapter.notifyItemChanged(position)
+                        } else {
+                            Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                }
+            })
+
+        binding.rvCategoryList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.rvCategoryList.adapter = adapter
+
+        // Add scroll listener for pagination
+        binding.rvCategoryList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val lastVisible = layoutManager.findLastCompletelyVisibleItemPosition()
+
+                if (!isLoading && lastVisible == contentDetails.size - 1 && contentDetails.size < totalCount) {
+                    fetchContent(skip, selectedContentType, selectedCategoryId)
+                }
+            }
+        })
+
+        fetchContent(skip, selectedContentType, selectedCategoryId)
+        setupChipListeners()
+    }
+
+    private fun setupChipListeners() {
+        binding.filterChipGroup.setOnCheckedStateChangeListener { group: ChipGroup, checkedIds: List<Int> ->
+            if (checkedIds.isNotEmpty()) {
+                val checkedId = checkedIds[0] // since single selection
+                val chip = group.findViewById<Chip>(checkedId)
+                if (chip != null) {
+                    var position = -1
+                    for (i in 0 until group.childCount) {
+                        val child = group.getChildAt(i)
+                        if (child.id == checkedId) {
+                            position = i
+                            break
+                        }
+                    }
+
+                    // Use the position as needed
+                    if (position != -1) {
+                        contentDetails.clear()
+                        skip = 0
+                        if (position == 0) {
+                            selectedCategoryId = ""
+                            fetchContent(skip, selectedContentType)
+                        } else {
+                            val result = responseObj.data.result[position - 1]
+                            selectedCategoryId = result.categoryId
+                            selectedModuleId = result.moduleId
+                            fetchContent(skip, selectedContentType, selectedCategoryId)
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -57,16 +158,14 @@ class NewCategoryListActivity : BaseActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
-                    val responseObj = gson.fromJson(
+                    responseObj = gson.fromJson(
                         jsonResponse,
                         ModuleChipCategory::class.java
                     )
                     addChip("All", selectedModuleId)
-                    for (i in responseObj.data.result.indices) {
-                        addChip(
-                            responseObj.data.result[i].name,
-                            responseObj.data.result[i].id
-                        )
+                    val result = responseObj.data.result
+                    for (i in result.indices) {
+                        addChip(result[i].name, result[i].id)
                     }
                     findViewById<Chip>(binding.filterChipGroup.checkedChipId)?.let { chip ->
                         binding.filterChipGroup.requestChildFocus(chip, chip)
@@ -290,7 +389,73 @@ class NewCategoryListActivity : BaseActivity() {
     private fun popupOptionClicked(selectedString: String) {
         binding.tvSelectedCategory.text = selectedString
         selectedText = selectedString
-        //filterContent(selectedString)
+        skip = 0
+        contentDetails.clear()
+        selectedContentType = if (selectedString.equals("All", ignoreCase = true))
+            selectedString.lowercase()
+        else
+            selectedString.uppercase()
+        fetchContent(skip, selectedContentType, selectedCategoryId)
+    }
+
+    private fun fetchContent(skipValue: Int, contentType: String, categoryId: String = "") {
+        Utils.showLoader(this)
+        isLoading = true
+        val call = if (categoryId.isEmpty())
+            apiService.fetchCategoryList(
+                sharedPreferenceManager.accessToken,
+                limit,
+                skipValue,
+                selectedModuleId,
+                contentType
+            )
+        else
+            apiService.fetchCategoryList(
+                sharedPreferenceManager.accessToken,
+                limit,
+                skipValue,
+                selectedModuleId,
+                categoryId,
+                contentType
+            )
+
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                Utils.dismissLoader(this@NewCategoryListActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonString = response.body()?.string()
+
+                    val responseObj: CategoryListResponse =
+                        gson.fromJson(jsonString, CategoryListResponse::class.java)
+                    totalCount = responseObj.data?.count ?: 0
+
+                    val newItems = responseObj.data?.contentList ?: emptyList()
+                    contentDetails.addAll(newItems)
+                    adapter.notifyDataSetChanged()
+                    skip += newItems.size
+                }
+                isLoading = false
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                isLoading = false
+                Utils.dismissLoader(this@NewCategoryListActivity)
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+    private fun getModuleText(module: String?): String = when (module) {
+        null -> ""
+        AppConstants.EAT_RIGHT, "EAT_RIGHT" -> "EatRight"
+        AppConstants.THINK_RIGHT, "THINK_RIGHT" -> "ThinkRight"
+        AppConstants.SLEEP_RIGHT, "SLEEP_RIGHT" -> "SleepRight"
+        AppConstants.MOVE_RIGHT, "MOVE_RIGHT" -> "MoveRight"
+        else -> module
     }
 
 }
