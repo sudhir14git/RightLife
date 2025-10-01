@@ -14,7 +14,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import com.jetsynthesys.rightlife.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 
 class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
 
@@ -64,18 +64,18 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
             currentPhotoPathsecound = null
         }
 
-        val snapDishLocalListModel = if (Build.VERSION.SDK_INT >= 33) {
-            arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
+        val recipeDetailsLocalListModel = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("snapDishLocalListModel", RecipeDetailsLocalListModel::class.java)
         } else {
             arguments?.getParcelable("snapDishLocalListModel")
         }
 
         layoutDelete.setOnClickListener {
-            if (snapDishLocalListModel != null) {
-                if (snapDishLocalListModel.data.size > 0) {
-                    for (item in snapDishLocalListModel.data) {
-                        if (item.name.contentEquals(snapRecipeName)) {
-                            snapDishLocalListModel.data.remove(item)
+            if (recipeDetailsLocalListModel != null) {
+                if (recipeDetailsLocalListModel.data.size > 0) {
+                    for (item in recipeDetailsLocalListModel.data) {
+                        if (item.recipe.contentEquals(snapRecipeName)) {
+                            recipeDetailsLocalListModel.data.remove(item)
                             dismiss()
                             Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
                             val fragment = MealScanResultFragment()
@@ -89,7 +89,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
                             args.putString("homeTab", homeTab)
                             args.putString("selectedMealDate", selectedMealDate)
                             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
-                            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flFragment, fragment, "mealLog")

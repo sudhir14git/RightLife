@@ -53,18 +53,18 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.request.AddWorkoutLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.CreateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateRecipeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealsNutrientsRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateDishLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
@@ -106,13 +106,15 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeListResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SetStepsGoalResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SleepSoundResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealNutrientsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeListResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.StepTrackerResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.UpdateCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.UpdateRoutineResponse
@@ -122,7 +124,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryRespon
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutPlanResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MoveDashboardResponse
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeResponseNew
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsViewResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -151,20 +153,25 @@ interface ApiService {
         @Header("Authorization") authToken: String): Call<RecipeResponseModel>
 
     @GET("eat/recipes/names")
-    fun getSnapMealRecipesList(
-       ): Call<SnapMealRecipeResponseModel>
+    fun getRecipesList(
+       ): Call<RecipeListResponse>
 
     @GET("eat/recipes/")
-    fun getSnapMealRecipeById(
+    fun getDetailsViewRecipeById(
         @Query("recipe_id") recipeId: String
-    ): Call<RecipeResponseNew>
+    ): Call<RecipeDetailsViewResponse>
+
+    @GET("eat/recipes/fetch_recipe_by_id/")
+    fun getRecipeDetailsById(
+        @Query("recipe_id") recipeId: String
+    ): Call<RecipeDetailsResponse>
 
     @GET("eat/recipes/names")
-    fun getRecipesList(
+    fun getRecipesListWithFilter(
         @Query("meal_type") mealType: String? = null,
         @Query("food_type") foodType: String? = null,
         @Query("cuisine") cuisine: String? = null
-    ): Call<SnapMealRecipeResponseModel>
+    ): Call<RecipeListResponse>
 
     @GET("eat/recipes/{foodId}")
     fun getSnapMealRecipesDetails(
@@ -202,10 +209,10 @@ interface ApiService {
                 @Query("date") startDate: String): Call<MealsResponse>
 
     @GET("eat/meals/get_search/")
-    fun getSearchMealList(@Query("keyword") keyword: String): Call<SearchResultsResponse>
+    fun getSearchMealList(@Query("keyword") keyword: String): Call<IngredientRecipeListResponse>
 
     @GET("eat/fetch_ingredient_list/")
-    fun getSearchIngredientList(@Query("limit") limit: String): Call<IngredientResponse>
+    fun getSearchIngredientList(@Query("keyword") keyword: String): Call<IngredientResponse>
 
     @POST("eat/log-meal/")
     fun createLogDish(@Body request: MealLogRequest): Call<MealLogResponse>
@@ -214,7 +221,7 @@ interface ApiService {
     fun createLogMeal(@Query("user_id") userId: String,@Body request: MealPlanRequest): Call<MealPlanResponse>
 
     @POST("eat/meals/create_meal/")
-    fun createMealsSave(@Query("user_id") userId: String,@Body request: MealSaveRequest): Call<MealUpdateResponse>
+    fun createMealRequest(@Query("user_id") userId: String,@Body request: CreateMealRequest): Call<MealUpdateResponse>
 
     @POST("eat/recipes/create/")
     fun createRecipe(@Query("user_id") userId: String,@Body request: CreateRecipeRequest): Call<MealUpdateResponse>
@@ -231,10 +238,10 @@ interface ApiService {
     fun fetchMealDetails( @Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<SnapMealDetailsResponse>
 
     @GET("eat/meals/get_log_meal_byID/")
-    fun fetchMealLogDetails( @Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<MealLogDetailsResponse>
+    fun fetchSnapMealLogDetails( @Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<MealLogDetailsResponse>
 
     @PUT("eat/meals/update_meal/")
-    fun updateSaveMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String,@Body request: UpdateMealRequest
+    fun updateSaveMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String,@Body request: CreateMealRequest
     ): Call<MealUpdateResponse>
 
     @PUT("eat/meals/update_meal/")
@@ -253,7 +260,7 @@ interface ApiService {
     fun deleteLogDish(@Query("meal_id") mealId: String, @Query("user_id") userId: String, @Query("receipe_id") recipeId: String): Call<MealUpdateResponse>
 
     @PUT("eat/meals/update_logged_meal/")
-    fun updateLogDish(@Query("meal_id") mealId: String, @Query("user_id") userId: String,@Body request: UpdateDishLogRequest): Call<MealUpdateResponse>
+    fun updateLogDish(@Query("user_id") userId: String, @Query("meal_id") mealId: String, @Body request: SaveDishLogRequest): Call<MealUpdateResponse>
 
     @PUT("eat/meals/update_logged_meal/")
     fun updateSnapLogMeal(@Query("user_id") userId: String, @Query("meal_id") mealId: String, @Body request: UpdateSnapMealLogRequest): Call<MealUpdateResponse>
@@ -785,6 +792,11 @@ interface ApiService {
         @Url url: String,
         @Body request: AnalysisRequest
     ): Call<ScanMealNutritionResponse>
+
+    @POST("eat/snap_meals_nutrients/")
+    fun getSnapMealsNutrients(
+        @Body request: SnapMealsNutrientsRequest
+    ): Call<SnapMealNutrientsResponse>
 }
 
 

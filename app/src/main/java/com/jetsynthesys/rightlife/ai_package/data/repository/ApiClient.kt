@@ -63,6 +63,7 @@ object RetrofitClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL_FAST_API_V2)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
 

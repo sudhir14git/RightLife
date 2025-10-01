@@ -1,4 +1,4 @@
-package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
+package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
@@ -28,15 +29,30 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsA
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentDishBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.core.view.isVisible
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
+import com.jetsynthesys.rightlife.ai_package.model.request.IngredientLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.RecipeLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
-import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.Serving
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
+class OtherRecipeLogFragment : BaseFragment<FragmentDishBinding>() {
 
     private lateinit var macroItemRecyclerView : RecyclerView
     private lateinit var microItemRecyclerView : RecyclerView
@@ -52,20 +68,19 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var quantityEdit: EditText
     private lateinit var tvCheckOutRecipe: TextView
     private lateinit var tvChange: TextView
+    private lateinit var spinner: Spinner
     private lateinit var ivEdit : ImageView
     private lateinit var tvMeasure :TextView
-    private lateinit var backButton : ImageView
-    private lateinit var spinner: Spinner
     private var measureType : String = ""
-    private var ingredientLists : ArrayList<IngredientRecipeDetails> = ArrayList()
-    private var ingredientLocalListModel : IngredientLocalListModel? = null
-    private var recipeId : String = ""
-    private var recipeName : String = ""
-    private var serving : Double = 0.0
-    private var mealQuantity = 1.0
+    private lateinit var backButton : ImageView
+    private var dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+    private var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
+    private var mealId : String = ""
+    private var mealName : String = ""
+    private lateinit var mealType : String
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
-    private lateinit var mealType : String
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -104,46 +119,27 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
 
         moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
-        recipeId = arguments?.getString("recipeId").toString()
-        selectedMealDate = arguments?.getString("selectedMealDate").toString()
-        serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
+        mealId = arguments?.getString("mealId").toString()
         mealType = arguments?.getString("mealType").toString()
-        val ingredientName = arguments?.getString("ingredientName").toString()
-        recipeName = arguments?.getString("recipeName").toString()
-        val ingredientDetailResponse = if (Build.VERSION.SDK_INT >= 33) {
-            arguments?.getParcelable("ingredientDetailResponse", IngredientDetailResponse::class.java)
+        mealName = arguments?.getString("mealName").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
+        val snapRecipeName = arguments?.getString("snapRecipeName").toString()
+        val foodDetailsResponse = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("ingredientRecipeDetails", IngredientRecipeDetails::class.java)
         } else {
-            arguments?.getParcelable("ingredientDetailResponse")
+            arguments?.getParcelable("ingredientRecipeDetails")
         }
 
-        val ingredientLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
-            arguments?.getParcelable("ingredientLocalListModel", IngredientLocalListModel::class.java)
-        } else {
-            arguments?.getParcelable("ingredientLocalListModel")
-        }
-
-        if (ingredientDetailResponse != null){
-//            if (ingredientDetailResponse.data != null){
-//                ingredientLists.add(ingredientDetailResponse.data)
+//        if (foodDetailsResponse != null){
+//            if (recipeDetailsLocalListModels != null) {
+//                recipeDetailsLocalListModel = recipeDetailsLocalListModels
+//                if (recipeDetailsLocalListModel?.data != null){
+//                    if (recipeDetailsLocalListModel!!.data.size > 0){
+//                        dishLists.addAll(recipeDetailsLocalListModel!!.data)
+//                    }
+//                }
 //            }
-            if (ingredientLocalListModels != null) {
-                ingredientLocalListModel = ingredientLocalListModels
-                if (ingredientLocalListModel?.data != null){
-                    if (ingredientLocalListModel!!.data.size > 0){
-                        ingredientLists.addAll(ingredientLocalListModel!!.data)
-                    }
-                }
-            }
-        }else{
-            if (ingredientLocalListModels != null) {
-                ingredientLocalListModel = ingredientLocalListModels
-                if (ingredientLocalListModel?.data != null){
-                    if (ingredientLocalListModel!!.data.size > 0){
-                        ingredientLists.addAll(ingredientLocalListModel!!.data)
-                    }
-                }
-            }
-        }
+//        }
 
         layoutMacroTitle.setOnClickListener {
           if (macroItemRecyclerView.isVisible){
@@ -176,141 +172,67 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (searchType.contentEquals("searchIngredient")){
-                    val fragment = SearchIngredientFragment()
-                    val args = Bundle()
-                    args.putString("recipeId", recipeId)
-                    args.putString("recipeName", recipeName)
-                    args.putDouble("serving", serving)
-                    args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
-                }else{
-                    val fragment = CreateRecipeFragment()
-                    val args = Bundle()
-                    args.putString("recipeId", recipeId)
-                    args.putString("recipeName", recipeName)
-                    args.putDouble("serving", serving)
-                    args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
                 }
             }
         })
 
         backButton.setOnClickListener {
-            if (searchType.contentEquals("searchIngredient")){
-                val fragment = SearchIngredientFragment()
-                val args = Bundle()
-                args.putString("ModuleName", moduleName)
-                args.putString("selectedMealDate", selectedMealDate)
-                args.putString("mealType", mealType)
-                args.putString("recipeId", recipeId)
-                args.putString("recipeName", recipeName)
-                args.putDouble("serving", serving)
-                args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
-                }
-            }else{
-                val fragment = CreateRecipeFragment()
-                val args = Bundle()
-                args.putString("ModuleName", moduleName)
-                args.putString("selectedMealDate", selectedMealDate)
-                args.putString("mealType", mealType)
-                args.putString("recipeId", recipeId)
-                args.putString("recipeName", recipeName)
-                args.putDouble("serving", serving)
-                args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
-                }
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            args.putString("ModuleName", "EatRight")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
             }
         }
 
-        if (ingredientDetailResponse != null){
-            setDishData(ingredientDetailResponse.data, false)
-            onMacroNutrientsList(ingredientDetailResponse.data, 1.0, 1.0)
-            onMicroNutrientsList(ingredientDetailResponse.data, 1.0, 1.0)
-        }else{
-            if (ingredientLocalListModel != null){
-                for (item in ingredientLocalListModel!!.data) {
-                    if (item.food_name.contentEquals(ingredientName)) {
-                        setDishData(item, false)
-                        onMacroNutrientsList(item, 1.0, 1.0)
-                        onMicroNutrientsList(item, 1.0, 1.0)
-                        break
-                    }
-                }
-            }
+        if (foodDetailsResponse != null){
+            setDishData(foodDetailsResponse, false)
+            onMacroNutrientsList(foodDetailsResponse, 1.0, 1.0)
+            onMicroNutrientsList(foodDetailsResponse, 1.0, 1.0)
         }
 
+        var isProgrammaticChange = false
         quantityEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(update: Editable?) {
+                if (isProgrammaticChange) return  // ✅ ignore programmatic changes
                 if (update!!.isNotEmpty() && update.toString() != "."){
                     if (quantityEdit.text.toString().toDouble() > 0.0){
                         val targetValue : Double = quantityEdit.text.toString().toDouble()
-                        if (ingredientDetailResponse != null){
-                            setDishData(ingredientDetailResponse.data, true)
-                            var ingredientQuantity = 0.0
-                            if (ingredientDetailResponse.data.quantity > 0.0){
-                                ingredientQuantity = ingredientDetailResponse.data.quantity
+                        if (foodDetailsResponse != null){
+                            setDishData(foodDetailsResponse, true)
+                            var mealQuantity = 0.0
+                            if (foodDetailsResponse.quantity != null && foodDetailsResponse.quantity > 0.0){
+                                mealQuantity = foodDetailsResponse.quantity
                             }else{
-                                ingredientQuantity = 1.0
+                                mealQuantity = 1.0
                             }
-                            onMacroNutrientsList(ingredientDetailResponse.data, ingredientQuantity, targetValue)
-                            onMicroNutrientsList(ingredientDetailResponse.data, ingredientQuantity, targetValue)
-                        }else{
-                            if (ingredientLocalListModel != null){
-                                for (item in ingredientLocalListModel!!.data) {
-                                    if (item.food_name.contentEquals(ingredientName)) {
-                                        setDishData(item, true)
-                                        var ingredientQuantity = 0.0
-                                        if (item.quantity > 0.0){
-                                            ingredientQuantity = item.quantity
-                                        }else{
-                                            ingredientQuantity = 1.0
-                                        }
-                                        onMacroNutrientsList(item, ingredientQuantity, targetValue)
-                                        onMicroNutrientsList(item, ingredientQuantity, targetValue)
-                                        break
-                                    }
-                                }
-                            }
+                            onMacroNutrientsList(foodDetailsResponse, mealQuantity, targetValue)
+                            onMicroNutrientsList(foodDetailsResponse, mealQuantity, targetValue)
                         }
                     }
                 }
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
         addToTheMealLayout.setOnClickListener {
-
             if (quantityEdit.text.toString().isNotEmpty() && quantityEdit.text.toString() != "."){
                 if (quantityEdit.text.toString().toDouble() > 0.0){
-                    if (searchType.contentEquals("searchIngredient")){
-                        if (ingredientDetailResponse != null){
-                            val foodData = ingredientDetailResponse.data
+                    if (searchType.contentEquals("SearchDish")){
+                        if (foodDetailsResponse != null){
+                            val foodData = foodDetailsResponse
                             var targetValue = 0.0
                             if (quantityEdit.text.toString().toDouble() > 0.0){
                                 targetValue = quantityEdit.text.toString().toDouble()
@@ -380,127 +302,10 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                                 quantity =  quantityEdit.text.toString().toDouble(),
                                 servings = foodData.servings
                             )
-                            ingredientLists.add(ingredientData)
-                            ingredientLocalListModel = IngredientLocalListModel(ingredientLists)
+                            dishLists.add(ingredientData)
+                            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
                         }
-                        Toast.makeText(activity, "Added To Meal", Toast.LENGTH_SHORT).show()
-                        val fragment = CreateRecipeFragment()
-                        val args = Bundle()
-                        args.putString("ModuleName", moduleName)
-                        args.putString("selectedMealDate", selectedMealDate)
-                        args.putString("mealType", mealType)
-                        args.putString("recipeId", recipeId)
-                        args.putString("recipeName", recipeName)
-                        args.putDouble("serving", serving)
-                        args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
-                        fragment.arguments = args
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            replace(R.id.flFragment, fragment, "mealLog")
-                            addToBackStack("mealLog")
-                            commit()
-                        }
-                    }else{
-                        if (ingredientLocalListModel != null) {
-                            if (ingredientLocalListModel!!.data.size > 0) {
-                                for (item in ingredientLocalListModel!!.data) {
-                                    if (item.food_name.contentEquals(ingredientName)) {
-                                        val foodData = item
-                                        var targetValue = 0.0
-                                        if (quantityEdit.text.toString().toDouble() > 0.0){
-                                            targetValue = quantityEdit.text.toString().toDouble()
-                                        }else{
-                                            targetValue = 0.0
-                                        }
-                                        val index = ingredientLocalListModel!!.data.indexOfFirst { it.food_name == ingredientName }
-                                        var ingredientQuantity = 0.0
-                                        if (foodData.quantity != null && foodData.quantity > 0.0){
-                                            ingredientQuantity = foodData.quantity
-                                        }else{
-                                            ingredientQuantity = 1.0
-                                        }
-                                        val selectedServing = Serving(
-                                            type = measureType,
-                                            value = quantityEdit.text.toString().toDouble())
-                                        val ingredientData = IngredientRecipeDetails(
-                                            id = foodData.id,
-                                            recipe_id = foodData.recipe_id,
-                                            food_code = foodData.food_code,
-                                            food_name = foodData.food_name,
-                                            recipe = foodData.recipe,
-                                            meal_type = foodData.meal_type,
-                                            cuisine = foodData.cuisine,
-                                            regional_split = foodData.regional_split,
-                                            category = foodData.category,
-                                            food_category = foodData.food_category,
-                                            flag = foodData.flag,
-                                            serving_size_for_calorific_breakdown = foodData.serving_size_for_calorific_breakdown,
-                                            standard_serving_size = foodData.standard_serving_size,
-                                            calories_kcal = calculateValue(foodData.calories_kcal, ingredientQuantity, targetValue),
-                                            carbs_g = calculateValue(foodData.carbs_g, ingredientQuantity, targetValue),
-                                            fiber_g = calculateValue(foodData.fiber_g, ingredientQuantity, targetValue),
-                                            sugars_g = calculateValue(foodData.sugars_g, ingredientQuantity, targetValue),
-                                            vit_b6_mg = calculateValue(foodData.vit_b6_mg, ingredientQuantity, targetValue),
-                                            vit_b12_mcg = calculateValue(foodData.vit_b12_mcg, ingredientQuantity, targetValue),
-                                            protein_g = calculateValue(foodData.protein_g, ingredientQuantity, targetValue),
-                                            fat_g = calculateValue(foodData.fat_g, ingredientQuantity, targetValue),
-                                            vit_a_mcg = calculateValue(foodData.vit_a_mcg, ingredientQuantity, targetValue),
-                                            vit_c_mg = calculateValue(foodData.vit_c_mg, ingredientQuantity, targetValue),
-                                            vit_d_mcg = calculateValue(foodData.vit_d_mcg, ingredientQuantity, targetValue),
-                                            vit_e_mg = calculateValue(foodData.vit_e_mg, ingredientQuantity, targetValue),
-                                            folate_b9_mcg = calculateValue(foodData.folate_b9_mcg, ingredientQuantity, targetValue),
-                                            vit_k_mcg = calculateValue(foodData.vit_k_mcg, ingredientQuantity, targetValue),
-                                            thiamin_b1_mg = calculateValue(foodData.thiamin_b1_mg, ingredientQuantity, targetValue),
-                                            riboflavin_b2_mg = calculateValue(foodData.riboflavin_b2_mg, ingredientQuantity, targetValue),
-                                            niacin_b3_mg = calculateValue(foodData.niacin_b3_mg, ingredientQuantity, targetValue),
-                                            iron_mg = calculateValue(foodData.iron_mg, ingredientQuantity, targetValue),
-                                            calcium_mg = calculateValue(foodData.calcium_mg, ingredientQuantity, targetValue),
-                                            magnesium_mg = calculateValue(foodData.magnesium_mg, ingredientQuantity, targetValue),
-                                            zinc_mg = calculateValue(foodData.zinc_mg, ingredientQuantity, targetValue),
-                                            potassium_mg = calculateValue(foodData.potassium_mg, ingredientQuantity, targetValue),
-                                            sodium_mg = calculateValue(foodData.sodium_mg, ingredientQuantity, targetValue),
-                                            phosphorus_mg = calculateValue(foodData.phosphorus_mg, ingredientQuantity, targetValue),
-                                            omega3_g = calculateValue(foodData.omega3_g, ingredientQuantity, targetValue),
-                                            ingredients = foodData.ingredients,
-                                            preparation_notes = foodData.preparation_notes,
-                                            active_cooking_time_min = foodData.active_cooking_time_min,
-                                            allergy_groups_restricted_from_consuming = foodData.allergy_groups_restricted_from_consuming,
-                                            tags = foodData.tags,
-                                            typical_1person_serving = foodData.typical_1person_serving,
-                                            household_measure_1_serving = foodData.household_measure_1_serving,
-                                            photo_url = foodData.photo_url,
-                                            selected_serving = selectedServing,
-                                            default_serving = foodData.default_serving,
-                                            available_serving = foodData.available_serving,
-                                            source = foodData.source,
-                                            quantity =  quantityEdit.text.toString().toDouble(),
-                                            servings = foodData.servings
-                                        )
-                                        if (index != -1) {
-                                            ingredientLists[index] = ingredientData
-                                        }
-                                        ingredientLists.get(index)
-                                        ingredientLocalListModel = IngredientLocalListModel(ingredientLists)
-                                        Toast.makeText(activity, "Changes Save", Toast.LENGTH_SHORT).show()
-                                        val fragment = CreateRecipeFragment()
-                                        val args = Bundle()
-                                        args.putString("ModuleName", moduleName)
-                                        args.putString("selectedMealDate", selectedMealDate)
-                                        args.putString("mealType", mealType)
-                                        args.putString("recipeId", recipeId)
-                                        args.putString("recipeName", recipeName)
-                                        args.putDouble("serving", serving)
-                                        args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
-                                        fragment.arguments = args
-                                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                                            replace(R.id.flFragment, fragment, "mealLog")
-                                            addToBackStack("mealLog")
-                                            commit()
-                                        }
-                                        break
-                                    }
-                                }
-                            }
-                        }
+                        createDishLog(recipeDetailsLocalListModel)
                     }
                 }else{
                     Toast.makeText(activity, "Please input quantity greater than 0", Toast.LENGTH_SHORT).show()
@@ -511,49 +316,140 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         }
     }
 
-    private fun setDishData(snapRecipeData: IngredientRecipeDetails, isEdit: Boolean) {
-        addToTheMealTV.text = "Add To The Recipe"
-        val capitalized = snapRecipeData.food_name.toString().replaceFirstChar { it.uppercase() }
-        tvMealName.text = capitalized
-//        if (snapRecipeData.standard_serving_size != null){
-//            tvMeasure.text = snapRecipeData.standard_serving_size
-//        }
-
-        val servingsList = mutableListOf<Serving>()
-        if (recipeId != "null" && recipeId != null){
-            snapRecipeData.selected_serving?.let {
-                servingsList.add(Serving(it.type, it.value))
+    private fun createDishLog(recipeDetailsLocalListModel: RecipeDetailsLocalListModel?) {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
             }
-        }else{
-            servingsList.addAll(snapRecipeData.available_serving)
         }
-        val servingLabels = servingsList.map { it.type }
-        // Use ArrayAdapter
-        val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, servingLabels)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
 
-        if (!isEdit){
-//            if (snapRecipeData.quantity != null ){
-//                if (snapRecipeData.quantity > 0.0){
-//                    quantityEdit.setText(snapRecipeData.quantity?.toString())
-//                }else{
-//                    quantityEdit.setText("1.0")
-//                }
-//            }
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                    val selectedServing = servingsList[position]
-                    // You now have type & value
-                    Log.d("Serving", "Selected: ${selectedServing.value} ${selectedServing.type}")
-                    quantityEdit.setText(selectedServing.value.toString())
-                    measureType = selectedServing.type.toString()
+        val dishLogList : ArrayList<DishLog> = ArrayList()
+        val recipes: ArrayList<RecipeLogRequest> = ArrayList()
+        val ingredients: ArrayList<IngredientLogRequest> = ArrayList()
+
+        if (recipeDetailsLocalListModel != null && recipeDetailsLocalListModel.data.isNotEmpty()){
+            val selectedDish = recipeDetailsLocalListModel.data.get(0)
+            if (selectedDish.source.equals("recipe")){
+                val mealRecipeData = RecipeLogRequest(
+                    recipe_id = selectedDish.id,
+                    selected_serving_type = selectedDish.selected_serving?.type,
+                    selected_serving_value = selectedDish.selected_serving?.value
+                )
+                recipes.add(mealRecipeData)
+            }
+            if (selectedDish.source.equals("ingredient")){
+                val mealIngredientData = IngredientLogRequest(
+                    ingredient_id = selectedDish.id,
+                    meal_quantity = selectedDish.quantity,
+                    standard_serving_size = selectedDish.selected_serving?.type
+                )
+                ingredients.add(mealIngredientData)
+            }
+        }
+        val dishLogRequest = SaveDishLogRequest(
+            meal_type = mealType ?: "dd",
+            recipes = recipes,
+            ingredients = ingredients
+        )
+        val call = ApiClient.apiServiceFastApiV2.createSaveMealsToLog(userId, formattedDate, dishLogRequest)
+        call.enqueue(object : Callback<MealUpdateResponse> {
+            override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
+                if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    val mealData = response.body()?.message
+                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", "EatRight")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
-                override fun onNothingSelected(parent: AdapterView<*>) {}
             }
+            override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun calculateValue(givenValue: Double?, defaultQuantity: Double, targetQuantity: Double): Double {
+        return if (givenValue != null && defaultQuantity > 0.0) {
+            (givenValue / defaultQuantity) * targetQuantity
+        } else {
+            0.0
         }
-        var imageUrl : String? = ""
-        if (snapRecipeData.photo_url != null){
+    }
+
+    private fun Double?.scaledIfPositive(scale: Double): Double {
+        return if (this != null && this > 0.0) this * scale else 0.0
+    }
+
+    private fun setDishData(snapRecipeData: IngredientRecipeDetails, isEdit: Boolean) {
+            addToTheMealTV.text = "Log Your Meal"
+
+            val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
+            tvMealName.text = capitalized
+            val servingsList = mutableListOf<Serving>()
+            servingsList.addAll(snapRecipeData.available_serving)
+            val servingLabels = servingsList.map { it.type }
+            // Use ArrayAdapter
+            val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, servingLabels)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+
+//            if (snapRecipeData.standard_serving_size != null && snapRecipeData.standard_serving_size !=  ""){
+//                tvMeasure.text = snapRecipeData.standard_serving_size
+//            }else{
+//                tvMeasure.text = snapRecipeData.serving_size_for_calorific_breakdown
+//            }
+            if (!isEdit){
+//                if (snapRecipeData.quantity != null ){
+//                    quantityEdit.setText(snapRecipeData.quantity.toString())
+//                }
+                var isSpinnerInitialized = false
+                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                        if (!isSpinnerInitialized) {
+                            isSpinnerInitialized = true
+                            return
+                        }
+                        val selectedServing = servingsList[position]
+                        val newQuantity = selectedServing.value.toString()
+                        // ✅ Update only if different
+                        if (quantityEdit.text.toString() != newQuantity) {
+                            quantityEdit.setText(newQuantity)
+                            measureType = selectedServing.type.toString()
+                        }
+                    }
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
+                }
+            }
+            var imageUrl : String? = ""
             imageUrl = if (snapRecipeData.photo_url.contains("drive.google.com")) {
                 getDriveImageUrl(snapRecipeData.photo_url)
             }else{
@@ -564,15 +460,6 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                 .placeholder(R.drawable.ic_view_meal_place)
                 .error(R.drawable.ic_view_meal_place)
                 .into(imgFood)
-        }
-    }
-
-    private fun calculateValue(givenValue: Double?, defaultQuantity: Double, targetQuantity: Double): Double {
-        return if (givenValue != null && defaultQuantity > 0.0) {
-            (givenValue / defaultQuantity) * targetQuantity
-        } else {
-            0.0
-        }
     }
 
     private fun onMacroNutrientsList(mealDetails: IngredientRecipeDetails, defaultValue: Double, targetValue: Double) {
@@ -732,12 +619,20 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
+    private fun onFrequentlyLoggedItem(myMealModel: MyMealModel, position: Int, isRefresh: Boolean) {
+
+    }
+
     private fun onMacroNutrientsItemClick(macroNutrientsModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
 
     }
 
     private fun onMicroNutrientsItemClick(microNutrientsModel: MicroNutrientsModel, position: Int, isRefresh: Boolean) {
 
+    }
+
+    private fun getMonthName(month: Int): String {
+        return SimpleDateFormat("MMMM", Locale.getDefault()).format(Date(0, month, 0))
     }
 
     fun getDriveImageUrl(originalUrl: String): String? {
@@ -749,5 +644,14 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         } else {
             null
         }
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }

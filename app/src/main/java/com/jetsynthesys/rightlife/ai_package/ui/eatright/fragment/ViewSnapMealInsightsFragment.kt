@@ -21,12 +21,11 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.response.DishLists
-import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDetails
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.NutritionSummary
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogDetails
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapMealLogsAdapter
@@ -53,13 +52,13 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
     private lateinit var tvMealName : TextView
     private lateinit var tvDishes : TextView
     private var mealNutritionSummary : NutritionSummary? = null
-    private val mealCombinedList = ArrayList<DishLists>()
+    private val mealCombinedList = ArrayList<IngredientRecipeDetails>()
     private var mealNames = emptyList<String>()
     private var mealSnapNames : String = ""
     private var mealNameList = ArrayList<String>()
     private var loadingOverlay : FrameLayout? = null
 
-    private var mealLogDetails : MealLogDetails? = null
+    private var mealLogDetails : SnapMealLogDetails? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentViewMealInsightsBinding
         get() = FragmentViewMealInsightsBinding::inflate
@@ -142,9 +141,14 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
         }
     }
 
-    private fun setDishData(snapRecipeData: SearchResultItem) {
+    private fun setDishData(snapRecipeData: SnapMealLogDetails) {
 
-        val imageUrl = getDriveImageUrl(snapRecipeData.photo_url)
+        var imageUrl : String? = ""
+        imageUrl = if (snapRecipeData.image_url.contains("drive.google.com")) {
+            getDriveImageUrl(snapRecipeData.image_url)
+        }else{
+            snapRecipeData.image_url
+        }
         Glide.with(this)
             .load(imageUrl)
             .placeholder(R.drawable.ic_view_meal_place)
@@ -152,10 +156,9 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
             .into(imgFood)
     }
 
-
     private fun setMealLogsList() {
 
-        val snapMealData: DishLists? = null
+        val snapMealData: IngredientRecipeDetails? = null
         activity?.runOnUiThread {
             if (mealCombinedList.size > 0) {
                 tvDishes.visibility = View.VISIBLE
@@ -177,7 +180,7 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
 
         val calories_kcal : String = mealDetails?.calories_kcal?.times(value)?.toInt().toString()?: "NA"
         val protein_g : String = mealDetails?.protein_g?.times(value)?.toInt().toString()?: "NA"
-        val carb_g : String = mealDetails?.carb_g?.times(value)?.toInt().toString()?: "NA"
+        val carb_g : String = mealDetails?.carbs_g?.times(value)?.toInt().toString()?: "NA"
         val fat_g : String = mealDetails?.fat_g?.times(value)?.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
@@ -201,32 +204,32 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
             "0"
         }
 
-        val vitamin_A = if (mealDetails?.vitamin_a_mcg != null){
-            mealDetails.vitamin_a_mcg.times(value)?.toInt().toString()
+        val vitamin_A = if (mealDetails?.vit_a_mcg != null){
+            mealDetails.vit_a_mcg.times(value)?.toInt().toString()
         }else{
             "0"
         }
 
-        val vitamin_C = if (mealDetails?.vitamin_c_mg != null){
-            mealDetails.vitamin_c_mg.times(value)?.toInt().toString()
+        val vitamin_C = if (mealDetails?.vit_c_mg != null){
+            mealDetails.vit_c_mg.times(value)?.toInt().toString()
         }else{
             "0"
         }
 
-        val vitamin_k = if (mealDetails?.vitamin_k_mcg != null){
-            mealDetails.vitamin_k_mcg.times(value)?.toInt().toString()
+        val vitamin_k = if (mealDetails?.vit_k_mcg != null){
+            mealDetails.vit_k_mcg.times(value)?.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminD = if (mealDetails?.vitamin_d_iu != null){
-            mealDetails.vitamin_d_iu.toInt().toString()
+        val vitaminD = if (mealDetails?.vit_d_mcg != null){
+            mealDetails.vit_d_mcg.toInt().toString()
         }else{
             "0"
         }
 
-        val folate = if (mealDetails?.folate_mcg != null){
-            mealDetails.folate_mcg.toInt().toString()
+        val folate = if (mealDetails?.folate_b9_mcg != null){
+            mealDetails.folate_b9_mcg.toInt().toString()
         }else{
             "0"
         }
@@ -273,8 +276,8 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
             "0"
         }
 
-        val sugar_mg = if (mealDetails?.sugar_g != null){
-            mealDetails.sugar_g.times(value)?.toInt().toString()
+        val sugar_mg = if (mealDetails?.sugars_g != null){
+            mealDetails.sugars_g.times(value)?.toInt().toString()
         }else{
             "0"
         }
@@ -315,9 +318,9 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
     }
     private fun onBreakFastRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
     }
-    private fun onBreakFastSnapMealDeleteItem(mealItem: DishLists, position: Int, isRefresh: Boolean) {
+    private fun onBreakFastSnapMealDeleteItem(mealItem: IngredientRecipeDetails, position: Int, isRefresh: Boolean) {
     }
-    private fun onBreakFastSnapMealEditItem(mealItem: DishLists, position: Int, isRefresh: Boolean) {
+    private fun onBreakFastSnapMealEditItem(mealItem: IngredientRecipeDetails, position: Int, isRefresh: Boolean) {
     }
 
     fun getDriveImageUrl(originalUrl: String): String? {
@@ -338,7 +341,7 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
             }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val call = ApiClient.apiServiceFastApi.fetchMealLogDetails(userId, mealId)
+        val call = ApiClient.apiServiceFastApiV2.fetchSnapMealLogDetails(userId, mealId)
         call.enqueue(object : Callback<MealLogDetailsResponse> {
             override fun onResponse(call: Call<MealLogDetailsResponse>, response: Response<MealLogDetailsResponse>) {
                 if (response.isSuccessful) {
@@ -351,9 +354,7 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
                     if (mealDetails != null){
                         if (mealDetails.meal_details != null){
                             mealLogDetails = mealDetails.meal_details
-                            //  setDishData(foodDetailsResponse)
                             mealSnapNames = mealLogDetails?.meal_name.toString()
-
                             mealNutritionSummary = mealLogDetails!!.meal_nutrition_summary
                             if (mealNutritionSummary != null){
                                 onMacroNutrientsList(mealNutritionSummary, 1)
@@ -363,10 +364,10 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
                             if (snapMealsDish != null){
                                 if (snapMealsDish.isNotEmpty()){
                                     mealCombinedList.addAll(snapMealsDish)
-                                   // mealSnapNames = snapMealsDish.map { it.meal_name!! }
                                 }
                             }
                             setMealLogsList()
+                            setDishData(mealDetails.meal_details)
                         }
                     }
                 } else {

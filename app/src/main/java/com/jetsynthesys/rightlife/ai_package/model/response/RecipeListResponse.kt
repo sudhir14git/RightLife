@@ -3,14 +3,16 @@ package com.jetsynthesys.rightlife.ai_package.model.response
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-data class SnapMealRecipeResponseModel(
+@Parcelize
+data class RecipeListResponse(
     val success: Boolean,
     val message: String,
     val status_code: Int,
-    val data: List<SnapRecipeList>
-)
+    val data: List<IngredientRecipeList>
+):Parcelable
+
 @Parcelize
-data class SnapRecipeList(
+data class IngredientRecipeList(
     val id: String,
     val recipe: String,
     val photo_url: String,
@@ -19,5 +21,6 @@ data class SnapRecipeList(
     val calories_kcal: Double,
     val meal_type: String,
     val tags: String,
-    val cuisine: String
+    val cuisine: String,
+    val source : String
 ):Parcelable

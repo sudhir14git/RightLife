@@ -34,10 +34,10 @@ class OtherRecipeEatLandingAdapter(private val context: Context, private var dat
             .placeholder(R.drawable.ic_view_meal_place)
             .error(R.drawable.ic_view_meal_place)
             .into(holder.iamgeFood)
-        holder.calValue.text = item.calories.toInt().toString()
-        holder.subtractionValue.text = item.protein.toInt().toString()
-        holder.baguetteValue.text = item.carbs.toInt().toString()
-        holder.dewpointValue.text = item.fats.toInt().toString()
+        holder.calValue.text = item.calories_kcal.toInt().toString()
+        holder.subtractionValue.text = item.protein_g.toInt().toString()
+        holder.baguetteValue.text = item.carbs_g.toInt().toString()
+        holder.dewpointValue.text = item.fat_g.toInt().toString()
 
         holder.layoutMain.setOnClickListener {
             onOtherRecipeItem(item, position, true)

@@ -203,17 +203,17 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
         recipeAdapter.addAll(valueLists, position, myRecipe, isRefresh)
 
         val ingredientsLogList : ArrayList<MealLogItems> = ArrayList()
-      //  val dishList = myRecipe.ingredients_per_serving
-       // dishList?.forEach { selectedDish ->
+        val dishList = myRecipe
+      //  dishList?.forEach { selectedDish ->
             val ingredientsLogData = MealLogItems(
                 meal_id = myRecipe._id,
                 recipe_name = myRecipe.recipe,
-                meal_quantity = 1,
-                unit = "g",
-                measure = "Bowl"
+                meal_quantity = myRecipe.selected_serving?.value,
+                source = "recipe",
+                measure = myRecipe.selected_serving?.type
             )
             ingredientsLogList.add(ingredientsLogData)
-  //      }
+     //   }
         val recipeLogRequest = SelectedMealLogList(
             meal_name =  myRecipe.recipe,
             meal_type = myRecipe.recipe,

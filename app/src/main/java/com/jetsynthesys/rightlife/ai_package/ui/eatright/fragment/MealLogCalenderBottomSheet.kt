@@ -166,7 +166,7 @@ class MealLogCalenderBottomSheet : BottomSheetDialogFragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-            val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
+            val call = ApiClient.apiServiceFastApiV2.getMealsLogByDate(userId, formattedDate)
             call.enqueue(object : Callback<MealLogDataResponse> {
                 override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                     if (response.isSuccessful) {
@@ -307,7 +307,7 @@ class MealLogCalenderBottomSheet : BottomSheetDialogFragment() {
                             val fullDaySummary = response.body()?.data!!.full_day_summary
 
                             requireActivity()?.runOnUiThread {
-                                if (fullDaySummary.calories != null){
+                                if (fullDaySummary.calories_kcal != null){
                                     noMealLogsLayout.visibility = View.GONE
                                    // dailyCalorieGraphLayout.visibility = View.VISIBLE
                                    // setGraphValue(fullDaySummary)
@@ -365,7 +365,7 @@ class MealLogCalenderBottomSheet : BottomSheetDialogFragment() {
                 breakfastListLayout.visibility = View.VISIBLE
                 if (breakfastMealNutritionSummary.size > 0) {
                     calValueTv.text =
-                        breakfastMealNutritionSummary.get(0).calories.toInt().toString()
+                        breakfastMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
                 breakfastMealLogsAdapter.updateList(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
             } else {
@@ -378,7 +378,7 @@ class MealLogCalenderBottomSheet : BottomSheetDialogFragment() {
                 morningSnackMealLogsAdapter.addAll(morningSnackCombinedList, -1, regularRecipeData, snapMealData, false)
                 if (morningSnackMealNutritionSummary.size > 0) {
                     calValueMorningSnackTv.text =
-                        morningSnackMealNutritionSummary.get(0).calories.toInt().toString()
+                        morningSnackMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
             } else {
                 morningSnackListLayout.visibility = View.GONE
@@ -390,7 +390,7 @@ class MealLogCalenderBottomSheet : BottomSheetDialogFragment() {
                 lunchMealLogsAdapter.addAll(lunchCombinedList, -1, regularRecipeData, snapMealData, false)
                 if (lunchMealNutritionSummary.size > 0) {
                     calValueLunchTv.text =
-                        lunchMealNutritionSummary.get(0).calories.toInt().toString()
+                        lunchMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
             } else {
                 lunchListLayout.visibility = View.GONE
@@ -402,7 +402,7 @@ class MealLogCalenderBottomSheet : BottomSheetDialogFragment() {
                 eveningSnacksMealLogsAdapter.addAll(eveningSnacksCombinedList, -1, regularRecipeData, snapMealData, false)
                 if (eveningSnacksMealNutritionSummary.size > 0) {
                     calValueEveningSnacksTv.text =
-                        eveningSnacksMealNutritionSummary.get(0).calories.toInt().toString()
+                        eveningSnacksMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
             } else {
                 eveningSnacksListLayout.visibility = View.GONE
@@ -413,7 +413,7 @@ class MealLogCalenderBottomSheet : BottomSheetDialogFragment() {
                 dinnerListLayout.visibility = View.VISIBLE
                 dinnerMealLogsAdapter.addAll(dinnerCombinedList, -1, regularRecipeData, snapMealData, false)
                 if (dinnerMealNutritionSummary.size > 0){
-                    calValueDinnerTv.text = dinnerMealNutritionSummary.get(0).calories.toInt().toString()
+                    calValueDinnerTv.text = dinnerMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
             }else{
                 dinnerListLayout.visibility = View.GONE

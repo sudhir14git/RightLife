@@ -22,7 +22,7 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateRecipeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.IngredientEntry
-import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetail
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.IngredientListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.DeleteIngredientBottomSheet
@@ -38,7 +38,6 @@ import retrofit2.Response
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import androidx.core.view.isGone
-import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeDetailsResponse
 
 class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
@@ -56,7 +55,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
     private lateinit var layoutNoIngredients: LinearLayoutCompat
     private lateinit var addRecipeNameLayout : LinearLayoutCompat
     private lateinit var continueLayout : LinearLayoutCompat
-    private var ingredientLists : ArrayList<IngredientDetail> = ArrayList()
+    private var ingredientLists : ArrayList<IngredientRecipeDetails> = ArrayList()
     private var ingredientLocalListModel : IngredientLocalListModel? = null
     private var recipeId : String = ""
     private var recipeName : String = ""
@@ -308,28 +307,28 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             saveRecipeLayout.setBackgroundResource(R.drawable.light_green_bg)
         }
 
-        val valueLists : ArrayList<IngredientDetail> = ArrayList()
-        valueLists.addAll(ingredientLists as Collection<IngredientDetail>)
-        val mealLog: IngredientDetail? = null
+        val valueLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+        valueLists.addAll(ingredientLists as Collection<IngredientRecipeDetails>)
+        val mealLog: IngredientRecipeDetails? = null
         ingredientListAdapter.addAll(valueLists, -1, mealLog, false)
     }
 
-    private fun onIngredientClickItem(mealLogDateModel: IngredientDetail, position: Int, isRefresh: Boolean) {
+    private fun onIngredientClickItem(mealLogDateModel: IngredientRecipeDetails, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onIngredientDeleteItem(mealItem: IngredientDetail, position: Int, isRefresh: Boolean) {
+    private fun onIngredientDeleteItem(mealItem: IngredientRecipeDetails, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<IngredientDetail> = ArrayList()
-        valueLists.addAll(ingredientLists as Collection<IngredientDetail>)
+        val valueLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+        valueLists.addAll(ingredientLists as Collection<IngredientRecipeDetails>)
         ingredientListAdapter.addAll(valueLists, position, mealItem, isRefresh)
 
         deleteIngredientDialog(mealItem)
     }
 
-    private fun onIngredientEditItem(mealItem: IngredientDetail, position: Int, isRefresh: Boolean) {
-        val valueLists : ArrayList<IngredientDetail> = ArrayList()
-        valueLists.addAll(ingredientLists as Collection<IngredientDetail>)
+    private fun onIngredientEditItem(mealItem: IngredientRecipeDetails, position: Int, isRefresh: Boolean) {
+        val valueLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+        valueLists.addAll(ingredientLists as Collection<IngredientRecipeDetails>)
         ingredientListAdapter.addAll(valueLists, position, mealItem, isRefresh)
 
         requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -350,7 +349,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             commit()
         }
     }
-    private fun deleteIngredientDialog(ingredientItem: IngredientDetail){
+    private fun deleteIngredientDialog(ingredientItem: IngredientRecipeDetails){
 
         val deleteDishBottomSheet = DeleteIngredientBottomSheet()
         deleteDishBottomSheet.isCancelable = true
@@ -367,7 +366,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         activity?.supportFragmentManager?.let { deleteDishBottomSheet.show(it, "DeleteDishBottomSheet") }
     }
 
-    private fun createRecipe(ingredientList : ArrayList<IngredientDetail>) {
+    private fun createRecipe(ingredientList : ArrayList<IngredientRecipeDetails>) {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
@@ -382,7 +381,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val ingredientData = IngredientEntry(
                 ingredient_id = ingredient.id,
                 quantity = ingredient.quantity?.toInt(),
-                standard_serving_size = ingredient.measure
+                standard_serving_size = ingredient.selected_serving?.type
             )
             ingredientLists.add(ingredientData)
         }
@@ -436,7 +435,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         })
     }
 
-    private fun updateRecipe(ingredientList : ArrayList<IngredientDetail>) {
+    private fun updateRecipe(ingredientList : ArrayList<IngredientRecipeDetails>) {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
@@ -451,7 +450,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val ingredientData = IngredientEntry(
                 ingredient_id = ingredient.id,
                 quantity = ingredient.quantity?.toInt(),
-                standard_serving_size = ingredient.standard_serving_size
+                standard_serving_size = ingredient.selected_serving?.type
             )
             ingredientLists.add(ingredientData)
         }
@@ -523,14 +522,21 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                     }
                     if (response.body()?.data != null){
                         val ingredientList = response.body()?.data!!.ingredients
-                        val myIngredientLists : ArrayList<IngredientDetail> = ArrayList()
+                        val myIngredientLists : ArrayList<IngredientRecipeDetails> = ArrayList()
                         ingredientList.forEach { foodData ->
-                            val ingredientData = IngredientDetail(
-                                id = foodData._id,
+                            val ingredientData = IngredientRecipeDetails(
+                                id = foodData.id,
+                                recipe_id = foodData.recipe_id,
                                 food_code = foodData.food_code,
                                 food_name = foodData.food_name,
+                                recipe = foodData.recipe,
+                                meal_type = foodData.meal_type,
+                                cuisine = foodData.cuisine,
+                                regional_split = foodData.regional_split,
+                                category = foodData.category,
                                 food_category = foodData.food_category,
-                                photo_url = foodData.photo_url,
+                                flag = foodData.flag,
+                                serving_size_for_calorific_breakdown = foodData.serving_size_for_calorific_breakdown,
                                 standard_serving_size = foodData.standard_serving_size,
                                 calories_kcal = foodData.calories_kcal,
                                 protein_g = foodData.protein_g,
@@ -557,8 +563,20 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                                 sodium_mg = foodData.sodium_mg,
                                 phosphorus_mg = foodData.phosphorus_mg,
                                 omega3_g = foodData.omega3_g,
+                                ingredients = foodData.ingredients,
+                                preparation_notes = foodData.preparation_notes,
+                                active_cooking_time_min = foodData.active_cooking_time_min,
+                                allergy_groups_restricted_from_consuming = foodData.allergy_groups_restricted_from_consuming,
+                                tags = foodData.tags,
+                                typical_1person_serving = foodData.typical_1person_serving,
+                                household_measure_1_serving = foodData.household_measure_1_serving,
+                                photo_url = foodData.photo_url,
+                                selected_serving = foodData.selected_serving,
+                                default_serving = foodData.default_serving,
+                                available_serving = foodData.available_serving,
+                                source = foodData.source,
                                 quantity =  foodData.quantity,
-                                measure = ""
+                                servings = foodData.servings
                             )
                             myIngredientLists.add(ingredientData)
                         }

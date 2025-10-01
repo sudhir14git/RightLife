@@ -21,12 +21,10 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealDetailsLog
 import com.jetsynthesys.rightlife.ai_package.model.response.MealNutritionSummary
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
@@ -114,8 +112,8 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
             if (breakfastRecipes != null){
                 if (breakfastRecipes.isNotEmpty()){
                     mealCombinedList.addAll(breakfastRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
-                    mealNames = breakfastRecipes.map { it.receipe.recipe_name }
-                    val imageUrl = breakfastRecipes.get(0).receipe.photo_url
+                    mealNames = breakfastRecipes.map { (it.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?:  it.recipe.food_name).toString() }
+                    val imageUrl = breakfastRecipes.get(0).recipe.photo_url
                     setDishData(imageUrl)
                 }
             }
@@ -223,10 +221,10 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 
     private fun onMacroNutrientsList(mealDetails: MealNutritionSummary, value: Int) {
 
-        val calories_kcal : String = round(mealDetails.calories.times(value))?.toInt().toString()?: "NA"
-        val protein_g : String = round(mealDetails.protein.times(value))?.toInt().toString()?: "NA"
-        val carb_g : String = round(mealDetails.carbs.times(value))?.toInt().toString()?: "NA"
-        val fat_g : String = round(mealDetails.fats.times(value))?.toInt().toString()?: "NA"
+        val calories_kcal : String = round(mealDetails.calories_kcal.times(value))?.toInt().toString()?: "NA"
+        val protein_g : String = round(mealDetails.protein_g.times(value))?.toInt().toString()?: "NA"
+        val carb_g : String = round(mealDetails.carbs_g.times(value))?.toInt().toString()?: "NA"
+        val fat_g : String = round(mealDetails.fat_g.times(value))?.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
             MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),
@@ -260,22 +258,22 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         var totalPhosphorus = 0.0
         var totalPotassium = 0.0
 
-            totalVitaminD = mealDetails.vitamin_d_iu ?: 0.0
-            totalB12 = mealDetails.b12_mcg ?: 0.0
-            totalFolate = mealDetails.folate_mcg ?: 0.0
-            totalVitaminC = mealDetails.vitamin_c_mg ?: 0.0
-            totalVitaminA = mealDetails.vitamin_a_mcg ?: 0.0
-            totalVitaminK = mealDetails.vitamin_k_mcg ?: 0.0
-            totalIron = mealDetails.iron ?: 0.0
+            totalVitaminD = mealDetails.vit_d_mcg ?: 0.0
+            totalB12 = mealDetails.vit_b12_mcg ?: 0.0
+            totalFolate = mealDetails.folate_b9_mcg ?: 0.0
+            totalVitaminC = mealDetails.vit_c_mg ?: 0.0
+            totalVitaminA = mealDetails.vit_a_mcg ?: 0.0
+            totalVitaminK = mealDetails.vit_k_mcg ?: 0.0
+            totalIron = mealDetails.iron_mg ?: 0.0
             totalCalcium = mealDetails.calcium_mg ?: 0.0
-            totalMagnesium = mealDetails.magnesium ?: 0.0
+            totalMagnesium = mealDetails.magnesium_mg ?: 0.0
             totalZinc = mealDetails.zinc_mg ?: 0.0
-            totalOmega3 = mealDetails.omega_3_fatty_acids_g ?: 0.0
-            totalSodium = mealDetails.sodium ?: 0.0
-            totalCholesterol = mealDetails.cholesterol ?: 0.0
-            totalSugar = mealDetails.sugar ?: 0.0
+            totalOmega3 = mealDetails.omega3_g ?: 0.0
+            totalSodium = mealDetails.sodium_mg ?: 0.0
+          //  totalCholesterol = mealDetails.c ?: 0.0
+            totalSugar = mealDetails.sugars_g ?: 0.0
             totalPhosphorus = mealDetails.phosphorus_mg ?: 0.0
-            totalPotassium = mealDetails.potassium ?: 0.0
+            totalPotassium = mealDetails.potassium_mg ?: 0.0
 
         val vitaminD = if (totalVitaminD != null) {
             String.format("%.1f", totalVitaminD)

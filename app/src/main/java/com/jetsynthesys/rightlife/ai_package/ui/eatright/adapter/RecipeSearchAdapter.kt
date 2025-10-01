@@ -1,25 +1,23 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter
 
 import android.content.Context
-import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.bumptech.glide.Glide
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 
 class RecipeSearchAdapter(
     private val context: Context,
-    private var dataLists: ArrayList<SnapRecipeList>,
+    private var dataLists: ArrayList<IngredientRecipeList>,
     private var clickPos: Int,
-    private var mealLogListData: SnapRecipeList?,
+    private var mealLogListData: IngredientRecipeList?,
     private var isClickView: Boolean,
-    val onSearchDishItem: (SnapRecipeList, Int, Boolean) -> Unit
+    val onSearchDishItem: (IngredientRecipeList, Int, Boolean) -> Unit
 ) : RecyclerView.Adapter<RecipeSearchAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -67,7 +65,7 @@ class RecipeSearchAdapter(
         val statusDot : ImageView = itemView.findViewById(R.id.statusDot)
     }
 
-    fun addAll(item: ArrayList<SnapRecipeList>?, pos: Int, mealLogItem: SnapRecipeList?, isClick: Boolean) {
+    fun addAll(item: ArrayList<IngredientRecipeList>?, pos: Int, mealLogItem: IngredientRecipeList?, isClick: Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -78,9 +76,9 @@ class RecipeSearchAdapter(
         }
     }
 
-    fun updateList(newList: List<SnapRecipeList>) {
+    fun updateList(newList: List<IngredientRecipeList>) {
         dataLists.clear()
-        dataLists = newList as ArrayList<SnapRecipeList>
+        dataLists = newList as ArrayList<IngredientRecipeList>
         notifyDataSetChanged()
     }
 

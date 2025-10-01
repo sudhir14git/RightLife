@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -31,8 +30,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TabContentAdapter
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeListResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.RecipeSearchAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
@@ -59,7 +58,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private lateinit var appPreference: AppPreference
     private lateinit var tabContentCard: CardView
     private val recipesSearchViewModel: RecipesSearchViewModel by activityViewModels()
-    private var snapRecipesList: ArrayList<SnapRecipeList> = ArrayList()
+    private var snapRecipesList: ArrayList<IngredientRecipeList> = ArrayList()
     private var mealTypeList: ArrayList<String> = ArrayList()
     private var foodTypeList: ArrayList<String> = ArrayList()
     private var cuisineList: ArrayList<String> = ArrayList()
@@ -367,7 +366,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 tabLayout.getTabAt(i)?.let { setTabUnselectedUI(it) }
             }
             // fetch fresh data
-            getSnapMealRecipesList()
+            getRecipesList()
         }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
@@ -378,7 +377,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        getSnapMealRecipesList()  // this will handle tab restore on success
+        getRecipesList()  // this will handle tab restore on success
     }
 
     // Helper: set selected look
@@ -496,14 +495,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun onSnapSearchDishItemRefresh() {
-        val valueLists: ArrayList<SnapRecipeList> = ArrayList()
-        valueLists.addAll(snapRecipesList as Collection<SnapRecipeList>)
-        val mealLogDateData: SnapRecipeList? = null
+        val valueLists: ArrayList<IngredientRecipeList> = ArrayList()
+        valueLists.addAll(snapRecipesList as Collection<IngredientRecipeList>)
+        val mealLogDateData: IngredientRecipeList? = null
         recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
         refreshRecipesList()
     }
 
-    private fun onSnapSearchDishItem(recipesModel: SnapRecipeList, position: Int, isRefresh: Boolean) {
+    private fun onSnapSearchDishItem(recipesModel: IngredientRecipeList, position: Int, isRefresh: Boolean) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             val snapMealFragment = RecipeDetailsFragment()
             val args = Bundle()
@@ -528,9 +527,9 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val matchesCuisine = selectedCuisine?.let { recipe.cuisine == it } ?: true
             matchesQuery && matchesMealType && matchesFoodType && matchesCuisine
         }
-        val valueLists: ArrayList<SnapRecipeList> = ArrayList()
-        valueLists.addAll(filteredList as Collection<SnapRecipeList>)
-        val mealLogDateData: SnapRecipeList? = null
+        val valueLists: ArrayList<IngredientRecipeList> = ArrayList()
+        valueLists.addAll(filteredList as Collection<IngredientRecipeList>)
+        val mealLogDateData: IngredientRecipeList? = null
         recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
       //  recipeSearchAdapter.updateList(filteredList)
         if (query.isNotEmpty()) {
@@ -555,13 +554,13 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApiV2.getRecipesList(
+        val call = ApiClient.apiServiceFastApiV2.getRecipesListWithFilter(
             mealType = mealType,
             foodType = foodType,
             cuisine = cuisine
         )
-        call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
-            override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
+        call.enqueue(object : Callback<RecipeListResponse> {
+            override fun onResponse(call: Call<RecipeListResponse>, response: Response<RecipeListResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
@@ -585,7 +584,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     }
                 }
             }
-            override fun onFailure(call: Call<SnapMealRecipeResponseModel>, t: Throwable) {
+            override fun onFailure(call: Call<RecipeListResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
@@ -597,15 +596,15 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         })
     }
 
-    private fun getSnapMealRecipesList() {
+    private fun getRecipesList() {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApiV2.getSnapMealRecipesList()
-        call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
-            override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
+        val call = ApiClient.apiServiceFastApiV2.getRecipesList()
+        call.enqueue(object : Callback<RecipeListResponse> {
+            override fun onResponse(call: Call<RecipeListResponse>, response: Response<RecipeListResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
@@ -640,7 +639,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     }
                 }
             }
-            override fun onFailure(call: Call<SnapMealRecipeResponseModel>, t: Throwable) {
+            override fun onFailure(call: Call<RecipeListResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){

@@ -24,10 +24,10 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeResponseNew
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsViewResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentRecipeDetailsBinding
@@ -69,7 +69,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
     private var mealLogRequests : SelectedMealLogList? = null
     private var snapMealLogRequests : SelectedMealLogList? = null
     private lateinit var mealType : String
-    private  var recipeDetails :SnapRecipeList? = null
+    private  var recipeDetails :IngredientRecipeList? = null
     private var recipeId : String = ""
     private lateinit var backButton: ImageView
     private lateinit var mealTypeImage : ImageView
@@ -288,9 +288,9 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getSnapMealRecipeById(recipeId = recipeId)
-        call.enqueue(object : Callback<RecipeResponseNew> {
-            override fun onResponse(call: Call<RecipeResponseNew>, response: Response<RecipeResponseNew>) {
+        val call = ApiClient.apiServiceFastApiV2.getDetailsViewRecipeById(recipeId = recipeId)
+        call.enqueue(object : Callback<RecipeDetailsViewResponse> {
+            override fun onResponse(call: Call<RecipeDetailsViewResponse>, response: Response<RecipeDetailsViewResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
@@ -301,7 +301,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     val ingredientsFormatted = ingredientsList.joinToString(separator = "\n") { "• $it" }
                     ingredients_description.text = ingredientsFormatted
                     // Format instructions as a numbered list
-                    val instructionsList = response.body()?.data?.instructions.orEmpty()
+                    val instructionsList = response.body()?.data?.preparation_notes.orEmpty()
 //                    val instructionsFormatted = instructionsList.mapIndexed { index, instruction ->
 //                        "${index + 1}. ${instruction.replaceFirstChar { it.uppercase() }}"
 //                    }.joinToString(separator = "\n")
@@ -312,13 +312,13 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     val instructionsText = instructionsList.joinToString(separator = "\n") { "- $it" }
                     steps_description.text = instructionsText
 
-                    serves_text.text = "Serves ${response.body()?.data?.servings.toString()}"
-                    tvMealName.text = response.body()?.data?.recipe_name.toString()
-                    time_text.text = response.body()?.data?.total_time.toString()
-                    calorie_value.text = "${response.body()?.data?.calories?.toInt().toString()} Kcal"
-                    carbs_value.text = "${response.body()?.data?.carbs?.toInt()} g"
-                    protein_value.text = "${response.body()?.data?.protein?.toInt()} g"
-                    fat_value.text = "${response.body()?.data?.fat?.toInt()} g"
+                    serves_text.text = "Serves ${response.body()?.data?.serving_size_for_calorific_breakdown.toString()}"
+                    tvMealName.text = response.body()?.data?.recipe.toString()
+                    time_text.text = response.body()?.data?.active_cooking_time_min.toString()
+                    calorie_value.text = "${response.body()?.data?.calories_kcal?.toInt().toString()} Kcal"
+                    carbs_value.text = "${response.body()?.data?.carbs_g?.toInt()} g"
+                    protein_value.text = "${response.body()?.data?.protein_g?.toInt()} g"
+                    fat_value.text = "${response.body()?.data?.fat_g?.toInt()} g"
                     vegTv.text = response.body()?.data?.tags?.substringBefore("_")
                     if (response.body()?.data?.tags?.substringBefore("_").equals("Veg")){
                         vegImage.setImageResource(R.drawable.green_circle)
@@ -328,16 +328,16 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     }else{
                         vegImage.visibility = View.INVISIBLE
                     }
-                    foodType.text = response.body()?.data?.course
-                    if (response.body()?.data?.course.equals("Breakfast")){
+                    foodType.text = response.body()?.data?.meal_type
+                    if (response.body()?.data?.meal_type.equals("Breakfast")){
                         mealTypeImage.setImageResource(R.drawable.ic_breakfast)
-                    }else if (response.body()?.data?.course.equals("Snack")){
+                    }else if (response.body()?.data?.meal_type.equals("Snack")){
                         mealTypeImage.setImageResource(R.drawable.ic_morning_snack)
-                    }else if (response.body()?.data?.course.equals("Lunch")){
+                    }else if (response.body()?.data?.meal_type.equals("Lunch")){
                         mealTypeImage.setImageResource(R.drawable.ic_lunch)
-                    }else if (response.body()?.data?.course.equals("One Pot Dish")){
+                    }else if (response.body()?.data?.meal_type.equals("One Pot Dish")){
                         mealTypeImage.setImageResource(R.drawable.ic_evening_snack)
-                    }else if (response.body()?.data?.course.equals("Dinner")){
+                    }else if (response.body()?.data?.meal_type.equals("Dinner")){
                         mealTypeImage.setImageResource(R.drawable.ic_dinner)
                     }else{
                         mealTypeImage.setImageResource(R.drawable.ic_view_meal_place)
@@ -354,7 +354,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     }
                 }
             }
-            override fun onFailure(call: Call<RecipeResponseNew>, t: Throwable) {
+            override fun onFailure(call: Call<RecipeDetailsViewResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){

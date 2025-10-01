@@ -259,13 +259,15 @@
                             android:layout_marginStart="15dp"
                             android:textColor="@color/text_color_kcal"/>
 
-                        <LinearLayout
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="5dp"
                             android:background="@drawable/white_bg"
-                            android:padding="8dp"
+                            android:layout_marginTop="5dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
                             android:gravity="center_vertical">
 
                             <TextView
@@ -275,17 +277,37 @@
                                 android:layout_height="wrap_content"
                                 android:text="Serving"
                                 android:textSize="16sp"
+                                android:visibility="gone"
                                 android:fontFamily="@font/dmsans_medium"
-                                android:textColor="@color/black_no_meals"/>
+                                android:textColor="@color/black_no_meals"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"/>
+
+                            <Spinner
+                                android:id="@+id/spinner"
+                                android:layout_width="wrap_content"
+                                android:layout_height="20dp"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:background="@color/white"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="7dp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textColor="@color/black_no_meals"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintHorizontal_weight="1.9"/>
 
                             <ImageView
                                 android:id="@+id/ivMealDropdown"
-                                android:layout_width="12dp"
-                                android:layout_height="18dp"
-                                android:visibility="invisible"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:src="@drawable/updown_icon"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintHorizontal_weight=".1"
                                 />
-                        </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
                 </LinearLayout>
 

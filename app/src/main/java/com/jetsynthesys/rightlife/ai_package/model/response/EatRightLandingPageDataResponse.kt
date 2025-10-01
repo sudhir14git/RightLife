@@ -26,10 +26,10 @@ data class LastWeightLog(
 data class OtherRecipe(
     val _id: String,
     val meal_name: String,
-    val calories: Double,
-    val protein: Double,
-    val fats: Double,
-    val carbs: Double,
+    val calories_kcal: Double,
+    val protein_g: Double,
+    val fat_g: Double,
+    val carbs_g: Double,
     val image: String
 )
 

@@ -23,7 +23,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -36,14 +35,18 @@ import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.request.CreateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
+import com.jetsynthesys.rightlife.ai_package.model.request.IngredientLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.MealIngredient
 import com.jetsynthesys.rightlife.ai_package.model.request.MealLogItem
+import com.jetsynthesys.rightlife.ai_package.model.request.MealRecipe
+import com.jetsynthesys.rightlife.ai_package.model.request.RecipeLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.SnapDish
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.OnImageSelectedListener
@@ -52,7 +55,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragme
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.FrequentlyAddDishBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -81,8 +84,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private lateinit var imageScan : ImageView
     private lateinit var imageGallery : ImageView
     private lateinit var loggedSuccess : TextView
-    private var dishLists : ArrayList<SearchResultItem> = ArrayList()
-    private  var snapDishLocalListModel : SnapDishLocalListModel? = null
+    private var dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+    private  var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
     private var mealLogRequests : SelectedMealLogList? = null
     private var mealLogRequestsList : ArrayList<SelectedMealLogList> = ArrayList()
     private var selectedMealLogList : ArrayList<MealLogItems> = ArrayList()
@@ -138,7 +141,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         mealQuantity = arguments?.getString("mealQuantity").toString()
         val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
-            arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
+            arguments?.getParcelable("snapDishLocalListModel", RecipeDetailsLocalListModel::class.java)
         } else {
             arguments?.getParcelable("snapDishLocalListModel")
         }
@@ -178,8 +181,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
 
         if (dishLocalListModels != null){
-            snapDishLocalListModel = dishLocalListModels
-            dishLists.addAll(snapDishLocalListModel!!.data)
+            recipeDetailsLocalListModel = dishLocalListModels
+            dishLists.addAll(recipeDetailsLocalListModel!!.data)
         }
 
         if (mealQuantity != "null" && !mealQuantity.equals("")){
@@ -259,7 +262,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
-                    0 -> replaceFragment(FrequentlyLoggedFragment())
+                    0 -> replaceFrequentlyFragment(FrequentlyLoggedFragment())
                     1 -> replaceFragment(MyMealFragment())
                   //  2 -> replaceFragment(MealPlanFragment())
                     2 -> replaceFragment(MyRecipeFragment())
@@ -310,7 +313,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             args.putString("searchType", "HomeTabMeal")
             args.putString("mealType", mealType)
             args.putString("selectedMealDate", selectedMealDate)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             args.putParcelable("selectedMealLogList", mealLogRequests)
             args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
             args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
@@ -323,7 +326,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
 
         if (searchType.contentEquals("DishToLog")){
-            if (snapDishLocalListModel != null){
+            if (recipeDetailsLocalListModel != null){
                 //loggedAddDish(snapDishLocalListModel)
                 frequentlyAddDishBottomSheetLayout.visibility = View.VISIBLE
                 flexboxLayout.visibility = View.VISIBLE
@@ -332,7 +335,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 // Display default ingredients
                 if (dishLists.size > 0){
                     for (dishItem in dishLists) {
-                        ingredientsList.add(dishItem.name!!)
+                        ingredientsList.add(dishItem.recipe)
                     }
                 }
                 if (mealLogRequests != null) {
@@ -358,7 +361,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
 
         btnLogMeal.setOnClickListener {
-            if (snapDishLocalListModel != null){
+            if (recipeDetailsLocalListModel != null){
                 if (mealType.isNotEmpty() && !mealType.equals("null")){
                     if (dishLists.size > 0){
                         createDishLog()
@@ -472,6 +475,23 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
     }
 
+    private fun replaceFrequentlyFragment(fragment: Fragment) {
+        childFragmentManager.beginTransaction().apply {
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putString("mealType", mealType)
+            args.putString("selectedMealDate", selectedMealDate)
+            args.putString("searchType", "HomeTabMeal")
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
+            args.putParcelable("selectedMealLogList", mealLogRequests)
+            args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
+            args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
+            fragment.arguments = args
+            replace(R.id.fragmentContainer, fragment, "homeTab")
+            commit()
+        }
+    }
+
     // Function to update tab selection colors
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updateTabColors() {
@@ -520,7 +540,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     updateIngredientChips()
                 }else{
                     frequentlyAddDishBottomSheetLayout.visibility = View.GONE
-                    snapDishLocalListModel = null
+                    recipeDetailsLocalListModel = null
                     mealLogRequests = null
                     snapMealLogRequests = null
                     snapMealRequestLocalListModel = null
@@ -577,7 +597,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     updateIngredientChips()
                 }else{
                     frequentlyAddDishBottomSheetLayout.visibility = View.GONE
-                    snapDishLocalListModel = null
+                    recipeDetailsLocalListModel = null
                     mealLogRequests = null
                     snapMealLogRequests = null
                     snapMealRequestLocalListModel = null
@@ -606,7 +626,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     updateIngredientChips()
                 }else{
                     frequentlyAddDishBottomSheetLayout.visibility = View.GONE
-                    snapDishLocalListModel = null
+                    recipeDetailsLocalListModel = null
                     mealLogRequests = null
                     snapMealLogRequests = null
                     snapMealRequestLocalListModel = null
@@ -620,7 +640,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                             meal_id = selectedDish.meal_id,
                             recipe_name = selectedDish.recipe_name,
                             meal_quantity = selectedDish.meal_quantity,
-                            unit = selectedDish.unit,
+                            source = selectedDish.source,
                             measure = selectedDish.measure
                         )
                         selectedMealLog.add(mealLogData)
@@ -688,7 +708,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     val iterator = dishLists.iterator()
                     while (iterator.hasNext()) {
                         val dishItem = iterator.next()
-                        if (dishItem.name.equals(ingredient, ignoreCase = true)) {
+                        if (dishItem.recipe.equals(ingredient, ignoreCase = true)) {
                             iterator.remove()
                             // someUpdateMethod(ingredient)
                             break // if only one item should be removed
@@ -728,7 +748,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         tvIngredientsCount.text = ""+ ingredientsList.size + " Dishes/ Ingredients Added"
         if (ingredientsList.isEmpty()){
             frequentlyAddDishBottomSheetLayout.visibility = View.GONE
-            snapDishLocalListModel = null
+            recipeDetailsLocalListModel = null
             mealLogRequests = null
             snapMealLogRequests = null
             snapMealRequestLocalListModel = null
@@ -759,18 +779,36 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         val formattedDate = selectedMealDate  //?: currentDateTime.format(formatter)
 
         val dishLogList : ArrayList<DishLog> = ArrayList()
-        val mealNamesString = dishLists.map { it.name ?: "" }.joinToString(", ")
+        val recipes: ArrayList<RecipeLogRequest> = ArrayList()
+        val ingredients: ArrayList<IngredientLogRequest> = ArrayList()
+        val mealNamesString = dishLists.map { it.recipe ?: "" }.joinToString(", ")
 
-        if (snapDishLocalListModel != null){
+        if (recipeDetailsLocalListModel != null){
             if (dishLists.size > 0) {
                 dishLists?.forEach { snapRecipe ->
-                    val mealLogData = DishLog(
-                        receipe_id = snapRecipe.id,
-                        meal_quantity = mealQuantity.toDouble(),
-                        unit = "g",
-                        measure = "Bowl"
-                    )
-                    dishLogList.add(mealLogData)
+                    if (snapRecipe.source.equals("recipe")){
+                        val mealRecipeData = RecipeLogRequest(
+                            recipe_id = snapRecipe.id,
+                            selected_serving_type = snapRecipe.selected_serving?.type,
+                            selected_serving_value = snapRecipe.selected_serving?.value
+                        )
+                        recipes.add(mealRecipeData)
+                    }
+                    if (snapRecipe.source.equals("ingredient")){
+                        val mealIngredientData = IngredientLogRequest(
+                            ingredient_id = snapRecipe.id,
+                            meal_quantity = snapRecipe.quantity,
+                            standard_serving_size = snapRecipe.selected_serving?.type
+                        )
+                        ingredients.add(mealIngredientData)
+                    }
+//                    val mealLogData = DishLog(
+//                        receipe_id = snapRecipe.id,
+//                        meal_quantity = mealQuantity.toDouble(),
+//                        unit = "g",
+//                        measure = "Bowl"
+//                    )
+//                    dishLogList.add(mealLogData)
                 }
             }
         }
@@ -778,21 +816,38 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         if (mealLogRequests != null){
             if (selectedMealLogList.size > 0){
                 selectedMealLogList?.forEach { selectedDish ->
-                    val mealLogData = DishLog(
-                        receipe_id = selectedDish.meal_id,
-                        meal_quantity = mealQuantity.toDouble(),
-                        unit = "g",
-                        measure = "Bowl"
-                    )
-                    dishLogList.add(mealLogData)
+                    if (selectedDish.source.equals("recipe")){
+                        val mealRecipeData = RecipeLogRequest(
+                            recipe_id = selectedDish.meal_id,
+                            selected_serving_type = selectedDish.measure,
+                            selected_serving_value = selectedDish.meal_quantity
+                        )
+                        recipes.add(mealRecipeData)
+                    }
+                    if (selectedDish.source.equals("ingredient")){
+                        val mealIngredientData = IngredientLogRequest(
+                            ingredient_id = selectedDish.meal_id,
+                            meal_quantity = selectedDish.meal_quantity,
+                            standard_serving_size = selectedDish.measure
+                        )
+                        ingredients.add(mealIngredientData)
+                    }
+//                    val mealLogData = DishLog(
+//                        receipe_id = selectedDish.meal_id,
+//                        meal_quantity = mealQuantity.toDouble(),
+//                        unit = "g",
+//                        measure = "Bowl"
+//                    )
+//                    dishLogList.add(mealLogData)
                 }
             }
         }
         val dishLogRequest = SaveDishLogRequest(
             meal_type = mealType ?: "dd",
-            meal_log = dishLogList
+            recipes = recipes,
+            ingredients = ingredients
         )
-        val call = ApiClient.apiServiceFastApi.createSaveMealsToLog(userId, formattedDate, dishLogRequest)
+        val call = ApiClient.apiServiceFastApiV2.createSaveMealsToLog(userId, formattedDate, dishLogRequest)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {
@@ -859,12 +914,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
-        val snapDishList: ArrayList<SnapDish> = ArrayList()
         if (snapRecipeList.dish.isNotEmpty()) {
-            val items = snapRecipeList.dish
-            items?.forEach { snapDish ->
-                snapDishList.add(snapDish)
-            }
             val snapMealLogRequest = SnapMealLogRequest(
                 user_id = userId,
                 meal_type = mealType,
@@ -872,13 +922,13 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 is_save = false,
                 is_snapped = true,
                 date = utcDateString,
-                dish = snapDishList,
+                dish = snapRecipeList.dish,
                 image_url = ""
             )
             val gson = Gson()
             val jsonString = gson.toJson(snapMealLogRequest) // snapMealLogRequest is your model instance
             Log.d("JSON Output", jsonString)
-            val call = ApiClient.apiServiceFastApi.createSnapMealLog(snapMealLogRequest)
+            val call = ApiClient.apiServiceFastApiV2.createSnapMealLog(snapMealLogRequest)
             call.enqueue(object : Callback<SnapMealLogResponse> {
                 override fun onResponse(
                     call: Call<SnapMealLogResponse>,
@@ -944,12 +994,12 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         loadingOverlay?.visibility = View.GONE
     }
 
-    private fun loggedAddDish(snapDishLocalListModel: SnapDishLocalListModel?) {
+    private fun loggedAddDish(recipeDetailsLocalListModel: RecipeDetailsLocalListModel?) {
         val frequentlyAddDishBottomSheet = FrequentlyAddDishBottomSheet()
         frequentlyAddDishBottomSheet.isCancelable = true
         val args = Bundle()
         args.putString("mealType", mealType)
-        args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+        args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
         args.putBoolean("test",false)
         frequentlyAddDishBottomSheet.arguments = args
         activity?.supportFragmentManager?.let { frequentlyAddDishBottomSheet.show(it, "FrequentlyAddDishBottomSheet") }

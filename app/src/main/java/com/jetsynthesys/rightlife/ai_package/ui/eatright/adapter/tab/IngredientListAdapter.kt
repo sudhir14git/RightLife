@@ -9,17 +9,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.model.MealDetails
-import com.jetsynthesys.rightlife.ai_package.model.MealLists
-import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetail
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 
-class IngredientListAdapter(private val context: Context, private var dataLists: ArrayList<IngredientDetail>,
-                            private var clickPos: Int, private var mealLogListData : IngredientDetail?,
-                            private var isClickView : Boolean, val onIngredientClickItem: (IngredientDetail, Int, Boolean) -> Unit,
-                            val onIngredientDeleteItem: (IngredientDetail, Int, Boolean) -> Unit,
-                            val onIngredientEditItem: (IngredientDetail, Int, Boolean) -> Unit) :
+class IngredientListAdapter(private val context: Context, private var dataLists: ArrayList<IngredientRecipeDetails>,
+                            private var clickPos: Int, private var mealLogListData : IngredientRecipeDetails?,
+                            private var isClickView : Boolean, val onIngredientClickItem: (IngredientRecipeDetails, Int, Boolean) -> Unit,
+                            val onIngredientDeleteItem: (IngredientRecipeDetails, Int, Boolean) -> Unit,
+                            val onIngredientEditItem: (IngredientRecipeDetails, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<IngredientListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -123,7 +119,7 @@ class IngredientListAdapter(private val context: Context, private var dataLists:
          val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
      }
 
-    fun addAll(item : ArrayList<IngredientDetail>?, pos: Int, mealLogItem : IngredientDetail?, isClick : Boolean) {
+    fun addAll(item : ArrayList<IngredientRecipeDetails>?, pos: Int, mealLogItem : IngredientRecipeDetails?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

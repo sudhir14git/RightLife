@@ -1,25 +1,26 @@
-package com.jetsynthesys.rightlife.ai_package.model.response
+package com.jetsynthesys.rightlife.ai_package.ui.eatright.model
 
-data class MyRecipeDetailsResponse(
+import android.os.Parcelable
+import com.jetsynthesys.rightlife.ai_package.model.response.Serving
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class RecipeDetailsViewResponse(
     val status_code: Int,
-    val message: String,
-    val data: MyRecipeData
-)
+    val data: RecipeDetailsViewData
+): Parcelable
 
-data class MyRecipeData(
+@Parcelize
+data class RecipeDetailsViewData(
     val id: String,
     val recipe_id: String,
-    val food_code: String,
-    val food_name: String,
     val recipe: String,
     val meal_type: String,
     val cuisine: String,
     val regional_split: String,
     val category: String,
-    val food_category: String,
     val flag: String,
     val serving_size_for_calorific_breakdown: String,
-    val standard_serving_size: String,
     val calories_kcal: Double,
     val protein_g: Double,
     val fat_g: Double,
@@ -45,17 +46,17 @@ data class MyRecipeData(
     val sodium_mg: Double,
     val phosphorus_mg: Double,
     val omega3_g: Double,
-    val ingredients: List<IngredientRecipeDetails>,
+    val ingredients: List<String>,
     val preparation_notes: List<String>,
     val active_cooking_time_min: Int,
     val allergy_groups_restricted_from_consuming: String,
     val tags: String,
     val typical_1person_serving: String,
     val household_measure_1_serving: String,
-    val selected_serving: Serving?,
-    val default_serving: Serving?,
-    val available_serving: List<Serving>,
     val photo_url: String,
-    val source: String,
-    val servings: Int
-)
+    val selected_serving: Serving,
+    val default_serving: Serving,
+    val available_serving: List<Serving>
+):Parcelable
+
+

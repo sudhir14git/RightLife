@@ -17,6 +17,7 @@ data class MyRecipe(
     val fat_g: Double,
     val servings: Double,
     val photo_url: String,
+    val selected_serving: Serving?,
     val ingredients: List<Ingredient>,
     var isRecipeLog : Boolean = false
 )
