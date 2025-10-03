@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:fontFamily="@font/dmsans_bold"
+                    android:fontFamily="@font/merriweather_bold"
                     android:gravity="center_horizontal"
                     android:text="@string/your_data_control"
                     android:textColor="@color/txt_color_header"
@@ -50,7 +50,7 @@
                     android:fontFamily="@font/dmsans_regular"
                     android:text="@string/data_control_desc1"
                     android:textColor="@color/txt_color_header"
-                    android:textSize="@dimen/textsize_large" />
+                    android:textSize="@dimen/textsize_medium" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -78,6 +78,7 @@
             android:layout_height="wrap_content"
             android:autoLink="web"
             android:textColorLink="@color/nuraBlue"
+            android:fontFamily="@font/dmsans_regular"
             android:textSize="11sp" />
 
     </LinearLayout>
@@ -101,6 +102,7 @@
             android:id="@+id/tv_terms_condition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_regular"
             android:autoLink="web"
             android:textColorLink="@color/nuraBlue"
             android:textSize="11sp" />

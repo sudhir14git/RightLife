@@ -200,7 +200,7 @@ We’ll never share your data with anyone outside RightLife and our trusted part
 
 We also use device identifiers to improve analytics and tailor your in-app experience.</string>
 
-    <string name="data_control_desc1">Your health data stays with us safe, secure, and used only to personalize your experience on RightLife.\n\nWe’ll never share your data with anyone outside RightLife and our trusted partners. You can manage or delete your data anytime from your profile.\n\nWe also use device identifiers to improve analytics and tailor your in-app experience.\n\n</string>
+    <string name="data_control_desc1">Your health data stays with us safe, secure, and used only to personalize your experience on RightLife.\n\nWe’ll never share your data with anyone outside RightLife and our trusted partners. You can manage or delete your data anytime from your profile.\n\nWe also use device identifiers to improve analytics and tailor your in-app experience.\n</string>
 
     <string name="str_continue">Continue</string>
     <string name="continue_google">Continue With Google</string>
