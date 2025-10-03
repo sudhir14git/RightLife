@@ -265,7 +265,7 @@ class SettingsNewActivity : BaseActivity() {
                 editor.remove(key)
             }
         }
-
+        editor.remove("ACCESS_TOKEN")
         editor.apply()
     }
 

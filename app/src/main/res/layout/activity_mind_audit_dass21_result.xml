@@ -99,44 +99,6 @@
             android:layout_height="match_parent">
 
 
-            <RelativeLayout
-                android:id="@+id/rl_check_progress"
-                android:layout_width="match_parent"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingStart="@dimen/margin_card_16dp"
-                android:paddingEnd="@dimen/margin_card_16dp"
-                android:background="#D9DBE9"
-                android:visibility="visible"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/tv_checkprogress"
-                    android:layout_width="wrap_content"
-                    android:text="Check your Progress"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/tv_checkprogress_days"
-                    android:layout_width="wrap_content"
-                    android:text="Re - take Assessment"
-                    android:paddingHorizontal="5dp"
-                    android:layout_alignParentEnd="true"
-                    android:background="@drawable/roundedcornerpinkborder"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/tv_checkprogress_due"
-                    android:layout_width="wrap_content"
-                    android:text="  Due Today  "
-                    android:padding="1dp"
-                    android:layout_below="@+id/tv_checkprogress"
-                    android:layout_margin="5dp"
-                    android:visibility="gone"
-                    android:background="@drawable/roundedcornerpinkborder"
-                    android:layout_height="wrap_content" />
-            </RelativeLayout>
-
             <TextView
                 android:id="@+id/tv_assessment_taken"
                 android:layout_width="match_parent"
@@ -159,35 +121,6 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:orientation="horizontal"
-                        android:gravity="right"
-                        android:padding="16dp"
-                        android:visibility="gone"
-                        android:weightSum="3">
-
-                        <com.jetsynthesys.rightlife.quiestionscustomviews.DynamicRainbowView
-                            android:id="@+id/leftArc"
-                            android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:layout_gravity="start|center_vertical"
-                            android:layout_height="match_parent" />
-
-                        <com.jetsynthesys.rightlife.quiestionscustomviews.DynamicRainbowView
-                            android:id="@+id/centerArc"
-                            android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:layout_height="match_parent" />
-
-                        <com.jetsynthesys.rightlife.quiestionscustomviews.DynamicRainbowView
-                            android:id="@+id/rightArc"
-                            android:layout_width="match_parent"
-                            android:layout_weight="1"
-                            android:layout_height="match_parent" />
-                    </LinearLayout>
-
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -196,15 +129,9 @@
                             android:id="@+id/rainbowView"
                             android:layout_width="match_parent"
                             android:layout_height="150dp"
-                            android:visibility="invisible"
+                            android:visibility="visible"
                             android:layout_centerInParent="true" />
-                        <com.jetsynthesys.rightlife.quiestionscustomviews.FanArcView
-                            android:id="@+id/fanArcView"
-                            android:layout_width="300dp"
-                            android:layout_height="200dp"
-                            android:layout_gravity="center"
-                            android:layout_centerHorizontal="true"
-                            />
+
 
                     </RelativeLayout>
 
@@ -428,241 +355,9 @@
                         </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
-                    <RelativeLayout
-                        android:id="@+id/happinessScoreBarContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <LinearLayout
-                            android:id="@+id/scoreBarContainerhappiness"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-
-                            <!-- Score Number Row -->
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:weightSum="5">
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:background="@drawable/grey_border_bg"
-                                    android:paddingHorizontal="3dp"
-                                    android:text="1"
-                                     />
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text=""
-                                    android:layout_weight="1" />
-
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text="2"
-                                    android:background="@drawable/grey_border_bg"
-                                    android:paddingHorizontal="3dp"
-                                     />
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text=""
-                                    android:layout_weight="1" />
 
 
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text="3"
-                                    android:background="@drawable/grey_border_bg"
-                                    android:paddingHorizontal="3dp"
-                                     />
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text=""
-                                    android:layout_weight="1" />
 
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text="4"
-                                    android:background="@drawable/grey_border_bg"
-                                    android:paddingHorizontal="3dp"
-                                     />
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text=""
-                                    android:layout_weight="1" />
-
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text="5"
-                                    android:background="@drawable/grey_border_bg"
-                                    android:paddingHorizontal="3dp" />
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text=""
-                                    android:layout_weight="1" />
-
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text="6"
-                                    android:background="@drawable/grey_border_bg"
-                                    android:paddingHorizontal="3dp" />
-                                <TextView
-                                    style="@style/ScoreStepLabel"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:gravity="start"
-                                    android:textColor="@color/text_color_app"
-                                    android:text=""
-                                    android:layout_weight="0" />
-                            </LinearLayout>
-
-                            <!-- Colored Score Segments -->
-                            <androidx.cardview.widget.CardView
-                                android:id="@+id/scoreBarcardhappiness"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                app:cardCornerRadius="10dp"
-                                android:background="@drawable/roundedcornerblueborder">
-
-                                <LinearLayout
-                                    android:id="@+id/scoreBarhappiness"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
-
-                                    <ImageView
-                                        android:layout_width="match_parent"
-                                        android:src="@drawable/ic_ohq_scale"
-                                        android:layout_height="wrap_content" />
-                                </LinearLayout>
-                            </androidx.cardview.widget.CardView>
-                        </LinearLayout>
-                    </RelativeLayout>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="@dimen/margin_card_16dp"
-                        android:elevation="5dp"
-                        android:id="@+id/cardview_mainscore_happiness"
-                        app:cardBackgroundColor="#4EC6DE">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_card_16dp"
-                            android:gravity="center_vertical">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:layout_marginStart="@dimen/margin_card_16dp"
-                                android:id="@+id/ll_title_message_main"
-                                android:layout_toLeftOf="@+id/iv_main_score_image">
-
-                                <TextView
-                                    android:id="@+id/main_score_title_happiness"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Happiness Score"
-                                    android:textColor="@color/txt_color_journal_date"
-                                    android:fontFamily="@font/dmsans_bold"
-                                    android:textSize="18sp" />
-
-                                <TextView
-                                    android:id="@+id/main_score_level_message"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Balancing joy like a happiness pro"
-                                    android:textColor="@color/txt_color_mind"
-                                    android:paddingEnd="10dp"
-                                    android:fontFamily="@font/dmsans_regular"
-                                    android:textSize="14sp" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/tv_main_score_happiness"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:layout_below="@+id/ll_title_message_main"
-                                android:gravity="center"
-                                android:text="5"
-                                android:textColor="#06142E"
-                                android:textSize="16sp"
-                                android:layout_marginStart="@dimen/margin_card_16dp"
-                                android:layout_marginTop="@dimen/margin_card_16dp"
-                                android:textStyle="bold"
-                                android:backgroundTint="@color/white"
-                                android:background="@drawable/circle_shape" />
-
-                            <ImageView
-                                android:id="@+id/iv_main_score_image"
-                                android:layout_width="60dp"
-                                android:src="@drawable/rounded_corder_border_gray"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginTop="30dp"
-                                android:layout_height="60dp"/>
-
-
-                            <TextView
-                                android:id="@+id/main_score_level_desciption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Balancing joy like a happiness pro"
-                                android:textColor="@color/txt_color_mind"
-                                android:layout_margin="@dimen/margin_card_16dp"
-                                android:layout_below="@+id/tv_main_score_happiness"
-                                android:fontFamily="@font/dmsans_regular"
-                                android:textSize="14sp" />
-                        </RelativeLayout>
-
-                    </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
@@ -838,6 +533,8 @@
                     </androidx.cardview.widget.CardView>
 
 
+
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:orientation="vertical"
@@ -921,42 +618,5 @@ While you do that here are some suggestion to help you in your journey."
         </LinearLayout>
     </ScrollView>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:id="@+id/rl_assessment_not_taken"
-        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_assessment_not_taken"
-            android:layout_width="match_parent"
-            android:text="PHQ-9 Score"
-            android:gravity="center_vertical"
-            android:background="#F7E6B7"
-            android:paddingStart="@dimen/margin_card_16dp"
-            android:layout_height="50dp" />
-
-        <TextView
-            android:id="@+id/tv_assessment_not_taken_msg"
-            android:layout_width="match_parent"
-            android:text="You have not taken this assessment yet."
-            android:layout_marginBottom="70dp"
-            android:layout_marginTop="10dp"
-            android:layout_centerInParent="true"
-            android:padding="@dimen/margin_card_16dp"
-            android:layout_height="match_parent" />
-
-        <Button
-            android:id="@+id/btnTakeAssessment"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:minWidth="100dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:backgroundTint="@color/btn_color_journal"
-            android:textColor="@color/thinkright_text_color"
-            android:layout_marginBottom="32dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="Take Assessment" />
-    </RelativeLayout>
 </LinearLayout>
