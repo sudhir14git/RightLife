@@ -734,7 +734,7 @@ class HomeNewActivity : BaseActivity() {
 
 
     private fun checkTrailEndedAndShowDialog(): Boolean {
-        return if (!DashboardChecklistManager.paymentStatus) {
+        /*return if (!DashboardChecklistManager.paymentStatus) {
             showTrailEndedBottomSheet()
             false // Return false if condition is true and dialog is shown
         } else {
@@ -745,7 +745,23 @@ class HomeNewActivity : BaseActivity() {
                 true // Return true if condition is false
             }
         }
+        return true*/
+        return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+                false
+            } else if(sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+                showTrailEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            }else{
+                true
+            }
+        }
         return true
+
     }
 
     private fun showTrailEndedBottomSheet() {
@@ -2587,5 +2603,9 @@ class HomeNewActivity : BaseActivity() {
 
             })
     }
-}
 
+    private fun freeTrialDialogActivity() {
+        val intent = Intent(this, BeginMyFreeTrialActivity::class.java)
+        startActivity(intent)
+    }
+}
