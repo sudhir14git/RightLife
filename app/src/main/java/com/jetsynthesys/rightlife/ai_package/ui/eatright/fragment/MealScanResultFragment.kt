@@ -118,6 +118,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private var loadingOverlay : FrameLayout? = null
     private var mealType : String = ""
     private var snapMealLog : String = ""
+    private var snapMyMeal : String = ""
     private var homeTab : String = ""
     private var selectedMealDate : String = ""
     private var isSaveClick : Boolean = false
@@ -181,6 +182,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         mealName = arguments?.getString("mealName").toString()
         mealType = arguments?.getString("mealType").toString()
         snapMealLog = arguments?.getString("snapMealLog").toString()
+        snapMyMeal = arguments?.getString("snapMyMeal").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         snapImageUrl = arguments?.getString("snapImageUrl").toString()
 
@@ -399,6 +401,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("snapImageUrl", snapImageUrl)
             args.putString("mealType", mealType)
             args.putString("homeTab", homeTab)
+            args.putString("snapMyMeal", snapMyMeal)
             args.putString("selectedMealDate", selectedMealDate)
             args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
@@ -715,6 +718,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("homeTab", homeTab)
             args.putString("selectedMealDate", selectedMealDate)
             args.putString("snapMealLog", snapMealLog)
+            args.putString("snapMyMeal", snapMyMeal)
             args.putString("mealQuantity", snapRecipeData.quantity.toString())
             args.putString("snapRecipeName", snapRecipeData.food_name)
             args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
@@ -742,6 +746,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         args.putString("homeTab", homeTab)
         args.putString("selectedMealDate", selectedMealDate)
         args.putString("snapMealLog", snapMealLog)
+        args.putString("snapMyMeal", snapMyMeal)
         args.putString("snapRecipeName", snapRecipeData.food_name)
         args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
         deleteSnapMealBottomSheet.arguments = args

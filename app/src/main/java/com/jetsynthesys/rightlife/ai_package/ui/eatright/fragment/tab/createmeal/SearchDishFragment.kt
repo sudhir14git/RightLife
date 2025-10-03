@@ -67,6 +67,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var mealId : String = ""
     private var mealName : String = ""
     private var snapImageUrl: String = ""
+    private var snapMyMeal : String = ""
     private lateinit var mealType : String
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
@@ -110,6 +111,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         mealType = arguments?.getString("mealType").toString()
         homeTab = arguments?.getString("homeTab").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
+        snapMyMeal = arguments?.getString("snapMyMeal").toString()
 
         if (searchType.contentEquals("mealScanResult")){
             allDishesRecyclerview.layoutManager = LinearLayoutManager(context)
@@ -118,7 +120,6 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             allDishesRecyclerview.layoutManager = LinearLayoutManager(context)
             allDishesRecyclerview.adapter = snapSearchDishAdapter
         }
-
 //        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
 //            arguments?.getParcelable("dishLocalListModel", DishLocalListModel::class.java)
 //        } else {
@@ -130,15 +131,12 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         } else {
             arguments?.getParcelable("snapDishLocalListModel")
         }
-
         if (recipeDetailsLocalListModels != null){
             recipeDetailsLocalListModel = recipeDetailsLocalListModels
         }
-
 //        if (dishLocalListModels != null){
 //            dishLocalListModel = dishLocalListModels
 //        }
-
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -151,6 +149,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                         args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                         args.putString("mealId", mealId)
                         args.putString("mealName", mealName)
+                        args.putString("snapMyMeal", snapMyMeal)
                         args.putString("snapImageUrl", snapImageUrl)
                         args.putString("mealType", mealType)
                         args.putString("homeTab", homeTab)
@@ -194,6 +193,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("snapImageUrl", snapImageUrl)
                 args.putString("mealType", mealType)
                 args.putString("homeTab", homeTab)
+                args.putString("snapMyMeal", snapMyMeal)
                 args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -243,7 +243,6 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
-
 //        if (searchType.contentEquals("mealScanResult")){
 //            getSnapMealRecipesList()
 //            onSnapSearchDishItemRefresh()
@@ -254,12 +253,10 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     }
 
     private fun onSearchDishItemRefresh() {
-
         val valueLists : ArrayList<IngredientRecipeList> = ArrayList()
         valueLists.addAll(searchMealList as Collection<IngredientRecipeList>)
         val mealLogDateData: IngredientRecipeList? = null
         searchDishAdapter.addAll(valueLists, -1, mealLogDateData, false)
-
 //        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
 //            filterDishes(query)
 //        }
@@ -324,7 +321,6 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     }
 
     private fun onSnapSearchDishItem(recipesModel: IngredientRecipeList, position: Int, isRefresh: Boolean) {
-
         if (recipesModel.source != null){
             when (recipesModel.source) {
                 "recipe" -> getRecipesDetails(recipesModel.id)
@@ -453,6 +449,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                                 args.putString("snapImageUrl", snapImageUrl)
                                 args.putString("mealType", mealType)
                                 args.putString("homeTab", homeTab)
+                                args.putString("snapMyMeal", snapMyMeal)
                                 args.putString("searchType", "SearchDish")
                                 args.putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
                                 args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
@@ -532,6 +529,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                                 args.putString("snapImageUrl", snapImageUrl)
                                 args.putString("mealType", mealType)
                                 args.putString("homeTab", homeTab)
+                                args.putString("snapMyMeal", snapMyMeal)
                                 args.putString("searchType", "SearchDish")
                                 args.putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
                                 args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)

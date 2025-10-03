@@ -88,6 +88,9 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var mealType : String
     private var moduleName : String = ""
     private var loadingOverlay : FrameLayout? = null
+    private var isSpinnerInitialized = false
+    private var defaultServing: Serving? = null
+    private var userSelectedServing: Serving? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -206,6 +209,9 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
             for (item in recipeDetailsLocalListModel!!.data) {
                 if (item.recipe.contentEquals(snapRecipeName)) {
                     setDishData(item, false)
+                    if (!item.source.equals("my_recipe")){
+                      setupSpinner(item.available_serving, item.selected_serving)
+                    }
                     onMacroNutrientsList(item, 1.0, 1.0)
                     onMicroNutrientsList(item, 1.0, 1.0)
                     break
@@ -360,7 +366,6 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         addToTheMealTV.text = "Update To The Dish"
         val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
         tvMealName.text = capitalized
-        val servingsList = mutableListOf<Serving>()
         if (snapRecipeData.source.equals("my_recipe")){
             tvMeasure.visibility = View.VISIBLE
             spinner.visibility = View.GONE
@@ -374,35 +379,11 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
             tvMeasure.visibility = View.GONE
             spinner.visibility = View.VISIBLE
             ivMealDropdown.visibility = View.VISIBLE
-            servingsList.addAll(snapRecipeData.available_serving)
-            val servingLabels = servingsList.map { it.type }
-            // Use ArrayAdapter
-            val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, servingLabels)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
         }
         if (!isEdit){
             if (snapRecipeData.source.equals("my_recipe")){
                 if (snapRecipeData.selected_serving?.value != null ){
                     quantityEdit.setText(snapRecipeData.selected_serving.value.toString())
-                }
-            }else{
-                var isSpinnerInitialized = false
-                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                        if (!isSpinnerInitialized) {
-                            isSpinnerInitialized = true
-                            return
-                        }
-                        val selectedServing = servingsList[position]
-                        val newQuantity = selectedServing.value.toString()
-                        // ✅ Update only if different
-                        if (quantityEdit.text.toString() != newQuantity) {
-                            quantityEdit.setText(newQuantity)
-                            measureType = selectedServing.type.toString()
-                        }
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>) {}
                 }
             }
         }
@@ -417,6 +398,44 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
             .placeholder(R.drawable.ic_view_meal_place)
             .error(R.drawable.ic_view_meal_place)
             .into(imgFood)
+    }
+
+    private fun setupSpinner(servingsList: List<Serving>, default: Serving?) {
+        val adapter = ArrayAdapter(
+            requireActivity(),
+            android.R.layout.simple_spinner_item,
+            servingsList.map {it.type }
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        // Store default serving
+        defaultServing = default
+        // Pre-select default serving in spinner
+        val defaultIndex = servingsList.indexOfFirst {
+            it.type == default?.type
+        }
+        val safeIndex = if (defaultIndex >= 0) defaultIndex else 0
+        spinner.setSelection(safeIndex)
+        val defaultSelectedServing = servingsList[safeIndex]
+        quantityEdit.setText(defaultSelectedServing.value.toString())
+        measureType = defaultSelectedServing.type.toString()
+        // Listener
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                if (!isSpinnerInitialized) {
+                    isSpinnerInitialized = true
+                    return
+                }
+                val selectedServing = servingsList[position]
+                userSelectedServing = selectedServing  // ✅ track user choice
+                val newQuantity = selectedServing.value.toString()
+                if (quantityEdit.text.toString() != newQuantity) {
+                    quantityEdit.setText(newQuantity)
+                    measureType = selectedServing.type.toString()
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
     }
 
     private fun onMacroNutrientsList(mealDetails: IngredientRecipeDetails, defaultValue: Double, targetValue: Double) {

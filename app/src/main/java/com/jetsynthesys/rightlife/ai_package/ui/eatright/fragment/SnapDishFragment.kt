@@ -79,8 +79,12 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private var snapImageUrl: String = ""
     private var mealType : String = ""
     private var snapMealLog : String = ""
+    private var snapMyMeal : String = ""
     private var homeTab : String = ""
     private var selectedMealDate : String = ""
+    private var isSpinnerInitialized = false
+    private var defaultServing: Serving? = null
+    private var userSelectedServing: Serving? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -123,6 +127,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         val mealQuantitys = arguments?.getString("mealQuantity").toString()
         mealType = arguments?.getString("mealType").toString()
         snapMealLog = arguments?.getString("snapMealLog").toString()
+        snapMyMeal = arguments?.getString("snapMyMeal").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         homeTab = arguments?.getString("homeTab").toString()
         if (mealQuantitys != "null"){
@@ -253,6 +258,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                     args.putString("snapMealLog", snapMealLog)
                     args.putString("searchType", searchType)
                     args.putString("homeTab", homeTab)
+                    args.putString("snapMyMeal", snapMyMeal)
                     args.putString("selectedMealDate", selectedMealDate)
                     args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
                     args.putString("ModuleName", arguments?.getString("ModuleName").toString())
@@ -295,6 +301,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 args.putString("snapImageUrl", snapImageUrl)
                 args.putString("mealType", mealType)
                 args.putString("snapMealLog", snapMealLog)
+                args.putString("snapMyMeal", snapMyMeal)
                 args.putString("searchType", searchType)
                 args.putString("homeTab", homeTab)
                 args.putString("selectedMealDate", selectedMealDate)
@@ -341,7 +348,6 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
             }
         })
 
-
 //        ivEdit.setOnClickListener {
 //          val value =  quantityEdit.text.toString().toInt()
 //            if (foodDetailsResponse != null){
@@ -364,13 +370,15 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 //        }
 
         if (foodDetailsResponse != null){
+            setupSpinner(foodDetailsResponse.available_serving, foodDetailsResponse.selected_serving)
             setDishData(foodDetailsResponse, false)
             onMacroNutrientsList(foodDetailsResponse,1.0, 1.0)
             onMicroNutrientsList(foodDetailsResponse, 1.0, 1.0)
         }else{
             if (recipeDetailsLocalListModel != null){
                 for (item in recipeDetailsLocalListModel.data) {
-                    if (item.recipe.contentEquals(snapRecipeName)) {
+                    if (item.food_name.contentEquals(snapRecipeName)) {
+                        setupSpinner(item.available_serving, item.selected_serving)
                         setDishData(item, false)
                         onMacroNutrientsList(item, 1.0, 1.0)
                         onMicroNutrientsList(item, 1.0, 1.0)
@@ -462,6 +470,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         args.putString("mealType", mealType)
                         args.putString("snapMealLog", snapMealLog)
                         args.putString("homeTab", homeTab)
+                        args.putString("snapMyMeal", snapMyMeal)
                         args.putString("selectedMealDate", selectedMealDate)
                         args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
                         args.putString("ModuleName", arguments?.getString("ModuleName").toString())
@@ -555,6 +564,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         args.putString("mealType", mealType)
                                         args.putString("snapMealLog", snapMealLog)
                                         args.putString("homeTab", homeTab)
+                                        args.putString("snapMyMeal", snapMyMeal)
                                         args.putString("selectedMealDate", selectedMealDate)
                                         args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
                                         args.putString("ModuleName", arguments?.getString("ModuleName").toString())
@@ -593,26 +603,13 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         }else {
             addToTheMealTV.text = "Save Changes"
         }
-            val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
+            val capitalized = snapRecipeData.food_name.toString().replaceFirstChar { it.uppercase() }
             tvMealName.text = capitalized
 //            if (snapRecipeData.standard_serving_size != null && snapRecipeData.standard_serving_size != ""){
 //                tvMeasure.text = snapRecipeData.standard_serving_size
 //            }else{
 //                tvMeasure.text = "Serving"
 //            }
-        val servingsList = mutableListOf<Serving>()
-        if (snapMealLog.equals("snapMealLog")) {
-            snapRecipeData.selected_serving?.let {
-                servingsList.add(Serving(it.type, it.value))
-            }
-        }else{
-            servingsList.addAll(snapRecipeData.available_serving)
-        }
-        val servingLabels = servingsList.map { it.type }
-        // Use ArrayAdapter
-        val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, servingLabels)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
         if (!isEdit){
 //            if (snapRecipeData.quantity != null ){
 //                if (snapRecipeData.quantity > 0.0){
@@ -625,24 +622,6 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 //                    quantityEdit.setText("1.0")
 //                }
 //            }
-            var isSpinnerInitialized = false
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                    if (!isSpinnerInitialized) {
-                        isSpinnerInitialized = true
-                        return
-                    }
-                    val selectedServing = servingsList[position]
-                    val newQuantity = selectedServing.value.toString()
-                    // ✅ Update only if different
-                    if (quantityEdit.text.toString() != newQuantity) {
-                        quantityEdit.setText(newQuantity)
-                        measureType = selectedServing.type.toString()
-
-                    }
-                }
-                override fun onNothingSelected(parent: AdapterView<*>) {}
-            }
         }
         var imageUrl : String? = ""
         imageUrl = if (snapRecipeData.photo_url.contains("drive.google.com")) {
@@ -656,6 +635,56 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 .error(R.drawable.ic_view_meal_place)
                 .into(imgFood)
 
+    }
+
+    private fun setupSpinner(servingsList: List<Serving>, default: Serving?) {
+        val newServingList = mutableListOf<Serving>()
+        if (snapMealLog.equals("snapMealLog") || snapMyMeal.equals("snapMyMeal")) {
+            if (servingsList.isEmpty()){
+                if (default != null) {
+                    newServingList.add(default)
+                }
+            }else{
+                newServingList.addAll(servingsList)
+            }
+        }else{
+            newServingList.addAll(servingsList)
+        }
+        val adapter = ArrayAdapter(
+            requireActivity(),
+            android.R.layout.simple_spinner_item,
+            newServingList.map {it.type }
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        // Store default serving
+        defaultServing = default
+        // Pre-select default serving in spinner
+        val defaultIndex = newServingList.indexOfFirst {
+            it.type == default?.type
+        }
+        val safeIndex = if (defaultIndex >= 0) defaultIndex else 0
+        spinner.setSelection(safeIndex)
+        val defaultSelectedServing = newServingList[safeIndex]
+        quantityEdit.setText(defaultSelectedServing.value.toString())
+        measureType = defaultSelectedServing.type.toString()
+        // Listener
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                if (!isSpinnerInitialized) {
+                    isSpinnerInitialized = true
+                    return
+                }
+                val selectedServing = newServingList[position]
+                userSelectedServing = selectedServing  // ✅ track user choice
+                val newQuantity = selectedServing.value.toString()
+                if (quantityEdit.text.toString() != newQuantity) {
+                    quantityEdit.setText(newQuantity)
+                    measureType = selectedServing.type.toString()
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
     }
 
     private fun onMacroNutrientsList(mealDetails: IngredientRecipeDetails, defaultValue: Double, targetValue: Double) {

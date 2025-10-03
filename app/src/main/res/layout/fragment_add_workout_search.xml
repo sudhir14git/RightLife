@@ -48,33 +48,44 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ImageView
-                android:id="@+id/workoutIcon"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/workout_function_icon"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layout_toolbar" />
-
-            <TextView
-                android:id="@+id/workoutName"
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/workoutNameLayout"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
                 android:layout_marginStart="10dp"
-                android:paddingEnd="5dp"
-                android:fontFamily="@font/dmsans_bold"
-                android:text="Functional Strength Training"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                app:layout_constraintBottom_toBottomOf="@+id/workoutIcon"
-                app:layout_constraintStart_toEndOf="@+id/workoutIcon"
-                app:layout_constraintTop_toTopOf="@+id/workoutIcon"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:layout_marginEnd="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_toolbar">
+
+                <ImageView
+                    android:id="@+id/workoutIcon"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/workout_function_icon"
+                    />
+
+                <TextView
+                    android:id="@+id/workoutName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:paddingEnd="5dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="Functional Strength Training"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    app:layout_constraintBottom_toBottomOf="@+id/workoutIcon"
+                    app:layout_constraintStart_toEndOf="@+id/workoutIcon"
+                    app:layout_constraintTop_toTopOf="@+id/workoutIcon"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <TextView
                 android:id="@+id/calories_text"
@@ -87,7 +98,7 @@
                 android:textSize="64dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/workoutName" />
+                app:layout_constraintTop_toBottomOf="@+id/workoutNameLayout" />
 
             <TextView
                 android:layout_width="wrap_content"
