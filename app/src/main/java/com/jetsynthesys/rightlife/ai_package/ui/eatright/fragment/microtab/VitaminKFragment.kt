@@ -462,7 +462,7 @@ class VitaminKFragment : BaseFragment<FragmentSugarBinding>() {
                         setSelectedDate(selectedWeekDate)
                     }
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedVitaminK(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedVitaminK(
                     userId = userId,
                     period = period,
                     date = selectedDate

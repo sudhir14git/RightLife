@@ -19,6 +19,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -59,17 +60,24 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealsNutrientsRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealNutrientsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
-import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.ai_package.utils.showToast
+import com.jetsynthesys.rightlife.apimodel.UploadImage
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -80,6 +88,9 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
     private var moduleName : String = ""
 
+    lateinit var apiService: ApiService
+    private var preSignedUrlData: PreSignedUrlData? = null
+    private var imageGeneratedUrl = ""
     private lateinit var currentPhotoPath: String
     private lateinit var takePhotoInfoLayout : LinearLayoutCompat
     private lateinit var enterMealDescriptionLayout : LinearLayoutCompat
@@ -109,6 +120,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        apiService = com.jetsynthesys.rightlife.RetrofitData.ApiClient.getClient(requireContext()).create(ApiService::class.java)
         proceedLayout = view.findViewById(R.id.layout_proceed)
         imageFood = view.findViewById(R.id.imageFood)
         videoView = view.findViewById(R.id.videoView)
@@ -134,7 +146,14 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
         skipTV.setOnClickListener {
             if (imagePath != ""){
-                uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+              //  imagePathsecond
+                if (imageGeneratedUrl != ""){
+                    getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+                }else{
+                    imagePathsecond?.let { getUrlFromURI(it) }
+                }
+               // imagePathString.let { Uri.parse(it) }!!
+               // uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
             }else{
                 Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
             }
@@ -213,7 +232,12 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 //  }else{
                 if (isProceedResult){
                     if (imagePath != ""){
-                        uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+                       // uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+                        if (imageGeneratedUrl != ""){
+                            getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+                        }else{
+                            imagePathsecond?.let { getUrlFromURI(it) }
+                        }
                     }else{
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
@@ -235,7 +259,12 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         proceedLayout.setOnClickListener {
                 if (isProceedResult){
                     if (imagePath != ""){
-                        uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+                        if (imageGeneratedUrl != ""){
+                            getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+                        }else{
+                            imagePathsecond?.let { getUrlFromURI(it) }
+                        }
+                       // uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
                     }else{
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
@@ -657,6 +686,196 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             }
         }
         return inSampleSize
+    }
+
+    private fun getUrlFromURI(uri: Uri) {
+        val uploadImage = UploadImage()
+        uploadImage.isPublic = false
+        uploadImage.fileType = "USER_FILES"
+        if (uri != null) {
+            val (fileName, fileSize) = getFileNameAndSize(requireContext(), uri) ?: return
+            uploadImage.fileSize = fileSize
+            uploadImage.fileName = fileName
+        }
+        uriToFile(uri)?.let { getPreSignedUrl(uploadImage, it) }
+    }
+
+    private fun uriToFile(uri: Uri): File? {
+        val contentResolver = requireContext().contentResolver
+        val fileName = getFileName(uri) ?: "temp_image_file"
+        val tempFile = File(requireContext().cacheDir, fileName)
+
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val outputStream = FileOutputStream(tempFile)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        var name: String? = null
+        val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && it.moveToFirst()) {
+                name = it.getString(nameIndex)
+            }
+        }
+        return name
+    }
+
+    private fun getFileNameAndSize(context: Context, uri: Uri): Pair<String, Long>? {
+        val returnCursor = context.contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+            if (it.moveToFirst()) {
+                val name = it.getString(nameIndex)
+                val size = it.getLong(sizeIndex)
+                return Pair(name, size)
+            }
+        }
+        return null
+    }
+
+    private fun getPreSignedUrl(uploadImage: UploadImage, file: File) {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
+        val call: Call<PreSignedUrlResponse> = apiService.getPreSignedUrl(sharedPreferenceManager.accessToken, uploadImage)
+        call.enqueue(object : Callback<PreSignedUrlResponse?> {
+            override fun onResponse(
+                call: Call<PreSignedUrlResponse?>,
+                response: Response<PreSignedUrlResponse?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.let { preSignedUrlData = it }
+                    response.body()?.data?.url?.let {
+                        CommonAPICall.uploadImageToPreSignedUrl(
+                            requireContext(),
+                            file, it
+                        ) { success ->
+                            if (success) {
+                                if (isAdded && view != null) {
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
+                                //showToast("Image uploaded successfully!")
+                                imageGeneratedUrl = it.split("?").get(0)
+                                getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+                            } else {
+                                if (isAdded && view != null) {
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
+                                showToast("Upload failed!")
+                            }
+                        }
+                    }
+                } else {
+                    if (isAdded && view != null) {
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    showToast("Server Error: " + response.code())
+                }
+            }
+            override fun onFailure(call: Call<PreSignedUrlResponse?>, t: Throwable) {
+                // handleNoInternetView(t)
+                if (isAdded && view != null) {
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun getSnapMealsNutrients(imageUrl: String, description: String) {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
+        val base64Image = encodeImageToBase64(imagePath)
+        val request = SnapMealsNutrientsRequest(imageUrl, description)
+        val call = ApiClient.apiServiceFastApiV2.getSnapMealsNutrients(
+            request)
+        call.enqueue(object : Callback<SnapMealNutrientsResponse> {
+            override fun onResponse(call: Call<SnapMealNutrientsResponse>, response: Response<SnapMealNutrientsResponse>) {
+                if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    println("Success: ${response.body()}")
+                    if (response.body()?.data != null){
+                        if (response.body()?.data!!.dish.isNotEmpty()){
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                val snapMealFragment = MealScanResultFragment()
+                                val args = Bundle()
+                                args.putString("homeTab", homeTab)
+                                args.putString("selectedMealDate", selectedMealDate)
+                                args.putString("mealType", mealType)
+                                args.putString("ModuleName", moduleName)
+                                args.putString("ImagePath", imagePath)
+                                args.putString("description", mealDescriptionET.text.toString())
+                                args.putString("ImagePathsecound", imagePathsecond.toString())
+                                args.putParcelable("foodDataResponses", response.body())
+                                snapMealFragment.arguments = args
+                                replace(R.id.flFragment, snapMealFragment, "Steps")
+                                addToBackStack(null)
+                                commit()
+                            }
+                        }else{
+                            Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
+                        }
+                    }else{
+                        Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    println("Error: ${response.errorBody()?.string()}")
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    val errorBody = response.errorBody()?.string()
+                    if (!errorBody.isNullOrEmpty()) {
+                        try {
+                            val json = JSONObject(errorBody)
+                            val message = json.optString("text", "Unknown error")
+                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
+                        }
+                    }else{
+                        Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            override fun onFailure(call: Call<SnapMealNutrientsResponse>, t: Throwable) {
+                println("Failure: ${t.message}")
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+                Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
 

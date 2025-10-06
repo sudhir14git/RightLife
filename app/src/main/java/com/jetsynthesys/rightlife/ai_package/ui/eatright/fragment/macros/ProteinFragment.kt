@@ -528,7 +528,7 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedProtiens(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedProtiens(
                     userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){

@@ -462,7 +462,7 @@ class ZincFragment : BaseFragment<FragmentSugarBinding>() {
                         setSelectedDate(selectedWeekDate)
                     }
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedZinc(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedZinc(
                     userId = userId,
                     period = period,
                     date = selectedDate

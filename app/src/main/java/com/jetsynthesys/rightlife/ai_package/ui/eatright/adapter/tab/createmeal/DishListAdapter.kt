@@ -9,19 +9,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.model.MealDetails
-import com.jetsynthesys.rightlife.ai_package.model.MealLists
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 
-class DishListAdapter(private val context: Context, private var dataLists: ArrayList<SearchResultItem>,
-                      private var clickPos: Int, private var mealLogListData : SearchResultItem?,
-                      private var isClickView : Boolean, val onMealLogClickItem: (SearchResultItem, Int, Boolean) -> Unit,
-                      val onMealLogDeleteItem: (SearchResultItem, Int, Boolean) -> Unit,
-                      val onMealLogEditItem: (SearchResultItem, Int, Boolean) -> Unit) :
+
+class DishListAdapter(private val context: Context, private var dataLists: ArrayList<IngredientRecipeDetails>,
+                      private var clickPos: Int, private var mealLogListData : IngredientRecipeDetails?,
+                      private var isClickView : Boolean, val onMealLogClickItem: (IngredientRecipeDetails, Int, Boolean) -> Unit,
+                      val onMealLogDeleteItem: (IngredientRecipeDetails, Int, Boolean) -> Unit,
+                      val onMealLogEditItem: (IngredientRecipeDetails, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<DishListAdapter.ViewHolder>() {
-
-    private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_meal_logs_ai, parent, false)
@@ -32,23 +28,23 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
         val item = dataLists[position]
 
       //  holder.mealTitle.text = item.mealType
-        val capitalized = item.name.toString().replaceFirstChar { it.uppercase() }
+        val capitalized = item.recipe.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
-        holder.servesCount.text = item.mealQuantity?.toInt().toString()
-        if (item.cooking_time_in_seconds != null){
-            val mealTime = item.cooking_time_in_seconds.toString()
+        holder.servesCount.text = item.quantity?.toInt().toString()
+        if (item.active_cooking_time_min != null){
+            val mealTime = item.active_cooking_time_min.toString()
             holder.mealTime.text = mealTime
         }
         var value : Double = 0.0
-        if (item.mealQuantity != null){
+        if (item.quantity != null){
             value = 1.0
         }else{
             value = 1.0
         }
-        holder.calValue.text = item.nutrients.macros.Calories?.times(value)?.toInt().toString()
-        holder.subtractionValue.text = item.nutrients.macros.Carbs?.times(value)?.toInt().toString()
-        holder.baguetteValue.text = item.nutrients.macros.Protein?.times(value)?.toInt().toString()
-        holder.dewpointValue.text = item.nutrients.macros.Fats?.times(value)?.toInt().toString()
+        holder.calValue.text = item.calories_kcal?.times(value)?.toInt().toString()
+        holder.subtractionValue.text = item.carbs_g?.times(value)?.toInt().toString()
+        holder.baguetteValue.text = item.protein_g?.times(value)?.toInt().toString()
+        holder.dewpointValue.text = item.fat_g?.times(value)?.toInt().toString()
         val imageUrl = getDriveImageUrl(item.photo_url)
         Glide.with(context)
             .load(imageUrl)
@@ -117,7 +113,7 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
          val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
      }
 
-    fun addAll(item : ArrayList<SearchResultItem>?, pos: Int, mealLogItem : SearchResultItem?, isClick : Boolean) {
+    fun addAll(item : ArrayList<IngredientRecipeDetails>?, pos: Int, mealLogItem : IngredientRecipeDetails?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

@@ -105,16 +105,16 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
                 layoutVegNonveg.visibility = View.VISIBLE
                 servesLayout.visibility = View.VISIBLE
             }
-
-            mealName.text = data.receipe.recipe_name
-            servesCount.text = data.receipe.servings.toString()
-            val mealTime = data.receipe.serving_weight
+            val mealNames =  data.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?:  data.recipe.food_name
+            mealName.text = mealNames
+            servesCount.text = data.recipe.servings.toString()
+            val mealTime = data.recipe.active_cooking_time_min
             mealTimeTv.text = mealTime.toInt().toString()
-            calValue.text = round(data.receipe.calories).toInt().toString()
-            proteinValue.text = round(data.receipe.protein).toInt().toString()
-            carbsValue.text = round(data.receipe.carbs).toInt().toString()
-            fatsValue.text = round(data.receipe.fat).toInt().toString()
-            val imageUrl = getDriveImageUrl(data.receipe.photo_url)
+            calValue.text = round(data.recipe.calories_kcal!!).toInt().toString()
+            proteinValue.text = round(data.recipe.protein_g!!).toInt().toString()
+            carbsValue.text = round(data.recipe.carbs_g!!).toInt().toString()
+            fatsValue.text = round(data.recipe.fat_g!!).toInt().toString()
+            val imageUrl = getDriveImageUrl(data.recipe.photo_url)
             Glide.with(this.itemView)
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_view_meal_place)
@@ -202,7 +202,7 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
                 mealTimeTv.text = ""//mealTime.toInt().toString()
                 calValue.text = round(snapData.calories_kcal)?.toInt().toString()
                 proteinValue.text = round(snapData.protein_g)?.toInt().toString()
-                carbsValue.text = round(snapData.carb_g)?.toInt().toString()
+                carbsValue.text = round(snapData.carbs_g)?.toInt().toString()
                 fatsValue.text = round(snapData.fat_g)?.toInt().toString()
                 val imageUrl = data.image_url//getDriveImageUrl(data.photo_url)
                 Glide.with(this.itemView)

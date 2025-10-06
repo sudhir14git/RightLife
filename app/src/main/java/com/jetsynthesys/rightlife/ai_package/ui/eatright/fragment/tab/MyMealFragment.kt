@@ -23,39 +23,22 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.databinding.FragmentMyMealBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
-import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapDish
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipe
-import com.jetsynthesys.rightlife.ai_package.model.response.Macros
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetails
-import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.MealPlan
-import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
-import com.jetsynthesys.rightlife.ai_package.model.response.Micros
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.Nutrients
-import com.jetsynthesys.rightlife.ai_package.model.response.RecipeData
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.MyMealListAdapter.SavedMealViewHolder
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.MyMealListAdapter.SnapMealViewHolder
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealScanResultFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSheet.OnMealDeletedListener {
@@ -69,7 +52,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     private lateinit var addLayout : LinearLayoutCompat
     private lateinit var mealType : String
     private val mergedList = mutableListOf<MergedMealItem>()
-    private  var snapDishLocalListModel : SnapDishLocalListModel? = null
+    private  var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
@@ -293,11 +276,11 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         val dishList = mealDetails.receipe_data
         dishList?.forEach { selectedDish ->
             val mealLogData = MealLogItems(
-                meal_id = selectedDish.receipe._id,
-                recipe_name = selectedDish.receipe.recipe_name,
-                meal_quantity = 1,
-                unit = "g",
-                measure = "Bowl",
+                meal_id = selectedDish.id,
+                recipe_name =  selectedDish.recipe.takeIf { r -> !r.isNullOrBlank() } ?: selectedDish.food_name,
+                meal_quantity = selectedDish.selected_serving?.value,
+                source = selectedDish.source,
+                measure = selectedDish.selected_serving?.type,
                 isMealLogSelect = mealDetails.isMealLog
             )
             mealLogList.add(mealLogData)
@@ -316,79 +299,17 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     private fun onEditMealLogItem(mealDetails: MealDetails, position: Int, isRefresh: Boolean){
         if (mealDetails != null){
             val dishList = mealDetails.receipe_data
-             val dishLists : ArrayList<SearchResultItem> = ArrayList()
-            dishList?.forEach { foodData ->
-                val macrosData = Macros(
-                    Calories = foodData.receipe.calories,
-                    Carbs = foodData.receipe.carbs,
-                    Fats = foodData.receipe.fat,
-                    Protein = foodData.receipe.protein
-                )
-                val microsData = Micros(
-                    Cholesterol = foodData.receipe.cholesterol,
-                    Vitamin_A = 0.0,
-                    Vitamin_C = 0.0,
-                    Vitamin_K = 0.0,
-                    Vitamin_D = 0.0,
-                    Folate = 0.0,
-                    Iron = foodData.iron_mg,
-                    Calcium = 0.0,
-                    Magnesium = foodData.magnesium_mg,
-                    Potassium = foodData.receipe.potassium,
-                    Fiber = foodData.receipe.fiber,
-                    Zinc = 0.0,
-                    Sodium = foodData.receipe.sodium,
-                    Sugar = foodData.receipe.sugar,
-                    b12_mcg = 0.0,
-                    b1_mg = 0.0,
-                    b2_mg = 0.0,
-                    b5_mg = 0.0,
-                    b3_mg = 0.0,
-                    b6_mg = 0.0,
-                    vitamin_e_mg = 0.0,
-                    omega_3_fatty_acids_g = 0.0,
-                    omega_6_fatty_acids_g = 0.0,
-                    copper_mg = 0.0,
-                    phosphorus_mg = 0.0,
-                    saturated_fats_g = foodData.receipe.saturated_fat,
-                    selenium_mcg = 0.0,
-                    trans_fats_g = foodData.receipe.trans_fat,
-                    polyunsaturated_g = 0.0,
-                    is_beverage = false,
-                    mass_g = 0.0,
-                    monounsaturated_g = 0.0,
-                    percent_fruit = 0.0,
-                    percent_vegetable = 0.0,
-                    percent_legume_or_nuts = 0.0,
-                    source_urls = emptyList()
-                )
-                val nutrientsData = Nutrients(
-                    macros = macrosData,
-                    micros = microsData
-                )
-                val snapRecipeData = SearchResultItem(
-                    id = foodData.receipe._id,
-                    name = foodData.receipe.recipe_name,
-                    category = "",
-                    photo_url = foodData.receipe.photo_url,
-                    servings = foodData.receipe.servings,
-                    cooking_time_in_seconds = foodData.receipe.time_in_seconds,
-                    calories = foodData.calories_kcal,
-                    nutrients = nutrientsData,
-                    source = "",
-                    unit = foodData.unit,
-                    mealQuantity = foodData.quantity
-                )
-                dishLists.add(snapRecipeData)
-            }
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+            dishLists.addAll(dishList)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
             val fragment = CreateMealFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
+            args.putString("mealType", mealType)
             args.putString("mealId", mealDetails._id)
             args.putString("mealName", mealDetails.meal_name)
             args.putString("selectedMealDate", selectedMealDate)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -418,60 +339,13 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         val mealLogData = MealLogItems(
             meal_id = snapMealDetail._id,
             recipe_name = snapMealDetail.meal_name,
-            meal_quantity = 1,
-            unit = "g",
+            meal_quantity = 1.0,
+            source = "snap",
             measure = "Bowl",
             isMealLogSelect = snapMealDetail.isSnapMealLog
         )
         val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-        val snapDishList: ArrayList<SnapDish> = ArrayList()
         if (snapMealDetail.dish.isNotEmpty()) {
-            val items = snapMealDetail.dish
-            items?.forEach { snapDish ->
-                val snapDishRequest = SnapDish(
-                    name = snapDish.name,
-                    b12_mcg = snapDish.b12_mcg,
-                    b1_mg = snapDish.b1_mg,
-                    b2_mg = snapDish.b2_mg,
-                    b3_mg = snapDish.b3_mg,
-                    b6_mg = snapDish.b6_mg,
-                    calcium_mg = snapDish.calcium_mg,
-                    calories_kcal = snapDish.calories_kcal,
-                    carb_g = snapDish.carb_g,
-                    cholesterol_mg = snapDish.cholesterol_mg,
-                    copper_mg = snapDish.copper_mg,
-                    fat_g = snapDish.fat_g,
-                    folate_mcg = snapDish.folate_mcg,
-                    fiber_g = snapDish.fiber_g,
-                    iron_mg = snapDish.iron_mg,
-                    is_beverage = false,
-                    magnesium_mg = snapDish.magnesium_mg,
-                    mass_g = snapDish.mass_g,
-                    monounsaturated_g = snapDish.monounsaturated_g,
-                    omega_3_fatty_acids_g = snapDish.omega_3_fatty_acids_g,
-                    omega_6_fatty_acids_g = snapDish.omega_6_fatty_acids_g,
-                    percent_fruit = snapDish.percent_fruit,
-                    percent_legume_or_nuts = snapDish.percent_legume_or_nuts,
-                    percent_vegetable = snapDish.percent_vegetable,
-                    phosphorus_mg = snapDish.phosphorus_mg,
-                    polyunsaturated_g = snapDish.polyunsaturated_g,
-                    potassium_mg = snapDish.potassium_mg,
-                    protein_g = snapDish.protein_g,
-                    saturated_fats_g = snapDish.saturated_fats_g,
-                    selenium_mcg = snapDish.selenium_mcg,
-                    sodium_mg = snapDish.sodium_mg,
-                    source_urls = snapDish.source_urls,
-                    sugar_g = snapDish.sugar_g,
-                    vitamin_a_mcg = snapDish.vitamin_a_mcg,
-                    vitamin_c_mg = snapDish.vitamin_c_mg,
-                    vitamin_d_iu = snapDish.vitamin_d_iu,
-                    vitamin_e_mg = snapDish.vitamin_e_mg,
-                    vitamin_k_mcg = snapDish.vitamin_k_mcg,
-                    zinc_mg = snapDish.zinc_mg,
-                    mealQuantity = 1.0
-                )
-                snapDishList.add(snapDishRequest)
-            }
             val snapMealLogRequest = SnapMealLogRequest(
                 user_id = snapMealDetail.user_id,
                 meal_type = mealType,
@@ -479,7 +353,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
                 is_save = false,
                 is_snapped = true,
                 date = currentDateUtc,
-                dish = snapDishList,
+                dish = snapMealDetail.dish,
                 image_url = "",
                 isSnapMealLogSelect = snapMealDetail.isSnapMealLog,
                 _id = snapMealDetail._id
@@ -492,80 +366,18 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     private fun onEditSnapMealLogItem(snapMealDetail: SnapMealDetail, position: Int, isRefresh: Boolean){
         if (snapMealDetail != null){
             val dishList = snapMealDetail.dish
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
-            dishList?.forEach { foodData ->
-                val macrosData = Macros(
-                    Calories = foodData.calories_kcal,
-                    Carbs = foodData.carb_g,
-                    Fats = foodData.fat_g,
-                    Protein = foodData.protein_g
-                )
-                val microsData = Micros(
-                    Cholesterol = foodData.cholesterol_mg,
-                    Vitamin_A = foodData.vitamin_a_mcg,
-                    Vitamin_C = foodData.vitamin_c_mg,
-                    Vitamin_K = foodData.calories_kcal,
-                    Vitamin_D = foodData.vitamin_d_iu,
-                    Folate = foodData.folate_mcg,
-                    Iron = foodData.iron_mg,
-                    Calcium =foodData.calcium_mg,
-                    Magnesium = foodData.magnesium_mg,
-                    Potassium = foodData.potassium_mg,
-                    Fiber = foodData.fiber_g,
-                    Zinc = foodData.zinc_mg,
-                    Sodium = foodData.sodium_mg,
-                    Sugar = foodData.sugar_g,
-                    b12_mcg = foodData.b12_mcg,
-                    b1_mg = foodData.b1_mg,
-                    b2_mg = foodData.b2_mg,
-                    b5_mg = 0.0,
-                    b3_mg = foodData.b3_mg,
-                    b6_mg = foodData.b6_mg,
-                    vitamin_e_mg = foodData.vitamin_e_mg,
-                    omega_3_fatty_acids_g = foodData.omega_3_fatty_acids_g,
-                    omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
-                    copper_mg = foodData.copper_mg,
-                    phosphorus_mg = foodData.phosphorus_mg,
-                    saturated_fats_g = foodData.saturated_fats_g,
-                    selenium_mcg = foodData.selenium_mcg,
-                    trans_fats_g = 0.0,
-                    polyunsaturated_g = foodData.polyunsaturated_g,
-                    is_beverage = false,
-                    mass_g = foodData.mass_g,
-                    monounsaturated_g = foodData.monounsaturated_g,
-                    percent_fruit = foodData.percent_fruit,
-                    percent_vegetable = foodData.percent_vegetable,
-                    percent_legume_or_nuts = foodData.percent_legume_or_nuts,
-                    source_urls = foodData.source_urls
-                )
-                val nutrientsData = Nutrients(
-                    macros = macrosData,
-                    micros = microsData
-                )
-                val snapRecipeData = SearchResultItem(
-                    id = "",
-                    name = foodData.name,
-                    category = "",
-                    photo_url = "",
-                    servings = 1,
-                    cooking_time_in_seconds = 0,
-                    calories = foodData.calories_kcal,
-                    nutrients = nutrientsData,
-                    source = "",
-                    unit = "",
-                    mealQuantity = 0.0
-                )
-                dishLists.add(snapRecipeData)
-            }
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+            dishLists.addAll(dishList)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
             val fragment = MealScanResultFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("selectedMealDate", selectedMealDate)
             args.putString("mealId", snapMealDetail._id)
+            args.putString("snapMyMeal", "snapMyMeal")
             args.putString("mealName", snapMealDetail.meal_name)
             args.putString("snapImageUrl", snapMealDetail.image_url)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -582,7 +394,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
              }
          }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val call = ApiClient.apiServiceFastApi.getMyMealList(userId)
+        val call = ApiClient.apiServiceFastApiV2.getMyMealList(userId)
         call.enqueue(object : Callback<MyMealsSaveResponse> {
             override fun onResponse(call: Call<MyMealsSaveResponse>, response: Response<MyMealsSaveResponse>) {
                 if (response.isSuccessful) {

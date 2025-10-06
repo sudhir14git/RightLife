@@ -25,28 +25,28 @@ class MyRecipeAdapter(private val context: Context, private var dataLists: Array
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        val data = item.ingredients_per_serving
+        val data = item.ingredients
         if (data.isNotEmpty()){
             val ingredientsNames  = data!!.map { it.ingredient_name }
             val name = ingredientsNames.joinToString(", ")
             val capitalized = name.replaceFirstChar { it.uppercase() }
             holder.mealName.text = capitalized
         }else{
-            holder.mealName.text = item.recipe_name
+            holder.mealName.text = item.recipe
         }
-        holder.mealTitle.text = item.recipe_name
+        holder.mealTitle.text = item.recipe
         holder.servesCount.text = item.servings.toString()
         if (item.servings != null && item.servings > 0){
             val servingsCount = item.servings
-            holder.calValue.text = item.calories.times(servingsCount).toInt().toString()
-            holder.subtractionValue.text = item.protein.times(servingsCount).toInt().toString()
-            holder.baguetteValue.text = item.carbs.times(servingsCount).toInt().toString()
-            holder.dewpointValue.text = item.fat.times(servingsCount).toInt().toString()
+            holder.calValue.text = item.calories_kcal.times(servingsCount).toInt().toString()
+            holder.subtractionValue.text = item.protein_g.times(servingsCount).toInt().toString()
+            holder.baguetteValue.text = item.carbs_g.times(servingsCount).toInt().toString()
+            holder.dewpointValue.text = item.fat_g.times(servingsCount).toInt().toString()
         }else{
-            holder.calValue.text = item.calories.toInt().toString()
-            holder.subtractionValue.text = item.protein.toInt().toString()
-            holder.baguetteValue.text = item.carbs.toInt().toString()
-            holder.dewpointValue.text = item.fat.toInt().toString()
+            holder.calValue.text = item.calories_kcal.toInt().toString()
+            holder.subtractionValue.text = item.protein_g.toInt().toString()
+            holder.baguetteValue.text = item.carbs_g.toInt().toString()
+            holder.dewpointValue.text = item.fat_g.toInt().toString()
         }
 
         if (item.isRecipeLog) {

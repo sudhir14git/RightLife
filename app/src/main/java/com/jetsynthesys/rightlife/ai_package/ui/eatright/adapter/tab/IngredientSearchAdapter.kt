@@ -10,15 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.bumptech.glide.Glide
-import com.jetsynthesys.rightlife.ai_package.model.response.IngredientLists
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 
-class IngredientSearchAdapter(private val context: Context, private var dataLists: ArrayList<IngredientLists>,
-                              private var clickPos: Int, private var ingredientData : IngredientLists?,
-                              private var isClickView : Boolean, val onSearchIngredientItem: (IngredientLists, Int, Boolean) -> Unit) :
+class IngredientSearchAdapter(private val context: Context, private var dataLists: ArrayList<IngredientRecipeList>,
+                              private var clickPos: Int, private var ingredientData : IngredientRecipeList?,
+                              private var isClickView : Boolean, val onSearchIngredientItem: (IngredientRecipeList, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<IngredientSearchAdapter.ViewHolder>() {
-
-    private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dish_search_ai, parent, false)
@@ -28,7 +25,7 @@ class IngredientSearchAdapter(private val context: Context, private var dataList
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.dishName.text = item.ingredient_name
+        holder.dishName.text = item.recipe
         var imageUrl : String? = ""
         if (item.photo_url != null){
             imageUrl = if (item.photo_url.contains("drive.google.com")) {
@@ -60,7 +57,7 @@ class IngredientSearchAdapter(private val context: Context, private var dataList
          val layoutMain : LinearLayout = itemView.findViewById(R.id.lyt_meal_item)
      }
 
-    fun addAll(item : ArrayList<IngredientLists>?, pos: Int, ingredient : IngredientLists?, isClick : Boolean) {
+    fun addAll(item : ArrayList<IngredientRecipeList>?, pos: Int, ingredient : IngredientRecipeList?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -71,8 +68,8 @@ class IngredientSearchAdapter(private val context: Context, private var dataList
         notifyDataSetChanged()
     }
 
-    fun updateList(newList: List<IngredientLists>) {
-        dataLists = newList as ArrayList<IngredientLists>
+    fun updateList(newList: List<IngredientRecipeList>) {
+        dataLists = newList as ArrayList<IngredientRecipeList>
         notifyDataSetChanged()
     }
 

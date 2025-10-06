@@ -473,7 +473,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                 }
 
                 // Proceed with API call
-                val response = ApiClient.apiServiceFastApi.getConsumedCalories(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedCalories(
                     userId = userId,
                     period = period,
                     date = selectedDate

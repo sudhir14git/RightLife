@@ -462,7 +462,7 @@ class SodiumFragment : BaseFragment<FragmentSugarBinding>() {
                         setSelectedDate(selectedWeekDate)
                     }
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedSodium(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedSodium(
                     userId = userId,
                     period = period,
                     date = selectedDate

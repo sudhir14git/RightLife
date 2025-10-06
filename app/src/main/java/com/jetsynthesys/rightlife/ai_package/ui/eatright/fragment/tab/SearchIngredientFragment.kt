@@ -25,7 +25,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.IngredientLists
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.IngredientSearchAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
@@ -52,7 +52,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private val dishesViewModel: DishesViewModel by activityViewModels()
     private var ingredientLocalListModel : IngredientLocalListModel? = null
     private lateinit var backButton : ImageView
-    private var searchIngredientList : ArrayList<IngredientLists> = ArrayList()
+    private var searchIngredientList : ArrayList<IngredientRecipeList> = ArrayList()
     private var recipeId : String = ""
     private var ingredientName : String = ""
     private var recipeName : String = ""
@@ -163,8 +163,6 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             filterDishes(query)
         }
 
-        getRecipesList("0")
-
         cancel.setOnClickListener {
             if (searchEditText.text.toString().isNotEmpty()){
                 dishesViewModel.setSearchQuery("")
@@ -177,6 +175,20 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 dishesViewModel.setSearchQuery(s.toString())
+
+                if (s!!.length > 1) {
+                    searchResultLayout.visibility = View.VISIBLE
+                    tvSearchResult.visibility = View.VISIBLE
+                    cancel.visibility = View.VISIBLE
+                  //  tvSearchResult.text = "Search Result: ${filteredList.size}"
+                    getRecipesList(s.toString())
+                }else if (s!!.length == 0){
+                    searchResultLayout.visibility = View.VISIBLE
+                    tvSearchResult.visibility = View.GONE
+                    cancel.visibility = View.GONE
+                    searchIngredientList.clear()
+                    onSnapSearchDishItemRefresh()
+                }
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -192,20 +204,20 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
 
     private fun onSnapSearchDishItemRefresh() {
 
-        val valueLists : ArrayList<IngredientLists> = ArrayList()
-        valueLists.addAll(searchIngredientList as Collection<IngredientLists>)
-        val mealLogDateData: IngredientLists? = null
+        val valueLists : ArrayList<IngredientRecipeList> = ArrayList()
+        valueLists.addAll(searchIngredientList as Collection<IngredientRecipeList>)
+        val mealLogDateData: IngredientRecipeList? = null
         snapSearchDishAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onSearchIngredientItem(recipesModel: IngredientLists, position: Int, isRefresh: Boolean) {
+    private fun onSearchIngredientItem(recipesModel: IngredientRecipeList, position: Int, isRefresh: Boolean) {
 
-        getRecipesDetails(recipesModel.id)
+        getIngredientDetails(recipesModel.id)
     }
 
     private fun filterDishes(query: String) {
         val filteredList = if (query.isEmpty()) searchIngredientList
-        else searchIngredientList.filter { it.ingredient_name.contains(query, ignoreCase = true) }
+        else searchIngredientList.filter { it.recipe.contains(query, ignoreCase = true) }
         snapSearchDishAdapter.updateList(filteredList)
         if (query.isNotEmpty()) {
             searchResultLayout.visibility = View.VISIBLE
@@ -219,13 +231,13 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
         }
     }
 
-    private fun getRecipesList(limit : String) {
+    private fun getRecipesList(keyword : String) {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getSearchIngredientList(limit)
+        val call = ApiClient.apiServiceFastApiV2.getSearchIngredientList(keyword)
         call.enqueue(object : Callback<IngredientResponse> {
             override fun onResponse(call: Call<IngredientResponse>, response: Response<IngredientResponse>) {
                 if (response.isSuccessful) {
@@ -266,13 +278,13 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
         })
     }
 
-    private fun getRecipesDetails(ingredientId : String) {
+    private fun getIngredientDetails(ingredientId : String) {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getRecipesDetails(ingredientId)
+        val call = ApiClient.apiServiceFastApiV2.getIngredientDetails(ingredientId)
         call.enqueue(object : Callback<IngredientDetailResponse> {
             override fun onResponse(call: Call<IngredientDetailResponse>, response: Response<IngredientDetailResponse>) {
                 if (response.isSuccessful) {

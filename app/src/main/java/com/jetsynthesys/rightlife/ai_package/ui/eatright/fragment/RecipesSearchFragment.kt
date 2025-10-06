@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -31,10 +30,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TabContentAdapter
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeListResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.RecipeSearchAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentRecipeSearchBinding
@@ -42,6 +40,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.core.view.isVisible
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.RecipesSearchViewModel
 
 class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
@@ -58,8 +57,8 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private lateinit var searchType: String
     private lateinit var appPreference: AppPreference
     private lateinit var tabContentCard: CardView
-    private val dishesViewModel: DishesViewModel by activityViewModels()
-    private var snapRecipesList: ArrayList<SnapRecipeList> = ArrayList()
+    private val recipesSearchViewModel: RecipesSearchViewModel by activityViewModels()
+    private var snapRecipesList: ArrayList<IngredientRecipeList> = ArrayList()
     private var mealTypeList: ArrayList<String> = ArrayList()
     private var foodTypeList: ArrayList<String> = ArrayList()
     private var cuisineList: ArrayList<String> = ArrayList()
@@ -111,14 +110,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                             tabContentAdapter.deselectedUpdateItems(mealTypeList, -1)
                             selectedMealType = null
                             selectedMealType = null
-                            dishesViewModel.setSelectedMealType(null)
+                            recipesSearchViewModel.setSelectedMealType(null)
                             getFilterRecipesList(null, selectedFoodType, selectedCuisine)
                             updateTabColors(false) // Update colors when deselected
                             Log.d("RecipesSearchFragment", "Deselected Meal Type")
                         } else {
                             selectedMealType = item
                             selectedMealType = item
-                            dishesViewModel.setSelectedMealType(item)
+                            recipesSearchViewModel.setSelectedMealType(item)
                             getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
                             updateTabColors(true) // Update colors when selected
                             Log.d("RecipesSearchFragment", "Selected Meal Type: $selectedMealType")
@@ -129,13 +128,13 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         tabContentAdapter.deselectedUpdateItems(foodTypeList, -1)
                         selectedFoodType = null
                         selectedFoodType = null
-                        dishesViewModel.setSelectedFoodType(null)
+                        recipesSearchViewModel.setSelectedFoodType(null)
                         getFilterRecipesList(selectedMealType, null, selectedCuisine)
                         updateTabColors(false) // Update colors when deselected
                         Log.d("RecipesSearchFragment", "Deselected Food Type")
                     } else {
                         selectedFoodType = item
-                        dishesViewModel.setSelectedFoodType(item)
+                        recipesSearchViewModel.setSelectedFoodType(item)
                         selectedFoodType = item
                         getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
                         updateTabColors(true) // Update colors when selected
@@ -147,13 +146,13 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                             tabContentAdapter.deselectedUpdateItems(cuisineList, -1)
                             selectedCuisine = null
                             selectedCuisine = null
-                            dishesViewModel.setSelectedCuisine(null)
+                            recipesSearchViewModel.setSelectedCuisine(null)
                             getFilterRecipesList(selectedMealType, selectedFoodType, null)
                             updateTabColors(false) // Update colors when deselected
                             Log.d("RecipesSearchFragment", "Deselected Cuisine")
                         } else {
                             selectedCuisine = item
-                            dishesViewModel.setSelectedCuisine(item)
+                            recipesSearchViewModel.setSelectedCuisine(item)
                             selectedCuisine = item
                             getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
                             updateTabColors(true) // Update colors when selected
@@ -182,7 +181,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.position?.let { position ->
                     tabContentCard.visibility = View.VISIBLE
-                    dishesViewModel.setSelectedTabIndex(position) // <-- Save in VM
+                    recipesSearchViewModel.setSelectedTabIndex(position) // <-- Save in VM
                     val tag = tabTitles[position]
                     currentFragmentTag = tag
                     // mark UI for selected tab & others
@@ -238,7 +237,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         setTabUnselectedUI(tab)
                         expandedTabIndex = null
                     } else {
-                        dishesViewModel.setSelectedTabIndex(tab.position)
+                        recipesSearchViewModel.setSelectedTabIndex(tab.position)
                         expandedTabIndex = position
                         tabContentCard.visibility = View.VISIBLE
                         setTabSelectedUI(tab)
@@ -267,11 +266,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    dishesViewModel.setSearchQuery("") // use null instead of "" for consistency
-                    dishesViewModel.setSelectedMealType(null)
-                    dishesViewModel.setSelectedFoodType(null)
-                    dishesViewModel.setSelectedCuisine(null)
-                    dishesViewModel.setSelectedTabIndex(null)
+                    recipesSearchViewModel.setSearchQuery("") // use null instead of "" for consistency
+                    recipesSearchViewModel.setSelectedMealType(null)
+                    recipesSearchViewModel.setSelectedFoodType(null)
+                    recipesSearchViewModel.setSelectedCuisine(null)
+                    recipesSearchViewModel.setSelectedTabIndex(null)
                     // clear local variables
                     selectedMealType = null
                     selectedFoodType = null
@@ -301,11 +300,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             })
 
         backButton.setOnClickListener {
-            dishesViewModel.setSearchQuery("") // use null instead of "" for consistency
-            dishesViewModel.setSelectedMealType(null)
-            dishesViewModel.setSelectedFoodType(null)
-            dishesViewModel.setSelectedCuisine(null)
-            dishesViewModel.setSelectedTabIndex(null)
+            recipesSearchViewModel.setSearchQuery("") // use null instead of "" for consistency
+            recipesSearchViewModel.setSelectedMealType(null)
+            recipesSearchViewModel.setSelectedFoodType(null)
+            recipesSearchViewModel.setSelectedCuisine(null)
+            recipesSearchViewModel.setSelectedTabIndex(null)
             // clear local variables
             selectedMealType = null
             selectedFoodType = null
@@ -333,23 +332,23 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             }
         }
 
-        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
+        recipesSearchViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
             filterDishes(query)
         }
 //        cancel.setOnClickListener {
 //            if (searchEditText.text.toString().isNotEmpty()){
-//                dishesViewModel.setSearchQuery("")
+//                recipesSearchViewModel.setSearchQuery("")
 //                searchEditText.setText("")
 //                snapRecipesList.clear()
 //            }
 //        }
         cancel.setOnClickListener {
             // clear ViewModel state
-            dishesViewModel.setSearchQuery("") // use null instead of "" for consistency
-            dishesViewModel.setSelectedMealType(null)
-            dishesViewModel.setSelectedFoodType(null)
-            dishesViewModel.setSelectedCuisine(null)
-            dishesViewModel.setSelectedTabIndex(null)
+            recipesSearchViewModel.setSearchQuery("") // use null instead of "" for consistency
+            recipesSearchViewModel.setSelectedMealType(null)
+            recipesSearchViewModel.setSelectedFoodType(null)
+            recipesSearchViewModel.setSelectedCuisine(null)
+            recipesSearchViewModel.setSelectedTabIndex(null)
             // clear local variables
             selectedMealType = null
             selectedFoodType = null
@@ -367,18 +366,18 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 tabLayout.getTabAt(i)?.let { setTabUnselectedUI(it) }
             }
             // fetch fresh data
-            getSnapMealRecipesList()
+            getRecipesList()
         }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                dishesViewModel.setSearchQuery(s.toString())
+                recipesSearchViewModel.setSearchQuery(s.toString())
             }
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        getSnapMealRecipesList()  // this will handle tab restore on success
+        getRecipesList()  // this will handle tab restore on success
     }
 
     // Helper: set selected look
@@ -496,14 +495,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun onSnapSearchDishItemRefresh() {
-        val valueLists: ArrayList<SnapRecipeList> = ArrayList()
-        valueLists.addAll(snapRecipesList as Collection<SnapRecipeList>)
-        val mealLogDateData: SnapRecipeList? = null
+        val valueLists: ArrayList<IngredientRecipeList> = ArrayList()
+        valueLists.addAll(snapRecipesList as Collection<IngredientRecipeList>)
+        val mealLogDateData: IngredientRecipeList? = null
         recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
         refreshRecipesList()
     }
 
-    private fun onSnapSearchDishItem(recipesModel: SnapRecipeList, position: Int, isRefresh: Boolean) {
+    private fun onSnapSearchDishItem(recipesModel: IngredientRecipeList, position: Int, isRefresh: Boolean) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             val snapMealFragment = RecipeDetailsFragment()
             val args = Bundle()
@@ -519,15 +518,18 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
     private fun filterDishes(query: String) {
         val filteredList = snapRecipesList.filter { recipe ->
-            val matchesQuery = if (query.isEmpty()) true else recipe.name.contains(query, ignoreCase = true)
+            val matchesQuery = if (query.isEmpty()) true else recipe.recipe.contains(query, ignoreCase = true)
             val matchesMealType = selectedMealType?.let { recipe.meal_type == it } ?: true
-            val matchesFoodType = selectedFoodType?.let { recipe.food_type == it } ?: true
+            val matchesFoodType = selectedFoodType?.let { selected ->
+                recipe.tags?.split(",")?.map { it.trim() }?.contains(selected)
+            } ?: true
+           // val matchesFoodType = selectedFoodType?.let { recipe.tags == it } ?: true
             val matchesCuisine = selectedCuisine?.let { recipe.cuisine == it } ?: true
             matchesQuery && matchesMealType && matchesFoodType && matchesCuisine
         }
-        val valueLists: ArrayList<SnapRecipeList> = ArrayList()
-        valueLists.addAll(filteredList as Collection<SnapRecipeList>)
-        val mealLogDateData: SnapRecipeList? = null
+        val valueLists: ArrayList<IngredientRecipeList> = ArrayList()
+        valueLists.addAll(filteredList as Collection<IngredientRecipeList>)
+        val mealLogDateData: IngredientRecipeList? = null
         recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
       //  recipeSearchAdapter.updateList(filteredList)
         if (query.isNotEmpty()) {
@@ -538,7 +540,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun refreshRecipesList() {
-        val currentQuery = dishesViewModel.searchQuery.value ?: ""
+        val currentQuery = recipesSearchViewModel.searchQuery.value ?: ""
         filterDishes(currentQuery)
     }
 
@@ -552,13 +554,13 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getRecipesList(
+        val call = ApiClient.apiServiceFastApiV2.getRecipesListWithFilter(
             mealType = mealType,
             foodType = foodType,
             cuisine = cuisine
         )
-        call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
-            override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
+        call.enqueue(object : Callback<RecipeListResponse> {
+            override fun onResponse(call: Call<RecipeListResponse>, response: Response<RecipeListResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
@@ -582,7 +584,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     }
                 }
             }
-            override fun onFailure(call: Call<SnapMealRecipeResponseModel>, t: Throwable) {
+            override fun onFailure(call: Call<RecipeListResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
@@ -594,15 +596,15 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         })
     }
 
-    private fun getSnapMealRecipesList() {
+    private fun getRecipesList() {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getSnapMealRecipesList()
-        call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
-            override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
+        val call = ApiClient.apiServiceFastApiV2.getRecipesList()
+        call.enqueue(object : Callback<RecipeListResponse> {
+            override fun onResponse(call: Call<RecipeListResponse>, response: Response<RecipeListResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
@@ -616,7 +618,10 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     foodTypeList.clear()
                     cuisineList.clear()
                     mealTypeList.addAll(snapRecipesList.map { it.meal_type }.filterNotNull().distinct().sorted())
-                    foodTypeList.addAll(snapRecipesList.map { it.food_type }.filterNotNull().distinct().sorted())
+                    // Assuming snapRecipesList is your recipe list
+                    foodTypeList.addAll(snapRecipesList.mapNotNull { it.tags }.flatMap { it.split(",") }.map { it.trim() }
+                        .filter { it.isNotEmpty() }.distinct().sorted())
+                    // foodTypeList.addAll(snapRecipesList.map { it.tags }.filterNotNull().distinct().sorted())
                     cuisineList.addAll(snapRecipesList.map { it.cuisine }.filterNotNull().distinct().sorted())
                     Log.d("RecipesSearchFragment", "Meal Types: $mealTypeList")
                     Log.d("RecipesSearchFragment", "Food Types: $foodTypeList")
@@ -634,7 +639,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     }
                 }
             }
-            override fun onFailure(call: Call<SnapMealRecipeResponseModel>, t: Throwable) {
+            override fun onFailure(call: Call<RecipeListResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
@@ -647,7 +652,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun restoreTabStateAfterData() {
-        val savedIndex = dishesViewModel.selectedTabIndex.value
+        val savedIndex = recipesSearchViewModel.selectedTabIndex.value
         if (savedIndex != null && savedIndex >= 0 && savedIndex < tabLayout.tabCount) {
             tabLayout.getTabAt(savedIndex)?.select()
 
@@ -696,13 +701,13 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     override fun onResume() {
         super.onResume()
 
-        dishesViewModel.searchQuery.value?.let {
+        recipesSearchViewModel.searchQuery.value?.let {
             searchEditText.setText(it)
             filterDishes(it)
         }
-        selectedMealType = dishesViewModel.selectedMealType.value
-        selectedFoodType = dishesViewModel.selectedFoodType.value
-        selectedCuisine = dishesViewModel.selectedCuisine.value
+        selectedMealType = recipesSearchViewModel.selectedMealType.value
+        selectedFoodType = recipesSearchViewModel.selectedFoodType.value
+        selectedCuisine = recipesSearchViewModel.selectedCuisine.value
 
         refreshRecipesList()
     }

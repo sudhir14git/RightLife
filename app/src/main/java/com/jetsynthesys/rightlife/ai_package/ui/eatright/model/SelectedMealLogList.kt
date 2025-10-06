@@ -16,8 +16,8 @@ data class SelectedMealLogList(
 data class MealLogItems(
     val meal_id: String?,
     val recipe_name: String?,
-    val meal_quantity: Int? = null,
-    val unit: String? = null,
+    val meal_quantity: Double? = null,
+    val source: String? = null,
     val measure: String? = null,
     val isMealLogSelect : Boolean = false
 ):Parcelable

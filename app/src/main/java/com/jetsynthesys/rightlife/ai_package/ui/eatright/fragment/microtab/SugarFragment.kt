@@ -491,7 +491,7 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                         setSelectedDate(selectedWeekDate)
                     }
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedSugar(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedSugar(
                     userId = userId,
                     period = period,
                     date = selectedDate

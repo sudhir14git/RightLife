@@ -97,7 +97,7 @@ class DeleteLogDishBottomSheet : BottomSheetDialogFragment() {
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
-        val call = ApiClient.apiServiceFastApi.deleteLogDish(mealId, userId, recipeId)
+        val call = ApiClient.apiServiceFastApiV2.deleteLogDish(mealId, userId, recipeId)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {
@@ -142,7 +142,7 @@ class DeleteLogDishBottomSheet : BottomSheetDialogFragment() {
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
-        val call = ApiClient.apiServiceFastApi.deleteSnapLogMeal(mealId, userId)
+        val call = ApiClient.apiServiceFastApiV2.deleteSnapLogMeal(mealId, userId)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {

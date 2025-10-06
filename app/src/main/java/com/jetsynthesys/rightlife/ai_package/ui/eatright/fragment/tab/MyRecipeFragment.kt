@@ -21,13 +21,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFr
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMyRecipeBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipe
-import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetail
-import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -45,7 +40,6 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
     private lateinit var layoutNoRecipe : LinearLayoutCompat
     private lateinit var yourRecipesLayout : ConstraintLayout
     private lateinit var mealType : String
-    private var ingredientLocalListModel : IngredientLocalListModel? = null
     private var recipeList: List<MyRecipe> = ArrayList()
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
@@ -149,7 +143,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
                     for (item in myRecipeList) {
                         // check if this item matches ANY meal in mealDataList
                         val matchFound = mealDataList.any { meal ->
-                            item._id == meal.meal_id && item.recipe_name == meal.recipe_name
+                            item._id == meal.meal_id && item.recipe == meal.recipe_name
                         }
                         if (matchFound) {
                             item.isRecipeLog = true
@@ -185,56 +179,21 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
     }
 
     private fun onEditRecipeItem(myRecipe: MyRecipe, position: Int, isRefresh: Boolean) {
-        if (myRecipe != null){
-            val ingredientList = myRecipe.ingredients_per_serving
-            val ingredientLists : ArrayList<IngredientDetail> = ArrayList()
-            ingredientList?.forEach { foodData ->
-                val ingredientData = IngredientDetail(
-                    id = foodData.ingredient_id,
-                    ingredient_code = "",
-                    ingredient_name = foodData.ingredient_name,
-                    ingredient_category = foodData.ingredient_category,
-                    photo_url = foodData.photo_url,
-                    calories = foodData.calories,
-                    carbs = foodData.carbs,
-                    sugar = foodData.sugar,
-                    fiber = foodData.fiber,
-                    protein = foodData.protein,
-                    fat = foodData.fat,
-                    cholesterol = foodData.calories,
-                    vitamin_a = foodData.vitamin_a,
-                    vitamin_c = foodData.vitamin_c,
-                    vitamin_k = foodData.vitamin_k,
-                    vitamin_d = foodData.vitamin_d,
-                    folate = foodData.folate,
-                    iron = foodData.iron,
-                    calcium = foodData.calcium,
-                    magnesium = foodData.magnesium,
-                    sodium = foodData.sodium,
-                    potassium = foodData.potassium,
-                    zinc = foodData.zinc,
-                    quantity =  foodData.quantity,
-                    measure = foodData.measure
-                )
-                ingredientLists.add(ingredientData)
-            }
-            ingredientLocalListModel = IngredientLocalListModel(ingredientLists)
             val fragment = CreateRecipeFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("selectedMealDate", selectedMealDate)
             args.putString("mealType", mealType)
             args.putString("recipeId", myRecipe._id)
-            args.putString("recipeName", myRecipe.recipe_name)
+            args.putString("recipeName", myRecipe.recipe)
             args.putDouble("serving", myRecipe.servings)
-            args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
+            args.putString("updateMyRecipe", "updateMyRecipe")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
                 addToBackStack("mealLog")
                 commit()
             }
-        }
     }
 
     private fun onLogRecipeItem(myRecipe: MyRecipe, position: Int, isRefresh: Boolean) {
@@ -244,20 +203,20 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
         recipeAdapter.addAll(valueLists, position, myRecipe, isRefresh)
 
         val ingredientsLogList : ArrayList<MealLogItems> = ArrayList()
-      //  val dishList = myRecipe.ingredients_per_serving
-       // dishList?.forEach { selectedDish ->
+        val dishList = myRecipe
+      //  dishList?.forEach { selectedDish ->
             val ingredientsLogData = MealLogItems(
                 meal_id = myRecipe._id,
-                recipe_name = myRecipe.recipe_name,
-                meal_quantity = 1,
-                unit = "g",
-                measure = "Bowl"
+                recipe_name = myRecipe.recipe,
+                meal_quantity = myRecipe.selected_serving?.value,
+                source = "recipe",
+                measure = myRecipe.selected_serving?.type
             )
             ingredientsLogList.add(ingredientsLogData)
-  //      }
+     //   }
         val recipeLogRequest = SelectedMealLogList(
-            meal_name =  myRecipe.recipe_name,
-            meal_type = myRecipe.recipe_name,
+            meal_name =  myRecipe.recipe,
+            meal_type = myRecipe.recipe,
             meal_log = ingredientsLogList,
             isMealLog = myRecipe.isRecipeLog
         )
@@ -272,7 +231,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val call = ApiClient.apiServiceFastApi.getMyRecipeList("0", userId)
+        val call = ApiClient.apiServiceFastApiV2.getMyRecipeList("0", userId)
         call.enqueue(object : Callback<MyRecipeResponse> {
             override fun onResponse(call: Call<MyRecipeResponse>, response: Response<MyRecipeResponse>) {
                 if (response.isSuccessful) {

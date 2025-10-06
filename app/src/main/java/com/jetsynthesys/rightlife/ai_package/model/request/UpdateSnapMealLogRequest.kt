@@ -1,8 +1,10 @@
 package com.jetsynthesys.rightlife.ai_package.model.request
 
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
+
 data class UpdateSnapMealLogRequest(
     val meal_name: String,
-    val meal_log: List<SnapMealLogItems>
+    val meal_log: List<IngredientRecipeDetails>
 )
 
 data class SnapMealLogItems(

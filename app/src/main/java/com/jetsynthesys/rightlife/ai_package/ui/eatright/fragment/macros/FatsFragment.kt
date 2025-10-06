@@ -525,7 +525,7 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
-                val response = ApiClient.apiServiceFastApi.getConsumedFats(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedFats(
                     userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
