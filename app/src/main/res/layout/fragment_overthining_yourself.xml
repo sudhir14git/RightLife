@@ -126,7 +126,7 @@
             android:fontFamily="@font/dmsans_bold"
             android:text="@string/str_continue"
             android:textColor="@color/white"
-            android:textSize="@dimen/textsize_large"
+            android:textSize="@dimen/textsize_large18sp"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 </RelativeLayout>

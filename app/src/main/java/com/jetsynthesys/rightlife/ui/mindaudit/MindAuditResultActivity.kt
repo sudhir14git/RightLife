@@ -440,8 +440,8 @@ class MindAuditResultActivity : BaseActivity() {
                         binding.tvResultExplanationTitle.text = explanation.first
                         binding.tvResultExplanation.text = explanation.second
                         cardviewMainscore3.setOnClickListener {
-                            setRightRainbowView(assessmentTaken.interpretations.stress.score.toInt())
-                            setRainbowView(assessmentTaken.interpretations.stress.score.toInt())
+                            //setRightRainbowView(assessmentTaken.interpretations.stress.score.toInt())
+                            //setRainbowView(assessmentTaken.interpretations.stress.score.toInt())
                             val explanation = getDASS21StressExplanation(
                                 assessmentTaken.interpretations.stress.score.toFloat()
                             )

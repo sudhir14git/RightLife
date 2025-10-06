@@ -262,7 +262,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:layout_marginVertical="16dp">
 
                     <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
@@ -306,7 +306,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Experience how RightLife can truly improve your health with a 7 day free trial."
-                            android:fontFamily="@font/dmsans_regular"
+                            android:fontFamily="@font/dmsans_medium"
                             android:textColor="@color/txt_color_header"
                             android:textSize="@dimen/textsize_small" />
 
@@ -326,6 +326,7 @@
                                 android:textSize="32sp" />
 
                             <TextView
+                                android:id="@+id/tv_striketroughPrice"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="8dp"

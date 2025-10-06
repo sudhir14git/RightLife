@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -406,23 +407,30 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
-                if (DashboardChecklistManager.facialScanStatus) {
-                    startActivity(
-                        Intent(
-                            this@HomeNewActivity, NewHealthCamReportActivity::class.java
+                if (checkTrailEndedAndShowDialog()) {
+                    if (DashboardChecklistManager.facialScanStatus) {
+                        startActivity(
+                            Intent(
+                                this@HomeNewActivity, NewHealthCamReportActivity::class.java
+                            )
                         )
-                    )
-                } else {
-                    ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
+                    } else {
+                        ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
+                    }
                 }
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
-                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SNAP_MEAL_CLICK)
-                ActivityUtils.startEatRightReportsActivity(
-                    this@HomeNewActivity,
-                    "SnapMealTypeEat",
-                    ""
-                )
+                if (checkTrailEndedAndShowDialog()) {
+                    AnalyticsLogger.logEvent(
+                        this@HomeNewActivity,
+                        AnalyticsEvent.EOS_SNAP_MEAL_CLICK
+                    )
+                    ActivityUtils.startEatRightReportsActivity(
+                        this@HomeNewActivity,
+                        "SnapMealTypeEat",
+                        ""
+                    )
+                }
             }
 
         }
@@ -498,6 +506,7 @@ class HomeNewActivity : BaseActivity() {
                     putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
                 })
         }
+          binding.tvStriketroughPrice.paintFlags = binding.tvStriketroughPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
     }
 
     override fun onResume() {

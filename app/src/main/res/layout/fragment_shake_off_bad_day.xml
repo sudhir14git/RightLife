@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="How long does it take for you to shake off a bad day?"
-        android:textSize="@dimen/textsize_large18sp"
+        android:textSize="@dimen/textsize_large24sp"
         android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"
         android:textColor="@color/menu_icon_color_unselected" />

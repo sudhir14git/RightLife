@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -10,39 +10,44 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="How have your emotions been over the past week?"
-        android:textSize="@dimen/textsize_large18sp"
-        android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"
-        android:textColor="@color/menu_icon_color_unselected" />
+        android:fontFamily="@font/merriweather_bold"
+        android:text="How have your emotions been over the past week?"
+        android:textColor="@color/menu_icon_color_unselected"
+        android:textSize="@dimen/textsize_large18sp" />
 
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="300dp"
         android:layout_height="400dp"
+        android:layout_centerInParent="true"
         android:layout_marginTop="40dp"
-        app:cardCornerRadius="20dp"
         android:background="@drawable/chaotic_bg_card"
-        app:cardElevation="8dp"
-        android:layout_centerInParent="true">
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="20dp"
-            android:gravity="center_horizontal">
+            android:padding="20dp">
 
             <!-- Title -->
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:elevation="5dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:shadowColor="#80000000"
+                android:shadowDx="5"
+                android:shadowDy="5"
+                android:shadowRadius="5"
                 android:text="Chaotic"
-                android:textSize="30dp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:textSize="30sp" />
 
             <!-- White Box -->
 
@@ -50,16 +55,16 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_marginTop="20dp"
-                app:cardCornerRadius="10dp"
-                android:background="@android:color/transparent">
+                android:background="@android:color/transparent"
+                app:cardCornerRadius="10dp">
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottieView"
                     android:layout_width="200dp"
                     android:layout_height="200dp"
-                    app:lottie_fileName="Chaotic.json"
-                    app:lottie_autoPlay="true"
                     android:scaleType="centerCrop"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="Chaotic.json"
                     app:lottie_loop="true" />
             </androidx.cardview.widget.CardView>
 
@@ -68,17 +73,17 @@
                 android:id="@+id/parentRelative"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
                 android:background="@drawable/seekbar_bg_tr_q1"
                 android:backgroundTint="@color/red"
-                android:layout_marginTop="30dp"
                 android:padding="5dp">
 
                 <LinearLayout
                     android:id="@+id/outerLinear"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_centerInParent="true"
+                    android:orientation="horizontal"
                     android:weightSum="4">
 
                     <!-- Block 1 -->
@@ -92,9 +97,9 @@
                         <TextView
                             android:layout_width="5dp"
                             android:layout_height="5dp"
-                            android:gravity="end"
                             android:background="@drawable/circle_shape"
-                            android:backgroundTint="@color/white" />
+                            android:backgroundTint="@color/white"
+                            android:gravity="end" />
                     </LinearLayout>
 
                     <!-- Block 2 -->
@@ -138,8 +143,8 @@
                         <TextView
                             android:layout_width="5dp"
                             android:layout_height="5dp"
-                            android:background="@drawable/circle_shape"
                             android:layout_marginEnd="10dp"
+                            android:background="@drawable/circle_shape"
                             android:backgroundTint="@color/white" />
                     </LinearLayout>
 
@@ -149,13 +154,13 @@
                     android:id="@+id/seekBar"
                     android:layout_width="match_parent"
                     android:layout_height="25dp"
+                    android:background="@android:color/transparent"
                     android:max="4"
                     android:progress="0"
-                    android:thumbTint="@android:color/white"
-                    android:thumb="@drawable/custom_thumb_small"
-                    android:progressTint="@android:color/transparent"
                     android:progressBackgroundTint="@android:color/transparent"
-                    android:background="@android:color/transparent"
+                    android:progressTint="@android:color/transparent"
+                    android:thumb="@drawable/custom_thumb_small"
+                    android:thumbTint="@android:color/white"
                     app:splitTrack="false" />
 
             </RelativeLayout>
@@ -165,11 +170,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Slide the scale to select level."
-                android:textSize="14sp"
-                android:textColor="@android:color/white"
+                android:layout_marginTop="10dp"
                 android:backgroundTint="@color/red"
-                android:layout_marginTop="10dp" />
+                android:text="Slide the scale to select level."
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
@@ -185,13 +190,15 @@
             android:id="@+id/btnContinue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Continue"
-            android:layout_marginTop="12dp"
+            android:layout_alignParentBottom="true"
             android:layout_marginHorizontal="30dp"
-            android:backgroundTint="@color/menuselected"
-            android:textColor="@color/white"
+            android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:layout_alignParentBottom="true" />
+            android:backgroundTint="@color/menuselected"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Continue"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_large18sp" />
     </RelativeLayout>
 
 </RelativeLayout>

@@ -12,7 +12,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.RowCategoryListNewBinding
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
-import com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 
 class NewCategoryListAdapter(
@@ -102,13 +102,16 @@ class NewCategoryListAdapter(
                             putExtra("contentId", item.id)
                         })
                 } else if (item.contentType.equals("SERIES", ignoreCase = true)) {
+                    /*context.startActivity(Intent(context, NewSeriesDetailsActivity::class.java).apply {
+                            putExtra("seriesId", item.episodeDetails?.contentId)
+                            putExtra("episodeId", item.episodeDetails?.id)
+                        })*/
                     context.startActivity(
                         Intent(
                             context,
-                            NewSeriesDetailsActivity::class.java
+                            SeriesListActivity::class.java
                         ).apply {
-                            putExtra("seriesId", item.episodeDetails?.contentId)
-                            putExtra("episodeId", item.episodeDetails?.id)
+                            putExtra("contentId", item.id)
                         })
                 }
             }

@@ -26,6 +26,7 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
     private var reportId: String? = null
     private var isFrom: String? = null
     private var isFromThinkRight = false
+    private var showType = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,7 +188,7 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
         sharedPreferenceManager.saveUserEmotions(UserEmotions(response.body()!!.result[0].emotionalState))
 
         // Get which interpretation to show (passed from previous activity)
-        val showType = intent.getStringExtra("SHOW_INTERPRETATION")?.lowercase() ?: ""
+         showType = intent.getStringExtra("SHOW_INTERPRETATION")?.lowercase() ?: ""
 
         with(binding) {
             when (assessmentTaken.assessment) {
@@ -231,7 +232,7 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
         )
 
         setExplanationTitle(anxiety.level, "Anxiety")
-        setRainbowView(anxiety.score.toInt())
+        setRainbowView(anxiety.score.toInt(), showType)
 
         val explanation = getDASS21AnxietyExplanation(anxiety.score.toFloat())
         binding.tvResultExplanationTitle.text = explanation.first
@@ -251,7 +252,7 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
         }
 
         binding.cardviewMainscore.setOnClickListener {
-            setRainbowView(anxiety.score.toInt())
+            setRainbowView(anxiety.score.toInt(),showType)
             val explanationClick = getDASS21AnxietyExplanation(anxiety.score.toFloat())
             binding.tvResultExplanationTitle.text = explanationClick.first
             binding.tvResultExplanation.text = explanationClick.second
@@ -287,13 +288,13 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
             tvRange5.text = "28+"
             tvRange6.text = ""
         }
-        setRainbowView(depression.score.toInt())
+        setRainbowView(depression.score.toInt(),showType)
         val explanationClick = getDASS21DepressionExplanation(depression.score.toFloat())
         binding.tvResultExplanationTitle.text = explanationClick.first
         binding.tvResultExplanation.text = explanationClick.second
 
         binding.cardviewMainscore2.setOnClickListener {
-            setRainbowView(depression.score.toInt())
+            setRainbowView(depression.score.toInt(),showType)
             val explanationClick = getDASS21DepressionExplanation(depression.score.toFloat())
             binding.tvResultExplanationTitle.text = explanationClick.first
             binding.tvResultExplanation.text = explanationClick.second
@@ -330,13 +331,13 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
             tvExtSevere.visibility = View.VISIBLE
             tvRange5.gravity = Gravity.START
         }
-        setRainbowView(stress.score.toInt())
+        setRainbowView(stress.score.toInt(),showType)
         val explanationClick = getDASS21StressExplanation(stress.score.toFloat())
         binding.tvResultExplanationTitle.text = explanationClick.first
         binding.tvResultExplanation.text = explanationClick.second
 
         binding.cardviewMainscore3.setOnClickListener {
-            setRainbowView(stress.score.toInt())
+            setRainbowView(stress.score.toInt(),showType)
             val explanationClick = getDASS21StressExplanation(stress.score.toFloat())
             binding.tvResultExplanationTitle.text = explanationClick.first
             binding.tvResultExplanation.text = explanationClick.second
@@ -537,9 +538,17 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
 
 
 
-    private fun setRainbowView(score: Int) {
+    private fun setRainbowView(score: Int,showType:String) {
         binding.rainbowView.visibility = View.VISIBLE
-        binding.rainbowView.setRainbowColors(getColorArrayForScore(score))
+        if (showType.lowercase()=="depression") {
+            binding.rainbowView.setRainbowColors(getColorArrayForDASS_Depression_Score(score))
+        }else if (showType.lowercase()=="anxiety") {
+            binding.rainbowView.setRainbowColors(getColorArrayForDASS_Anxiety_Score(score))
+        }else if (showType.lowercase()=="stress") {
+            binding.rainbowView.setRainbowColors(getColorArrayForDASS_Stress_Score(score))
+        }else {
+            binding.rainbowView.setRainbowColors(getColorArrayForScore(score))
+        }
         binding.rainbowView.setStrokeWidth(60f)
         binding.rainbowView.setArcSpacing(8f)
     }
