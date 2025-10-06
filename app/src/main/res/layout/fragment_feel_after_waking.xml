@@ -116,6 +116,8 @@
             android:backgroundTint="@color/menuselected"
             android:textColor="@color/white"
             android:layout_marginBottom="12dp"
+            android:textSize="@dimen/textsize_large18sp"
+            android:fontFamily="@font/dmsans_bold"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 

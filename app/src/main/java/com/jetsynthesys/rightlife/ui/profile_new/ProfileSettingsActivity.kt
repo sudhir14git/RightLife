@@ -18,6 +18,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
 import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
+import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusListActivity
 import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
 import com.jetsynthesys.rightlife.ui.settings.PurchasePlansActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
@@ -107,7 +108,7 @@ class ProfileSettingsActivity : BaseActivity() {
         val personalizationAdapter = SettingsAdapter(items) { item ->
             when (item.title) {
                 "Goals" ->
-                    startActivity(Intent(this, WellnessFocusActivity::class.java).apply {
+                    startActivity(Intent(this, WellnessFocusListActivity::class.java).apply {
                         putExtra("FROM", "ProfileSetting")
                     })
 

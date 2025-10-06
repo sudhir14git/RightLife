@@ -909,9 +909,7 @@ class HomeExploreFragment : BaseFragment() {
                 "Meal Snap" -> {
                     if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
-                            startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
-                                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
-                            })
+                            freeTrialDialogActivity()
                         } else {
                             showInternetError()
                         }
@@ -923,14 +921,13 @@ class HomeExploreFragment : BaseFragment() {
                             ""
                         )
                     }
+                    ActivityUtils.startMindAuditActivity(requireContext())
                 }
 
                 "Health Cam" ->{
                     if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
-                            startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
-                                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
-                            })
+                            freeTrialDialogActivity()
                         } else {
                             showInternetError()
                         }
@@ -1268,5 +1265,10 @@ class HomeExploreFragment : BaseFragment() {
 
     private fun isFragmentSafe(): Boolean {
         return isAdded && activity != null && !requireActivity().isFinishing && !requireActivity().isDestroyed
+    }
+
+    private fun freeTrialDialogActivity() {
+        val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
+        startActivity(intent)
     }
 }

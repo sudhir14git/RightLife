@@ -111,6 +111,10 @@ class BreathworkPracticeActivity : BaseActivity() {
         setBreathingTypeColors()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        showDeleteBottomSheet()
+    }
 
     /**
      * Start the preparation countdown (3, 2, 1) before breathing begins

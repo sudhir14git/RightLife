@@ -13,6 +13,7 @@
     <dimen name="text_margin">16dp</dimen>
 
     <dimen name="textsize_large24sp">24sp</dimen>
+    <dimen name="textsize_large20sp">20sp</dimen>
     <dimen name="textsize_large18sp">18sp</dimen>
     <dimen name="margin_card_16dp">16dp</dimen>
     <dimen name="spacing">3dp</dimen>

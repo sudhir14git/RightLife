@@ -132,7 +132,7 @@ class UserInterestActivity : BaseActivity() {
             val iconRes = iconList.getOrElse(index) { R.drawable.move_interest }
             //section Image
             val iconView = ImageView(this@UserInterestActivity).apply {
-                val sizeInDp = 20
+                val sizeInDp = 16
                 val sizeInPx = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     sizeInDp.toFloat(),

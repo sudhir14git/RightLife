@@ -384,7 +384,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Face Scan"
@@ -435,7 +435,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Snap Meal"
@@ -486,7 +486,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Sleep Sounds"
@@ -537,7 +537,8 @@
                             android:backgroundTint="@color/ql_affirmation_color_bg"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="10dp">
+                            android:paddingVertical="10dp"
+                            >
 
                             <ImageView
                                 android:layout_width="30dp"
@@ -547,9 +548,9 @@
 
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Affirmations"
@@ -564,6 +565,7 @@
                                 android:minLines="2"
                                 android:text="Daily mindset boost"
                                 android:textColor="#0B1215"
+                                android:paddingHorizontal="10dp"
                                 android:textSize="@dimen/textsize_small" />
                         </LinearLayout>
                     </LinearLayout>
@@ -600,7 +602,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Journaling"
@@ -651,7 +653,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Breathwork"

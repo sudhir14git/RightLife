@@ -118,7 +118,7 @@ class GenderSelectionFragment : Fragment() {
 
                 saveGender()
 
-            }, 300)
+            }, 500)
         }
 
         llFemale.setOnClickListener {
