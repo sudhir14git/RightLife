@@ -10,6 +10,7 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityHealthcamBinding
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
@@ -68,7 +69,20 @@ class HealthCamActivity : BaseActivity() {
             if (currentItem < totalItems - 1) {
                 binding.viewPager.currentItem = currentItem + 1
             } else {
-                showDisclaimerDialog()
+                val desc =
+                    "This facial scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
+                DialogUtils.showCommonBottomSheetDialog(this, description = desc,
+                    onOkayClick = {
+                        startActivity(
+                            Intent(
+                                this@HealthCamActivity,
+                                HealthCamBasicDetailsNewActivity::class.java
+                            )
+                        )
+                    },
+                    onCloseClick = {
+                        finish()
+                    })
             }
         }
 
@@ -116,42 +130,6 @@ class HealthCamActivity : BaseActivity() {
         dialogButtonStay.setOnClickListener {
             // Perform your action
             dialog.dismiss()
-        }
-        dialogButtonExit.setOnClickListener {
-            dialog.dismiss()
-            this.finish()
-        }
-
-        // Show the dialog
-        dialog.show()
-    }
-
-    private fun showDisclaimerDialog() {
-        // Create the dialog
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.layout_disclaimer_health_cam)
-        dialog.setCancelable(true)
-        dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-
-        val window = dialog.window
-        // Set the dim amount
-        val layoutParams = window!!.attributes
-        layoutParams.dimAmount = 0.85f // Adjust the dim amount (0.0 - 1.0)
-        window.attributes = layoutParams
-
-        // Find views from the dialog layout
-        //val dialogImage = dialog.findViewById<ImageView>(R.id.dialog_image)
-        //val dialogText = dialog.findViewById<TextView>(R.id.dialog_text)
-        val dialogButtonStay = dialog.findViewById<Button>(R.id.dialog_button_stay)
-        val dialogButtonExit = dialog.findViewById<Button>(R.id.dialog_button_exit)
-
-        // Set button click listener
-        dialogButtonStay.setOnClickListener {
-            // Perform your action
-            dialog.dismiss()
-            val intent =
-                Intent(this@HealthCamActivity, HealthCamBasicDetailsNewActivity::class.java)
-            startActivity(intent)
         }
         dialogButtonExit.setOnClickListener {
             dialog.dismiss()

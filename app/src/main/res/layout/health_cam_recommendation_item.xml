@@ -1,157 +1,149 @@
+<!-- res/layout/grid_item.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
-    android:gravity="center"
-    android:layout_margin="10dp"
-    app:cardCornerRadius="@dimen/textsize_small"
-    android:background="@color/white"
+    android:orientation="vertical"
+    android:background="@color/colorTransperent"
+    android:layout_margin="8dp"
     android:padding="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:paddingBottom="5dp">
+        <androidx.cardview.widget.CardView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:cardCornerRadius="22dp"
+            android:background="@color/colorTransperent"
+            android:padding="0dp">
+
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_toRightOf="@id/rlimg1"
-                android:id="@+id/rl_module_name"
-                android:layout_height="wrap_content">
-
-                <View
-                    android:layout_width="1dp"
-                    android:id="@+id/centerlineview"
-                    android:background="@color/black"
-                    android:layout_marginTop="5dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_height="14dp"/>
-                <TextView
-                    android:id="@+id/tv_modulename"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_toLeftOf="@+id/centerlineview"
-                    android:layout_marginBottom="5dp"
-
-                    android:drawableStart="@drawable/rlpage_thinkright_svg"
-                    android:drawablePadding="5dp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:paddingStart="5dp"
-                    android:text="MoveRight"
-                    android:textSize="@dimen/textsize_small"
-                    tools:ignore="DuplicateIds" />
+                android:layout_height="100dp">
 
                 <ImageView
-                    android:id="@+id/imgtag"
-                    android:layout_width="wrap_content"
-                    android:src="@drawable/ic_tag"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/centerlineview"
-                    android:layout_centerVertical="true"
-                    app:tint="@color/black" />
-
-                <TextView
+                    android:id="@+id/item_image"
                     android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/facial_scan" />
+
+                <LinearLayout
+                    android:id="@+id/llVideoSeries"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tv_category"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_toRightOf="@+id/imgtag"
+                    android:orientation="horizontal"
+                    android:layout_alignParentBottom="true"
+                    android:padding="6dp"
+                    android:background="#BF000000">
 
-                    android:drawablePadding="5dp"
-                    android:drawableTint="#FFE18D"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:text="Yoga"
-                    android:textSize="@dimen/textsize_small" />
+                    <ImageView
+                        android:id="@+id/img_iconview"
+                        android:layout_width="6dp"
+                        android:layout_height="12dp"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/video_jump_back_in" />
+
+                    <TextView
+                        android:id="@+id/item_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="video"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="12sp"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
             </RelativeLayout>
+        </androidx.cardview.widget.CardView>
 
-            <ImageView
-                android:id="@+id/rlimg1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/image1_rlpage_edit"
-                tools:ignore="DuplicateIds" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Simple Daily Habits to Boost Your Health, Energy, and Mood Without Changing Your Entire Routine"
+            android:textColor="@color/txt_color_journal_date"
+            android:gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:textSize="14sp"
+            android:fontFamily="@font/merriweather_bold" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="16dp">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/dmsans_regular"
+            android:textSize="@dimen/textsize_small"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="asdaskjdjakjsda"
+            android:textColor="@color/txt_color_header" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="10dp"
+            android:layout_marginHorizontal="8dp"
+            android:background="#767676"
+            android:layout_gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/tvdateTime"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:fontFamily="@font/dmsans_regular"
+            android:textSize="@dimen/textsize_small"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="15 AUg 2323"
+            android:textColor="#767676" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="10dp"
+            android:layout_marginHorizontal="8dp"
+            android:background="#767676"
+            android:layout_gravity="center_vertical" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/rl_module_name"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_toEndOf="@id/rlimg1"
-                android:fontFamily="@font/merriweather_bold"
-                android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
-                android:id="@+id/item_text"
-                android:layout_centerVertical="true"
-                android:textColor="@color/txt_color_header"
-                android:textSize="@dimen/textsize_medium" />
+                android:id="@+id/tvLeftTime"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:layout_weight="7"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="@dimen/textsize_small"
+                android:text="1m 24sec"
+                android:gravity="center"
+                android:textColor="#767676" />
 
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_toRightOf="@id/rlimg1">
-
-                <TextView
-                    android:id="@+id/tv_artistname"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:drawablePadding="5dp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:paddingStart="5dp"
-                    android:text="Ventak swami muthu s…   |"
-                    android:textSize="@dimen/textsize_small"
-                    tools:ignore="DuplicateIds" />
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="20dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/rightlife"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/tvTimeLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toRightOf="@+id/tv_artistname"
-                    android:drawablePadding="5dp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:paddingStart="15dp"
-                    android:text="2 min left"
-                    android:textSize="@dimen/textsize_small"
-                    tools:ignore="DuplicateIds" />
-            </RelativeLayout>
-
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:background="@color/gray"
-            android:layout_margin="1dp"
-            android:visibility="gone"
-            android:layout_height="1dp"/>
+        </LinearLayout>
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDDDDD" />
+
 </LinearLayout>

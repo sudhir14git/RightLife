@@ -2,129 +2,110 @@ package com.jetsynthesys.rightlife.ui.healthcam
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.Recommendation
+import com.jetsynthesys.rightlife.databinding.HealthCamRecommendationItemBinding
+import com.jetsynthesys.rightlife.databinding.RowCategoryListNewBinding
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
-import com.jetsynthesys.rightlife.ui.utility.Utils
 
 // Import your Utils class
 class HealthCamRecommendationAdapter(
     private val context: Context,
     private val recommendations: List<Recommendation>
-) : RecyclerView.Adapter<HealthCamRecommendationAdapter.RecommendationViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecommendationViewHolder {
-        val view = LayoutInflater.from(context)
-            .inflate(R.layout.health_cam_recommendation_item, parent, false)
-        return RecommendationViewHolder(view)
-    }
+) : RecyclerView.Adapter<HealthCamRecommendationAdapter.RecommendedViewHolder>() {
 
-    override fun onBindViewHolder(holder: RecommendationViewHolder, position: Int) {
-        val recommendation = recommendations[position]
-
-        holder.titleTextView.text = recommendation.title
-        holder.categoryTextView.text = recommendation.categoryName
-
-        if (recommendation.artist != null && recommendation.artist.isNotEmpty()) {
-            val artistName =
-                recommendation.artist[0].firstName + " " + recommendation.artist[0].lastName
-            holder.artistTextView.text = artistName
-        } else {
-            holder.artistTextView.text = ""
-        }
-
-        if (recommendation.thumbnail != null && recommendation.thumbnail.url != null && recommendation.thumbnail.url.isNotEmpty()) {
-            Glide.with(context)
-                .load(ApiClient.CDN_URL_QA + recommendation.thumbnail.url)
+    inner class RecommendedViewHolder(val binding: HealthCamRecommendationItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Recommendation, position: Int) {
+            // Load image using Glide
+            Glide.with(binding.root.context)
+                .load(ApiClient.CDN_URL_QA + (item.thumbnail?.url ?: ""))
                 .placeholder(R.drawable.rl_placeholder)
                 .error(R.drawable.rl_placeholder)
-                .transform(RoundedCorners(25))
-                .into(holder.thumbnailImageView)
-        } else {
-            holder.thumbnailImageView.setImageResource(R.drawable.image1_rlpage_edit) // Default image
-        }
+                .into(binding.itemImage)
 
-        holder.moduleNameTextView.text = Utils.getModuleText(recommendation.moduleId)
-        val startDrawable = getModuleTypeDrawable(context, recommendation.moduleId)
-        startDrawable!!.setBounds(0, 0, startDrawable.intrinsicWidth, startDrawable.intrinsicHeight)
-        holder.moduleNameTextView.setCompoundDrawables(startDrawable, null, null, null)
+            binding.itemText.text = item.contentType ?: "Untitled"
+            binding.tvTitle.text = item.title
+            //binding.tvLeftTime.text = item.leftDuration
+            //binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.date)
+            binding.tvName.text = item.categoryName
 
-        val text = if ("SERIES" == recommendation.contentType) {
-            recommendation.episodeCount.toString() + "  videos" // " videos/audios";
-        } else {
-            "" //contentList.get(position).getLeftDuration() + " left";
-        }
+            binding.imgIconview.setImageResource(
+                if ("VIDEO".equals(item.contentType, ignoreCase = true))
+                    R.drawable.video_jump_back_in
+                else if ("AUDIO".equals(item.contentType, ignoreCase = true))
+                    R.drawable.audio_jump_back_in
+                else if ("TEXT".equals(item.contentType, ignoreCase = true))
+                    R.drawable.ic_text_content
+                else
+                    R.drawable.series_jump_back_in
+            )
 
-        /* if ("SERIES".equals(recommendation.seriesType)) {
-            text = recommendation.episodeCount + " episodes";
-        } else {
-            // You might need a way to determine "left duration" for other content types
-            text = "";
-        }*/
-        holder.timeLeftTextView.text = text
-
-        holder.itemView.setOnClickListener {
-            val contentType = recommendation.contentType
-            val contentId = recommendation.id
-            if (contentType.equals("TEXT", ignoreCase = true)) {
-                context.startActivity(Intent(context, ArticlesDetailActivity::class.java).apply {
-                    putExtra("contentId", contentId)
-                })
-            } else if (contentType
-                    .equals("VIDEO", ignoreCase = true) || contentType
-                    .equals("AUDIO", ignoreCase = true)
-            ) {
-                context.startActivity(
-                    Intent(
-                        holder.itemView.context,
-                        ContentDetailsActivity::class.java
-                    ).apply {
-                        putExtra("contentId", contentId)
-                    })
-            } else if (contentType.equals("SERIES", ignoreCase = true)) {
-                context.startActivity(Intent(context, SeriesListActivity::class.java).apply {
-                    putExtra("contentId", contentId)
-                })
+            // Click listener
+            binding.root.setOnClickListener {
+                if (item.contentType.equals(
+                        "TEXT",
+                        ignoreCase = true
+                    ) || item.contentType.equals("Articles", ignoreCase = true)
+                ) {
+                    context.startActivity(
+                        Intent(
+                            context,
+                            ArticlesDetailActivity::class.java
+                        ).apply {
+                            putExtra("contentId", item.id)
+                        })
+                } else if (item.contentType.equals(
+                        "VIDEO",
+                        ignoreCase = true
+                    ) || item.contentType
+                        .equals("AUDIO", ignoreCase = true)
+                ) {
+                    context.startActivity(
+                        Intent(
+                            context,
+                            ContentDetailsActivity::class.java
+                        ).apply {
+                            putExtra("contentId", item.id)
+                        })
+                } else if (item.contentType.equals("SERIES", ignoreCase = true)) {
+                    /*context.startActivity(Intent(context, NewSeriesDetailsActivity::class.java).apply {
+                            putExtra("seriesId", item.episodeDetails?.contentId)
+                            putExtra("episodeId", item.episodeDetails?.id)
+                        })*/
+                    context.startActivity(
+                        Intent(
+                            context,
+                            SeriesListActivity::class.java
+                        ).apply {
+                            putExtra("contentId", item.id)
+                        })
+                }
             }
         }
     }
 
-    private fun getModuleTypeDrawable(ctx: Context, moduleName: String): Drawable? {
-        val startDrawable = ContextCompat.getDrawable(ctx, R.drawable.rlpage_thinkright_svg)
-        if ("THINK_RIGHT".equals(moduleName, ignoreCase = true)) {
-            return ContextCompat.getDrawable(ctx, R.drawable.rlpage_thinkright_svg)
-        } else if ("SLEEP_RIGHT".equals(moduleName, ignoreCase = true)) {
-            return ContextCompat.getDrawable(ctx, R.drawable.rlpage_sleepright_svg)
-        } else if ("MOVE_RIGHT".equals(moduleName, ignoreCase = true)) {
-            return ContextCompat.getDrawable(ctx, R.drawable.rlpage_moveright_svg)
-        } else if ("EAT_RIGHT".equals(moduleName, ignoreCase = true)) {
-            return ContextCompat.getDrawable(ctx, R.drawable.rlpage_eatright_svg)
-        }
-        return startDrawable
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecommendedViewHolder {
+        val binding =
+            HealthCamRecommendationItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        return RecommendedViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return recommendations.size
+    override fun getItemCount(): Int = recommendations.size
+
+    override fun onBindViewHolder(holder: RecommendedViewHolder, position: Int) {
+        holder.bind(recommendations[position], position)
     }
 
-    class RecommendationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var thumbnailImageView: ImageView = itemView.findViewById(R.id.rlimg1)
-        var titleTextView: TextView = itemView.findViewById(R.id.item_text)
-        var categoryTextView: TextView = itemView.findViewById(R.id.tv_category)
-        var artistTextView: TextView = itemView.findViewById(R.id.tv_artistname)
-        var timeLeftTextView: TextView = itemView.findViewById(R.id.tvTimeLeft)
-        var moduleNameTextView: TextView = itemView.findViewById(R.id.tv_modulename)
-    }
 }

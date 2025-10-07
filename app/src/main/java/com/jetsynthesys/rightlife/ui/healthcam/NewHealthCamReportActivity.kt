@@ -1,7 +1,6 @@
 package com.jetsynthesys.rightlife.ui.healthcam
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.app.DownloadManager
 import android.content.Intent
 import android.graphics.Color
@@ -11,7 +10,6 @@ import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
@@ -31,6 +29,7 @@ import com.jetsynthesys.rightlife.newdashboard.FacialScanReportDetailsActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall.updateChecklistStatus
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -88,7 +87,11 @@ class NewHealthCamReportActivity : BaseActivity() {
         })
 
 
-        binding!!.icCloseDialog.setOnClickListener { showDisclaimerDialog() }
+        binding!!.icCloseDialog.setOnClickListener {
+            val desc =
+                "This facial scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
+            DialogUtils.showCommonBottomSheetDialog(this, description = desc)
+        }
         binding!!.cardviewLastCheckin.setOnClickListener {
             val intent = Intent(this, SubscriptionPlanListActivity::class.java)
             intent.putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
@@ -146,6 +149,7 @@ class NewHealthCamReportActivity : BaseActivity() {
             )
         }
     }
+
     override fun onResume() {
         super.onResume()
         myRLHealthCamResult
@@ -248,7 +252,7 @@ class NewHealthCamReportActivity : BaseActivity() {
             }
 
             binding!!.txtAlertMessage.text = facialReportResponseNew.data.summary
-            binding!!.tvLastReportDate.text = DateTimeUtils.convertAPIDateMonthFormatWithTime(
+            binding!!.tvLastReportDate.text = DateTimeUtils.convertAPIDateMonthFormatWithTimeFS(
                 facialReportResponseNew.data.createdAt
             )
             allHealthCamItems.clear()
@@ -320,36 +324,6 @@ class NewHealthCamReportActivity : BaseActivity() {
             binding.recyclerViewContinue.setAdapter(adapter);
         }
     }*/
-    private fun showDisclaimerDialog() {
-        // Create the dialog
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.layout_disclaimer_facescan_result)
-        dialog.setCancelable(true)
-        dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-        val window = dialog.window
-        // Set the dim amount
-        val layoutParams = window!!.attributes
-        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
-        window.attributes = layoutParams
-
-        // Find views from the dialog layout
-        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        //val dialogImage = dialog.findViewById<ImageView>(R.id.dialog_image)
-        //val dialogText = dialog.findViewById<TextView>(R.id.dialog_text)
-        val dialogButtonStay = dialog.findViewById<Button>(R.id.dialog_button_stay)
-        //val dialogButtonExit = dialog.findViewById<Button>(R.id.dialog_button_exit)
-
-        // Optional: Set dynamic content
-        // dialogText.setText("Please find a quiet and comfortable place before starting");
-
-        // Set button click listener
-        dialogButtonStay.setOnClickListener {
-            // Perform your action
-            dialog.dismiss()
-        }
-        // Show the dialog
-        dialog.show()
-    }
 
 
     // new Booster ui

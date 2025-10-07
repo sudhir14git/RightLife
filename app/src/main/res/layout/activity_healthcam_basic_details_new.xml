@@ -53,7 +53,8 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:text="Name"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:drawableEnd="@drawable/astric" />
 
             <EditText
                 android:id="@+id/edtName"
@@ -80,7 +81,8 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:text="Height"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:drawableEnd="@drawable/astric" />
 
             <EditText
                 android:id="@+id/edtHeight"
@@ -110,7 +112,8 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:text="Weight"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:drawableEnd="@drawable/astric" />
 
             <EditText
                 android:id="@+id/edtWeight"
@@ -140,7 +143,8 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:text="Age"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:drawableEnd="@drawable/astric" />
 
             <EditText
                 android:id="@+id/edtAge"
@@ -158,16 +162,30 @@
                 android:editable="false"
                 android:textColor="@color/black" />
 
-            <TextView
-                android:id="@+id/tvGender"
-                android:textColor="@color/txt_color_health"
-                android:drawablePadding="4dp"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/dmsans_bold"
-                android:layout_marginTop="16dp"
-                android:text="Gender At Birth"
-                android:textSize="@dimen/textsize_medium" />
+                android:layout_marginTop="16dp">
+                
+                <ImageView
+                    android:id="@+id/infoIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/grey_info_icon"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvGender"
+                    android:textColor="@color/txt_color_health"
+                    android:drawablePadding="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="Gender At Birth"
+                    android:textSize="@dimen/textsize_medium"
+                    android:drawableEnd="@drawable/astric" />
+            </RelativeLayout>
 
             <EditText
                 android:id="@+id/edtGender"
@@ -206,7 +224,8 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:text="Do You Smoke?"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:drawableEnd="@drawable/astric" />
 
             <EditText
                 android:id="@+id/edtSmoke"
@@ -237,7 +256,8 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:text="Are You Taking Blood Pressure Medication?"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:drawableEnd="@drawable/astric" />
 
             <EditText
                 android:id="@+id/edtBloodPressure"
@@ -268,7 +288,8 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:text="Are You Diabetic?"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:drawableEnd="@drawable/astric" />
 
             <EditText
                 android:id="@+id/edtDiabetic"
