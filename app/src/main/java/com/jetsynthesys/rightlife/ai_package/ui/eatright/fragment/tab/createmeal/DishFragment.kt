@@ -63,11 +63,13 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvCheckOutRecipe: TextView
     private lateinit var tvChange: TextView
     private lateinit var tvQuantity: TextView
-    private var selectedQuantity : String = ""
+    private var editQuantity : Double = 1.0
+    private var editUnit : String = ""
     private lateinit var spinner: Spinner
     private lateinit var ivEdit : ImageView
     private lateinit var tvMeasure :TextView
     private var measureType : String = ""
+    private var selectedDefaultValue : Double? = 0.0
     private lateinit var backButton : ImageView
     private var dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
     private var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
@@ -283,10 +285,24 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             if (recipeDetailsLocalListModel != null){
                 for (item in recipeDetailsLocalListModel!!.data) {
                     if (item.recipe.contentEquals(snapRecipeName)) {
+                        editQuantity = item.selected_serving?.value!!
+                        editUnit = item.selected_serving?.type.toString()
                         setupSpinner(item.available_serving, item.selected_serving)
                         setDishData(item, false)
-                        onMacroNutrientsList(item, 1.0, 1.0)
-                        onMicroNutrientsList(item, 1.0, 1.0)
+//                        var mealQuantity = 0.0
+//                        if (measureType == "g" || measureType == "ml") {
+//                            var newEdit = 1.0
+//                            if (editUnit == "g" || editUnit == "ml"){
+//                                newEdit = 1.0
+//                            }else{
+//                                newEdit = editQuantity
+//                            }
+//                            mealQuantity = selectedDefaultValue!! * newEdit
+//                        }else{
+//                            mealQuantity = item.selected_serving?.value!!
+//                        }
+                        onMacroNutrientsList(item, 1.0, editQuantity)
+                        onMicroNutrientsList(item,1.0, editQuantity)
                         break
                     }
                 }
@@ -303,8 +319,8 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                         if (foodDetailsResponse != null){
                             setDishData(foodDetailsResponse, true)
                             var mealQuantity = 0.0
-                            if (foodDetailsResponse.quantity != null && foodDetailsResponse.quantity > 0.0){
-                                mealQuantity = foodDetailsResponse.quantity
+                            if (selectedDefaultValue != null && selectedDefaultValue!! > 0.0){
+                                mealQuantity = selectedDefaultValue!!
                             }else{
                                 mealQuantity = 1.0
                             }
@@ -316,12 +332,23 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                                     if (item.recipe.contentEquals(snapRecipeName)) {
                                         setDishData(item, true)
                                         var mealQuantity = 0.0
-                                        if (item.quantity != null && item.quantity > 0.0){
-                                            mealQuantity = item.quantity
+                                        if (selectedDefaultValue != null && selectedDefaultValue!! > 0.0){
+                                            mealQuantity = selectedDefaultValue!!
                                         }else{
                                             mealQuantity = 1.0
                                         }
-                                        onMacroNutrientsList(item, mealQuantity, targetValue)
+//                                        if (measureType == "g" || measureType == "ml") {
+//                                            var newEdit = 1.0
+//                                            if (editUnit == "g" || editUnit == "ml"){
+//                                                newEdit = 1.0
+//                                            }else{
+//                                                newEdit = editQuantity
+//                                            }
+//                                            mealQuantity = selectedDefaultValue!! * newEdit
+//                                        }else{
+//                                            mealQuantity = item.selected_serving?.value!!
+//                                        }
+                                        onMacroNutrientsList(item,mealQuantity, targetValue)
                                         onMicroNutrientsList(item, mealQuantity, targetValue)
                                         break
                                     }
@@ -348,8 +375,8 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                                 targetValue = 0.0
                             }
                             var ingredientQuantity = 0.0
-                            if (foodData.quantity != null && foodData.quantity > 0.0){
-                                ingredientQuantity = foodData.quantity
+                            if (selectedDefaultValue != null && selectedDefaultValue!! > 0.0){
+                                ingredientQuantity = selectedDefaultValue!!
                             }else{
                                 ingredientQuantity = 1.0
                             }
@@ -442,8 +469,8 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                                         }
                                         val index = recipeDetailsLocalListModel!!.data.indexOfFirst { it.recipe == snapRecipeName }
                                         var ingredientQuantity = 0.0
-                                        if (foodData.quantity != null && foodData.quantity > 0.0){
-                                            ingredientQuantity = foodData.quantity
+                                        if (selectedDefaultValue != null && selectedDefaultValue!! > 0.0){
+                                            ingredientQuantity = selectedDefaultValue!!
                                         }else{
                                             ingredientQuantity = 1.0
                                         }
@@ -558,47 +585,6 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             addToTheMealTV.text = "Add To The Meal"
             val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
             tvMealName.text = capitalized
-//            val servingsList = mutableListOf<Serving>()
-//            if (mealId != "null" && mealId != null){
-//                snapRecipeData.selected_serving?.let {
-//                    servingsList.add(Serving(it.type, it.value))
-//                }
-//            }else{
-//                servingsList.addAll(snapRecipeData.available_serving)
-//            }
-//            val servingLabels = servingsList.map { it.type }
-//            // Use ArrayAdapter
-//            val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, servingLabels)
-//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//            spinner.adapter = adapter
-
-//            if (snapRecipeData.standard_serving_size != null && snapRecipeData.standard_serving_size !=  ""){
-//                tvMeasure.text = snapRecipeData.standard_serving_size
-//            }else{
-//                tvMeasure.text = snapRecipeData.serving_size_for_calorific_breakdown
-//            }
-            if (!isEdit){
-//                if (snapRecipeData.quantity != null ){
-//                    quantityEdit.setText(snapRecipeData.quantity.toString())
-//                }
-//                var isSpinnerInitialized = false
-//                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-//                        if (!isSpinnerInitialized) {
-//                            isSpinnerInitialized = true
-//                            return
-//                        }
-//                        val selectedServing = servingsList[position]
-//                        val newQuantity = selectedServing.value.toString()
-//                        // ✅ Update only if different
-//                        if (quantityEdit.text.toString() != newQuantity) {
-//                            quantityEdit.setText(newQuantity)
-//                            measureType = selectedServing.type.toString()
-//                        }
-//                    }
-//                    override fun onNothingSelected(parent: AdapterView<*>) {}
-//                }
-            }
             var imageUrl : String? = ""
             imageUrl = if (snapRecipeData.photo_url.contains("drive.google.com")) {
                 getDriveImageUrl(snapRecipeData.photo_url)
@@ -630,12 +616,14 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         val safeIndex = if (defaultIndex >= 0) defaultIndex else 0
         spinner.setSelection(safeIndex)
         val defaultSelectedServing = servingsList[safeIndex]
+
+        measureType = defaultSelectedServing.type.toString()
+        selectedDefaultValue = defaultSelectedServing.value
         if (default != null && default.value != null){
             quantityEdit.setText(default.value.toString())
         }else{
             quantityEdit.setText(defaultSelectedServing.value.toString())
         }
-        measureType = defaultSelectedServing.type.toString()
         // Listener
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -647,8 +635,9 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                 userSelectedServing = selectedServing  // ✅ track user choice
                 val newQuantity = selectedServing.value.toString()
                 if (quantityEdit.text.toString() != newQuantity) {
-                    quantityEdit.setText(newQuantity)
                     measureType = selectedServing.type.toString()
+                    selectedDefaultValue = selectedServing.value
+                    quantityEdit.setText(newQuantity)
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -682,103 +671,103 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
     private fun onMicroNutrientsList(mealDetails: IngredientRecipeDetails, defaultValue: Double, targetValue: Double) {
 
 //        val cholesterol = if (mealDetails.cholesterol != null){
-//            calculateValue( mealDetails.cholesterol, defaultValue, targetValue).toInt().toString()
+//            calculateValue( mealDetails.cholesterol, defaultValue, targetValue).toString()
 //        }else{
 //            "0.0"
 //        }
 
         val vitamin_A = if (mealDetails.vit_a_mcg != null){
-            calculateValue( mealDetails.vit_a_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_a_mcg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val vitamin_C = if (mealDetails.vit_c_mg != null){
-            calculateValue( mealDetails.vit_c_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_c_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val vitamin_k = if (mealDetails.vit_k_mcg != null){
-            calculateValue( mealDetails.vit_k_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_k_mcg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val vitaminD = if (mealDetails.vit_d_mcg != null){
-            calculateValue( mealDetails.vit_d_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_d_mcg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val folate = if (mealDetails.folate_b9_mcg != null){
-            calculateValue( mealDetails.folate_b9_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.folate_b9_mcg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val iron_mg = if (mealDetails.iron_mg != null){
-            calculateValue( mealDetails.iron_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.iron_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val calcium = if (mealDetails.calcium_mg != null){
-            calculateValue( mealDetails.calcium_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.calcium_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val magnesium = if (mealDetails.magnesium_mg != null){
-            calculateValue( mealDetails.magnesium_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.magnesium_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val potassium_mg = if (mealDetails.potassium_mg != null){
-            calculateValue( mealDetails.potassium_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.potassium_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
 //        val fiber_mg = if (mealDetails.fiber != null){
-//            calculateValue( mealDetails.fiber, defaultValue, targetValue).toInt().toString()
+//            calculateValue( mealDetails.fiber, defaultValue, targetValue).toString()
 //        }else{
 //            "0"
 //        }
 
         val zinc = if (mealDetails.zinc_mg != null){
-            calculateValue( mealDetails.zinc_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.zinc_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val sodium = if (mealDetails.sodium_mg != null){
-            calculateValue( mealDetails.sodium_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.sodium_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
 //        val sugar_mg = if (mealDetails.sugar != null){
-//            calculateValue( mealDetails.sugar, defaultValue, targetValue).toInt().toString()
+//            calculateValue( mealDetails.sugar, defaultValue, targetValue).toString()
 //        }else{
 //            "0.0"
 //        }
 
         val vitB6 = if (mealDetails.vit_b6_mg != null){
-            calculateValue( mealDetails.vit_b6_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_b6_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val vitB12 = if (mealDetails.vit_b12_mcg != null){
-            calculateValue( mealDetails.vit_b12_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_b12_mcg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }
 
         val phosphorus = if (mealDetails.phosphorus_mg != null){
-            calculateValue( mealDetails.phosphorus_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.phosphorus_mg, defaultValue, targetValue).toString()
         }else{
             "0.0"
         }

@@ -42,8 +42,8 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
             value = 1.0
         }
         holder.calValue.text = item.calories_kcal?.times(value)?.toInt().toString()
-        holder.subtractionValue.text = item.carbs_g?.times(value)?.toInt().toString()
-        holder.baguetteValue.text = item.protein_g?.times(value)?.toInt().toString()
+        holder.subtractionValue.text = item.protein_g?.times(value)?.toInt().toString()
+        holder.baguetteValue.text = item.carbs_g?.times(value)?.toInt().toString()
         holder.dewpointValue.text = item.fat_g?.times(value)?.toInt().toString()
         val imageUrl = getDriveImageUrl(item.photo_url)
         Glide.with(context)
