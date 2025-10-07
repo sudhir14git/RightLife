@@ -700,22 +700,22 @@ class HomeExploreFragment : BaseFragment() {
         }
         if (MoveRSubModuleResponse?.data?.size!! > 1) {
             with(binding) {
-                tvMoveRightCategory2.text = MoveRSubModuleResponse?.data?.get(1)?.name
+                tvMoveRightCategory3.text = MoveRSubModuleResponse?.data?.get(1)?.name
                 Glide.with(requireActivity())
                     .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(1)?.imageUrl)
                     .placeholder(R.drawable.rl_placeholder)
                     .error(R.drawable.rl_placeholder)
-                    .into(imageMoveRightCategory2)
+                    .into(imageMoveRightCategory3)
             }
         }
         if (MoveRSubModuleResponse?.data?.size!! > 2) {
             with(binding) {
-                tvMoveRightCategory3.text = MoveRSubModuleResponse?.data?.get(2)?.name
+                tvMoveRightCategory2.text = MoveRSubModuleResponse?.data?.get(2)?.name
                 Glide.with(requireActivity())
                     .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(2)?.imageUrl)
                     .placeholder(R.drawable.rl_placeholder)
                     .error(R.drawable.rl_placeholder)
-                    .into(imageMoveRightCategory3)
+                    .into(imageMoveRightCategory2)
             }
         }
     }

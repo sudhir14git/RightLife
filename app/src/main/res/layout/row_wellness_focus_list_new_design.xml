@@ -19,7 +19,7 @@
         android:layout_height="100dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:src="@mipmap/balance_motivation"/>
+        android:src="@drawable/eatrightbanner"/>
 
     <TextView
         android:id="@+id/tv_row_wellness_focus"

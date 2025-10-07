@@ -109,10 +109,11 @@ class BreathworkPracticeActivity : BaseActivity() {
         // Start the preparation countdown
         startPreparationCountdown()
         setBreathingTypeColors()
+        setBreathingTexts(breathingData?.title ?: "Custom")
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        //super.onBackPressed()
         showDeleteBottomSheet()
     }
 
@@ -340,12 +341,13 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.rlPracticeComplete.visibility = View.VISIBLE
         binding.rlBreathingPracticeMain.visibility = View.GONE
         binding.btnExit.setOnClickListener {
-            if (isHapticFeedBack)
+            showCompletedBottomSheet()
+        /*    if (isHapticFeedBack)
                 showCompletedBottomSheet()
             else {
                 callPostMindFullDataAPI()
                 finish()
-            }
+            }*/
         }
         binding.btnRepeat.setOnClickListener {
             // Reset for a new session
@@ -356,7 +358,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startBreathIn() {
-        binding.breathingPhase.text = "Inhale"
+        binding.breathingPhase.text = breathInText
         playSoundCue(BreathingPhase.INHALE) // Play inhale sound
         animateCircle(1f, 1.5f, inhaleTime)
         startCountdown(inhaleTime) {
@@ -365,14 +367,14 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startHold() {
-        binding.breathingPhase.text = "Hold"
+        binding.breathingPhase.text = holdText
         playSoundCue(BreathingPhase.HOLD) // Play hold sound
         animateCircle(1.5f, 1.5f, holdTime)
         startCountdown(holdTime) { startBreathOut() }
     }
 
     private fun startBreathOut() {
-        binding.breathingPhase.text = "Exhale"
+        binding.breathingPhase.text = breathOutText
         playSoundCue(BreathingPhase.EXHALE) // Play exhale sound
         animateCircle(1.5f, 1f, exhaleTime)
         startCountdown(exhaleTime) {
@@ -595,6 +597,13 @@ class BreathworkPracticeActivity : BaseActivity() {
             "Custom" -> R.color.custom_breathing_card_color
             else -> R.color.white
         }
+        val colorResourceText = when (breathingType) {
+            "Box Breathing" -> R.color.box_breathing_card_color_text
+            "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color_text
+            "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color_text
+            "Custom" -> R.color.custom_breathing_card_color_text
+            else -> R.color.alternate_breathing_card_color_text
+        }
 
         // Get the actual color value
         val mainColor = resources.getColor(colorResource, null)
@@ -606,6 +615,9 @@ class BreathworkPracticeActivity : BaseActivity() {
         // Apply the colors to the views
         binding.circleViewbase.backgroundTintList = ColorStateList.valueOf(baseColor)
         binding.circleView.backgroundTintList = ColorStateList.valueOf(mainColor)
+
+        binding.btnRepeat.backgroundTintList = ColorStateList.valueOf(mainColor)
+        binding.btnRepeat.setTextColor(resources.getColor(colorResourceText, null))
     }
 
     // Helper function to adjust color alpha (transparency)
