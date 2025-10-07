@@ -14,7 +14,7 @@
             android:id="@+id/card_view_consistency"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:elevation="16dp"
             app:cardCornerRadius="25dp">
 
@@ -43,7 +43,7 @@
 
                     <ImageView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="180dp"
                         android:layout_centerHorizontal="true"
                         android:src="@drawable/subtraction_2" />
 
@@ -55,15 +55,15 @@
                         android:layout_marginEnd="36dp"
                         android:orientation="horizontal"
                         android:background="@drawable/bg_gray_border"
-                        android:layout_marginTop="50dp">
+                        android:layout_marginTop="41dp">
 
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/logo_rightlife"
-                            android:layout_marginStart="24dp"
-                            android:layout_marginTop="24dp"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="16dp"
                             android:layout_marginEnd="16dp" />
 
                         <TextView
@@ -83,8 +83,8 @@
                         android:layout_below="@id/ll_consistency"
                         android:layout_marginStart="55dp"
                         android:layout_marginEnd="55dp"
-                        android:layout_marginTop="32dp"
-                        android:fontFamily="@font/dmsans_bold"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/merriweather_bold"
                         android:gravity="center"
                         android:text="Consistency Is The Key To Health"
                         android:textColor="@color/txt_color_header"
@@ -108,8 +108,9 @@
                         android:layout_height="wrap_content"
                         android:text="Turn On Notifications For"
                         android:gravity="center"
-                        android:fontFamily="@font/dmsans_bold"
+                        android:fontFamily="@font/merriweather_bold"
                         android:textSize="18sp"
+                        android:textColor="@color/txt_color_header"
                         android:padding="8dp" />
 
                     <RelativeLayout
@@ -133,7 +134,7 @@
                             android:fontFamily="@font/dmsans_bold"
                             android:text="Daily Reminders"
                             android:textColor="@color/txt_color_header"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/textsize_large" />
 
                         <TextView
                             android:id="@+id/tv_personalise_insights_desc"
@@ -142,12 +143,10 @@
                             android:layout_toEndOf="@id/image_correct1"
                             android:layout_below="@+id/tv_personalise_insights"
                             android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
                             android:fontFamily="@font/dmsans_regular"
                             android:text="Stay on track with affirmations, workouts, workout analysis and more."
                             android:textColor="@color/txt_color_header"
-                            android:textSize="18sp" />
+                            android:textSize="@dimen/textsize_medium" />
 
                     </RelativeLayout>
 
@@ -172,7 +171,7 @@
                             android:fontFamily="@font/dmsans_bold"
                             android:text="Personalised Tips"
                             android:textColor="@color/txt_color_header"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/textsize_large" />
 
                         <TextView
                             android:id="@+id/tv_better_results_desc"
@@ -181,12 +180,10 @@
                             android:layout_toEndOf="@id/image_correct2"
                             android:layout_below="@+id/tv_better_results"
                             android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
                             android:fontFamily="@font/dmsans_regular"
                             android:text="Get curated content tailored to your goals."
                             android:textColor="@color/txt_color_header"
-                            android:textSize="18sp" />
+                            android:textSize="@dimen/textsize_medium" />
 
                     </RelativeLayout>
 
@@ -211,7 +208,7 @@
                             android:fontFamily="@font/dmsans_bold"
                             android:text="Exclusive Updates"
                             android:textColor="@color/txt_color_header"
-                            android:textSize="20sp" />
+                            android:textSize="@dimen/textsize_large" />
 
                         <TextView
                             android:id="@+id/tv_end_to_end_desc"
@@ -225,7 +222,7 @@
                             android:fontFamily="@font/dmsans_regular"
                             android:text="Be the first to know about new features and programs."
                             android:textColor="@color/txt_color_header"
-                            android:textSize="18sp" />
+                            android:textSize="@dimen/textsize_medium"/>
 
                     </RelativeLayout>
 
@@ -274,7 +271,7 @@
     <Button
         android:id="@+id/btn_enable_notification"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:layout_marginHorizontal="36dp"
         android:layout_marginBottom="24dp"

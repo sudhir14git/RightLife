@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.context_screens
 import android.content.Intent
 import android.os.Bundle
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityAffirmationContextScreenBinding
@@ -19,6 +20,7 @@ class AffirmationContextScreenActivity : BaseActivity() {
         Glide.with(this)
             .asGif()
             .load(R.drawable.affirmation_context_screen) // or URL: "https://..."
+            .transform(RoundedCorners(32)) // radius in px
             .into(binding.gifImageView)
 
         binding.iconBack.setOnClickListener {

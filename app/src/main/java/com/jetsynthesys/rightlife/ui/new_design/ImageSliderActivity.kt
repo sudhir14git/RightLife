@@ -78,14 +78,14 @@ class ImageSliderActivity : BaseActivity() {
     )
 
     private val headers = listOf(
-        "Four Foundations, One Powerful App",
+        "Build a Healthier You, \nOne Habit at a Time",
         "Meet Your Smart Health Companion",
         "Wellness That Fits Your Life",
         "Backed by Science, Not Fads"
     )
 
     private val descriptions = listOf(
-        "The only app you need to optimize your mind, body, nutrition, and sleep, all from your smartphone.",
+        "Four foundations: mind, body, nutrition, and rest working together for lifelong wellbeing.",
         "AI that listens to your body, predicts risks, and helps you build better habits.",
         "From stretching at sunrise to meditating at midnight, RightLife adapts to you and guides your progress.",
         "No influencer fluff. Just personalized content backed by evidence you can trust."
