@@ -20,8 +20,6 @@ class RecipeSearchAdapter(
     val onSearchDishItem: (IngredientRecipeList, Int, Boolean) -> Unit
 ) : RecyclerView.Adapter<RecipeSearchAdapter.ViewHolder>() {
 
-    private var selectedItem = -1
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recipe_card, parent, false)
         return ViewHolder(view)
@@ -31,7 +29,12 @@ class RecipeSearchAdapter(
         val item = dataLists[position]
 
         holder.dishName.text = item.recipe
-        val imageUrl = getDriveImageUrl(item.photo_url)
+        var imageUrl : String? = ""
+        imageUrl = if (item.photo_url.contains("drive.google.com")) {
+            getDriveImageUrl(item.photo_url)
+        }else{
+            item.photo_url
+        }
         Glide.with(context)
             .load(imageUrl)
             .placeholder(R.drawable.ic_view_meal_place)
@@ -45,7 +48,7 @@ class RecipeSearchAdapter(
         holder.statusDot.visibility = View.VISIBLE
         when (type) {
             "veg", "vegan" -> holder.statusDot.setImageResource(R.drawable.green_circle)
-            "non-veg", "nonveg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
+            "non-veg", "nonveg", "non-vegetarian" -> holder.statusDot.setImageResource(R.drawable.red_circle)
             "egg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
             else -> holder.statusDot.visibility = View.INVISIBLE
         }

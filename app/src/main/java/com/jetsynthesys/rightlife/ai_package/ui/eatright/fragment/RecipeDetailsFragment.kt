@@ -232,8 +232,14 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
             return
         }
         // Extract the FILE_ID from the URL
-        val fileId = imageUrl.substringAfter("/d/").substringBefore("/view")
-        val directImageUrl = "https://drive.google.com/uc?export=download&id=$fileId"
+        var imageUrls : String? = ""
+        imageUrls = if (imageUrl.contains("drive.google.com")) {
+            getDriveImageUrl(imageUrl)
+        }else{
+            imageUrl
+        }
+       // val fileId = imageUrl.substringAfter("/d/").substringBefore("/view")
+        val directImageUrl = imageUrls//"https://drive.google.com/uc?export=download&id=$fileId"
         // First, try loading directly with Glide
         Glide.with(imgFood.context)
             .load(directImageUrl)
@@ -248,7 +254,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     .followRedirects(true) // Handle redirects
                     .build()
                 val request = Request.Builder()
-                    .url(directImageUrl)
+                    .url(directImageUrl!!)
                     .build()
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {

@@ -41,8 +41,8 @@ class IngredientListAdapter(private val context: Context, private var dataLists:
 //            holder.mealTime.text = mealTime
 //        }
         holder.calValue.text = item.calories_kcal?.toInt().toString()
-        holder.subtractionValue.text = item.carbs_g?.toInt().toString()
-        holder.baguetteValue.text = item.protein_g?.toInt().toString()
+        holder.subtractionValue.text = item.protein_g?.toInt().toString()
+        holder.baguetteValue.text = item.carbs_g?.toInt().toString()
         holder.dewpointValue.text = item.fat_g?.toInt().toString()
         var imageUrl : String? = ""
         if (item.photo_url != null){
