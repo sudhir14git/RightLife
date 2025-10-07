@@ -98,6 +98,7 @@
                         android:gravity="center_vertical"
                         android:background="@drawable/roundedcornerborderred"
                         android:layout_height="wrap_content">
+
                         <LinearLayout
                             android:id="@+id/countdownLayout"
                             android:layout_width="wrap_content"
@@ -180,6 +181,38 @@
                             </LinearLayout>
 
                         </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llFreeTrailExpired"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="20dp"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="22dp"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/rounded_corner_border_red"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Free Trial Expired"
+                            android:textSize="10sp"
+                            android:textColor="@color/menuselected"
+                            android:fontFamily="@font/dmsans_bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Upgrade To Continue"
+                            android:gravity="center_horizontal"
+                            android:textSize="8sp"
+                            android:textColor="@color/txt_color_header"
+                            android:fontFamily="@font/dmsans_regular" />
 
                     </LinearLayout>
 

@@ -12,6 +12,7 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -20,6 +21,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
@@ -29,6 +31,9 @@ import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonAPICall.updateViewCount
+import com.jetsynthesys.rightlife.ui.Wellness.SeriesListAdapter
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Episode
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.SeriesResponse
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -68,6 +73,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
             if (episodeId != null) {
                 getSeriesDetails(seriesId, episodeId)
             }
+            getSeriesWithEpisodes(seriesId)
         }
 
         val viewCountRequest = ViewCountRequest()
@@ -78,6 +84,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
         binding.icBackDialog.setOnClickListener {
             finish()
         }
+
     }
 
     // get single content details
@@ -546,14 +553,14 @@ class NewSeriesDetailsActivity : BaseActivity() {
         if (::mediaPlayer.isInitialized) {
             callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
             mediaPlayer.release()
-        } else{
+        } else {
             callTrackAPI((lastPosition).toDouble())
         }
         handler.removeCallbacks(updateProgress)
         Log.d("contentDetails", "onDestroyCalled")
     }
 
-    private fun callTrackAPI(watchDuration: Double){
+    private fun callTrackAPI(watchDuration: Double) {
         val contentData = ContentResponseObj.data
         CommonAPICall.postSeriesContentPlayedProgress(
             this,
@@ -617,6 +624,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 youTubePlayer.loadVideo(videoId, 0f)
                 Log.d("YouTube", "Video loaded: $videoId")
             }
+
             override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
                 // This is called every second during playback
                 lastPosition = second
@@ -686,5 +694,36 @@ class NewSeriesDetailsActivity : BaseActivity() {
         } else if (binding != null && binding.tvAuthorName != null) {
             binding.tvAuthorName.text = "" // or set some default value
         }
+    }
+
+    private fun getSeriesWithEpisodes(seriesId: String) {
+        val call =
+            apiService.getSeriesWithEpisodes(sharedPreferenceManager.accessToken, seriesId, true)
+        call.enqueue(object : Callback<JsonElement?> {
+            override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                Utils.dismissLoader(this@NewSeriesDetailsActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+                    val seriesResponseModel =
+                        gson.fromJson(jsonResponse, SeriesResponse::class.java)
+                    setupEpisodeListData(seriesResponseModel.data.episodes)
+                } else {
+                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                Utils.dismissLoader(this@NewSeriesDetailsActivity)
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+    private fun setupEpisodeListData(contentList: ArrayList<Episode>) {
+        val adapter = SeriesListAdapter(this, contentList)
+        val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.rvAllEpisodes.setLayoutManager(horizontalLayoutManager)
+        binding.rvAllEpisodes.setAdapter(adapter)
     }
 }

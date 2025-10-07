@@ -11,10 +11,17 @@ import android.text.Html
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.DialogChecklistQuestionsBinding
 import com.jetsynthesys.rightlife.databinding.DialogJournalCommonBinding
 import com.jetsynthesys.rightlife.databinding.DialogPlaylistCreatedBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
+import com.jetsynthesys.rightlife.databinding.DisclaimerCommonDialogBinding
 
 object DialogUtils {
 
@@ -135,5 +142,57 @@ object DialogUtils {
 
         dialog.show()
     }
+
+    fun showCommonBottomSheetDialog(
+        context: Context,
+        description: String,
+        header: String = "Disclaimer",
+        btnText: String = "Okay",
+        onOkayClick: (() -> Unit)? = null,
+        onCloseClick: (() -> Unit)? = null
+    ) {
+        val bottomSheetDialog = BottomSheetDialog(context)
+        // Inflate the BottomSheet layout
+        val binding = DisclaimerCommonDialogBinding.inflate(LayoutInflater.from(context))
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(context, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
+
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        binding.tvTitle.text = header
+        binding.tvDescription.text = description
+        binding.btnOkay.text = btnText
+
+        binding.btnOkay.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            onOkayClick?.invoke()
+        }
+
+        binding.btnClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            onCloseClick?.invoke()
+        }
+
+        bottomSheetDialog.show()
+    }
+
 
 }

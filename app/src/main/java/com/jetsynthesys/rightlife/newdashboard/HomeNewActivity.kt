@@ -88,7 +88,6 @@ import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
-import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
@@ -402,7 +401,7 @@ class HomeNewActivity : BaseActivity() {
             includedhomebottomsheet.llBreathwork.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
                 //if (checkTrailEndedAndShowDialog()) {
-                    ActivityUtils.startBreathWorkActivity(this@HomeNewActivity)
+                ActivityUtils.startBreathWorkActivity(this@HomeNewActivity)
                 //}
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
@@ -497,7 +496,6 @@ class HomeNewActivity : BaseActivity() {
 
         // Handling Subscribe to RightLife
         binding.trialExpiredLayout.btnSubscription.setOnClickListener {
-
             startActivity(
                 Intent(
                     this,
@@ -506,7 +504,18 @@ class HomeNewActivity : BaseActivity() {
                     putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
                 })
         }
-          binding.tvStriketroughPrice.paintFlags = binding.tvStriketroughPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+        binding.llFreeTrailExpired.setOnClickListener {
+            startActivity(
+                Intent(
+                    this,
+                    SubscriptionPlanListActivity::class.java
+                ).apply {
+                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                })
+        }
+        binding.tvStriketroughPrice.paintFlags =
+            binding.tvStriketroughPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
     }
 
     override fun onResume() {
@@ -573,23 +582,23 @@ class HomeNewActivity : BaseActivity() {
                     tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
 
                     val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
-            /*        if (countDown < 7) {
-                        binding.tvCountDown.text = "${countDown + 1}/7"
-                        binding.llCountDown.visibility = View.VISIBLE
-                        binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                        isTrialExpired = false
-                        isCountDownVisible = true
-                    } else {
-                        binding.llCountDown.visibility = View.GONE
-                        isCountDownVisible = false
-                        if (!DashboardChecklistManager.paymentStatus) {
-                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
-                            isTrialExpired = true
-                        } else {
-                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                            isTrialExpired = false
-                        }
-                    }*/
+                    /*        if (countDown < 7) {
+                                binding.tvCountDown.text = "${countDown + 1}/7"
+                                binding.llCountDown.visibility = View.VISIBLE
+                                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                                isTrialExpired = false
+                                isCountDownVisible = true
+                            } else {
+                                binding.llCountDown.visibility = View.GONE
+                                isCountDownVisible = false
+                                if (!DashboardChecklistManager.paymentStatus) {
+                                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                                    isTrialExpired = true
+                                } else {
+                                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                                    isTrialExpired = false
+                                }
+                            }*/
 
                     if (ResponseObj.isReportGenerated && !ResponseObj.reportView) {
                         binding.rightLifeReportCard.visibility = View.VISIBLE
@@ -617,8 +626,8 @@ class HomeNewActivity : BaseActivity() {
                     handleUserSubscriptionStatus(ResponseObj.user_sub_status)
                     if (ResponseObj.freeServiceDate.isNotEmpty()) {
                         binding.llCountDown.visibility = View.VISIBLE
-                        showSevenDayCountdown(ResponseObj.freeServiceDate,binding.tvDays)
-                    }else{
+                        showSevenDayCountdown(ResponseObj.freeServiceDate, binding.tvDays)
+                    } else {
                         binding.tvDays.text = ""
                         binding.llCountDown.visibility = View.GONE
                     }
@@ -627,13 +636,13 @@ class HomeNewActivity : BaseActivity() {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
 
-              /*  if (!DashboardChecklistManager.paymentStatus) {
-                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
-                    isTrialExpired = true
-                } else {
-                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                    isTrialExpired = false
-                }*/
+                /*  if (!DashboardChecklistManager.paymentStatus) {
+                      binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                      isTrialExpired = true
+                  } else {
+                      binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                      isTrialExpired = false
+                  }*/
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
@@ -762,10 +771,10 @@ class HomeNewActivity : BaseActivity() {
             if (!DashboardChecklistManager.checklistStatus) {
                 DialogUtils.showCheckListQuestionCommonDialog(this)
                 false
-            } else if(sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
                 showTrailEndedBottomSheet()
                 false // Return false if condition is true and dialog is shown
-            }else{
+            } else {
                 true
             }
         }
@@ -824,9 +833,11 @@ class HomeNewActivity : BaseActivity() {
     fun showSubsribeLayout(show: Boolean) {
         if (!DashboardChecklistManager.paymentStatus) {
             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+            binding.llFreeTrailExpired.visibility = View.VISIBLE
             isTrialExpired = true
         } else {
             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+            binding.llFreeTrailExpired.visibility = View.GONE
             isTrialExpired = false
         }
     }
@@ -2445,25 +2456,37 @@ class HomeNewActivity : BaseActivity() {
                 // maybe trigger free trial flow here
                 binding.flFreeTrial.visibility = View.VISIBLE
                 binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                binding.llFreeTrailExpired.visibility = View.GONE
             }
+
             1 -> {
                 //Toast.makeText(this, "You are subscribed. Enjoy premium features!", Toast.LENGTH_LONG).show()
                 binding.flFreeTrial.visibility = View.GONE
                 binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                binding.llFreeTrailExpired.visibility = View.GONE
             }
+
             2 -> {
-             //   Toast.makeText(this, "Your free trial has expired. Subscribe to continue.", Toast.LENGTH_LONG).show()
+                //   Toast.makeText(this, "Your free trial has expired. Subscribe to continue.", Toast.LENGTH_LONG).show()
                 // navigate to subscription screen if needed
                 binding.flFreeTrial.visibility = View.GONE
                 binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                binding.llFreeTrailExpired.visibility = View.VISIBLE
             }
+
             3 -> {
-               // Toast.makeText(this, "Your subscription has ended. Renew to regain access.", Toast.LENGTH_LONG).show()
+                // Toast.makeText(this, "Your subscription has ended. Renew to regain access.", Toast.LENGTH_LONG).show()
                 binding.flFreeTrial.visibility = View.GONE
                 binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                binding.llFreeTrailExpired.visibility = View.VISIBLE
             }
+
             else -> {
-                Toast.makeText(this, "Unknown subscription status. Please contact support.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Unknown subscription status. Please contact support.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }

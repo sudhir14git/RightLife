@@ -46,6 +46,8 @@ class SavedItemsAdapter(
                     R.drawable.video_jump_back_in
                 else if ("AUDIO".equals(item.contentType, ignoreCase = true))
                     R.drawable.audio_jump_back_in
+                else if ("TEXT".equals(item.contentType, ignoreCase = true))
+                    R.drawable.ic_text_content
                 else
                     R.drawable.series_jump_back_in
             )

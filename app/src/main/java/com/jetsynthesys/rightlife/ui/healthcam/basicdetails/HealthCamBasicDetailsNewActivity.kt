@@ -17,7 +17,6 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -37,6 +36,7 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Option
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamSubmitResponse
@@ -44,7 +44,6 @@ import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
 import com.jetsynthesys.rightlife.ui.sdkpackage.HealthCamRecorderActivity
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.Dispatchers
@@ -80,6 +79,14 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
         binding.iconBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+
+        binding.infoIcon.setOnClickListener {
+            DialogUtils.showCommonBottomSheetDialog(
+                this,
+                header = "Gender At Birth",
+                description = "We support all forms of gender expression. However, we need this information to calculate the most actionable body metrics for you."
+            )
         }
 
         binding.edtAge.setOnClickListener {
@@ -143,22 +150,12 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             val bpMedication = binding.edtBloodPressure.text.toString()
             val diabetic = binding.edtDiabetic.text.toString()
 
-            if (name.isEmpty())
-                showCustomToast("Name is Required")
-            else if (height.isEmpty())
-                showCustomToast("Please select Height")
-            else if (weight.isEmpty())
-                showCustomToast("Please select Weight")
-            else if (age.isEmpty())
-                showCustomToast("Please select Age")
-            else if (gender.isEmpty())
-                showCustomToast("Please select Gender")
-            else if (smoke.isEmpty())
-                showCustomToast("Please select Smoking Habit")
-            else if (bpMedication.isEmpty())
-                showCustomToast("Please select Blood Pressure Medication")
-            else if (diabetic.isEmpty())
-                showCustomToast("Please select Diabetic Level")
+            if (name.isEmpty() || height.isEmpty() || weight.isEmpty() || age.isEmpty()
+                || gender.isEmpty() || smoke.isEmpty() || bpMedication.isEmpty() || diabetic.isEmpty()
+            )
+                showCustomToast("Please fill all required fields before proceeding.")
+            else if (age.split(" ")[0].toInt() !in 13..80)
+                showCustomToast("Face Scan is available only for users aged 13–80.")
             else {
                 val answerFaceScans = ArrayList<AnswerFaceScan>()
 
@@ -234,14 +231,14 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     CommonAPICall.convertFeetInchToCmWithIndex(height).cmIndex.toString()
 
 
-          /*      val weightInKg =
-                    if (weightWithUnit[1].equals(
-                            "kgs",
-                            ignoreCase = true
-                        )
-                    ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
-                        weightWithUnit[0]
-                    )*/
+                /*      val weightInKg =
+                          if (weightWithUnit[1].equals(
+                                  "kgs",
+                                  ignoreCase = true
+                              )
+                          ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
+                              weightWithUnit[0]
+                          )*/
 
                 val unit = listOfNotNull(
                     weightWithUnit.getOrNull(1),
@@ -443,12 +440,14 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     startY = event.y
                     isScrolling = false
                 }
+
                 MotionEvent.ACTION_MOVE -> {
                     // If finger moved enough vertically, mark as scrolling
                     if (Math.abs(event.y - startY) > picker.height / 20) {
                         isScrolling = true
                     }
                 }
+
                 MotionEvent.ACTION_UP -> {
                     if (!isScrolling) {
                         val height = picker.height
@@ -522,7 +521,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
         dialogBinding.rulerView.adapter = adapterWeight
 
-        if (selectedLabel == " kg"){
+        if (selectedLabel == " kg") {
             dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.kgOption.setTextColor(Color.WHITE)
 
@@ -531,7 +530,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             setKgsValue()
 
             dialogBinding.selectedNumberText.text = selectedWeight
-        }else{
+        } else {
             dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
             dialogBinding.lbsOption.setTextColor(Color.WHITE)
 
@@ -669,14 +668,14 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 " cms"
             else
                 " feet"
-            if (selectedLabel == " feet"){
+            if (selectedLabel == " feet") {
                 dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
                 dialogBinding.feetOption.setTextColor(Color.WHITE)
 
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
                 dialogBinding.cmsOption.setTextColor(Color.BLACK)
                 setFtIn()
-            }else{
+            } else {
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
                 dialogBinding.cmsOption.setTextColor(Color.WHITE)
 
