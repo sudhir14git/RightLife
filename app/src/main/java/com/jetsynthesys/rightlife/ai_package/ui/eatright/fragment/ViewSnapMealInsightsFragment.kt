@@ -199,87 +199,87 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
     private fun onMicroNutrientsList(mealDetails: NutritionSummary?, value: Int) {
 
         val cholesterol = if (mealDetails?.cholesterol_mg != null){
-            mealDetails.cholesterol_mg.times(value)?.toInt().toString()
+            mealDetails.cholesterol_mg.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val vitamin_A = if (mealDetails?.vit_a_mcg != null){
-            mealDetails.vit_a_mcg.times(value)?.toInt().toString()
+            mealDetails.vit_a_mcg.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val vitamin_C = if (mealDetails?.vit_c_mg != null){
-            mealDetails.vit_c_mg.times(value)?.toInt().toString()
+            mealDetails.vit_c_mg.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val vitamin_k = if (mealDetails?.vit_k_mcg != null){
-            mealDetails.vit_k_mcg.times(value)?.toInt().toString()
+            mealDetails.vit_k_mcg.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val vitaminD = if (mealDetails?.vit_d_mcg != null){
-            mealDetails.vit_d_mcg.toInt().toString()
+            mealDetails.vit_d_mcg.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val folate = if (mealDetails?.folate_b9_mcg != null){
-            mealDetails.folate_b9_mcg.toInt().toString()
+            mealDetails.folate_b9_mcg.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val iron_mg = if (mealDetails?.iron_mg != null){
-            mealDetails.iron_mg.toInt().toString()
+            mealDetails.iron_mg.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val calcium = if (mealDetails?.calcium_mg != null){
-            mealDetails.calcium_mg.toInt().toString()
+            mealDetails.calcium_mg.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val magnesium = if (mealDetails?.magnesium_mg != null){
-            mealDetails.magnesium_mg.times(value)?.toInt().toString()
+            mealDetails.magnesium_mg.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val potassium_mg = if (mealDetails?.potassium_mg != null){
-            mealDetails.potassium_mg.times(value)?.toInt().toString()
+            mealDetails.potassium_mg.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val fiber_mg = if (mealDetails?.fiber_g != null){
-            mealDetails.fiber_g.times(value)?.toInt().toString()
+            mealDetails.fiber_g.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val zinc = if (mealDetails?.zinc_mg != null){
-            mealDetails.zinc_mg.times(value)?.toInt().toString()
+            mealDetails.zinc_mg.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val sodium = if (mealDetails?.sodium_mg != null){
-            mealDetails.sodium_mg.times(value)?.toInt().toString()
+            mealDetails.sodium_mg.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val sugar_mg = if (mealDetails?.sugars_g != null){
-            mealDetails.sugars_g.times(value)?.toInt().toString()
+            mealDetails.sugars_g.times(value)?.toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val mealLogs = listOf(
@@ -302,7 +302,7 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
         //  valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
         for (item in mealLogs){
-            if (item.nutrientsValue != "0"){
+            if (item.nutrientsValue != "0.0"){
                 valueLists.add(item)
             }
         }

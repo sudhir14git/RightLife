@@ -208,10 +208,13 @@ We also use device identifiers to improve analytics and tailor your in-app exper
     <!--<string name="know_each_other">Let’s get to know each other</string>-->
     <string name="know_each_other">Let’s get to know you.</string>
     <!--<string name="know_your_name">We’d love to know \nyour name!</string>-->
-    <string name="know_your_name">What should we call you?</string>
+    <string name="know_your_name">What should we \ncall you?</string>
     <!--<string name="error_username">Invalid user name, do not use number, special characters</string>-->
     <string name="error_username">Invalid name. Please use letters only (no numbers or symbols).</string>
     <string name="happy_to_share">Happy to have you here,</string>
+    <string name="welcome_sub_text">
+    This is your space to build\nhealthier habits.\n<i>One step at a time</i>
+</string>
     <string name="wellness_focus">What’s your wellness focus?</string>
     <string name="pick_up_goal">Pick one goal. We’ll take care of the rest.</string>
     <string name="str_think_right">ThinkRight</string>

@@ -1534,7 +1534,7 @@
                                         android:id="@+id/imageThinkRightCategory4"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight=".4"
+                                        android:layout_weight=".6"
                                         android:contentDescription="dsha"
                                         android:src="@drawable/thinkrightcoping" />
 
@@ -1542,7 +1542,7 @@
                                         android:id="@+id/tvThinkRightCategory4"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight=".6"
+                                        android:layout_weight=".4"
                                         android:fontFamily="@font/merriweather_bold"
                                         android:gravity="center"
                                         android:text="Coping"
@@ -1670,7 +1670,7 @@
                                         android:id="@+id/imageMoveRightCategory1"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight=".4"
+                                        android:layout_weight=".6"
                                         android:src="@drawable/ic_healthcam_logo" />
 
                                     <TextView
@@ -1678,7 +1678,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
-                                        android:layout_weight=".6"
+                                        android:layout_weight=".4"
                                         android:fontFamily="@font/merriweather_bold"
                                         android:gravity="center"
                                         android:text="Movement"
@@ -1704,14 +1704,14 @@
                                         android:id="@+id/imageMoveRightCategory2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight=".4"
+                                        android:layout_weight=".6"
                                         android:src="@drawable/ic_voicescan_logo" />
 
                                     <TextView
                                         android:id="@+id/tvMoveRightCategory2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight=".6"
+                                        android:layout_weight=".4"
                                         android:fontFamily="@font/merriweather_bold"
                                         android:gravity="center"
                                         android:text="Breathing"
@@ -1744,7 +1744,7 @@
                                     <ImageView
                                         android:id="@+id/imageMoveRightCategory3"
                                         android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
+                                        android:layout_height="100dp"
                                         android:src="@drawable/ic_healthaudit_logo" />
 
                                     <TextView
@@ -2156,7 +2156,7 @@
                                     <ImageView
                                         android:id="@+id/imageSleepRightCategory1"
                                         android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
+                                        android:layout_height="100dp"
                                         android:src="@drawable/sleepaid" />
 
                                     <TextView
@@ -2229,6 +2229,7 @@
                                         android:id="@+id/imageSleepRightCategory2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        android:layout_weight=".6"
                                         android:src="@drawable/sleepperformance" />
 
                                     <TextView
@@ -2238,6 +2239,7 @@
                                         android:layout_gravity="center"
                                         android:fontFamily="@font/merriweather_bold"
                                         android:gravity="center"
+                                        android:layout_weight=".4"
                                         android:text="Sleep &amp;\n Performance"
                                         android:textAlignment="center"
                                         android:textColor="#002C5F"
@@ -2261,6 +2263,7 @@
                                         android:id="@+id/imageSleepRightCategory3"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        android:layout_weight=".6"
                                         android:src="@drawable/sleepdisorder" />
 
                                     <TextView
@@ -2272,6 +2275,7 @@
                                         android:text="Sleep \nDisorders"
                                         android:textAlignment="center"
                                         android:textColor="#002C5F"
+                                        android:layout_weight=".4"
                                         android:textSize="@dimen/textsize_large" />
 
                                 </LinearLayout>

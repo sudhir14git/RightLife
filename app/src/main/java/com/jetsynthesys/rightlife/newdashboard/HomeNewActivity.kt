@@ -388,9 +388,9 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
-                if (checkTrailEndedAndShowDialog()) {
+                //if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
-                }
+                //}
             }
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)
@@ -400,9 +400,9 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llBreathwork.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
-                //if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startBreathWorkActivity(this@HomeNewActivity)
-                //}
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this@HomeNewActivity)
+                }
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)

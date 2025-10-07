@@ -75,7 +75,7 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/green_check_item"/>
+            android:src="@drawable/right_tick_data_exported"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
             android:fontFamily="@font/dmsans_bold"
             android:layout_marginVertical="12dp"
             android:textColor="@color/txt_color_header"
-            android:textSize="16sp"/>
+            android:textSize="24sp"/>
 
         <TextView
             android:layout_width="wrap_content"
