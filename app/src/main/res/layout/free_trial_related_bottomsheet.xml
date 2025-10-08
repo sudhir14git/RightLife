@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/roundedcornershape"
+    android:gravity="center">
+
+    <!-- Close Button (Top Right) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/mainImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ft_expired_today"
+            android:layout_below="@id/btnClose" />
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/close_breathwork" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+        <ImageView
+            android:id="@+id/leftImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ft_used" />
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Face Scan Used"
+            android:fontFamily="@font/dmsans_bold"
+            android:textSize="22sp"
+            android:textColor="@color/txt_color_header"
+            android:layout_toEndOf="@id/leftImage"
+            android:layout_marginHorizontal="8dp" />
+    </RelativeLayout>
+    <!-- Body -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:fontFamily="@font/dmsans_regular"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/txt_color_header"
+        android:textAlignment="center"
+        android:text="Your Annual Pro Plan ends in 14 days. Renew today to continue enjoying full access." />
+
+    <Button
+        android:id="@+id/btnOkay"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Okay"
+        android:textColor="@color/white"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:textSize="16sp"
+        android:background="@drawable/button_background_filled"
+        app:backgroundTint="@color/menuselected" />
+
+    <Button
+        android:id="@+id/btnExplorePlans"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Explore Plans"
+        android:textColor="@color/txt_color_journal_date"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:textSize="16sp"
+        android:background="@drawable/button_background_filled"
+        app:backgroundTint="@color/gray_light_bg" />
+</LinearLayout>

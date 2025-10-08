@@ -32,7 +32,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityTodaysAffirmationBinding
 import com.jetsynthesys.rightlife.databinding.LayoutDiscardBottomsheetBinding
-import com.jetsynthesys.rightlife.ui.BalloonAlignment
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.AffirmationCardPagerAdapter
@@ -42,8 +42,6 @@ import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationSelectedCategor
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationSelectedCategoryResponse
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.CreateAffirmationPlaylistRequest
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetAffirmationPlaylistResponse
-import com.jetsynthesys.rightlife.ui.showBalloon
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
@@ -85,8 +83,8 @@ class TodaysAffirmationActivity : BaseActivity() {
         startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         setupCategoryBottomSheet()
-        setupCloseBottomSheet()
-        setupDiscardBottomSheet()
+        //setupCloseBottomSheet()
+        //setupDiscardBottomSheet()
         getAffirmationPlaylist()
         getCategoryList()
 
@@ -116,14 +114,11 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.ivClose.setOnClickListener {
-            if (sharedPreferenceManager.firstTimeUserForAffirmation)
-                closeBottomSheetDialog.show()
-            else if (affirmationPlaylistRequest.isNotEmpty())
-                discardBottomSheetDialog.show()
-            else {
-                callPostMindFullDataAPI()
+            callPostMindFullDataAPI()
+            if (affirmationPlaylist.size >= 3)
+                createAffirmationPlaylist()
+            else
                 finish()
-            }
         }
 
         binding.addAffirmation.setOnClickListener {
@@ -152,12 +147,6 @@ class TodaysAffirmationActivity : BaseActivity() {
                     )
                 )
                 addCardToPlaylist()
-            }
-        }
-
-        binding.btnCreateAffirmation.setOnClickListener {
-            if (affirmationPlaylistRequest.isNotEmpty()) {
-                createAffirmationPlaylist()
             }
         }
 
@@ -277,7 +266,6 @@ class TodaysAffirmationActivity : BaseActivity() {
     }
 
 
-
     private fun addCardToPlaylist() {
         val yOff = -200
         val xOff = 10
@@ -288,68 +276,7 @@ class TodaysAffirmationActivity : BaseActivity() {
                 it
             )
         }
-        if (affirmationPlaylist.size >= 3)
-            binding.btnCreateAffirmation.isEnabled = true
 
-        if (sharedPreferenceManager.firstTimeUserForAffirmation) {
-            when (affirmationPlaylist.size) {
-                1 -> {
-                    //Toast.makeText(this, "Great choice, keep going.", Toast.LENGTH_SHORT).show()
-                    /*showBalloon(
-                        binding.addAffirmation, "Great choice, keep going.",
-                        BalloonAlignment.BOTTOM,0.5f, xOff = 10, yOff = -100
-                    )*/
-                    showBalloonWithDim(
-                        binding.addAffirmation, "Great choice, keep going.","AffirmationAddButton",
-                        BalloonAlignment.BOTTOM,0.5f, xOff = 10, yOff = -100
-                    )
-                }
-
-                2 -> {
-                    /*Toast.makeText(
-                        this,
-                        "One more and your playlist is ready to go.",
-                        Toast.LENGTH_SHORT
-                    ).show()*/
-                    showBalloon(
-                        binding.addAffirmation,
-                        "One more and your playlist is ready to go.", xOff = xOff, yOff = yOff
-                    )
-                }
-
-                3 -> {
-                    //Toast.makeText(this, "Playlist Unlocked!", Toast.LENGTH_SHORT).show()
-                    showBalloon(
-                        binding.addAffirmation,
-                        "Playlist Unlocked!",
-                        xOff = xOff,
-                        yOff = yOff
-                    )
-                }
-
-                else -> {
-                    /*Toast.makeText(
-                        this,
-                        "${affirmationPlaylist.size} Affirmation Added!",
-                        Toast.LENGTH_SHORT
-                    ).show()*/
-                    showBalloon(
-                        binding.addAffirmation,
-                        "${affirmationPlaylist.size} Affirmation Added!", xOff = xOff, yOff = yOff
-                    )
-                }
-            }
-        } else {
-            /*Toast.makeText(
-                this,
-                "${affirmationPlaylistRequest.size} Affirmation Added!",
-                Toast.LENGTH_SHORT
-            ).show()*/
-            showBalloon(
-                binding.addAffirmation,
-                "${affirmationPlaylistRequest.size} Affirmation Added!", xOff = xOff, yOff = yOff
-            )
-        }
     }
 
     private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
@@ -479,6 +406,7 @@ class TodaysAffirmationActivity : BaseActivity() {
 
         bottomSheetView.findViewById<Button>(R.id.btnNo).setOnClickListener {
             callPostMindFullDataAPI()
+            createAffirmationPlaylist()
             finish()
         }
         bottomSheetView.findViewById<Button>(R.id.btnYes).setOnClickListener {
@@ -603,10 +531,6 @@ class TodaysAffirmationActivity : BaseActivity() {
                 Utils.dismissLoader(this@TodaysAffirmationActivity)
                 if (response.isSuccessful && response.body() != null) {
                     response.body()?.data?.let { affirmationPlaylist.addAll(it) }
-                    if (affirmationPlaylist.isNotEmpty()) {
-                        binding.btnCreateAffirmation.text = "Save"
-                        binding.btnCreateAffirmation.isEnabled = true
-                    }
                 } else {
                     Toast.makeText(
                         this@TodaysAffirmationActivity,
@@ -679,6 +603,7 @@ class TodaysAffirmationActivity : BaseActivity() {
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Utils.dismissLoader(this@TodaysAffirmationActivity)
+                finish()
                 if (response.isSuccessful && response.body() != null) {
 
                     AnalyticsLogger.logEvent(
@@ -694,10 +619,12 @@ class TodaysAffirmationActivity : BaseActivity() {
                             this@TodaysAffirmationActivity,
                             "Affirmation"
                         )
-                        showCreatedUpdatedDialog("Playlist Created")
+                        //showCreatedUpdatedDialog("Playlist Created")
+                        showCustomToast("Playlist Updated Successfully", true)
                         sharedPreferenceManager.firstTimeUserForAffirmation = false
                     } else {
-                        showCreatedUpdatedDialog("Changes Saved")
+                        showCustomToast("Playlist Updated Successfully", true)
+                        //showCreatedUpdatedDialog("Changes Saved")
                     }
                 } else {
                     Toast.makeText(
@@ -715,6 +642,7 @@ class TodaysAffirmationActivity : BaseActivity() {
                     "Network Error: " + t.message,
                     Toast.LENGTH_SHORT
                 ).show()
+                finish()
             }
 
         })
@@ -739,21 +667,6 @@ class TodaysAffirmationActivity : BaseActivity() {
         val width = displayMetrics.widthPixels
 
         layoutParams?.width = width
-
-        dialog.setOnCancelListener {
-            if (sharedPreferenceManager.firstTimeUserForAffirmation)
-                showBalloonWithDim(
-                    binding.btnCreateAffirmation,
-                    "Select at least 3 affirmations to build your personal affirmation playlist!",
-                    "AffirmationCreateButton", xOff = -200, yOff = 20
-                ) {
-                    showBalloonWithDim(
-                        binding.addAffirmation,
-                        "Save to your Playlist",
-                        "AffirmationAddButton", BalloonAlignment.BOTTOM,0.5f, xOff = 10, yOff = -100
-                    )
-                }
-        }
         dialog.show()
         sharedPreferenceManager.firstTimeUserAffirmationInfoShown = false
     }

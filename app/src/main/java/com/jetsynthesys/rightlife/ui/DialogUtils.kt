@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Handler
@@ -22,30 +23,51 @@ import com.jetsynthesys.rightlife.databinding.DialogJournalCommonBinding
 import com.jetsynthesys.rightlife.databinding.DialogPlaylistCreatedBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.databinding.DisclaimerCommonDialogBinding
+import com.jetsynthesys.rightlife.databinding.FreeTrialRelatedBottomsheetBinding
+import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 
 object DialogUtils {
 
     fun showJournalCommonDialog(context: Context, header: String, htmlText: String) {
-        val dialog = Dialog(context)
+        val bottomSheetDialog = BottomSheetDialog(context)
+        // Inflate the BottomSheet layout
         val binding = DialogJournalCommonBinding.inflate(LayoutInflater.from(context))
-        dialog.setContentView(binding.root)
-        dialog.setCancelable(true)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val window = dialog.window
-        // Set the dim amount
-        val layoutParams = window!!.attributes
-        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
-        window.attributes = layoutParams
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(context, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
+
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
 
         binding.tvTitle.text = header
         binding.tvDescription.text = Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)
 
         // Handle close button click
         binding.btnClose.setOnClickListener {
-            dialog.dismiss()
+            bottomSheetDialog.dismiss()
         }
 
-        dialog.show()
+        binding.btnOK.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
     }
 
     fun showCheckListQuestionCommonDialog(
@@ -189,6 +211,69 @@ object DialogUtils {
         binding.btnClose.setOnClickListener {
             bottomSheetDialog.dismiss()
             onCloseClick?.invoke()
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    fun showFreeTrailRelatedBottomSheet(
+        context: Context,
+        description: String,
+        header: String,
+        btnOkayText: String = "Okay",
+        isExplorePlanBtnVisible: Boolean = false,
+        mainImage: Int,
+        leftImage: Int,
+        onOkayClick: (() -> Unit)? = null,
+        onExploreClick: (() -> Unit)? = null
+    ) {
+        val bottomSheetDialog = BottomSheetDialog(context)
+        // Inflate the BottomSheet layout
+        val binding = FreeTrialRelatedBottomsheetBinding.inflate(LayoutInflater.from(context))
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(context, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
+
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        binding.tvTitle.text = header
+        binding.tvDescription.text = description
+        binding.btnOkay.text = btnOkayText
+        binding.leftImage.setImageResource(leftImage)
+        binding.mainImage.setImageResource(mainImage)
+
+        binding.btnExplorePlans.visibility =
+            if (isExplorePlanBtnVisible) View.VISIBLE else View.GONE
+
+        binding.btnExplorePlans.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            onExploreClick?.invoke()
+        }
+
+        binding.btnOkay.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            onOkayClick?.invoke()
+        }
+
+        binding.btnClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
         }
 
         bottomSheetDialog.show()

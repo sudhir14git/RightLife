@@ -11,6 +11,7 @@ import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeSeriesTrackRequest
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
@@ -46,11 +47,10 @@ object CommonAPICall {
                 response: Response<CommonResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    /*Toast.makeText(
-                        context,
-                        response.body()!!.successMessage,
-                        Toast.LENGTH_SHORT
-                    ).show()*/
+                    if (isSelectedModule)
+                        context.showCustomToast("Added from toolkit.",true)
+                    else
+                        context.showCustomToast("Removed from toolkit.")
                 } else {
                     Toast.makeText(
                         context,

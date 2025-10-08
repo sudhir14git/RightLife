@@ -181,7 +181,7 @@ class JournalListActivity : BaseActivity() {
             bottomSheetDialog.dismiss()
         }
 
-        dialogBinding.btnYes.setOnClickListener {
+        dialogBinding.btnDelete.setOnClickListener {
             deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
         }

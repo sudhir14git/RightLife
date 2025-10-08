@@ -327,7 +327,7 @@ class Journal4QuestionsActivity : BaseActivity() {
             bottomSheetDialog.dismiss()
         }
 
-        dialogBinding.btnYes.setOnClickListener {
+        dialogBinding.btnDelete.setOnClickListener {
             val journalDeleteTagRequest = JournalDeleteTagRequest()
             journalDeleteTagRequest.outerIndex = type - 1
             journalDeleteTagRequest.innerIndex = position

@@ -2,22 +2,30 @@ package com.jetsynthesys.rightlife
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 
-fun Context.showCustomToast(message: String) {
+fun Context.showCustomToast(message: String, isSuccess: Boolean = false) {
     val inflater = LayoutInflater.from(this)
-    val layout = inflater.inflate(R.layout.custom_toast_new, null)
+    val layout: View = inflater.inflate(R.layout.custom_toast_new, null)
 
-    val toastText = layout.findViewById<TextView>(R.id.tvMessage)
+    // Set message text
+    val toastText: TextView = layout.findViewById(R.id.tvMessage)
     toastText.text = message
 
-    val ivIcon = layout.findViewById<ImageView>(R.id.ivIcon)
-    ivIcon.setImageResource(R.drawable.close_journal)
+    // Set icon based on success/failure
+    val imgIcon: ImageView = layout.findViewById(R.id.ivIcon)
+    imgIcon.setImageResource(
+        if (isSuccess) R.drawable.breathing_green_tick
+        else R.drawable.close_journal
+    )
 
-    val toast = Toast(this)
-    toast.duration = Toast.LENGTH_SHORT
-    toast.view = layout
-    toast.show()
+    // Create and show toast
+    Toast(applicationContext).apply {
+        duration = Toast.LENGTH_SHORT
+        view = layout
+        show()
+    }
 }
