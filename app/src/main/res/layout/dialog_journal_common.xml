@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@drawable/bg_food_item"
+    android:background="@drawable/roundedcornershape"
     android:gravity="center">
 
     <!-- Close Button (Top Right) -->
@@ -18,18 +19,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Free Form"
-            android:fontFamily="@font/dmsans_bold"
-            android:textSize="20sp"
+            android:fontFamily="@font/merriweather_bold"
+            android:textSize="22sp"
             android:layout_marginTop="8dp"
             android:layout_centerHorizontal="true"
             android:textColor="@color/txt_color_header" />
 
         <ImageView
             android:id="@+id/btnClose"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/close_journal" />
+            android:src="@drawable/close_breathwork" />
     </RelativeLayout>
 
     <!-- Body -->
@@ -43,4 +44,18 @@
         android:textColor="@color/txt_color_header"
         android:textAlignment="center"
         android:text="Free Form Journaling is all about flow. There are no rules, no structure—just your thoughts, as they come.\n\nYou can write a few lines or fill a page. It’s your space to vent, dream, reflect, or ramble.\n\nLet go of how it should sound and focus on what you feel." />
+
+    <Button
+        android:id="@+id/btnOK"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Ok"
+        android:textColor="@color/color_think_right"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:textSize="16sp"
+        android:background="@drawable/button_background_filled"
+        app:backgroundTint="@color/btn_color_journal" />
 </LinearLayout>

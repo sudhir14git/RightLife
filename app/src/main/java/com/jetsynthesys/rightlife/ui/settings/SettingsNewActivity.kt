@@ -18,6 +18,7 @@ import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.LogoutUserRequest
 import com.jetsynthesys.rightlife.databinding.ActivitySettingsNewBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteSettingBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
@@ -129,7 +130,7 @@ class SettingsNewActivity : BaseActivity() {
 
     private fun showLogoutBottomSheet() {
         val bottomSheetDialog = BottomSheetDialog(this)
-        val dialogBinding = BottomsheetDeleteTagBinding.inflate(layoutInflater)
+        val dialogBinding = BottomsheetDeleteSettingBinding.inflate(layoutInflater)
         val bottomSheetView = dialogBinding.root
         bottomSheetDialog.setContentView(bottomSheetView)
 

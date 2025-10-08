@@ -197,6 +197,88 @@ class HomeNewActivity : BaseActivity() {
             }
         }
 
+        /*DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Unlock RightLife Pro to keep your health journey uninterrupted.",
+            "Free Trial Ending In 2 Days",
+            "Upgrade Now",
+            false,
+            R.drawable.ft_days_left,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your trial ends today.\n" +
+                    "Upgrade to Pro to continue accessing your data and insights.",
+            "Free Trial ends today",
+            "Upgrade To Pro",
+            false,
+            R.drawable.ft_expired_today,
+            R.drawable.ft_warning,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
+            "Free Trial ended",
+            "See Plans",
+            false,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Monthly Pro Plan ends in 7 days. Renew now to avoid interruptions.",
+            "7 days left",
+            "Renew Plan",
+            false,
+            R.drawable.ft_days_left,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Monthly Pro Plan access ends tomorrow. Renew to keep your dashboard active.",
+            "Plan Ends tomorrow",
+            "Renew Plan",
+            false,
+            R.drawable.ft_expired_today,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Pro Plan has expired. Reactivate now to continue tracking and improving your health.",
+            "Plan expired",
+            "Renew Plan",
+            false,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Annual Pro Plan ends in 14 days. Renew today to continue enjoying full access.",
+            "Plan Expiring Soon",
+            "Renew Plan",
+            true,
+            R.drawable.ft_days_left,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Just 3 days left in your Annual Pro Plan. Don’t lose your progress.",
+            "3 days left",
+            "Renew Plan",
+            true,
+            R.drawable.ft_expired_today,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Annual Pro Plan has expired. Renew now to keep your yearly savings and full access.",
+            "Annual Plan expired",
+            "Renew Plan",
+            true,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {})*/
+
         binding.flFreeTrial.setOnClickListener {
             startActivity(Intent(this, BeginMyFreeTrialActivity::class.java))
         }
@@ -388,9 +470,9 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
-                //if (checkTrailEndedAndShowDialog()) {
+                if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
-                //}
+                }
             }
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)
