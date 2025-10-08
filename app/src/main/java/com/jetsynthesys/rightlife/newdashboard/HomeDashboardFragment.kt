@@ -349,6 +349,7 @@ class HomeDashboardFragment : BaseFragment() {
                     val checklistResponse = gson.fromJson(
                         promotionResponse2, ChecklistResponse::class.java
                     )
+                    sharedPreferenceManager.saveChecklistResponse(checklistResponse)
                     runWhenAttached { handleChecklistResponse(checklistResponse) }
                     checkListCount = 0
                 } else {

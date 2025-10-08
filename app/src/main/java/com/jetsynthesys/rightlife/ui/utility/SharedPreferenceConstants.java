@@ -71,6 +71,7 @@ public class SharedPreferenceConstants {
     public static final String EQUAL_BREATH_WORK = "EQUAL_BREATH_WORK";
     public static final String ALTERNATE_BREATH_WORK = "ALTERNATE_BREATH_WORK";
 
+    public static final String CHECKLISTDATA = "CHECKLISTDATA";
 }
 
 

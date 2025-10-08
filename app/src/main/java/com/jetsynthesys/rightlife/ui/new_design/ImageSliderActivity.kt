@@ -275,6 +275,7 @@ class ImageSliderActivity : BaseActivity() {
                             )
                         } catch (e: Exception) {
                             Log.e("GoogleAuthUtil", "Error retrieving access token", e)
+                            Utils.showNewDesignToast(this@ImageSliderActivity, "Verification Failed", false)
                         }
                     }
                 }
@@ -339,6 +340,7 @@ class ImageSliderActivity : BaseActivity() {
                 response: Response<GoogleLoginTokenResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
+                    Utils.showNewDesignToast(this@ImageSliderActivity, "Verification Successful", true)
                     val apiResponse = response.body()
                     SharedPreferenceManager.getInstance(this@ImageSliderActivity)
                         .saveAccessToken(apiResponse?.accessToken)
