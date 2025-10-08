@@ -79,14 +79,23 @@ class UserInterestActivity : BaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.btnSaveInterest.setOnClickListener {
+            if (selectedInterests.size < 2) {
+                Utils.showNewDesignToast(this, "Please choose at least 2 options to continue.",false)
+                return@setOnClickListener
+            }
+
             val ids = ArrayList<String>()
             selectedInterests.forEach { interest ->
-                interest.id?.let { it1 -> ids.add(it1) }
+                interest.id?.let { ids.add(it) }
             }
-            val saveUserInterestRequest = SaveUserInterestRequest()
-            saveUserInterestRequest.intrestId = ids
+
+            val saveUserInterestRequest = SaveUserInterestRequest().apply {
+                intrestId = ids
+            }
+
             saveUserInterest(saveUserInterestRequest, header!!)
         }
+
     }
 
     private fun getInterests() {
@@ -289,7 +298,7 @@ class UserInterestActivity : BaseActivity() {
                             AnalyticsParam.SAVED_INTEREST to selectedInterestString
                         )
                     )
-
+                    Utils.showNewDesignToast(this@UserInterestActivity, "Interests Saved.",true)
                 } else {
                     Toast.makeText(
                         this@UserInterestActivity,

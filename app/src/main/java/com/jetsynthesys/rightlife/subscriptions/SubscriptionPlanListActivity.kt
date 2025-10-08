@@ -85,6 +85,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             startActivity(Intent(this, PlanInfoActivity::class.java))
         }
 
+
         adapter = SubscriptionPlanAdapter(planList) { plan ->
             // showToast("Plan Clicked - " + plan.googlePlay)
 
@@ -143,6 +144,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
         if (type == "FACIAL_SCAN") {
             binding.cancelButton.visibility = View.GONE
             binding.continueButton.visibility = View.GONE
+            binding.iconInfo.visibility = View.GONE
         } else {
             binding.cancelButton.visibility = View.VISIBLE
             binding.continueButton.visibility = View.GONE

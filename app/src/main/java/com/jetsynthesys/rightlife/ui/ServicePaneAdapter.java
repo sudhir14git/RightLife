@@ -52,7 +52,9 @@ public class ServicePaneAdapter extends RecyclerView.Adapter<ServicePaneAdapter.
                     .placeholder(R.drawable.ic_healthcam_logo)
                     .into(holder.imgEven);
 
-            holder.tvHeaderEven.setText(homeService.getTitle());
+            var formattedText = homeService.getTitle().replaceFirst(" ", "\n");
+
+            holder.tvHeaderEven.setText(formattedText);
 
             ColorStateList colorStateList;
             switch (homeService.getTitle()) {

@@ -295,6 +295,7 @@
     <color name="four_seven_breathing_card_color_text">#4A2E3A</color>
     <color name="custom_breathing_card_color_text">#3B4A36</color>
     <color name="dialog_status_bar">#883f49</color>
+    <color name="gray_past_price">#747474</color>
 
 
 </resources>

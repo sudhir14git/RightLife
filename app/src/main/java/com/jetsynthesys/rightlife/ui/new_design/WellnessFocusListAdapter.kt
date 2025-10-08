@@ -75,7 +75,7 @@ class WellnessFocusListAdapter(
                         wellnessFocusList.any { it.moduleTopic == "Weight Loss & Calorie Management" && it.isSelected })
             ) {
                 Utils.showNewDesignToast(context,
-                    "You cannot select Weight Loss & Calorie Management with Bulk and Build Muscle together.",
+                    "Goals conflict. Select either Weight Loss or Bulk and Build Muscle.",
                     false
                 )
                 return@setOnClickListener

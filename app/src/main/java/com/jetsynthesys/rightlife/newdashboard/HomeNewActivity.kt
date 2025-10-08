@@ -476,9 +476,9 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)
-                if (checkTrailEndedAndShowDialog()) {
+                //if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
-                }
+                //}
             }
             includedhomebottomsheet.llBreathwork.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_BREATH_WORK_CLICK)

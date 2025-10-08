@@ -3,8 +3,10 @@ package com.jetsynthesys.rightlife.ui.new_design
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -37,6 +39,7 @@ class WellnessFocusListActivity : BaseActivity() {
     private lateinit var tv_ur_journey: TextView
     private lateinit var tv_choose_str: TextView
     private lateinit var btnContinue: Button
+    private lateinit var llHeader: LinearLayout
     private lateinit var colorStateListSelected: ColorStateList
     private lateinit var colorStateList: ColorStateList
 
@@ -50,6 +53,7 @@ class WellnessFocusListActivity : BaseActivity() {
         val tvHeader = findViewById<TextView>(R.id.tv_header)
         val rvWellnessFocusList = findViewById<RecyclerView>(R.id.rv_wellness_focus_list)
         btnContinue = findViewById(R.id.btn_continue)
+        llHeader = findViewById(R.id.ll_header)
         val imgHeader = findViewById<ImageView>(R.id.img_header)
 
         AnalyticsLogger.logEvent(
@@ -73,8 +77,12 @@ class WellnessFocusListActivity : BaseActivity() {
         }
         tvHeader.text = header*/
 
-        if (isFrom.isNotEmpty() && isFrom == "ProfileSetting")
+        if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
             btnContinue.text = "Save"
+            llHeader.visibility = View.VISIBLE
+        }else{
+            llHeader.visibility = View.GONE
+        }
 
         //tvHeader.setTextColor(Utils.getModuleDarkColor(this, header))
         getOnboardingDataModule()
@@ -101,7 +109,7 @@ class WellnessFocusListActivity : BaseActivity() {
                     btnContinue.isEnabled = true
                 } else {
                     btnContinue.backgroundTintList = colorStateList
-                    btnContinue.isEnabled = false
+                    btnContinue.isEnabled = true
                 }
             }
 
@@ -113,7 +121,7 @@ class WellnessFocusListActivity : BaseActivity() {
         btnContinue.setOnClickListener {
 
             if (selectedWellnessFocus.size in 2..4) {
-                Utils.showNewDesignToast(this, "Goals Updated", true)
+                Utils.showNewDesignToast(this, "Goals Saved", true)
                 val selectedOptions = ArrayList<String>()
                 selectedWellnessFocus.forEach {
                     it.id?.let { it1 -> selectedOptions.add(it1) }
@@ -142,17 +150,9 @@ class WellnessFocusListActivity : BaseActivity() {
                 }
 
             } else if (selectedWellnessFocus.size < 2) {
-                Toast.makeText(
-                    this,
-                    "Please choose at least 2 goals to continue.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Utils.showNewDesignToast(this,"Please choose at least 2 goals ", false)
             } else {
-                Toast.makeText(
-                    this,
-                    "You can select up to 4 goals only.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Utils.showNewDesignToast(this,"You can select up to 4 goals only.", false)
             }
 
 
@@ -199,7 +199,7 @@ class WellnessFocusListActivity : BaseActivity() {
                         btnContinue.isEnabled = true
                     } else {
                         btnContinue.backgroundTintList = colorStateList
-                        btnContinue.isEnabled = false
+                        btnContinue.isEnabled = true
                     }
 
                 } else {

@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionHistoryBinding
+import com.jetsynthesys.rightlife.ui.settings.adapter.PastSubscriptionHistoryAdapter
 import com.jetsynthesys.rightlife.ui.settings.adapter.SubscriptionHistoryAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.PurchaseHistoryResponse
 import com.jetsynthesys.rightlife.ui.settings.pojo.Subscription
@@ -17,7 +18,7 @@ import retrofit2.Response
 
 class SubscriptionHistoryActivity : BaseActivity() {
     private lateinit var binding: ActivitySubscriptionHistoryBinding
-    private lateinit var pastSubscriptionAdapter: SubscriptionHistoryAdapter
+    private lateinit var pastSubscriptionAdapter: PastSubscriptionHistoryAdapter
     private lateinit var activeSubscriptionAdapter: SubscriptionHistoryAdapter
     private val activeSubscriptions = ArrayList<Subscription>()
     private val pastSubscriptions = ArrayList<Subscription>()
@@ -34,7 +35,7 @@ class SubscriptionHistoryActivity : BaseActivity() {
         }
 
         pastSubscriptionAdapter =
-            SubscriptionHistoryAdapter(pastSubscriptions) { subscription -> // code here for selected item from past subscriptions
+            PastSubscriptionHistoryAdapter(pastSubscriptions) { subscription -> // code here for selected item from past subscriptions
             }
         binding.rvPastSubscription.layoutManager = LinearLayoutManager(this)
         binding.rvPastSubscription.adapter = pastSubscriptionAdapter

@@ -141,7 +141,8 @@ class SleepSoundPlayerActivity : BaseActivity() {
             /*player.seekToNext()
             updateUI()*/
             if (player.currentMediaItemIndex == soundList.size - 1) {
-                Toast.makeText(this, "This is the last song", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "No more tracks available.", Toast.LENGTH_SHORT).show()
+                Utils.showNewDesignToast(this, "No more tracks available.", false)
             } else {
                 player.seekToNext()
                 updateUI()
