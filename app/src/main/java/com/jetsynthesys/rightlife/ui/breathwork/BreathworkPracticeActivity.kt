@@ -29,6 +29,10 @@ class BreathworkPracticeActivity : BaseActivity() {
     var breathInText = ""
     var holdText = ""
     var breathOutText = ""
+    var isLeftActive = false
+    var breathLeftText = ""
+    var breathRightText = ""
+    var alternateHoldText = ""
 
     private lateinit var binding: ActivityBreathworkPracticeBinding
     var lastClickTime = 0L
@@ -125,8 +129,10 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.circleView.visibility = View.GONE
         binding.circleViewbase.visibility = View.GONE
         // Hide breathing-specific UI elements during countdown
-        //binding.setIndicator.alpha = 0.3f
-        //binding.sessionTimer.alpha = 0.3f
+        binding.setIndicator.alpha = 0.1f
+        binding.sessionTimer.alpha = 0.1f
+        binding.setIndicator.visibility = View.GONE
+        binding.sessionTimer.visibility = View.GONE
 
         // Make the countdown very prominent
         binding.breathingPhase.text = "Get Ready"
@@ -200,6 +206,8 @@ class BreathworkPracticeActivity : BaseActivity() {
         // Restore UI elements
         binding.setIndicator.alpha = 1.0f
         binding.sessionTimer.alpha = 1.0f
+        binding.setIndicator.visibility = View.VISIBLE
+        binding.sessionTimer.visibility = View.VISIBLE
         //binding.circleTimer.textSize = 48f // Reset to normal size
 
         // Start the breathing session
@@ -358,15 +366,27 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startBreathIn() {
+        setBreathingTexts(breathingData?.title ?: "Custom")
         binding.breathingPhase.text = breathInText
         playSoundCue(BreathingPhase.INHALE) // Play inhale sound
         animateCircle(1f, 1.5f, inhaleTime)
-        startCountdown(inhaleTime) {
-            if (holdTime > 0) startHold() else startBreathOut()
+        // For Alternate Nostril Breathing, show nostril switch instruction 1 second early
+        if (breathingData?.title == "Alternate Nostril Breathing" && inhaleTime > 1000) {
+            startCountdownWithNostrilSwitch(inhaleTime) {
+                if (holdTime > 0) startHold() else startBreathOut()
+            }
+        } else {
+            startCountdown(inhaleTime) {
+                if (holdTime > 0) startHold() else startBreathOut()
+            }
         }
+      /*  startCountdown(inhaleTime) {
+            if (holdTime > 0) startHold() else startBreathOut()
+        }*/
     }
 
     private fun startHold() {
+        //setBreathingTexts(breathingData?.title ?: "Custom")
         binding.breathingPhase.text = holdText
         playSoundCue(BreathingPhase.HOLD) // Play hold sound
         animateCircle(1.5f, 1.5f, holdTime)
@@ -374,6 +394,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startBreathOut() {
+        //setBreathingTexts(breathingData?.title ?: "Custom")
         binding.breathingPhase.text = breathOutText
         playSoundCue(BreathingPhase.EXHALE) // Play exhale sound
         animateCircle(1.5f, 1f, exhaleTime)
@@ -388,6 +409,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startFinalHold() {
+        //setBreathingTexts(breathingData?.title ?: "Custom")
         binding.breathingPhase.text = "Hold"
         playSoundCue(BreathingPhase.HOLD) // Play exhale sound
         animateCircle(1f, 1f, holdTime)
@@ -404,6 +426,31 @@ class BreathworkPracticeActivity : BaseActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 secondsLeft++
                 binding.circleTimer.text = secondsLeft.toString()
+            }
+
+            override fun onFinish() {
+                onFinish()
+            }
+        }.start()
+    }
+
+    // New method: Countdown with nostril switch instruction
+    private fun startCountdownWithNostrilSwitch(duration: Long, onFinish: () -> Unit) {
+        var secondsLeft = 0
+        val totalSeconds = (duration / 1000).toInt()
+        val originalPhaseText = binding.breathingPhase.text.toString()
+
+        binding.circleTimer.text = secondsLeft.toString()
+
+        countDownTimer = object : CountDownTimer(duration, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                secondsLeft++
+                binding.circleTimer.text = secondsLeft.toString()
+
+                // Show nostril switch instruction 1 second before completion
+                if (secondsLeft == totalSeconds - 1) {
+                    binding.breathingPhase.text = alternateHoldText
+                }
             }
 
             override fun onFinish() {
@@ -648,9 +695,19 @@ class BreathworkPracticeActivity : BaseActivity() {
             }
 
             "Alternate Nostril Breathing" -> {
-                breathInText = "Inhale slowly through your left nostril..."
-                holdText = "Hold"
-                breathOutText = "Exhale through your right nostril.."
+                if (isLeftActive) {
+                    breathInText = "Inhale slowly through your left nostril..."
+                    alternateHoldText = "Now close your left nostril."
+                    holdText = "Hold"
+                    breathOutText = "Exhale through your right nostril.."
+                    isLeftActive = false
+                } else {
+                    breathInText = "Inhale slowly through your right nostril..."
+                    alternateHoldText = "Close the right nostril.."
+                    holdText = "Hold"
+                    breathOutText = "Exhale through your left nostril.."
+                    isLeftActive = true
+                }
             }
 
             "4-7-8 Breathing" -> {

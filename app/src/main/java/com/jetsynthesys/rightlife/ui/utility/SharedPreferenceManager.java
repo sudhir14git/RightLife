@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
+import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.jetsynthesys.rightlife.ui.mindaudit.UserEmotions;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.InterestDataList;
@@ -139,6 +140,21 @@ public class SharedPreferenceManager {
         Gson gson = new Gson();
         String json = sharedPreferences.getString(SharedPreferenceConstants.USER_PROFILE, "");
         UserProfileResponse obj = gson.fromJson(json, UserProfileResponse.class);
+        return obj;
+    }
+
+    public void saveChecklistResponse(ChecklistResponse checklistResponse) {
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(checklistResponse);
+        prefsEditor.putString(SharedPreferenceConstants.CHECKLISTDATA, json);
+        prefsEditor.apply();
+    }
+
+    public ChecklistResponse getChecklistResponse() {
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(SharedPreferenceConstants.CHECKLISTDATA, "");
+        ChecklistResponse obj = gson.fromJson(json, ChecklistResponse.class);
         return obj;
     }
 
