@@ -70,14 +70,18 @@ class MindAuditResultActivity : BaseActivity() {
             startActivity(intent)
         }
 
-        binding.tvCheckprogressDays.setOnClickListener{
-            val intent = Intent(
-                this,
-                MASuggestedAssessmentActivity::class.java
-            )
-            intent.putExtra("SelectedAssessment", selectedAssessment)
-            startActivity(intent)
+        binding.tvCheckprogressDays.setOnClickListener {
+            if (selectedAssessment == "Other") {
+                startActivity(Intent(this, MindAuditFromActivity::class.java).apply {
+                    putExtra("IS_FROM_MIND_AUDIT_RESULT", true)
+                })
+            } else {
+                startActivity(Intent(
+                    this,
+                    MASuggestedAssessmentActivity::class.java
+                ).apply { putExtra("SelectedAssessment", selectedAssessment) })
             }
+        }
 
 
         if (sharedPreferenceManager.userEmotions != null) {
@@ -341,10 +345,16 @@ class MindAuditResultActivity : BaseActivity() {
                                     tvExtSevere.visibility = View.VISIBLE
                                     tvRange5.gravity = Gravity.START
                                 }
-                                val intent = Intent(this@MindAuditResultActivity, MindAuditDass21DetailResultActivity::class.java)
-                                intent.putExtra("SHOW_INTERPRETATION", "anxiety") // can be stress/anxiety/depression
-                                intent.putExtra("REPORT_ID",reportId)
-                                intent.putExtra("Assessment",assessmentTaken.assessment)
+                                val intent = Intent(
+                                    this@MindAuditResultActivity,
+                                    MindAuditDass21DetailResultActivity::class.java
+                                )
+                                intent.putExtra(
+                                    "SHOW_INTERPRETATION",
+                                    "anxiety"
+                                ) // can be stress/anxiety/depression
+                                intent.putExtra("REPORT_ID", reportId)
+                                intent.putExtra("Assessment", assessmentTaken.assessment)
                                 startActivity(intent)
                             }
                         }
@@ -405,10 +415,16 @@ class MindAuditResultActivity : BaseActivity() {
                                 tvRange5.gravity = Gravity.START
                             }
 
-                            val intent = Intent(this@MindAuditResultActivity, MindAuditDass21DetailResultActivity::class.java)
-                            intent.putExtra("SHOW_INTERPRETATION", "depression") // can be stress/anxiety/depression
-                            intent.putExtra("REPORT_ID",reportId)
-                            intent.putExtra("Assessment",assessmentTaken.assessment)
+                            val intent = Intent(
+                                this@MindAuditResultActivity,
+                                MindAuditDass21DetailResultActivity::class.java
+                            )
+                            intent.putExtra(
+                                "SHOW_INTERPRETATION",
+                                "depression"
+                            ) // can be stress/anxiety/depression
+                            intent.putExtra("REPORT_ID", reportId)
+                            intent.putExtra("Assessment", assessmentTaken.assessment)
                             startActivity(intent)
                         }
                         binding.apply {
@@ -461,10 +477,16 @@ class MindAuditResultActivity : BaseActivity() {
                                 tvExtSevere.visibility = View.VISIBLE
                                 tvRange5.gravity = Gravity.START
                             }
-                            val intent = Intent(this@MindAuditResultActivity, MindAuditDass21DetailResultActivity::class.java)
-                            intent.putExtra("SHOW_INTERPRETATION", "stress") // can be stress/anxiety/depression
-                            intent.putExtra("REPORT_ID",reportId)
-                            intent.putExtra("Assessment",assessmentTaken.assessment)
+                            val intent = Intent(
+                                this@MindAuditResultActivity,
+                                MindAuditDass21DetailResultActivity::class.java
+                            )
+                            intent.putExtra(
+                                "SHOW_INTERPRETATION",
+                                "stress"
+                            ) // can be stress/anxiety/depression
+                            intent.putExtra("REPORT_ID", reportId)
+                            intent.putExtra("Assessment", assessmentTaken.assessment)
                             startActivity(intent)
                         }
                         binding.apply {
@@ -543,7 +565,8 @@ class MindAuditResultActivity : BaseActivity() {
                         binding.mainScoreLevel.visibility = View.GONE
                         binding.tvMainScoreHappiness.text =
                             assessmentTaken.interpretations.happiness.score.toString()
-                        mainScoreLevelMessage.text =  assessmentTaken.interpretations.happiness.score.toString()
+                        mainScoreLevelMessage.text =
+                            assessmentTaken.interpretations.happiness.score.toString()
                         setHappinessRainbowView(assessmentTaken.interpretations.happiness.score.toFloat())
                         binding.cardviewMainscoreHappiness.setCardBackgroundColor(
                             resources.getColor(
@@ -694,9 +717,9 @@ class MindAuditResultActivity : BaseActivity() {
         val anxietyScore = assessmentTaken?.interpretations?.anxiety?.score ?: 0
         val depressionScore = assessmentTaken?.interpretations?.depression?.score ?: 0
         val stressScore = assessmentTaken?.interpretations?.stress?.score ?: 0
-        var anxietyScoreList  = getColorArrayForDASS_Anxiety_Score(anxietyScore)
-        var depressionScoreList  = getColorArrayForDASS_Depression_Score(depressionScore)
-        var stressScoreList  = getColorArrayForDASS_Stress_Score(stressScore)
+        var anxietyScoreList = getColorArrayForDASS_Anxiety_Score(anxietyScore)
+        var depressionScoreList = getColorArrayForDASS_Depression_Score(depressionScore)
+        var stressScoreList = getColorArrayForDASS_Stress_Score(stressScore)
         val newColors2 = listOf(
             anxietyScoreList.toList(),
             depressionScoreList.toList(),
@@ -754,6 +777,7 @@ class MindAuditResultActivity : BaseActivity() {
         binding.rainbowView.setStrokeWidth(60f)
         binding.rainbowView.setArcSpacing(8f)
     }
+
     private fun setRainbowViewCAS(score: Int) {
         binding.rainbowView.visibility = View.VISIBLE
         binding.rainbowView.setRainbowColors(getColorArrayForScoreCAS(score))
@@ -855,15 +879,15 @@ class MindAuditResultActivity : BaseActivity() {
             }
         }
 
-    /*    for (assessment in suggestedAssessments) {
-            addChip(assessment, assessment == selectedAssessment)
-        }*/
+        /*    for (assessment in suggestedAssessments) {
+                addChip(assessment, assessment == selectedAssessment)
+            }*/
 
         for (assessmentName in suggestedAssessments) {
             var isCompleted = false
 
             // check in savedAssessment list
-            for (saved in assessments?.savedAssessment ?: emptyList()) {
+            for (saved in assessments.savedAssessment) {
                 if (saved.assessmentType == assessmentName && saved.isCompleted) {
                     isCompleted = true
                     break
@@ -969,10 +993,10 @@ class MindAuditResultActivity : BaseActivity() {
             val position = binding.chipGroup1.indexOfChild(view)
             val selectedChip = binding.chipGroup1.getChildAt(position) as Chip
             Log.d("selected chip", " --" + selectedChip.text.toString())
-            if (selectedChip.text.toString().equals("Sleep Audit")) {
+            if (selectedChip.text.toString() == "Sleep Audit") {
 
             } else {
-                if (selectedChip.text.toString().equals("Other")) {
+                if (selectedChip.text.toString() == "Other") {
                     binding.llOtherSection.visibility = View.VISIBLE
                     binding.scrollviewResult.visibility = View.GONE
                     binding.rlAssessmentNotTaken.visibility = View.GONE
@@ -985,9 +1009,8 @@ class MindAuditResultActivity : BaseActivity() {
                     binding.scrollviewResult.visibility = View.VISIBLE
                     getAssessmentResult(selectedChip.text.toString())
                     binding.tvAssessmentTaken.text = selectedChip.text.toString() + " " + "Score"
-                    selectedAssessment = selectedChip.text.toString()
                 }
-
+                selectedAssessment = selectedChip.text.toString()
             }
         }
 
@@ -1021,6 +1044,7 @@ class MindAuditResultActivity : BaseActivity() {
             else -> R.color.red_ext_severe
         }
     }
+
     private fun getColorResForScore(score: String): Int {
         return when (score.lowercase()) {
             "normal" -> R.color.green_minimal
@@ -1031,6 +1055,7 @@ class MindAuditResultActivity : BaseActivity() {
             else -> R.color.red_ext_severe
         }
     }
+
     private fun getColorResForScoreCASandGAD(score: String): Int {
         return when (score.lowercase()) {
             "minimal" -> R.color.green_minimal
@@ -1076,6 +1101,7 @@ class MindAuditResultActivity : BaseActivity() {
             if (index < activeColorCount) colorLevels[index] else fallbackColor
         }
     }
+
     // Get Depression color array based on DASS-21 scoring
     fun getColorArrayForDASS_Depression_Score(score: Int): IntArray {
         val colorLevels = listOf(
@@ -1100,6 +1126,7 @@ class MindAuditResultActivity : BaseActivity() {
             if (index < activeColorCount) colorLevels[index] else fallbackColor
         }
     }
+
     // Get Anxiety color array based on DASS-21 scoring
     fun getColorArrayForDASS_Anxiety_Score(score: Int): IntArray {
         val colorLevels = listOf(
@@ -1124,7 +1151,8 @@ class MindAuditResultActivity : BaseActivity() {
             if (index < activeColorCount) colorLevels[index] else fallbackColor
         }
     }
-// Get Stress color array based on DASS-21 scoring
+
+    // Get Stress color array based on DASS-21 scoring
     fun getColorArrayForDASS_Stress_Score(score: Int): IntArray {
         val colorLevels = listOf(
             0xFF06B27B.toInt(), // green_minimal

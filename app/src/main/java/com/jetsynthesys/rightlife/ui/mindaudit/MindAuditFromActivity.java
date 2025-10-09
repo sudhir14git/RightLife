@@ -1,34 +1,36 @@
 package com.jetsynthesys.rightlife.ui.mindaudit;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
+import androidx.activity.OnBackPressedCallback;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
+import com.jetsynthesys.rightlife.ui.DialogUtils;
 import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MindAuditFromActivity extends BaseActivity {
 
     public Button nextButton;
+    public boolean isFromThinkRight;
     ImageView ic_back_dialog, close_dialog;
+    private boolean isFromMindAuditResult;
     private ViewPager2 viewPager;
     private Button prevButton, submitButton;
     private MindAuditFormPagerAdapter adapter;
     private ProgressBar progressBar;
-    public boolean isFromThinkRight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +38,10 @@ public class MindAuditFromActivity extends BaseActivity {
         //EdgeToEdge.enable(this);
         setChildContentView(R.layout.activity_mind_audit_from);
 
-        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT",false);
-
+        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT", false);
+        isFromMindAuditResult = getIntent().getBooleanExtra("IS_FROM_MIND_AUDIT_RESULT", false);
+        if (!isFromMindAuditResult)
+            getAssessmentResult();
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
@@ -72,18 +76,27 @@ public class MindAuditFromActivity extends BaseActivity {
             int currentItem = viewPager.getCurrentItem();
             int totalItems = adapter.getItemCount();
 
-            if (currentItem == 0) {
-                finish();
-            }
-            // If on any other page, move to the previous page
-            else {
+            if (currentItem == 0)
+                showExitDialog();
+            else
                 viewPager.setCurrentItem(currentItem - 1);
-            }
+
         });
 
 
         close_dialog.setOnClickListener(view -> {
             showExitDialog();
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                int currentItem = viewPager.getCurrentItem();
+                if (currentItem == 0)
+                    showExitDialog();
+                else
+                    viewPager.setCurrentItem(currentItem - 1);
+            }
         });
 
     }
@@ -120,7 +133,20 @@ public class MindAuditFromActivity extends BaseActivity {
             viewPager.setCurrentItem(currentItem + 1);
         } else {
             // If it's the last page, got to scan
-            showDisclaimerDialog();
+            DialogUtils.INSTANCE.showCommonBottomSheetDialog(
+                    this,
+                    "The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.",
+                    "Disclaimer",
+                    "Okay",
+                    () -> {                                // onOkayClick lambda
+                        return null;
+                    },
+                    () -> {                                // onCloseClick lambda
+                        return null;
+                    },
+                    R.color.color_think_right,
+                    R.color.btn_color_journal
+            );
 
         }
     }
@@ -136,99 +162,52 @@ public class MindAuditFromActivity extends BaseActivity {
         progressBar.setProgress(progressPercentage);
     }
 
-    private void showDisclaimerDialog() {
-        // Create the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.layout_disclaimer_health);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        Window window = dialog.getWindow();
-        // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
-
-        // Find views from the dialog layout
-        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButtonStay = dialog.findViewById(R.id.dialog_button_stay);
-        Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
-
-        // Optional: Set dynamic content
-        dialogText.setText("The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.");
-
-        ColorStateList colorStateList = ContextCompat.getColorStateList(MindAuditFromActivity.this, R.color.color_pink_myhealth);
-        dialogButtonStay.setBackgroundTintList(colorStateList);
-
-
-        // Set button click listener
-        dialogButtonStay.setOnClickListener(v -> {
-            // Perform your action
-            dialog.dismiss();
-            //Toast.makeText(VoiceScanActivity.this, "Scan feature is Coming Soon", Toast.LENGTH_SHORT).show();
-
-            // Start new activity here
-            Intent intent = new Intent(MindAuditFromActivity.this, AccessPaymentActivity.class);
-            //Intent intent = new Intent(HealthAuditActivity.this, AccessPaymentActivity.class);
-            // Optionally pass data
-            //intent.putExtra("key", "value");
-            //startActivity(intent);
-            Toast.makeText(MindAuditFromActivity.this, "Coming Soom", Toast.LENGTH_SHORT).show();
-
-        });
-        dialogButtonExit.setOnClickListener(v -> {
-            dialog.dismiss();
-            this.finish();
-        });
-
-        // Show the dialog
-        dialog.show();
-    }
-
-
-    // Exit Dailog
+    // Exit Dialog
     private void showExitDialog() {
-        // Create the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.layout_exit_dialog_mind);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        Window window = dialog.getWindow();
-        // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
-
-        // Find views from the dialog layout
-        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButtonStay = dialog.findViewById(R.id.dialog_button_stay);
-        Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
-
-        // Optional: Set dynamic content
-        // dialogText.setText("Please find a quiet and comfortable place before starting");
-
-        // Set button click listener
-        dialogButtonStay.setOnClickListener(v -> {
-            // Perform your action
-            dialog.dismiss();
-            //Toast.makeText(VoiceScanActivity.this, "Scan feature is Coming Soon", Toast.LENGTH_SHORT).show();
-
-
-        });
-        dialogButtonExit.setOnClickListener(v -> {
-            dialog.dismiss();
-            //this.finish();
-            finishAffinity();
-            Intent intent = new Intent(MindAuditFromActivity.this, HomeNewActivity.class);
-            intent.putExtra("FROM_THINK_RIGHT",isFromThinkRight);
-            startActivity(intent);
-
-        });
-
-        // Show the dialog
-        dialog.show();
+        DialogUtils.INSTANCE.showExitDialog(this,
+                () -> {
+                    if (isFromMindAuditResult)
+                        finish();
+                    else {
+                        finishAffinity();
+                        Intent intent = new Intent(MindAuditFromActivity.this, HomeNewActivity.class);
+                        intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
+                        startActivity(intent);
+                    }
+                    return null;
+                });
     }
+
+    private void getAssessmentResult() {
+        Utils.showLoader(this);
+        Call<MindAuditResultResponse> call = apiService.getMindAuditAssessmentResult(sharedPreferenceManager.getAccessToken());
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<MindAuditResultResponse> call, Response<MindAuditResultResponse> response) {
+                Utils.dismissLoader(MindAuditFromActivity.this);
+                if (response.isSuccessful() && response.body() != null) {
+                    if (!response.body().getResult().isEmpty()) {
+                        Intent intent = new Intent(MindAuditFromActivity.this, MindAuditResultActivity.class);
+                        if (!response.body().getResult().isEmpty()) {
+                            intent.putExtra("REPORT_ID", response.body().getResult().get(0).getId());
+                            if (!response.body().getResult().get(0).getAssessmentsTaken().isEmpty())
+                                intent.putExtra("Assessment", response.body().getResult().get(0).getAssessmentsTaken().get(0).getAssessment());
+                        }
+                        intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
+                        startActivity(intent);
+                        finish();
+                    }
+                } else {
+                    Toast.makeText(MindAuditFromActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MindAuditResultResponse> call, Throwable t) {
+                handleNoInternetView(t);
+                Utils.dismissLoader(MindAuditFromActivity.this);
+            }
+        });
+    }
+
 }

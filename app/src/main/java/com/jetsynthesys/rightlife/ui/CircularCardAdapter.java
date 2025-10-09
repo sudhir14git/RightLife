@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.jetsynthesys.rightlife.R;
@@ -26,7 +25,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
-import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity;
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
@@ -82,7 +81,7 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                         item.getCategory().equalsIgnoreCase("Mind Audit") ||
                         item.getCategory().equalsIgnoreCase("Health Audit") ||
                         item.getCategory().equalsIgnoreCase("mindAudit")) {
-                    Intent intent = new Intent(mContext, MindAuditActivity.class);
+                    Intent intent = new Intent(mContext, MindAuditFromActivity.class);
                     // Optionally pass data
                     //intent.putExtra("key", "value");
                     mContext.startActivity(intent);
@@ -156,6 +155,28 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                 Log.e("API_FAILURE", "Failure: " + t.getMessage());
             }
         });
+    }
+
+    private void callRlEditDetailActivity(CardItem item) {
+        // Assuming rightLifeEditResponse is accessible in this class
+        String contentType = null;
+        String contentId = null;
+        contentType = item.getSelectedContentType();
+        contentId = item.getSeriesId();
+
+        if (contentType != null && contentType.equalsIgnoreCase("TEXT")) {
+            Intent intent = new Intent(mContext, ArticlesDetailActivity.class);
+            intent.putExtra("contentId", contentId);
+            mContext.startActivity(intent);
+        } else if (contentType != null && (contentType.equalsIgnoreCase("VIDEO") || contentType.equalsIgnoreCase("AUDIO"))) {
+            Intent intent = new Intent(mContext, ContentDetailsActivity.class);
+            intent.putExtra("contentId", contentId);
+            mContext.startActivity(intent);
+        } else if (contentType != null && contentType.equalsIgnoreCase("SERIES")) {
+            Intent intent = new Intent(mContext, SeriesListActivity.class);
+            intent.putExtra("contentId", contentId);
+            mContext.startActivity(intent);
+        }
     }
 
     static class CardViewHolder extends RecyclerView.ViewHolder {
@@ -233,26 +254,4 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
         }
     }
-
-private void callRlEditDetailActivity(CardItem item) {
-    // Assuming rightLifeEditResponse is accessible in this class
-    String contentType = null;
-    String contentId = null;
-    contentType = item.getSelectedContentType();
-    contentId = item.getSeriesId();
-
-    if (contentType != null && contentType.equalsIgnoreCase("TEXT")) {
-        Intent intent = new Intent(mContext, ArticlesDetailActivity.class);
-        intent.putExtra("contentId", contentId);
-        mContext.startActivity(intent);
-    } else if (contentType != null && (contentType.equalsIgnoreCase("VIDEO") || contentType.equalsIgnoreCase("AUDIO"))) {
-        Intent intent = new Intent(mContext, ContentDetailsActivity.class);
-        intent.putExtra("contentId", contentId);
-        mContext.startActivity(intent);
-    } else if (contentType != null && contentType.equalsIgnoreCase("SERIES")) {
-        Intent intent = new Intent(mContext, SeriesListActivity.class);
-        intent.putExtra("contentId", contentId);
-        mContext.startActivity(intent);
-    }
-}
 }

@@ -57,8 +57,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/white_round_transferent__bg"
-            android:padding="5dp"
-            android:src="@drawable/save_icon" />
+            android:src="@drawable/add_breath_work" />
 
         <ImageView
             android:id="@+id/infoButton"

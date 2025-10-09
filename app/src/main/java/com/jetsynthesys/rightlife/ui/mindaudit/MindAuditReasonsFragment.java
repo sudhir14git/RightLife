@@ -1,6 +1,5 @@
 package com.jetsynthesys.rightlife.ui.mindaudit;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,16 +7,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +20,7 @@ import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.ui.DialogUtils;
 import com.jetsynthesys.rightlife.ui.healthaudit.Fruit;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
@@ -44,13 +39,13 @@ public class MindAuditReasonsFragment extends Fragment implements MindAuditBasic
     private static final String ARG_EMOTION = "emotion";
     private static final String ARG_EMOTION_REASONS = "emotion_reasons";
     private static final ArrayList<String> userEmotionsString = new ArrayList<>();
+    private final ArrayList<String> selectedEmotionReasons = new ArrayList<>();
+    private final ArrayList<String> emotionReasons = new ArrayList<>();
+    private final ArrayList<Fruit> fruitList = new ArrayList<>();
     private RecyclerView recyclerView;
     private MindAuditReasonslistAdapter adapter;
     private int pageIndex;
-    private final ArrayList<String> selectedEmotionReasons = new ArrayList<>();
-    private final ArrayList<String> emotionReasons = new ArrayList<>();
     private String emotion;
-    private final ArrayList<Fruit> fruitList = new ArrayList<>();
     private TextView tvHeader;
 
     public static MindAuditReasonsFragment newInstance(int pageIndex, ArrayList<String> emotionReasons, String emotion) {
@@ -122,7 +117,7 @@ public class MindAuditReasonsFragment extends Fragment implements MindAuditBasic
 
                         Intent intent = new Intent(requireActivity(), MASuggestedAssessmentActivity.class);
                         intent.putExtra("AssessmentData", assessments);
-                        intent.putExtra("FROM_THINK_RIGHT",((MindAuditBasicScreeningQuestionsActivity) requireActivity()).isFromThinkRight);
+                        intent.putExtra("FROM_THINK_RIGHT", ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).isFromThinkRight);
                         startActivity(intent);
 
                     } catch (IOException e) {
@@ -140,54 +135,29 @@ public class MindAuditReasonsFragment extends Fragment implements MindAuditBasic
         });
     }
 
-    private void showDisclaimerDialog() {
-        // Create the dialog
-        Dialog dialog = new Dialog(requireActivity());
-        dialog.setContentView(R.layout.layout_disclaimer_health_cam);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        Window window = dialog.getWindow();
-        // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
-
-        // Find views from the dialog layout
-        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        ImageView dialogImage = dialog.findViewById(R.id.img_dialog);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
-
-        Button dialogButtonOkay = dialog.findViewById(R.id.dialog_button_stay);
-
-        dialogButtonOkay.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.btn_color_journal));
-        dialogButtonOkay.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_think_right));
-
-
-        dialogImage.setVisibility(View.GONE);
-        dialogText.setText("The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.");
-
-        // Optional: Set dynamic content
-        // dialogText.setText("Please find a quiet and comfortable place before starting");
-
-        dialogButtonOkay.setOnClickListener(v -> {
-            dialog.dismiss();
-            UserEmotions userEmotions = new UserEmotions(userEmotionsString);
-            SharedPreferenceManager.getInstance(requireActivity()).saveUserEmotions(userEmotions);
-            getSuggestedAssessment(userEmotions);
-        });
-
-        // Show the dialog
-        dialog.show();
-    }
-
     @Override
     public void onNextClicked() {
         if (selectedEmotionReasons.isEmpty()) {
-            Toast.makeText(requireContext(),"Please select reason!!",Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please select reason!!", Toast.LENGTH_SHORT).show();
         } else {
             if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
-                showDisclaimerDialog();
+                DialogUtils.INSTANCE.showCommonBottomSheetDialog(
+                        getContext(),
+                        "The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.",
+                        "Disclaimer",
+                        "Okay",
+                        () -> {                                // onOkayClick lambda
+                            UserEmotions userEmotions = new UserEmotions(userEmotionsString);
+                            SharedPreferenceManager.getInstance(requireActivity()).saveUserEmotions(userEmotions);
+                            getSuggestedAssessment(userEmotions);
+                            return null;
+                        },
+                        () -> {                                // onCloseClick lambda
+                            return null;
+                        },
+                        R.color.btn_color_journal,
+                        R.color.color_think_right
+                );
             } else {
                 ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
             }

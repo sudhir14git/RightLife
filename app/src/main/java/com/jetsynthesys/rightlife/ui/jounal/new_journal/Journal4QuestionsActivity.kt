@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.jounal.new_journal
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
@@ -28,6 +31,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityJournalAnswerBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetAddTagBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
+import com.jetsynthesys.rightlife.databinding.CloseConfirmationBottomsheetBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -79,11 +84,11 @@ class Journal4QuestionsActivity : BaseActivity() {
 
         //back button
         binding.btnBack.setOnClickListener {
-            closeActivity()
+            closeConfirmationBottomSheet()
         }
 
         onBackPressedDispatcher.addCallback {
-            closeActivity()
+            closeConfirmationBottomSheet()
         }
 
         binding.btnInfo.setOnClickListener {
@@ -728,11 +733,7 @@ class Journal4QuestionsActivity : BaseActivity() {
                 response: Response<ResponseBody>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        this@Journal4QuestionsActivity,
-                        response.message(),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showCustomToast("Journal Entry Created", true)
                     /* AnalyticsLogger.logEvent(
                          this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
                          mapOf(
@@ -790,14 +791,8 @@ class Journal4QuestionsActivity : BaseActivity() {
                 response: Response<ResponseBody>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        this@Journal4QuestionsActivity,
-                        response.message(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-
+                    showCustomToast("Journal Entry Updated", true)
                     closeActivity()
-
                 } else {
                     Toast.makeText(
                         this@Journal4QuestionsActivity,
@@ -830,5 +825,42 @@ class Journal4QuestionsActivity : BaseActivity() {
     private fun callPostMindFullDataAPI() {
         val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
+    }
+
+    private fun closeConfirmationBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        // Inflate the BottomSheet layout
+        val binding = CloseConfirmationBottomsheetBinding.inflate(LayoutInflater.from(this))
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
+
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        binding.btnYes.setOnClickListener {
+            closeActivity()
+        }
+        binding.btnNo.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
     }
 }

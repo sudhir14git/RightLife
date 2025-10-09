@@ -45,7 +45,7 @@ import com.jetsynthesys.rightlife.ui.ServicePaneAdapter
 import com.jetsynthesys.rightlife.ui.TestAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
-import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.zhpan.bannerview.constants.PageStyle
 import com.zhpan.indicator.enums.IndicatorStyle
@@ -246,22 +246,28 @@ class HomeExploreFragment : BaseFragment() {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (MoveRSubModuleResponse?.data?.size!! > 1) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", MoveRSubModuleResponse?.data?.get(1)?.categoryId)
-                intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(1)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        MoveRSubModuleResponse?.data?.get(1)?.categoryId
+                    )
+                    intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(1)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
         binding.llMoverightCategory3.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (MoveRSubModuleResponse?.data?.size!! > 2) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", MoveRSubModuleResponse?.data?.get(2)?.categoryId)
-                intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(2)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        MoveRSubModuleResponse?.data?.get(2)?.categoryId
+                    )
+                    intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(2)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
 
@@ -269,44 +275,44 @@ class HomeExploreFragment : BaseFragment() {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (EatRSubModuleResponse?.data?.isNotEmpty() == true) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(0)?.categoryId)
-                intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(0)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(0)?.categoryId)
+                    intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(0)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
         binding.llEatrightCategory2.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (EatRSubModuleResponse?.data?.size!! > 1) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(1)?.categoryId)
-                intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(1)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(1)?.categoryId)
+                    intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(1)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
         binding.llEatrightCategory3.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (EatRSubModuleResponse?.data?.size!! > 2) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(2)?.categoryId)
-                intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(2)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(2)?.categoryId)
+                    intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(2)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
         binding.llEatrightCategory4.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (EatRSubModuleResponse?.data?.size!! > 3) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(3)?.categoryId)
-                intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(3)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra("Categorytype", EatRSubModuleResponse?.data?.get(3)?.categoryId)
+                    intent.putExtra("moduleId", EatRSubModuleResponse?.data?.get(3)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
 
@@ -314,33 +320,42 @@ class HomeExploreFragment : BaseFragment() {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (SleepRSubModuleResponse?.data?.isNotEmpty() == true) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(0)?.categoryId)
-                intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(0)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        SleepRSubModuleResponse?.data?.get(0)?.categoryId
+                    )
+                    intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(0)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
         binding.llSleeprightCategory2.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (SleepRSubModuleResponse?.data?.size!! > 1) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(1)?.categoryId)
-                intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(1)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        SleepRSubModuleResponse?.data?.get(1)?.categoryId
+                    )
+                    intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(1)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
         binding.llSleeprightCategory3.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 if (SleepRSubModuleResponse?.data?.size!! > 2) {
-                val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                intent.putExtra("Categorytype", SleepRSubModuleResponse?.data?.get(2)?.categoryId)
-                intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(2)?.moduleId)
-                startActivity(intent)
-            }
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        SleepRSubModuleResponse?.data?.get(2)?.categoryId
+                    )
+                    intent.putExtra("moduleId", SleepRSubModuleResponse?.data?.get(2)?.moduleId)
+                    startActivity(intent)
+                }
             } else showInternetError()
         }
 
@@ -348,7 +363,7 @@ class HomeExploreFragment : BaseFragment() {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
                 callExploreModuleActivity(SleepRSubModuleResponse!!)
-                } else showInternetError()
+            } else showInternetError()
         }
         binding.btnTrExplore.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
@@ -899,13 +914,14 @@ class HomeExploreFragment : BaseFragment() {
             when (homeService.title) {
                 "Voice Scan" -> {
                     val intentVoice =
-                        Intent(requireContext(), MindAuditActivity::class.java)
+                        Intent(requireContext(), MindAuditFromActivity::class.java)
                     startActivity(intentVoice)
                 }
 
                 "Mind Audit" -> {
                     ActivityUtils.startMindAuditActivity(requireContext())
                 }
+
                 "Meal Snap" -> {
                     if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
@@ -913,8 +929,7 @@ class HomeExploreFragment : BaseFragment() {
                         } else {
                             showInternetError()
                         }
-                    }
-                    else {
+                    } else {
                         ActivityUtils.startEatRightReportsActivity(
                             requireContext(),
                             "SnapMealTypeEat",
@@ -924,27 +939,32 @@ class HomeExploreFragment : BaseFragment() {
                     ActivityUtils.startMindAuditActivity(requireContext())
                 }
 
-                "Health Cam" ->{
+                "Health Cam" -> {
                     if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
                             freeTrialDialogActivity()
                         } else {
                             showInternetError()
                         }
-                    }else {
+                    } else {
                         ActivityUtils.startFaceScanActivity(requireContext())
                     }
                 }
-                "Face Scan" ->{
+
+                "Face Scan" -> {
                     if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
-                            startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
-                                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
-                            })
+                            startActivity(
+                                Intent(
+                                    requireContext(),
+                                    SubscriptionPlanListActivity::class.java
+                                ).apply {
+                                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                                })
                         } else {
                             showInternetError()
                         }
-                    }else {
+                    } else {
                         ActivityUtils.startFaceScanActivity(requireContext())
                     }
                 }

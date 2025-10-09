@@ -377,11 +377,7 @@ class JournalListActivity : BaseActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Utils.dismissLoader(this@JournalListActivity)
                 if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        this@JournalListActivity,
-                        response.message(),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showCustomToast("Journal Entry Deleted")
                     journalList.remove(journalEntry)
                     adapter.notifyDataSetChanged()
                 } else {

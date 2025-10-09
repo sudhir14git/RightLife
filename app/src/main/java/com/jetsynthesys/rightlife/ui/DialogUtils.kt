@@ -3,7 +3,7 @@ package com.jetsynthesys.rightlife.ui
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Handler
@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.DialogChecklistQuestionsBinding
@@ -24,7 +25,7 @@ import com.jetsynthesys.rightlife.databinding.DialogPlaylistCreatedBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.databinding.DisclaimerCommonDialogBinding
 import com.jetsynthesys.rightlife.databinding.FreeTrialRelatedBottomsheetBinding
-import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
+import com.jetsynthesys.rightlife.databinding.LayoutExitDialogMindBottomsheetBinding
 
 object DialogUtils {
 
@@ -171,7 +172,9 @@ object DialogUtils {
         header: String = "Disclaimer",
         btnText: String = "Okay",
         onOkayClick: (() -> Unit)? = null,
-        onCloseClick: (() -> Unit)? = null
+        onCloseClick: (() -> Unit)? = null,
+        btnColor: Int = R.color.menuselected,
+        btnTextColor: Int = R.color.white
     ) {
         val bottomSheetDialog = BottomSheetDialog(context)
         // Inflate the BottomSheet layout
@@ -202,6 +205,12 @@ object DialogUtils {
         binding.tvTitle.text = header
         binding.tvDescription.text = description
         binding.btnOkay.text = btnText
+        binding.btnOkay.apply {
+            setTextColor(ContextCompat.getColor(context, btnTextColor))
+            backgroundTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(context, btnColor)
+            )
+        }
 
         binding.btnOkay.setOnClickListener {
             bottomSheetDialog.dismiss()
@@ -276,6 +285,56 @@ object DialogUtils {
             bottomSheetDialog.dismiss()
         }
 
+        bottomSheetDialog.show()
+    }
+
+    fun showExitDialog(
+        context: Context,
+        onQuitClick: (() -> Unit)? = null,
+    ) {
+        val bottomSheetDialog = BottomSheetDialog(context)
+        // Inflate layout using View Binding
+        val binding: LayoutExitDialogMindBottomsheetBinding =
+            LayoutExitDialogMindBottomsheetBinding.inflate(
+                LayoutInflater.from(
+                    context
+                )
+            )
+
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(context, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
+
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        // Set button click listeners
+        binding.dialogButtonStay.setOnClickListener { v ->
+            bottomSheetDialog.dismiss()
+        }
+
+        binding.dialogButtonExit.setOnClickListener { v ->
+            bottomSheetDialog.dismiss()
+            onQuitClick?.invoke()
+        }
+
+        // Show dialog
         bottomSheetDialog.show()
     }
 
