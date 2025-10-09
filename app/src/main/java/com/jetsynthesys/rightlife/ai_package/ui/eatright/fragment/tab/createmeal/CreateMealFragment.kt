@@ -610,7 +610,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                         }
                     }
                     val mealData = response.body()?.message
-                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    showCustomToast(requireContext(), mealData)
+                   // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)

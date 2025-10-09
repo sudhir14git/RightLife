@@ -303,7 +303,7 @@
                                 <ImageView
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:src="@drawable/sleep_bed_mini_icon" />
+                                    android:src="@drawable/ic_sleep_bad" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -361,7 +361,7 @@
                                 <ImageView
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:src="@drawable/yellow_timer" />
+                                    android:src="@drawable/ic_sleep_clock" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -471,7 +471,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/sleep_bed_mini_icon"
+                        android:src="@drawable/ic_sleep_bad"
                         android:id="@+id/img_bed_icon1"
                         android:layout_marginTop="12dp"
                         android:layout_marginStart="5dp"
@@ -494,7 +494,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/sleep_clock_mini_icon"
+                        android:src="@drawable/ic_sleep_clock"
                         android:id="@+id/img_mini_clock_icon1"
                         android:layout_marginTop="12dp"
                         android:layout_marginStart="10dp"
@@ -946,7 +946,7 @@
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="15dp"
-                        android:src="@drawable/sleep_bed_mini_icon"
+                        android:src="@drawable/ic_sleep_bad"
                         android:id="@+id/img_bed_icon"
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="15dp"
@@ -969,7 +969,7 @@
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="15dp"
-                        android:src="@drawable/sleep_clock_mini_icon"
+                        android:src="@drawable/ic_sleep_clock"
                         android:id="@+id/img_mini_clock_icon"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="6dp"
@@ -1426,7 +1426,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="am · Wakeup Time"
                                     android:textSize="12sp"
-                                    android:drawableLeft="@drawable/yellow_timer"
+                                    android:drawableLeft="@drawable/ic_sleep_clock"
                                     android:drawablePadding="4dp" />
                             </LinearLayout>
 
@@ -1629,9 +1629,10 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="15dp"
-                                android:layout_height="15dp"
-                                android:layout_marginStart="15dp"
+                                android:layout_width="11dp"
+                                android:layout_height="11dp"
+                                android:scaleType="fitXY"
+                                android:layout_marginStart="10dp"
                                 android:src="@drawable/green_icon" />
 
                             <TextView
@@ -1640,8 +1641,8 @@
                                 android:text="Ideal"
                                 android:textSize="12sp"
                                 android:fontFamily="@font/dmsans_regular"
-                                android:textColor="@color/black"
-                                android:layout_marginStart="5dp" />
+                                android:textColor="@color/on_track_color"
+                                android:layout_marginStart="3dp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -1650,7 +1651,7 @@
                                 android:id="@+id/tv_ideal_time"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:textSize="12sp"
-                                android:textColor="@color/black"
+                                android:textColor="@color/black_no_meals"
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>
 
@@ -1659,13 +1660,14 @@
                             android:layout_height="45dp"
                             android:gravity="center_vertical"
                             android:layout_weight="1"
-                            android:layout_marginStart="10dp"
+                            android:layout_marginStart="5dp"
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="15dp"
-                                android:layout_height="15dp"
-                                android:layout_marginStart="10dp"
+                                android:layout_width="11dp"
+                                android:layout_height="11dp"
+                                android:scaleType="fitXY"
+                                android:layout_marginStart="5dp"
                                 android:src="@drawable/core_icon" />
 
                             <TextView
@@ -1674,8 +1676,8 @@
                                 android:text="Actual"
                                 android:textSize="12sp"
                                 android:fontFamily="@font/dmsans_regular"
-                                android:textColor="@color/black"
-                                android:layout_marginStart="5dp"
+                                android:textColor="@color/on_track_color"
+                                android:layout_marginStart="3dp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
@@ -1687,7 +1689,7 @@
                                 android:textSize="12sp"
                                 android:id="@+id/tv_actual_time"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:textColor="@color/black"
+                                android:textColor="@color/black_no_meals"
                                 android:layout_marginStart="5dp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -1967,7 +1969,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@drawable/sleep_bed_mini_icon" />
+                                android:src="@drawable/ic_sleep_bad" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -2128,7 +2130,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/sleep_consistent" />
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_ideal_sleep_time" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -2236,7 +2239,7 @@
                                 <ImageView
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:src="@drawable/sleep_bed_mini_icon" />
+                                    android:src="@drawable/ic_sleep_bad" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -2403,7 +2406,7 @@
                             android:text="5 hr 20 mins"
                             android:id="@+id/tv_consistency_time"
                             android:textSize="16sp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/sleep_text_color"
                             android:fontFamily="@font/dmsans_bold"
                             android:layout_marginStart="5dp"
                             app:layout_constraintStart_toStartOf="parent"
