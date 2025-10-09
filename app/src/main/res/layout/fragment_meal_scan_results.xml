@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="Meal Scan Results"
             android:textSize="18sp"
-            android:textStyle="bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textColor="@color/meal_log_title"
             android:layout_marginBottom="3dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -197,8 +197,7 @@
                         android:id="@+id/spinner"
                         android:layout_width="wrap_content"
                         android:layout_height="20dp"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
+                        android:textSize="13sp"
                         android:layout_weight="0.9"
                         android:background="@color/white"
                         android:layout_gravity="center"
@@ -210,14 +209,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Breakfast"
-                        android:textSize="13sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:visibility="gone"
                         android:fontFamily="@font/dmsans_bold"
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
                         android:layout_marginStart="15dp"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black_no_meals" />
 
                     <ImageView
                         android:layout_width="18dp"
@@ -306,7 +305,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Macro Nutrients Breakdown"
+                        android:text="Macronutrient Breakdown"
                         android:layout_marginTop="5dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"

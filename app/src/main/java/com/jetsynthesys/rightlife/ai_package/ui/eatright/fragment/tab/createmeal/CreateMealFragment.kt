@@ -1,10 +1,12 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,6 +73,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
+    private var currentToast: Toast? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
         get() = FragmentCreateMealBinding::inflate
@@ -523,7 +526,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                         }
                     }
                     val mealData = response.body()?.message
-                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    showCustomToast(requireContext(), mealData)
+                   // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
@@ -638,6 +642,31 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 }
             }
         })
+    }
+
+    private fun showCustomToast(context: Context, message: String?) {
+        // Cancel any old toast
+        currentToast?.cancel()
+        val inflater = LayoutInflater.from(context)
+        val toastLayout = inflater.inflate(R.layout.custom_toast_ai_eat, null)
+        val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+        // ✅ Wrap layout inside FrameLayout to apply margins
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val marginInPx = (20 * context.resources.displayMetrics.density).toInt()
+        params.setMargins(marginInPx, 0, marginInPx, 0)
+        toastLayout.layoutParams = params
+        container.addView(toastLayout)
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = container
+        toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 100)
+        currentToast = toast
+        toast.show()
     }
 
     fun showLoader(view: View) {

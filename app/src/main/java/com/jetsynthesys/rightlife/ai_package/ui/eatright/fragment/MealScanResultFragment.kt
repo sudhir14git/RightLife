@@ -231,7 +231,8 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         val items = arrayOf("Breakfast", "Morning Snack", "Lunch", "Evening Snacks", "Dinner")
         // Create Adapter
         val adapter =
-            ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item, items)
+            ArrayAdapter(requireActivity(), R.layout.snap_mealtype_spinner, items)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         spinner.adapter = adapter
 
         if (snapMealLog.equals("snapMealLog")) {

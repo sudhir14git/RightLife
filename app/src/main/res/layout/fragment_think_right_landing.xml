@@ -311,7 +311,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="1 hr 03 mins"
+                                    android:text=""
                                     android:id="@+id/tv_mindfull_minute"
                                     android:textSize="20sp"
                                     android:fontFamily="@font/dmsans_bold"
@@ -321,7 +321,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="practised today"
+                                    android:text="Practised today"
                                     android:textSize="10sp"
                                     android:fontFamily="@font/dmsans_regular"
                                     android:layout_gravity="center"

@@ -221,7 +221,7 @@
     <color name="progress_baguette_fill">#799CED</color>
     <color name="progress_dewpoint">#F7E6B7</color>
     <color name="progress_dewpoint_fill">#F5C560</color>
-    <!--<color name="light_green">#A7E1CE</color>-->
+    <color name="water_intek_border_green">#A7E1CE</color>
     <color name="new_fill">#F5F5F5</color>
     <color name="main_tab_background">#B0B0B0</color>
     <color name="eatright_text_color">#984C01</color>

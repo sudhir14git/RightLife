@@ -18,12 +18,14 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.buffer.BarBuffer
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -35,8 +37,10 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
@@ -53,9 +57,11 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>() {
 
@@ -71,6 +77,9 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     private lateinit var dateRangeText: TextView
     private lateinit var mindfullTitle: TextView
     private lateinit var mindfullDesc: TextView
+    private lateinit var selectMindLayout: CardView
+    private lateinit var selectedItemDate: TextView
+    private lateinit var selectedCalorieTv: TextView
     private lateinit var recyclerView_mindfulness_analysis: RecyclerView
     private lateinit var average: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
@@ -101,6 +110,9 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         mindfullTitle = view.findViewById(R.id.tv_mindfull_title)
         mindfullDesc = view.findViewById(R.id.tv_mindfull_desc)
         average = view.findViewById(R.id.tv_average_number)
+        selectMindLayout = view.findViewById(R.id.selectCalorieLayout)
+        selectedItemDate = view.findViewById(R.id.selectedDate)
+        selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
         radioGroup.check(R.id.rbWeek)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         // Show Week data by default
@@ -395,7 +407,6 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         }
     }
 
-
     private fun fetchMindfullnessData(startDate: String, endDate: String) {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
@@ -462,30 +473,11 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
 
 
     fun setupMonthlyBarChart(chart: BarChart, data: List<FormattedData>?, startDateStr:String, endDateStr:String) {
+        selectMindLayout.visibility = View.INVISIBLE
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val startDate = LocalDate.parse(startDateStr, formatter)
         val endDate = LocalDate.parse(endDateStr, formatter)
 
-        /*val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1
-        val entries = ArrayList<BarEntry>()
-        val labels = ArrayList<String>()
-
-        for (i in 0 until daysBetween) {
-            val currentDate = startDate.plusDays(i.toLong())
-            val dayOfMonth = currentDate.dayOfMonth
-            val labelGroup = when (dayOfMonth) {
-                in 1..7 -> "1–7"
-                in 8..14 -> "8–14"
-                in 15..21 -> "15–21"
-                in 22..28 -> "22–28"
-                in 29..30 -> "29–30"
-                else -> "31–${endDate.dayOfMonth}"
-            }
-
-            // Show label only once per 7-day group
-            val label = if (i == 0 || i % 7 == 0) labelGroup else ""
-            labels.add(label)
-        }*/
         val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1
         val entries = ArrayList<BarEntry>()
         val labels = ArrayList<String>()
@@ -511,7 +503,6 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             } else {
                 ""
             }
-
             labels.add(label)
         }
         data?.forEachIndexed { index, item ->
@@ -531,6 +522,16 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         customRenderer.initBuffers()
         chart.renderer = customRenderer
 
+        chart.apply {
+            setFitBars(true)
+            setScaleEnabled(false)
+            isDoubleTapToZoomEnabled = false
+            isHighlightPerTapEnabled = true
+            isHighlightPerDragEnabled = false
+            description.isEnabled = false
+            legend.isEnabled = false
+        }
+
         chart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             granularity = 1f
@@ -540,18 +541,31 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             labelRotationAngle = -30f
             textSize = 8f
         }
-
         chart.axisLeft.axisMinimum = 0f
         chart.axisRight.isEnabled = false
-        chart.description.isEnabled = false
-        chart.isHighlightPerTapEnabled = false
-        chart.isHighlightPerDragEnabled = false
-        chart.legend.isEnabled = false
-
         chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
-        chart.setFitBars(true)
+        // Chart selection listener
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                selectMindLayout.visibility = View.VISIBLE
+                e?.let {
+                    val index = e.x.toInt()
+                    val value = e.y
+                    val selectedDate = data?.getOrNull(index)
+                    Log.d("ChartClick", "Clicked bar index=$index date=$selectedDate value=$value")
+                    // Example: Update your UI
+                    selectedItemDate.text = selectedDate?.date ?: ""
+                    selectedCalorieTv.text = value.toInt().toString()
+                }
+            }
+            override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
+                selectMindLayout.visibility = View.INVISIBLE
+            }
+        })
         chart.invalidate()
     }
+
     fun getWeekDayNames(endOfWeek: LocalDate): List<String> {
         val startOfWeek = endOfWeek.minusDays(6)
         val formatter = DateTimeFormatter.ofPattern("EEE") // "Mon", "Tue", etc.
@@ -561,6 +575,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         }
     }
     fun setupWeeklyBarChart(chart: BarChart, data: List<FormattedData>?, endDate: String) {
+        selectMindLayout.visibility = View.INVISIBLE
         val entries = ArrayList<BarEntry>()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val localDate = LocalDate.parse(endDate, formatter)
@@ -589,6 +604,15 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         customRenderer.initBuffers()
         chart.renderer = customRenderer
 
+        chart.apply {
+            setFitBars(true)
+            setScaleEnabled(false)
+            isDoubleTapToZoomEnabled = false
+            isHighlightPerTapEnabled = true
+            isHighlightPerDragEnabled = false
+            description.isEnabled = false
+            legend.isEnabled = false
+        }
         /*chart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             granularity = 1f
@@ -616,14 +640,9 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             granularity = 5f      // distance between ticks
             setLabelCount(6, true)
         }
-
         chart.axisLeft.axisMinimum = 0f
         chart.axisRight.isEnabled = false
-        chart.description.isEnabled = false
-        chart.isHighlightPerTapEnabled = false
         chart.setExtraBottomOffset(24f)
-        chart.isHighlightPerDragEnabled = false
-        chart.legend.isEnabled = false
         chart.setScaleEnabled(false)
         chart.setXAxisRenderer(
             MultilineXAxisRenderer(
@@ -632,7 +651,38 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                 chart.getTransformer(YAxis.AxisDependency.LEFT)
             )
         )
+        // Chart selection listener
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                selectMindLayout.visibility = View.VISIBLE
+                e?.let {
+                    val index = e.x.toInt()
+                    val value = e.y
+                    val selectedDate = data?.getOrNull(index)
+                    Log.d("ChartClick", "Clicked bar index=$index date=$selectedDate value=$value")
+                    // Example: Update your UI
+                    val dateLabel = "${convertDate(selectedDate?.date ?: "")}"
+                    selectedItemDate.text = dateLabel ?: ""
+                    selectedCalorieTv.text = value.toInt().toString()
+                }
+            }
+            override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
+                selectMindLayout.visibility = View.INVISIBLE
+            }
+        })
         chart.invalidate()
+    }
+
+    private fun convertDate(inputDate: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return try {
+            val date = inputFormat.parse(inputDate)
+            outputFormat.format(date!!)
+        } catch (e: Exception) {
+            "Invalid Date"
+        }
     }
 
     fun getCurrentDate(): String {
