@@ -292,7 +292,7 @@ class StressManagementSelectionFragment : Fragment() {
         }*/
 
 
-        tvStressManagementHeader.text = "How active are you on a regular basis?"
+        tvStressManagementHeader.text = "How confident are you in improving your health habits?"
 
         stressManagementList.add(
             StressManagement(

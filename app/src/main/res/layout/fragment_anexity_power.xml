@@ -8,34 +8,32 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
-    <TextView
-        android:id="@+id/tvQuestion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="How powerful is your anxiety when it happens?"
-        android:textSize="@dimen/textsize_large18sp"
-        android:fontFamily="@font/merriweather_bold"
-        android:layout_marginBottom="16dp"
-        android:textColor="@color/menu_icon_color_unselected" />
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Scroll the slider to select level."
-        android:textSize="14sp"
-        android:fontFamily="@font/dmsans_regular"
-        android:textColor="@color/txt_color_header"
-        android:layout_marginBottom="30dp"
-         />
+        <TextView
+            android:id="@+id/tvQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="How severely does your anxiety affect you?"
+            android:textSize="@dimen/textsize_large18sp"
+            android:fontFamily="@font/merriweather_bold"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/menu_icon_color_unselected" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scroll the slider to select level."
+            android:textSize="14sp"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_header"
+            android:layout_marginBottom="30dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:id="@+id/rl_water"
             android:layout_margin="10dp"
             android:layout_height="wrap_content">
-
 
 
             <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillaryAnxietyLevelView
@@ -52,7 +50,6 @@
                 android:gravity="center"
                 android:layout_toLeftOf="@id/anxiety_slider_view"
                 android:orientation="vertical">
-
 
 
                 <TextView
@@ -119,8 +116,7 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_anxiety_extreme"
                     android:paddingBottom="20dp"
-                    android:gravity="top"
-                    />
+                    android:gravity="top" />
 
                 <ImageView
 
@@ -129,8 +125,7 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_anxiety_high"
                     android:paddingBottom="20dp"
-                    android:gravity="top"
-                     />
+                    android:gravity="top" />
 
                 <ImageView
 
@@ -139,8 +134,7 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_anxiety_moderate"
                     android:paddingBottom="20dp"
-                    android:gravity="top"
-                    />
+                    android:gravity="top" />
 
                 <ImageView
 
@@ -149,8 +143,7 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_anxiety_mild"
                     android:paddingBottom="20dp"
-                    android:gravity="top"
-                    />
+                    android:gravity="top" />
 
                 <ImageView
 
@@ -159,8 +152,7 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_anxiety_minimal"
                     android:paddingBottom="20dp"
-                    android:gravity="top"
-                    />
+                    android:gravity="top" />
 
             </LinearLayout>
         </RelativeLayout>
@@ -172,6 +164,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="10dp"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/btn_continue"
             android:layout_width="match_parent"

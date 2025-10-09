@@ -23,12 +23,12 @@ class FoodPreferenceFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val foodOptions = arrayListOf(
-        FoodOption("Vegan", "", R.drawable.ic_vegan),
-        FoodOption("Vegetarian", "", R.drawable.ic_vegeterian),
-        FoodOption("Eggetarian", "(Eggs Only)", R.drawable.ic_eggs),
-        FoodOption("Pescatarian", "(Fish And Vegetarian)", R.drawable.ic_chicken),
-        FoodOption("Non-Vegetarian", "(Chicken And Fish Only)", R.drawable.ic_meat),
-        FoodOption("Non-Vegetarian", "(All Types Of Meat)", R.drawable.ic_fish)
+        FoodOption("Vegan", "(No Animal Products)", R.drawable.ic_vegan),
+        FoodOption("Vegetarian", "(No Meat or Fish)", R.drawable.ic_vegeterian),
+        FoodOption("Eggetarian", "(Vegetarian + Eggs)", R.drawable.ic_eggs),
+        FoodOption("Pescatarian", " (Vegetarian + Fish)", R.drawable.ic_chicken),
+        FoodOption("Non-Vegetarian", "(Chicken & Fish, No Red Meat)", R.drawable.ic_meat),
+        FoodOption("Non-Vegetarian", "(All Meats)", R.drawable.ic_fish)
     )
 
     private var question: Question? = null
