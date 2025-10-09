@@ -6,7 +6,7 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityMindAuditContextScreenBinding
-import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
 
 class MindAuditContextScreenActivity : BaseActivity() {
     private lateinit var binding: ActivityMindAuditContextScreenBinding
@@ -27,7 +27,7 @@ class MindAuditContextScreenActivity : BaseActivity() {
         val isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
 
         binding.btnNext.setOnClickListener {
-            startActivity(Intent(this, MindAuditActivity::class.java).apply {
+            startActivity(Intent(this, MindAuditFromActivity::class.java).apply {
                 putExtra("FROM_THINK_RIGHT", isFromThinkRight)
             })
             finish()

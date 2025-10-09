@@ -19,13 +19,12 @@ import com.jetsynthesys.rightlife.ui.context_screens.SleepSoundsContextScreenAct
 import com.jetsynthesys.rightlife.ui.context_screens.TRSRAssessmentContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeEatRightContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeMoveRightContextScreenActivity
-import com.jetsynthesys.rightlife.ui.context_screens.WelcomeRightLifeContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeSleepRightContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeThinkRightContextScreenActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
-import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
@@ -46,7 +45,7 @@ object ActivityUtils {
                 }
             )
         } else {
-            context.startActivity(Intent(context, MindAuditActivity::class.java).apply {
+            context.startActivity(Intent(context, MindAuditFromActivity::class.java).apply {
                 putExtra("FROM_THINK_RIGHT", isFromThinkRight)
             })
         }
@@ -326,7 +325,7 @@ object ActivityUtils {
                 )
             )
         } else*/
-            context.startActivity(Intent(context, HomeNewActivity::class.java))
+        context.startActivity(Intent(context, HomeNewActivity::class.java))
     }
 
 }
