@@ -381,7 +381,14 @@ class HomeNewActivity : BaseActivity() {
         }
 
         binding.profileImage.setOnClickListener {
-            startActivity(Intent(this, ProfileSettingsActivity::class.java))
+
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
+            } else if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+            }else{
+                startActivity(Intent(this, ProfileSettingsActivity::class.java))
+            }
         }
 
         // Handle menu item clicks
@@ -477,7 +484,7 @@ class HomeNewActivity : BaseActivity() {
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)
                 //if (checkTrailEndedAndShowDialog()) {
-                    ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
+                ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
                 //}
             }
             includedhomebottomsheet.llBreathwork.setOnClickListener {

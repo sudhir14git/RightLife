@@ -206,7 +206,7 @@ class SleepSoundPlayerActivity : BaseActivity() {
                     binding.totalTime.text = formatDuration(player.duration)
                     startSeekBarUpdate()
                     if (player.isPlaying) {
-                        binding.playPauseButton.setImageResource(R.drawable.ic_pause_pause)
+                        binding.playPauseButton.setImageResource(R.drawable.ic_pause_player_new)
                     } else {
                         binding.playPauseButton.setImageResource(R.drawable.ic_play_player)
                     }

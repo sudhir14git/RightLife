@@ -98,6 +98,7 @@ class NewSleepSoundActivity : BaseActivity() {
 
     private fun setupCategoryRecyclerView() {
         categoryAdapter = SleepCategoryAdapter(categoryList) { selectedCategory ->
+            binding.llNoData.visibility = View.GONE
             // 🔥 Handle selected category here
             selectedCategoryForTitle = selectedCategory
             // You can perform an action, like loading content specific to the category!
@@ -105,7 +106,9 @@ class NewSleepSoundActivity : BaseActivity() {
             servicesList.clear()
             if (selectedCategory.title == "Your Playlist")
                 getUserCreatedPlaylist(true)
-            else
+            else if (selectedCategory.title.lowercase() == "all"){
+                //fetchCategories()
+            }else
                 fetchSleepSoundsByCategoryId(
                     selectedCategory._id,
                     false,
@@ -140,8 +143,11 @@ class NewSleepSoundActivity : BaseActivity() {
 
                     categoryList.clear()
                     sleepCategoryResponse?.let { categoryList.addAll(it.data) }
-                    if (useplaylistdata.isNotEmpty() && categoryList.firstOrNull()?.title != "Your Playlist")
+                    if (useplaylistdata.isNotEmpty() && categoryList.firstOrNull()?.title != "Your Playlist") {
                         categoryList.add(0, SleepCategory("", "Your Playlist", ""))
+                    } else {
+                        categoryList.add(0, SleepCategory("", "Your Playlist", ""))
+                    }
                     categoryAdapter.notifyDataSetChanged()
                     if (categoryList.isNotEmpty()) {
                         for (category in categoryList) {
@@ -459,7 +465,7 @@ class NewSleepSoundActivity : BaseActivity() {
     }
 
     // get user play list from api
-    private fun getUserCreatedPlaylist(isShowList: Boolean = false) {
+    private fun getUserCreatedPlaylist(isShowList: Boolean = true) {
         Utils.showLoader(this)
         val call = apiService.getUserCreatedPlaylist(sharedPreferenceManager.accessToken)
 
@@ -499,17 +505,22 @@ class NewSleepSoundActivity : BaseActivity() {
                             if (categoryList.isEmpty() || categoryList.firstOrNull()?.title != "Your Playlist")
                                 categoryList.add(0, SleepCategory("", "Your Playlist", ""))
                         } else {
-                            binding.tvYourPlayList.visibility = View.GONE
+                            //binding.tvYourPlayList.visibility = View.GONE
                             binding.recyclerViewPlayList.visibility = View.GONE
-                            if (categoryList.isNotEmpty() && categoryList[0].title == "Your Playlist")
-                                categoryList.removeAt(0)
+                            if (categoryList.isNotEmpty() && categoryList[0].title == "Your Playlist") {
+                            //categoryList.removeAt(0)
+                            }
                         }
                         categoryAdapter.notifyDataSetChanged()
                     } else {
                         showToast("No playlist data available")
-                        if (categoryList.isNotEmpty() && categoryList[0].title == "Your Playlist")
-                            categoryList.removeAt(0)
+                        /*if (categoryList.isNotEmpty() && categoryList[0].title == "Your Playlist")
+                            categoryList.removeAt(0)*/
                         categoryAdapter.notifyDataSetChanged()
+                        binding.llNoData.visibility = View.VISIBLE
+                        binding.llMusicHome.visibility = View.GONE
+                        binding.layouthorizontalMusicList.visibility = View.GONE
+                        binding.layoutVerticalCategoryList.visibility = View.GONE
                     }
                 } else {
                     showToast("Server Error: " + response.code())
