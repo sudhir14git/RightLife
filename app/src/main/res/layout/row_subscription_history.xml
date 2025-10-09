@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardCornerRadius="12dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -15,35 +15,35 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:visibility="visible"
             android:layout_alignTop="@+id/trialEnds"
-            android:src="@drawable/ic_download_pastsub" />
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_download_pastsub"
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/tvCurrentPlan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Plan"
-            android:background="@drawable/roundedcornershape"
             android:layout_alignParentEnd="true"
-            android:textColor="@color/white"
-            android:paddingHorizontal="16dp"
-            android:textSize="12sp"
             android:layout_marginVertical="8dp"
-            android:paddingVertical="5dp"
+            android:background="@drawable/roundedcornershape"
+            android:backgroundTint="@color/color_green"
             android:fontFamily="@font/dmsans_bold"
-            android:backgroundTint="@color/color_green"/>
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="5dp"
+            android:text="Current Plan"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/planName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Monthly Plan"
+            android:layout_alignParentStart="true"
             android:layout_marginVertical="8dp"
             android:fontFamily="@font/dmsans_bold"
+            android:text="Annual Plan"
             android:textColor="@color/txt_color_mind"
-            android:layout_alignParentStart="true"
             android:textSize="20sp" />
 
         <TextView
@@ -51,32 +51,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/planName"
-            android:text="First 14 days free · XXX/month"
             android:fontFamily="@font/dmsans_regular"
+            android:text="Subscription"
             android:textColor="@color/txt_color_health"
             android:textSize="14sp" />
+
         <TextView
             android:id="@+id/tvPlanAmmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="₹3499"
             android:layout_below="@+id/planDescription"
+            android:layout_alignParentStart="true"
             android:layout_marginVertical="8dp"
             android:fontFamily="@font/dmsans_bold"
+            android:text="₹3499"
             android:textColor="@color/txt_color_mind"
-            android:layout_alignParentStart="true"
             android:textSize="20sp" />
+
         <TextView
             android:id="@+id/trialEnds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvPlanAmmount"
+            android:fontFamily="@font/dmsans_regular"
             android:text="Valid Till 10 Mar 0000"
-            android:textColor="@color/text_color_char_left"
-            android:textSize="16sp"
-            android:layout_marginTop="4dp"
-            android:drawablePadding="8dp"
-            android:drawableStart="@drawable/baseline_calendar" />
+            android:textColor="@color/gray_past_price"
+            android:textSize="@dimen/textsize_small" />
 
     </RelativeLayout>
 
