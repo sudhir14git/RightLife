@@ -13,7 +13,7 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="How does your energy levels feel throughout the day?"
+        android:text="How do your energy levels feel throughout the day?"
         android:textSize="18sp"
         android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"

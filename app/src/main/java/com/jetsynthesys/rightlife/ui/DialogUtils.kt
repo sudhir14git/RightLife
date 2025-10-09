@@ -101,27 +101,31 @@ object DialogUtils {
         message: String,
         desc: String = ""
     ) {
-        // Inflate the view binding for the dialog layout
-        val inflater = LayoutInflater.from(activity)
-        val binding = DialogPlaylistCreatedBinding.inflate(inflater)
+        val bottomSheetDialog = BottomSheetDialog(activity)
+        // Inflate the BottomSheet layout
+        val binding = DialogPlaylistCreatedBinding.inflate(LayoutInflater.from(activity))
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
 
-        // Create the dialog and set the root view
-        val dialog = Dialog(activity)
-        dialog.setContentView(binding.root)
-        dialog.setCancelable(true)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(activity, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
 
-        // Dim background
-        val window = dialog.window
-        val layoutParams = window?.attributes
-        layoutParams?.dimAmount = 0.7f
-        window?.attributes = layoutParams
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
 
-        // Set full width
-        val displayMetrics = DisplayMetrics()
-        activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val width = displayMetrics.widthPixels
-        layoutParams?.width = width
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
 
         // Set message using view binding
         binding.tvDialogPlaylistCreated.text = message
@@ -131,10 +135,10 @@ object DialogUtils {
             binding.tvDialogDescription.text = desc
         }
 
-        dialog.show()
+        bottomSheetDialog.show()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            dialog.dismiss()
+            bottomSheetDialog.dismiss()
             activity.finish()
         }, 2000)
     }

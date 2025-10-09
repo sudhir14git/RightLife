@@ -107,7 +107,8 @@
                 android:gravity="top|start"
                 android:padding="12dp"
                 android:inputType="textMultiLine"
-                android:maxLength="5000"/>
+                android:maxLength="5000"
+                android:layout_margin="8dp"/>
         </LinearLayout>
     </ScrollView>
 
