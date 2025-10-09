@@ -93,6 +93,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private var imageGeneratedUrl = ""
     private lateinit var currentPhotoPath: String
     private lateinit var takePhotoInfoLayout : LinearLayoutCompat
+    private lateinit var tvProceed : TextView
     private lateinit var enterMealDescriptionLayout : LinearLayoutCompat
     private lateinit var proceedLayout : LinearLayoutCompat
     private lateinit var skipTV : TextView
@@ -125,6 +126,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         imageFood = view.findViewById(R.id.imageFood)
         videoView = view.findViewById(R.id.videoView)
         takePhotoInfoLayout = view.findViewById(R.id.takePhotoInfoLayout)
+        tvProceed = view.findViewById(R.id.tvProceed)
         enterMealDescriptionLayout = view.findViewById(R.id.enterMealDescriptionLayout)
         skipTV = view.findViewById(R.id.skipTV)
         mealDescriptionET = view.findViewById(R.id.mealDescriptionET)
@@ -175,6 +177,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             imageFood.visibility = View.VISIBLE
                             imageFood.setImageBitmap(rotatedBitmap)
                             takePhotoInfoLayout.visibility = View.GONE
+                            tvProceed.text = "Proceed"
                             enterMealDescriptionLayout.visibility = View.VISIBLE
                             skipTV.visibility = View.VISIBLE
                             proceedLayout.isEnabled = false
@@ -194,6 +197,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         }else{
             if (sharedPreferenceManager.getFirstTimeUserForSnapMealVideo()) {
                 takePhotoInfoLayout.visibility = View.GONE
+                tvProceed.text = "Proceed"
                 //   enterMealDescriptionLayout.visibility = View.VISIBLE
                 videoView.visibility = View.GONE
                 val cameraDialog = CameraDialogFragment("", moduleName, homeTab, mealType, selectedMealDate)
@@ -211,6 +215,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                                 imageFood.setImageBitmap(rotatedBitmap)
 
                                 takePhotoInfoLayout.visibility = View.GONE
+                                tvProceed.text = "Proceed"
                                 enterMealDescriptionLayout.visibility = View.VISIBLE
                                 skipTV.visibility = View.VISIBLE
                                 proceedLayout.isEnabled = false
@@ -248,6 +253,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 //      }
             } else {
                 takePhotoInfoLayout.visibility = View.VISIBLE
+                tvProceed.text = "Next"
                 enterMealDescriptionLayout.visibility = View.GONE
                 videoView.visibility = View.VISIBLE
                 sharedPreferenceManager.setFirstTimeUserForSnapMealVideo(true)
@@ -283,6 +289,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                                     imageFood.visibility = View.VISIBLE
                                     imageFood.setImageBitmap(rotatedBitmap)
                                     takePhotoInfoLayout.visibility = View.GONE
+                                    tvProceed.text = "Proceed"
                                     enterMealDescriptionLayout.visibility = View.VISIBLE
                                     skipTV.visibility = View.VISIBLE
                                     proceedLayout.isEnabled = false
@@ -456,6 +463,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             // Update UI
                             imagePath = currentPhotoPath
                             takePhotoInfoLayout.visibility = View.GONE
+                            tvProceed.text = "Proceed"
                             enterMealDescriptionLayout.visibility = View.VISIBLE
                             skipTV.visibility = View.VISIBLE
                             proceedLayout.isEnabled = false

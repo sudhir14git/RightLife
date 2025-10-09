@@ -310,6 +310,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             navigateToFragment(MindfulnessAnalysisFragment(), "MindfulnessAnalysis")
         }
         downloadView.setOnClickListener {
+            if (isAdded && view != null) {
+                requireActivity().runOnUiThread {
+                    showLoader(requireView())
+                }
+            }
+            Toast.makeText(requireContext(), "start Report downloading...", Toast.LENGTH_SHORT).show()
             saveViewAsPdf(requireContext(), mainView, "Journal")
         }
 
@@ -622,8 +628,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                         }
                     }
                     if (mindfullResponse.data?.formattedData?.isNotEmpty() == true) {
-                        mindfullResponse.data?.formattedData?.getOrNull(mindfullResponse.data?.formattedData?.size!! - 1)?.duration?.toString()
-                            .let { tvMindfullMinute.text = it + " min" }
+                        tvMindfullMinute.text = mindfullResponse.data?.formattedData?.getOrNull(mindfullResponse.data?.formattedData?.size!! - 1)?.duration?.let {
+                            formatDuration(
+                                it
+                            )
+                        }
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -650,6 +659,16 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 }
             }
         })
+    }
+
+    fun formatDuration(totalMinutes: Int): String {
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return when {
+            hours > 0 && minutes > 0 -> "${hours} hr ${minutes} mins"
+            hours > 0 -> "${hours} hr"
+            else -> "${minutes} mins"
+        }
     }
 
     fun getCurrentDate(): String {
@@ -699,7 +718,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     }
                 }
             }
-
             override fun onFailure(call: Call<ToolsGridResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -1255,17 +1273,33 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             outputStream?.use {
                 document.writeTo(it)
                 success = true
+                Toast.makeText(requireContext(), "Report downloaded successfully", Toast.LENGTH_SHORT).show()
             }
 
         } catch (e: IOException) {
+            if (isAdded && view != null) {
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+                }
+            }
             e.printStackTrace()
         } finally {
             document.close()
             outputStream?.close()
+            if (isAdded && view != null) {
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+                }
+            }
         }
 
         if (success && fileUri != null) {
             showDownloadNotification(context, fileName, fileUri)
+            if (isAdded && view != null) {
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+                }
+            }
         }
     }
 

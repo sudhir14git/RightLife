@@ -93,7 +93,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
     private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var weightIntakeUnit : TextView
-    private lateinit var otherRecipeMightLikeWithData : LinearLayout
+    private lateinit var otherRecipeMightLikeWithData : ConstraintLayout
     private lateinit var newImprovementLayout : LinearLayout
     private  var newBoolean : Boolean = false
     private lateinit var appPreference : AppPreference
@@ -286,11 +286,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
 
         fetchEatRecommendedData()
 
-        if (bottomSeatName.contentEquals("LogWeightEat")){
-            showLogWeightBottomSheet()
-        }else if (bottomSeatName.contentEquals("LogWaterIntakeEat")){
-            showWaterIntakeBottomSheet()
-        }
         lossNewWeightFilled.setOnClickListener {
             showLogWeightBottomSheet()
         }
@@ -718,6 +713,12 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             waterQuantityTv.text = "0"
         }
 
+        if (bottomSeatName.contentEquals("LogWeightEat")){
+            showLogWeightBottomSheet()
+        }else if (bottomSeatName.contentEquals("LogWaterIntakeEat")){
+            showWaterIntakeBottomSheet()
+        }
+
         if(landingPageResponse.last_weight_log != null){
             lastLoggedNoData.visibility = View.GONE
             weightIntake.visibility = View.VISIBLE
@@ -741,7 +742,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         val convertedDate = convertDate(landingPageResponse.last_weight_log?.date.toString())
-        weightLastLogDateTv.text = convertedDate
+        weightLastLogDateTv.text = convertDateWithdMMMyyyy(convertedDate)
 
         if (landingPageResponse.total_protein.toInt() >  landingPageResponse.max_protein.toInt()) {
            // tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
@@ -1172,6 +1173,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         args.putString("BottomSeatName", bottomSeatName)
         waterIntakeBottomSheet.arguments = args
         waterIntakeBottomSheet.show(parentFragmentManager, WaterIntakeBottomSheet.TAG)
+    }
+
+    private fun convertDateWithdMMMyyyy(inputDate: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return try {
+            val date = inputFormat.parse(inputDate)
+            outputFormat.format(date!!)
+        } catch (e: Exception) {
+            "Invalid Date"
+        }
     }
 
     private fun milestoneFor(value: Int): Int {

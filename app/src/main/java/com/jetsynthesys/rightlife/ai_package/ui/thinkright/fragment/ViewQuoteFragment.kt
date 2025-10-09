@@ -78,6 +78,7 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
         fetchQuoteData()
 
         downloadView.setOnClickListener {
+            Toast.makeText(requireContext(), "start Report downloading...", Toast.LENGTH_SHORT).show()
             saveViewAsPdf(requireContext(),lytQuote,"Quote")
         }
 
@@ -217,6 +218,7 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
             outputStream?.use {
                 document.writeTo(it)
                 success = true
+                Toast.makeText(requireContext(), "Report downloaded successfully", Toast.LENGTH_SHORT).show()
             }
 
         } catch (e: IOException) {
