@@ -372,6 +372,8 @@ class CalciumFragment : BaseFragment<FragmentSugarBinding>() {
         // Legend
         val legend = barChart.legend
         legend.setDrawInside(false)
+        selectedItemDate.text = labelsDate.getOrNull(entries.size-1) ?: ""
+        selectedCalorieTv.text = entries.get(entries.size-1).y.toInt().toString()
 
         // Chart selection listener
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {

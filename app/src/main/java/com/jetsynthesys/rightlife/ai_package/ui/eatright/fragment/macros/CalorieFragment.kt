@@ -48,6 +48,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.KValueFormatter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.databinding.FragmentCalorieBinding
@@ -267,7 +268,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     }
 
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,  activeCaloriesResponse: ConsumedCaloriesResponse) {
-        selectHeartRateLayout.visibility = View.INVISIBLE
+        selectHeartRateLayout.visibility = View.VISIBLE
         val dataSet = BarDataSet(entries, "")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
@@ -325,6 +326,8 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         leftYAxis.axisMinimum = 0f
         leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
         leftYAxis.granularity = 1f
+
+        leftYAxis.valueFormatter = KValueFormatter()
 
         if (entries.size < 30){
             val minValue = minOf(
@@ -387,6 +390,9 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         // Legend
         val legend = barChart.legend
         legend.setDrawInside(false)
+
+        selectedItemDate.text = labelsDate.getOrNull(entries.size-1) ?: ""
+        selectedCalorieTv.text = entries.get(entries.size-1).y.toInt().toString()
 
         // Chart selection listener
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
