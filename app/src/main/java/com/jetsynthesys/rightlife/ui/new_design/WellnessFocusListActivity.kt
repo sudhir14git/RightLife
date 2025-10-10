@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleTopic
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingDataModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleRequest
@@ -80,7 +81,7 @@ class WellnessFocusListActivity : BaseActivity() {
         if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
             btnContinue.text = "Save"
             llHeader.visibility = View.VISIBLE
-        }else{
+        } else {
             llHeader.visibility = View.GONE
         }
 
@@ -121,38 +122,15 @@ class WellnessFocusListActivity : BaseActivity() {
         btnContinue.setOnClickListener {
 
             if (selectedWellnessFocus.size in 2..4) {
-                Utils.showNewDesignToast(this, "Goals Saved", true)
                 val selectedOptions = ArrayList<String>()
                 selectedWellnessFocus.forEach {
                     it.id?.let { it1 -> selectedOptions.add(it1) }
                 }
                 updateOnBoardingModule(selectedOptions)
-                sharedPreferenceManager.selectedOnboardingSubModule =
-                    selectedWellnessFocus[0].moduleName
-                if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
-                    finish()
-                    startActivity(
-                        Intent(
-                            this@WellnessFocusListActivity,
-                            ProfileSettingsActivity::class.java
-                        ).apply {
-                            flags =
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                            putExtra("start_profile", true)
-                        })
-                } else {
-                    val intent = Intent(this, UserInterestActivity::class.java)
-                    //intent.putExtra("WellnessFocus", header)
-                    intent.putExtra("SelectedTopic", selectedWellnessFocus)
-                    SharedPreferenceManager.getInstance(this)
-                        .setWellnessFocusTopics(selectedWellnessFocus)
-                    startActivity(intent)
-                }
-
             } else if (selectedWellnessFocus.size < 2) {
-                Utils.showNewDesignToast(this,"Please choose at least 2 goals ", false)
+                Utils.showNewDesignToast(this, "Please choose at least 2 goals ", false)
             } else {
-                Utils.showNewDesignToast(this,"You can select up to 4 goals only.", false)
+                Utils.showNewDesignToast(this, "You can select up to 4 goals only.", false)
             }
 
 
@@ -231,7 +209,29 @@ class WellnessFocusListActivity : BaseActivity() {
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
-                    //Nothing to do here
+                    sharedPreferenceManager.selectedOnboardingSubModule =
+                        selectedWellnessFocus[0].moduleName
+                    showCustomToast("Goals Saved", true)
+                    if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
+                        finish()
+                        startActivity(
+                            Intent(
+                                this@WellnessFocusListActivity,
+                                ProfileSettingsActivity::class.java
+                            ).apply {
+                                flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                putExtra("start_profile", true)
+                            })
+                    } else {
+                        val intent =
+                            Intent(this@WellnessFocusListActivity, UserInterestActivity::class.java)
+                        //intent.putExtra("WellnessFocus", header)
+                        intent.putExtra("SelectedTopic", selectedWellnessFocus)
+                        SharedPreferenceManager.getInstance(this@WellnessFocusListActivity)
+                            .setWellnessFocusTopics(selectedWellnessFocus)
+                        startActivity(intent)
+                    }
                 } else {
                     Toast.makeText(
                         this@WellnessFocusListActivity,
@@ -242,7 +242,7 @@ class WellnessFocusListActivity : BaseActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                handleNoInternetView(t)
+                showCustomToast("Couldn’t save. Check connection and try again.")
             }
 
         })

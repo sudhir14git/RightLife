@@ -297,5 +297,10 @@
     <color name="dialog_status_bar">#883f49</color>
     <color name="gray_past_price">#747474</color>
 
+    <color name="bullet_color">#BA2C2C</color>
+    <color name="free_form_color">#A15A13</color>
+    <color name="gratitude_color">#0E6047</color>
+    <color name="grief_color">#0E3869</color>
+
 
 </resources>

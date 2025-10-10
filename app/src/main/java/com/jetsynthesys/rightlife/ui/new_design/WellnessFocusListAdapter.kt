@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -44,6 +45,17 @@ class WellnessFocusListAdapter(
         holder.tvHeader.text = wellnessFocus.moduleTopic
 
 
+        if (wellnessFocus.isSelected)
+            holder.tvHeader.setTextColor(
+                Utils.getModuleDarkColor(
+                    context,
+                    wellnessFocus.moduleName
+                )
+            )
+        else
+            holder.tvHeader.setTextColor(ContextCompat.getColor(context, R.color.txt_color_header))
+
+
         val bgDrawable =
             AppCompatResources.getDrawable(context, R.drawable.bg_gray_border_radius_small)
 
@@ -74,7 +86,8 @@ class WellnessFocusListAdapter(
                 (wellnessFocus.moduleTopic == "Bulk and Build Muscle" &&
                         wellnessFocusList.any { it.moduleTopic == "Weight Loss & Calorie Management" && it.isSelected })
             ) {
-                Utils.showNewDesignToast(context,
+                Utils.showNewDesignToast(
+                    context,
                     "Goals conflict. Select either Weight Loss or Bulk and Build Muscle.",
                     false
                 )
@@ -85,8 +98,8 @@ class WellnessFocusListAdapter(
                 onItemClickListener.onItemClick(wellnessFocus)
                 wellnessFocus.isSelected = !wellnessFocus.isSelected
                 notifyDataSetChanged()
-            }else{
-                Utils.showNewDesignToast(context, "You can select up to 4 goals only.",false)
+            } else {
+                Utils.showNewDesignToast(context, "You can select up to 4 goals only.", false)
             }
         }
     }
