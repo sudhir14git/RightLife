@@ -17,7 +17,7 @@
             android:id="@+id/mainImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ft_expired_today"
+            android:src="@drawable/ft_ended"
             android:layout_below="@id/btnClose" />
 
         <ImageView
@@ -57,9 +57,9 @@
         android:layout_height="wrap_content"
         android:textSize="14sp"
         android:fontFamily="@font/dmsans_regular"
-        android:layout_marginTop="16dp"
+        android:layout_marginVertical="@dimen/margin_card_16dp"
         android:textColor="@color/txt_color_header"
-        android:textAlignment="center"
+        android:textAlignment="textStart"
         android:text="Your Annual Pro Plan ends in 14 days. Renew today to continue enjoying full access." />
 
     <Button

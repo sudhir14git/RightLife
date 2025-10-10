@@ -16,6 +16,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
+import com.jetsynthesys.rightlife.newdashboard.BeginMyFreeTrialActivity
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusListActivity
@@ -53,7 +56,14 @@ class ProfileSettingsActivity : BaseActivity() {
         setupPersonalizationRecyclerView()
 
         binding.llProfile.setOnClickListener {
-            activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
+
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
+            } else if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+            }else{
+                activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
+            }
         }
         binding.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsNewActivity::class.java))
@@ -62,6 +72,11 @@ class ProfileSettingsActivity : BaseActivity() {
         binding.backButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+    }
+
+    private fun freeTrialDialogActivity() {
+        val intent = Intent(this, BeginMyFreeTrialActivity::class.java)
+        startActivity(intent)
     }
 
     private fun setupUserRecyclerView(isShowViewPastReports: Boolean) {
