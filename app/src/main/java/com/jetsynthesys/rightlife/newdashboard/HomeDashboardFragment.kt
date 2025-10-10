@@ -57,6 +57,7 @@ import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
+import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
 import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
@@ -448,7 +449,7 @@ class HomeDashboardFragment : BaseFragment() {
             sharedPreferenceManager.saveSnapMealId(snapMealId)
             this.snapMealId = snapMealId
         }*/
-        checklistResponse.data.snap_mealId?.let { snapMealId ->
+        checklistResponse.data.snap_mealId.let { snapMealId ->
             sharedPreferenceManager.saveSnapMealId(snapMealId)
             this.snapMealId = snapMealId
         }
@@ -671,7 +672,23 @@ class HomeDashboardFragment : BaseFragment() {
         binding.healthCardRecyclerView.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = HealthCardAdapter(discoverData)
+            adapter = HealthCardAdapter(discoverData) { item ->
+                if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                    freeTrialDialogActivity()
+                } else {
+                    val intent = if (DashboardChecklistManager.facialScanStatus) {
+                        Intent(requireContext(), NewHealthCamReportActivity::class.java)
+                    } else {
+                        Intent(requireContext(), HealthCamActivity::class.java)
+                    }
+                    startActivity(intent)
+                }
+
+                AnalyticsLogger.logEvent(
+                    requireContext(), AnalyticsEvent.DISCOVER_CLICK,
+                    mapOf(AnalyticsParam.DISCOVER_TYPE to item?.parameter!!)
+                )
+            }
             isNestedScrollingEnabled = false // 👈 important for smooth scroll
             overScrollMode = View.OVER_SCROLL_NEVER
         }

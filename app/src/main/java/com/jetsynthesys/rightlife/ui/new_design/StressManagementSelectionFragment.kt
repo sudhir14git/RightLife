@@ -1,6 +1,8 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -15,18 +17,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
-import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.StressManagement
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class StressManagementSelectionFragment : Fragment() {
     private lateinit var llSelectedStressManagement: LinearLayout
@@ -95,7 +91,7 @@ class StressManagementSelectionFragment : Fragment() {
                 btnContinue.backgroundTintList = colorStateList
             }
 
-            setList()
+        setList()
 
         recyclerView.adapter = adapter
 
@@ -130,7 +126,9 @@ class StressManagementSelectionFragment : Fragment() {
                 )
             )
 
-            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            Handler(Looper.getMainLooper()).postDelayed({
+                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            }, 500)
         }
 
         return view

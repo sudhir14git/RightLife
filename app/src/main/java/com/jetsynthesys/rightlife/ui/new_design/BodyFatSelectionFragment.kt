@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -159,7 +161,9 @@ class BodyFatSelectionFragment : Fragment() {
                     )
                 )
 
-                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+                }, 500)
             } else
                 Toast.makeText(
                     requireContext(),
