@@ -55,9 +55,9 @@ class JumpInBackActivity : BaseActivity() {
                     if (success) {
                         it.isBookmarked = !it.isBookmarked
                         val msg = if (it.isBookmarked) {
-                            "Added To Bookmarks"
+                            "Added To Your Saved Items"
                         } else {
-                            "Removed From Bookmarks"
+                            "Removed From Saved Items"
                         }
                         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                         adapter.notifyDataSetChanged()

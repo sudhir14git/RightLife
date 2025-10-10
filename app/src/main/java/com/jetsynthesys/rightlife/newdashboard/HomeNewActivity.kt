@@ -17,10 +17,7 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -56,7 +53,6 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryPurchasesParams
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
@@ -83,7 +79,6 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
@@ -197,6 +192,9 @@ class HomeNewActivity : BaseActivity() {
             }
         }
 
+        val fragmentName = intent.getStringExtra("FRAGMENT")
+        if ("MY_HEALTH" == fragmentName)
+
         /*DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Unlock RightLife Pro to keep your health journey uninterrupted.",
             "Free Trial Ending In 2 Days",
@@ -279,9 +277,9 @@ class HomeNewActivity : BaseActivity() {
             R.drawable.ft_warning,
             onOkayClick = {})*/
 
-        binding.flFreeTrial.setOnClickListener {
-            startActivity(Intent(this, BeginMyFreeTrialActivity::class.java))
-        }
+            binding.flFreeTrial.setOnClickListener {
+                startActivity(Intent(this, BeginMyFreeTrialActivity::class.java))
+            }
 
         binding.scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
             binding.swipeRefreshLayout.isEnabled = scrollY <= 5
@@ -424,49 +422,15 @@ class HomeNewActivity : BaseActivity() {
         }
 
         binding.menuExplore.setOnClickListener {
-            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
-                bottom_sheet.visibility = View.GONE
-                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
-                binding.fab.animate().rotationBy(180f).setDuration(60)
-                    .setInterpolator(DecelerateInterpolator()).withEndAction {
-                        // Change icon after rotation
-                        if (isAdd) {
-                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
-                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-                                this, R.color.rightlife
-                            )
-                            binding.fab.imageTintList = ColorStateList.valueOf(
-                                resources.getColor(
-                                    R.color.black
-                                )
-                            )
-                        } else {
-                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
-                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-                                this, R.color.white
-                            )
-                            binding.fab.imageTintList = ColorStateList.valueOf(
-                                resources.getColor(
-                                    R.color.rightlife
-                                )
-                            )
-                        }
-                        isAdd = !isAdd // Toggle the state
-                    }.start()
-            } else {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                    .commit()
-                updateMenuSelection(R.id.menu_explore)
-            }
+            myHealthFragmentSelected()
         }
 
         with(binding) {
             includedhomebottomsheet.llJournal.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
-                if (checkTrailEndedAndShowDialog()) {
+                //if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startJournalListActivity(this@HomeNewActivity)
-                }
+                //}
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
@@ -856,7 +820,7 @@ class HomeNewActivity : BaseActivity() {
             } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
                 showTrailEndedBottomSheet()
                 false // Return false if condition is true and dialog is shown
-            }else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
                 showSubsciptionEndedBottomSheet()
                 false // Return false if condition is true and dialog is shown
             } else {
@@ -866,6 +830,7 @@ class HomeNewActivity : BaseActivity() {
         return true
 
     }
+
     private fun showTrailEndedBottomSheet() {
         DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
@@ -2761,5 +2726,43 @@ class HomeNewActivity : BaseActivity() {
     private fun freeTrialDialogActivity() {
         val intent = Intent(this, BeginMyFreeTrialActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun myHealthFragmentSelected() {
+        if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+            binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+            binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+            binding.fab.animate().rotationBy(180f).setDuration(60)
+                .setInterpolator(DecelerateInterpolator()).withEndAction {
+                    // Change icon after rotation
+                    if (isAdd) {
+                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                            this, R.color.rightlife
+                        )
+                        binding.fab.imageTintList = ColorStateList.valueOf(
+                            resources.getColor(
+                                R.color.black
+                            )
+                        )
+                    } else {
+                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                            this, R.color.white
+                        )
+                        binding.fab.imageTintList = ColorStateList.valueOf(
+                            resources.getColor(
+                                R.color.rightlife
+                            )
+                        )
+                    }
+                    isAdd = !isAdd // Toggle the state
+                }.start()
+        } else {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                .commit()
+            updateMenuSelection(R.id.menu_explore)
+        }
     }
 }

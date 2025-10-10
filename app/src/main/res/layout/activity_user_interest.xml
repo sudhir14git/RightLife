@@ -26,7 +26,7 @@
             android:fontFamily="@font/merriweather_bold"
             android:text="Follow Your Curiosity"
             android:textColor="@color/txt_color_header"
-            android:textSize="24sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -73,7 +73,7 @@
             android:layout_marginStart="36dp"
             android:layout_marginEnd="36dp"
             android:backgroundTint="@color/rightlife"
-            android:enabled="false"
+            android:enabled="true"
             android:fontFamily="@font/dmsans_bold"
             android:text="Save"
             android:textSize="@dimen/textsize_large20sp"

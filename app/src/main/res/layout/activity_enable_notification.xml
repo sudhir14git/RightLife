@@ -5,10 +5,10 @@
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:layout_above="@id/btn_enable_notification">
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_view_consistency"
@@ -24,8 +24,8 @@
 
                 <ImageView
                     android:id="@+id/imageClose"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/close"
                     app:tint="@color/black"
                     android:layout_alignParentEnd="true"
@@ -144,7 +144,7 @@
                             android:layout_below="@+id/tv_personalise_insights"
                             android:layout_marginStart="16dp"
                             android:fontFamily="@font/dmsans_regular"
-                            android:text="Stay on track with affirmations, workouts, workout analysis and more."
+                            android:text="Stay on track with affirmations, workouts, and more."
                             android:textColor="@color/txt_color_header"
                             android:textSize="@dimen/textsize_medium" />
 
@@ -256,7 +256,7 @@
                         android:layout_marginEnd="16dp"
                         android:fontFamily="@font/dmsans_regular"
                         android:gravity="center"
-                        android:text="You are 2.4x more likely to achieve your goals!"
+                        android:text="You Are 2.4X More Likely To Achieve Your Goals."
                         android:textColor="@color/txt_color_header"
                         android:textSize="12sp" />
 
@@ -272,9 +272,9 @@
         android:id="@+id/btn_enable_notification"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/scollView"
         android:layout_marginHorizontal="36dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginVertical="24dp"
         android:backgroundTint="@color/menuselected"
         android:fontFamily="@font/dmsans_bold"
         android:text="Enable Notifications"
