@@ -936,7 +936,7 @@ class HomeExploreFragment : BaseFragment() {
                             ""
                         )
                     }
-                    ActivityUtils.startMindAuditActivity(requireContext())
+                    //ActivityUtils.startMindAuditActivity(requireContext())
                 }
 
                 "Health Cam" -> {

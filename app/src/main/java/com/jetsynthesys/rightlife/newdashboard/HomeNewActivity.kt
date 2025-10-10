@@ -381,14 +381,7 @@ class HomeNewActivity : BaseActivity() {
         }
 
         binding.profileImage.setOnClickListener {
-
-            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
-                freeTrialDialogActivity()
-            } else if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this)
-            }else{
-                startActivity(Intent(this, ProfileSettingsActivity::class.java))
-            }
+            startActivity(Intent(this, ProfileSettingsActivity::class.java))
         }
 
         // Handle menu item clicks
@@ -863,6 +856,9 @@ class HomeNewActivity : BaseActivity() {
             } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
                 showTrailEndedBottomSheet()
                 false // Return false if condition is true and dialog is shown
+            }else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+                showSubsciptionEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
             } else {
                 true
             }
@@ -870,8 +866,45 @@ class HomeNewActivity : BaseActivity() {
         return true
 
     }
-
     private fun showTrailEndedBottomSheet() {
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
+            "Free Trial ended",
+            "Explore Plans",
+            false,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {
+                if (NetworkUtils.isInternetAvailable(this)) {
+                    startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                        putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                    })
+                } else {
+                    showInternetError()
+                }
+            })
+    }
+
+    private fun showSubsciptionEndedBottomSheet() {
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Reactivate now to continue tracking and improving your health.",
+            "No Active Plan",
+            "Explore Plans",
+            false,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {
+                if (NetworkUtils.isInternetAvailable(this)) {
+                    startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                        putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                    })
+                } else {
+                    showInternetError()
+                }
+            })
+    }
+
+    /*private fun showTrailEndedBottomSheet() {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
 
@@ -909,7 +942,7 @@ class HomeNewActivity : BaseActivity() {
         }
 
         bottomSheetDialog.show()
-    }
+    }*/
 
     fun showHeader(show: Boolean) {
         binding.llCountDown.visibility = if (show && isCountDownVisible) View.VISIBLE else View.GONE
@@ -2580,7 +2613,7 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    // handle user subsciption Status Code Explanation
+    // handle user subsciption Status Code Explanation imp dont delete
     /*USER_SUB_STATUS = 0
 
     0 - New User(Free Trail Not Started) -  trial starts on API Hit
