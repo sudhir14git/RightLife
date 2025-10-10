@@ -28,15 +28,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Journal"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textSize="20sp"
             android:textColor="@color/txt_color_mind"
             android:layout_centerInParent="true" />
 
         <ImageButton
             android:id="@+id/btnInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/info_affirmation"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_alignParentEnd="true" />
@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="16dp">
 
             <!-- Greeting Card -->
             <androidx.cardview.widget.CardView
