@@ -137,7 +137,7 @@ class HomeDashboardFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (requireActivity() as? HomeNewActivity)?.showHeader(true)
+        //(requireActivity() as? HomeNewActivity)?.showHeader(true)
         fetchDashboardData()
         getAiDashboard()
 

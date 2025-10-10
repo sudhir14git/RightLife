@@ -48,7 +48,7 @@ object CommonAPICall {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     if (isSelectedModule)
-                        context.showCustomToast("Added from toolkit.",true)
+                        context.showCustomToast("Added to toolkit.",true)
                     else
                         context.showCustomToast("Removed from toolkit.")
                 } else {

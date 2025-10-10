@@ -711,15 +711,15 @@ class BreathworkPracticeActivity : BaseActivity() {
             }
 
             "4-7-8 Breathing" -> {
-                breathInText = "Slow Inhale"
-                holdText = "Hold Breath"
-                breathOutText = "Long Exhale"
+                breathInText = "Breathe In"
+                holdText = "Hold"
+                breathOutText = "Breathe Out"
             }
 
             "Custom" -> {
-                breathInText = "Inhale"
-                holdText = "Exhale"
-                breathOutText = "Hold Still"
+                breathInText = "Breathe In"
+                holdText = "Hold"
+                breathOutText = "Breathe Out"
             }
 
             else -> {
