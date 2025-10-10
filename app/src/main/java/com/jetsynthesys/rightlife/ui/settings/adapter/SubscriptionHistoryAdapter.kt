@@ -3,7 +3,9 @@ package com.jetsynthesys.rightlife.ui.settings.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowSubscriptionHistoryBinding
 import com.jetsynthesys.rightlife.ui.settings.pojo.Subscription
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
@@ -27,7 +29,19 @@ class SubscriptionHistoryAdapter(
 
             if (type == 1) {
                 binding.tvCurrentPlan.visibility = View.INVISIBLE
+            }else
+            {
+                binding.tvCurrentPlan.text = plan.status
+                binding.tvCurrentPlan.apply {
+                    text = plan.status
+                    setTextColor(when(plan.status) {
+                        "Current Plan" -> ContextCompat.getColor(context, R.color.green_minimal)
+                        "Cancelled" -> ContextCompat.getColor(context, R.color.menuselected)
+                        else -> ContextCompat.getColor(context, R.color.gray)
+                    })
+                }
             }
+
 
             binding.root.setOnClickListener {
                 selectedPosition = adapterPosition

@@ -86,8 +86,10 @@ import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
+import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
+import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
@@ -107,6 +109,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -124,6 +127,7 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class HomeNewActivity : BaseActivity() {
+    private lateinit var snapMealId: String
     private lateinit var binding: ActivityHomeNewBinding
     private var isAdd = true
     var isTrialExpired = false
@@ -488,7 +492,9 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
-                if (checkTrailEndedAndShowDialog()) {
+                if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                    freeTrialDialogActivity()
+                }else{
                     if (DashboardChecklistManager.facialScanStatus) {
                         startActivity(
                             Intent(
@@ -2756,6 +2762,40 @@ class HomeNewActivity : BaseActivity() {
                 }
 
             })
+    }
+
+    //getDashboardChecklist
+    private fun getDashboardChecklist() {
+        // Make the API call
+        val call = apiService.getDashboardChecklist(sharedPreferenceManager.accessToken)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val promotionResponse2 = response.body()!!.string()
+                    val gson = Gson()
+                    val checklistResponse = gson.fromJson(
+                        promotionResponse2, ChecklistResponse::class.java
+                    )
+                    sharedPreferenceManager.saveChecklistResponse(checklistResponse)
+                     handleChecklistResponse(checklistResponse) 
+                    
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t) // Print the full stack trace for more details
+            }
+        })
+    }
+    private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
+        if (checklistResponse != null) {
+            checklistResponse.data.snap_mealId?.let { snapMealId ->
+                sharedPreferenceManager.saveSnapMealId(snapMealId)
+                this.snapMealId = snapMealId
+            }
+        }
     }
 
     private fun freeTrialDialogActivity() {
