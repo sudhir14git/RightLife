@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowJournalNewBinding
@@ -52,6 +53,8 @@ class JournalAdapter(
                     imageViewAdd.setImageResource(
                         if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_free_form
                     )
+                    titleText.setTextColor(ContextCompat.getColor(context, R.color.free_form_color))
+                    descText.setTextColor(ContextCompat.getColor(context, R.color.free_form_color))
                 }
 
                 "Bullet" -> {
@@ -60,6 +63,8 @@ class JournalAdapter(
                     imageViewAdd.setImageResource(
                         if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_bullet
                     )
+                    titleText.setTextColor(ContextCompat.getColor(context, R.color.bullet_color))
+                    descText.setTextColor(ContextCompat.getColor(context, R.color.bullet_color))
                 }
 
                 "Gratitude" -> {
@@ -68,6 +73,8 @@ class JournalAdapter(
                     imageViewAdd.setImageResource(
                         if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_gratitude
                     )
+                    titleText.setTextColor(ContextCompat.getColor(context, R.color.gratitude_color))
+                    descText.setTextColor(ContextCompat.getColor(context, R.color.gratitude_color))
                 }
 
                 else -> {
@@ -76,6 +83,8 @@ class JournalAdapter(
                     imageViewAdd.setImageResource(
                         if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_grief
                     )
+                    titleText.setTextColor(ContextCompat.getColor(context, R.color.grief_color))
+                    descText.setTextColor(ContextCompat.getColor(context, R.color.grief_color))
                 }
             }
 
