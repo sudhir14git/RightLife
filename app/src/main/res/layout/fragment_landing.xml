@@ -155,28 +155,40 @@
                     </LinearLayout>
                 </FrameLayout>
 
-                <TextView
-                    android:id="@+id/heading_one"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutTop"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your Caloric Summary"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_color"
-                    android:textSize="18sp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginEnd="18dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rightLifeReportCard" />
-
-                <ImageView
-                    android:id="@+id/caloricInfo"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/infocircle"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rightLifeReportCard"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    >
+                    <TextView
+                        android:id="@+id/heading_one"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your Caloric Summary"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/caloricInfo"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/infocircle"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/calorie_balance_layout"
@@ -188,7 +200,7 @@
                     android:layout_marginStart="15dp"
                     android:layout_marginEnd="15dp"
                     android:layout_marginTop="20dp"
-                    app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutTop"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
@@ -301,22 +313,24 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:gravity="center"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="14dp"
-                                        android:layout_height="14dp"
+                                        android:layout_width="13dp"
+                                        android:layout_height="15dp"
+                                        android:scaleType="fitXY"
                                         android:src="@drawable/spoon"
-                                        android:layout_marginTop="4dp"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Log Meal"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </LinearLayout>
@@ -342,22 +356,24 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:gravity="center"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="14dp"
-                                        android:layout_height="14dp"
+                                        android:layout_width="11dp"
+                                        android:layout_height="15dp"
+                                        android:scaleType="fitXY"
                                         android:src="@drawable/run"
-                                        android:layout_marginTop="4dp"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Add Workout"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </LinearLayout>
@@ -496,8 +512,9 @@
                                 android:layout_width="70dp"
                                 android:layout_height="28dp"
                                 android:layout_marginStart="10dp"
+                                android:fontFamily="@font/dmsans_bold"
                                 android:text="INTAKE"
-                                android:textSize="10sp"
+                                android:textSize="11sp"
                                 android:textColor="@color/dotted_green"
                                 android:background="@drawable/button_green"
                                 app:layout_constraintTop_toBottomOf="@+id/textView1"
@@ -507,7 +524,8 @@
                                 android:id="@+id/burned_btn"
                                 android:layout_width="70dp"
                                 android:layout_height="28dp"
-                                android:textSize="10dp"
+                                android:textSize="11sp"
+                                android:fontFamily="@font/dmsans_bold"
                                 android:text="BURNED"
                                 android:textColor="@color/dotted_red"
                                 android:background="@drawable/button_red"
@@ -643,7 +661,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="On Track"
-                                android:textStyle="bold"
+                                android:fontFamily="@font/dmsans_bold"
                                 android:textSize="16sp"
                                 android:textColor="@color/on_track_color"
                                 app:layout_constraintBottom_toBottomOf="@+id/green_tick_icon"
@@ -654,8 +672,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:textStyle="normal"
-                                android:textSize="16dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="16sp"
                                 android:layout_marginStart="20dp"
                                 android:layout_marginEnd="28dp"
                                 android:textColor="@color/on_track_color"
@@ -695,22 +713,24 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:gravity="center"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="14dp"
-                                        android:layout_height="14dp"
+                                        android:layout_width="13dp"
+                                        android:layout_height="15dp"
+                                        android:scaleType="fitXY"
                                         android:src="@drawable/spoon"
-                                        android:layout_marginTop="4dp"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Log Meal"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </LinearLayout>
@@ -736,22 +756,24 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:gravity="center"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="14dp"
-                                        android:layout_height="14dp"
+                                        android:layout_width="11dp"
+                                        android:layout_height="15dp"
+                                        android:scaleType="fitXY"
                                         android:src="@drawable/run"
-                                        android:layout_marginTop="4dp"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Add Workout"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </LinearLayout>
@@ -764,28 +786,40 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/heading_two"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutMovementSummery"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your Movement Summary"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_color"
-                    android:textSize="18sp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginEnd="18dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout">
 
-                <ImageView
-                    android:id="@+id/yourMovementSummary"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/infocircle"
-                    app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    <TextView
+                        android:id="@+id/heading_two"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your Movement Summary"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/yourMovementSummary"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/infocircle"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/activity_factor_layout"
@@ -798,7 +832,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginTop="20dp"
-                    app:layout_constraintTop_toBottomOf="@+id/heading_two"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutMovementSummery"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
@@ -1201,9 +1235,9 @@
                                 android:layout_width="269dp"
                                 android:layout_height="wrap_content"
                                 android:text="You’re walking less than you do on a typical day"
-                                android:textColor="@color/workout_textcolor"
-                                android:textSize="16dp"
-                                android:textStyle="normal"
+                                android:textColor="@color/black_no_meals"
+                                android:textSize="16sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:layout_marginStart="20dp"
                                 android:layout_marginTop="65dp"
                                 app:layout_constraintTop_toTopOf="parent"

@@ -425,7 +425,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         days: Int = 30,
         locale: Locale = Locale.getDefault() // use Locale.ENGLISH for fixed English names
     ): List<String> {
-        val formatter = DateTimeFormatter.ofPattern("EEE dd MMM", locale)
+        val formatter = DateTimeFormatter.ofPattern("dd MMM, yyyy", locale)
         return List(days) { offset ->
             startDate.plusDays(offset.toLong()).format(formatter)
         }
@@ -441,8 +441,8 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         val labels = mutableListOf<String>()
         val monthLabel = getDateLabels(startDate,32)
 
-        val defaultColor   = Color.parseColor("#70A1FF")
-        val highlightColor = Color.parseColor("#007BFF")
+        val defaultColor   = Color.parseColor("#C5DEF9")
+        val highlightColor = Color.parseColor("#0B84FF")
 
         val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate1).toInt() + 1
         val entries = ArrayList<BarEntry>()
@@ -512,9 +512,11 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
         chart.setFitBars(true)
         chart.setDrawValueAboveBar(false)
+        cardPercent.visibility = View.VISIBLE
+        tvBarDate.text = monthLabel.getOrNull(entries.size-1) ?: ""
+        tvBarPercent.text = entries.get(entries.size-1).y.toInt().toString()
         chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
-                cardPercent.visibility = View.VISIBLE
                 if (e != null) {
                     val index = h?.x?.toInt() ?: return
                     val x = e.x.toInt()
@@ -554,33 +556,45 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         return labels
     }
 
+    fun getSlectedWeekDayNames(endOfWeek: LocalDate): List<String> {
+        val labels = mutableListOf<String>()
+        //  val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
+        // val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+        //   val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
+        //    labels.add("$top\n$bottom")
+        val startOfWeek = endOfWeek.minusDays(6)
+        for (i in 0..6) {
+           // val top = startOfWeek.plusDays(i.toLong()).format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+            val bottom = startOfWeek.plusDays(i.toLong()).format(DateTimeFormatter.ofPattern("d MMM, yyyy"))
+            labels.add(bottom)
+        }
+        return labels
+    }
+
     fun setupWeeklyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, endDate: String) {
         val entries = ArrayList<BarEntry>()
         val trimmedDate = endDate.substring(0, 10)  // "2025-05-01"
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val localDate = LocalDate.parse(trimmedDate, formatter)
         val labels = getWeekDayNames(localDate)
-        val defaultColor   = Color.parseColor("#70A1FF")
-        val highlightColor = Color.parseColor("#007BFF")
-
+        val selectedDate = getSlectedWeekDayNames(localDate)
+        val defaultColor   = Color.parseColor("#C5DEF9")
+        val highlightColor = Color.parseColor("#0B84FF")
         data?.forEachIndexed { index, item ->
             entries.add(BarEntry(index.toFloat(), item.sleepPerformanceData?.sleepPerformance?.toFloat() ?: 0f))
         }
-
         val dataSet = BarDataSet(entries, "Sleep Performance").apply {
             setColors(List(entries.size) { defaultColor })      // one color per bar
             setDrawValues(false)
             valueTextSize = 11f
             highLightAlpha = 0                                  // hide the grey overlay
         }
-
         val barData = BarData(dataSet)
         chart.data = barData
         val customRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
         customRenderer.initBuffers()
         chart.renderer = customRenderer
         val leftYAxis: YAxis = barChart.axisLeft
-
         if (entries.size < 30){
             val minValue = minOf(
                 entries.minOfOrNull { it.y } ?: 0f,
@@ -594,7 +608,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             )
             // Include stepsGoal in max check
             val axisMax = maxOf(maxValue, sleepPerformanceResponse.sleepPerformanceAllData?.sleepPerformanceAverage!!.toFloat())
-
             val avgStepsLine = LimitLine(sleepPerformanceResponse.sleepPerformanceAllData?.sleepPerformanceAverage!!.toFloat(), "A")
             avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
             avgStepsLine.lineWidth = 1f
@@ -602,7 +615,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
             avgStepsLine.textSize = 10f
             avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
-
             leftYAxis.removeAllLimitLines()
             leftYAxis.addLimitLine(avgStepsLine)
             averageGoalLayout.visibility = View.VISIBLE
@@ -610,15 +622,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             leftYAxis.removeAllLimitLines()
             averageGoalLayout.visibility = View.GONE
         }
-
-        /*chart.xAxis.apply {
-            valueFormatter = IndexAxisValueFormatter(labels)
-            granularity = 1f
-            position = XAxis.XAxisPosition.BOTTOM
-            setDrawGridLines(false)
-            labelRotationAngle = -30f
-            textSize = 10f
-        }*/
         chart.xAxis.apply {
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
@@ -632,7 +635,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             labelRotationAngle = 0f
             textSize = 10f
         }
-
         chart.axisLeft.axisMinimum = 0f
         chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
@@ -650,6 +652,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             )
         )
         chart.invalidate()
+        cardPercent.visibility = View.VISIBLE
+        tvBarDate.text = selectedDate.getOrNull(entries.size-1) ?: ""
+        tvBarPercent.text = entries.get(entries.size-1).y.toInt().toString()
         chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 cardPercent.visibility = View.VISIBLE
@@ -663,11 +668,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                     dataSet.colors = newColors
 
                     chart.invalidate()
-                    tvBarDate.text = labels.getOrNull(x)?.replace("\n", " ") ?: ""
+                    tvBarDate.text = selectedDate.getOrNull(x)?.replace("\n", " ") ?: ""
                     tvBarPercent.text = y.toInt().toString()
                 }
             }
-
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 cardPercent.visibility = View.INVISIBLE
