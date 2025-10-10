@@ -16,10 +16,10 @@
 
         <ImageView
             android:id="@+id/ivClose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/close_affirmation"
-            android:layout_alignParentStart="true"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/close_breathwork"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"/>
 
         <TextView
