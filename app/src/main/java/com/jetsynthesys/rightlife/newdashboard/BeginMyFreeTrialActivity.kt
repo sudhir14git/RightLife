@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.newdashboard
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -24,6 +25,8 @@ class BeginMyFreeTrialActivity : BaseActivity() {
     private lateinit var binding: ActivityBeginMyFreeTrialBinding
     private lateinit var runnable: Runnable
     private val timeDurationForImageSlider = 2000L
+    private var sliderHandler: Handler? = null // Handler for scheduling auto-slide
+    private var sliderRunnable: Runnable? = null
 
     private val images = listOf(
         R.drawable.planinfo1,
@@ -60,6 +63,16 @@ class BeginMyFreeTrialActivity : BaseActivity() {
         binding = ActivityBeginMyFreeTrialBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
 
+        sliderHandler = Handler(Looper.getMainLooper())
+        sliderRunnable = object : Runnable {
+            override fun run() {
+                val nextItem: Int = binding.viewPager.currentItem + 1
+                binding.viewPager.setCurrentItem(nextItem, true)
+                sliderHandler?.removeCallbacks(sliderRunnable!!)
+                sliderHandler?.postDelayed(this, 3000)
+            }
+        }
+        sliderHandler?.postDelayed(sliderRunnable!!, 3000)
 
         binding.ivDialogClose.setOnClickListener {
             finish()

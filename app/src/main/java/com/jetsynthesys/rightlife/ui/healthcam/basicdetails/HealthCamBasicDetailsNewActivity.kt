@@ -592,7 +592,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
     private fun showHeightSelectionBottomSheet(gender: String) {
-        var selectedHeight = "5 Ft 10 In"
+        var selectedHeight = "5 ft 10 in"
         var selectedLabel = " feet"
         // Create and configure BottomSheetDialog
         val decimalFormat = DecimalFormat("###.##")
@@ -623,11 +623,11 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
         selectedHeight = binding.edtHeight.text.toString()
         if (selectedHeight.isEmpty()) {
-            selectedHeight = "5 Ft 10 In"
+            selectedHeight = "5 ft 10 in"
         } else {
             val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1].equals("cms", ignoreCase = true))
-                " cms"
+            selectedLabel = if (h[1].equals("cm", ignoreCase = true))
+                " cm"
             else
                 " feet"
             if (selectedLabel == " feet") {
@@ -660,9 +660,9 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             selectedLabel = " feet"
 
             selectedHeight = if (gender == "Male" || gender == "M")
-                "5 Ft 8 In"
+                "5 ft 8 in"
             else
-                "5 Ft 4 In"
+                "5 ft 4 in"
             setFtIn()
 
             dialogBinding.rulerView.post {
@@ -682,12 +682,12 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
             dialogBinding.feetOption.setTextColor(Color.BLACK)
 
-            selectedLabel = " cms"
+            selectedLabel = " cm"
 
             selectedHeight = if (gender == "Male" || gender == "M")
-                "173 cms"
+                "173 cm"
             else
-                "163 cms"
+                "163 cm"
             setCms()
 
             dialogBinding.rulerView.post {
@@ -700,7 +700,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             dialogBinding.selectedNumberText.text = selectedHeight
         }
 
-        if (selectedLabel == " cms") {
+        if (selectedLabel == " cm") {
             setCms()
         } else {
             setFtIn()
@@ -730,7 +730,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                                 val h = (feet).toString().split(".")
                                 val ft = h[0]
                                 dialogBinding.selectedNumberText.text =
-                                    "$ft Ft $remainingInches In"
+                                    "$ft ft $remainingInches in"
                             }
                             selectedHeight = dialogBinding.selectedNumberText.text.toString()
                         }
@@ -760,7 +760,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             } else {
                 val h = selectedHeight.split(" ")
                 selectedLabel = if (h[1].equals("cms", ignoreCase = true))
-                    " cms"
+                    " cm"
                 else
                     " feet"
             }
@@ -809,7 +809,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 returnValue = true
             } else {
                 returnValue = false
-                showToast("Height should be in between 120 cms to 220 cms")
+                showToast("Height should be in between 120 cm to 220 cm")
             }
 
         }
@@ -930,9 +930,9 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     if (userdata.height != null)
                         if (userdata.heightUnit == "FT_AND_INCHES") {
                             val height = userdata.height.toString().split(".")
-                            binding.edtHeight.setText("${height[0]} Ft ${height[1]} In")
+                            binding.edtHeight.setText("${height[0]} ft ${height[1]} in")
                         } else {
-                            binding.edtHeight.setText("${userdata.height} cms")
+                            binding.edtHeight.setText("${userdata.height} cm")
                         }
                 }
 

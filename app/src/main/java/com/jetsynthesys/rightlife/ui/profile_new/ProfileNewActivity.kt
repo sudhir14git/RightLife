@@ -49,6 +49,7 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetGenderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetHeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.DialogOtpVerificationBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
@@ -224,9 +225,9 @@ class ProfileNewActivity : BaseActivity() {
         if (userData.height != null)
             if (userData.heightUnit == "FT_AND_INCHES") {
                 val height = userData.height.toString().split(".")
-                binding.tvHeight.text = "${height[0]} Ft ${height[1]} In"
+                binding.tvHeight.text = "${height[0]} ft ${height[1]} in"
             } else {
-                binding.tvHeight.text = "${userData.height} cms"
+                binding.tvHeight.text = "${userData.height} cm"
             }
     }
 
@@ -368,7 +369,7 @@ class ProfileNewActivity : BaseActivity() {
             "78 years",
             "79 years",
             "80 years",
-            )
+        )
 
         val selectedAgeArray = binding.tvAge.text.toString().split(" ")
         val selectedAgeFromUi =
@@ -411,12 +412,14 @@ class ProfileNewActivity : BaseActivity() {
                     startY = event.y
                     isScrolling = false
                 }
+
                 MotionEvent.ACTION_MOVE -> {
                     // If finger moved enough vertically, mark as scrolling
                     if (abs(event.y - startY) > picker.height / 20) {
                         isScrolling = true
                     }
                 }
+
                 MotionEvent.ACTION_UP -> {
                     if (!isScrolling) {
                         val height = picker.height
@@ -599,7 +602,7 @@ class ProfileNewActivity : BaseActivity() {
     }
 
     private fun showHeightSelectionBottomSheet(gender: String) {
-        var selectedHeight = "5 Ft 10 In"
+        var selectedHeight = "5 ft 10 in"
         var selectedLabel = " feet"
         // Create and configure BottomSheetDialog
         val decimalFormat = DecimalFormat("###.##")
@@ -630,11 +633,11 @@ class ProfileNewActivity : BaseActivity() {
 
         selectedHeight = binding.tvHeight.text.toString()
         if (selectedHeight.isEmpty()) {
-            selectedHeight = "5 Ft 10 In"
+            selectedHeight = "5 ft 10 in"
         } else {
             val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1].equals("cms", ignoreCase = true))
-                " cms"
+            selectedLabel = if (h[1].equals("cm", ignoreCase = true))
+                " cm"
             else
                 " feet"
             if (selectedLabel == " feet") {
@@ -667,9 +670,9 @@ class ProfileNewActivity : BaseActivity() {
             selectedLabel = " feet"
 
             selectedHeight = if (gender == "Male" || gender == "M")
-                "5 Ft 8 In"
+                "5 ft 8 in"
             else
-                "5 Ft 4 In"
+                "5 ft 4 in"
             setFtIn()
 
             dialogBinding.rulerView.post {
@@ -689,12 +692,12 @@ class ProfileNewActivity : BaseActivity() {
             dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
             dialogBinding.feetOption.setTextColor(Color.BLACK)
 
-            selectedLabel = " cms"
+            selectedLabel = " cm"
 
             selectedHeight = if (gender == "Male" || gender == "M")
-                "173 cms"
+                "173 cm"
             else
-                "163 cms"
+                "163 cm"
             setCms()
 
             dialogBinding.rulerView.post {
@@ -707,7 +710,7 @@ class ProfileNewActivity : BaseActivity() {
             dialogBinding.selectedNumberText.text = selectedHeight
         }
 
-        if (selectedLabel == " cms") {
+        if (selectedLabel == " cm") {
             setCms()
         } else {
             setFtIn()
@@ -737,7 +740,7 @@ class ProfileNewActivity : BaseActivity() {
                                 val h = (feet).toString().split(".")
                                 val ft = h[0]
                                 dialogBinding.selectedNumberText.text =
-                                    "$ft Ft $remainingInches In"
+                                    "$ft ft $remainingInches in"
                             }
                             selectedHeight = dialogBinding.selectedNumberText.text.toString()
                         }
@@ -766,8 +769,8 @@ class ProfileNewActivity : BaseActivity() {
                 selectedHeight = "5 Ft 10 In"
             } else {
                 val h = selectedHeight.split(" ")
-                selectedLabel = if (h[1].equals("cms", ignoreCase = true))
-                    " cms"
+                selectedLabel = if (h[1].equals("cm", ignoreCase = true))
+                    " cm"
                 else
                     " feet"
             }
@@ -883,7 +886,7 @@ class ProfileNewActivity : BaseActivity() {
                 returnValue = true
             } else {
                 returnValue = false
-                showToast("Height should be in between 120 cms to 220 cms")
+                showToast("Height should be in between 120 cm to 220 cm")
             }
 
         }
@@ -1089,25 +1092,15 @@ class ProfileNewActivity : BaseActivity() {
         val height = binding.tvHeight.text.toString()
         val weight = binding.tvWeight.text.toString()
         val gender = binding.tvGender.text.toString()
-        if (firstName.isEmpty()) {
-            showToast("First Name is required")
-        } else if (lastName.isEmpty()) {
-            showToast("Last Name is required")
-        } else if (email.isEmpty()) {
-            showToast("Email is required")
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
+            || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty()
+        ) {
+            showCustomToast("Please fill all required fields before proceeding.")
         } else if (!email.matches(Utils.emailPattern.toRegex())) {
-            showToast("Invalid Email format")
-        } else if (mobileNumber.isEmpty() || mobileNumber.length != 10) {
-            showToast("Phone Number is incorrect")
-        } else if (age.isEmpty()) {
-            showToast("Please select Age")
-        } else if (gender.isEmpty()) {
-            showToast("Please select Gender")
-        } else if (height.isEmpty()) {
-            showToast("Please select Height")
-        } else if (weight.isEmpty()) {
-            showToast("Please select Weight")
-        } else {
+            showCustomToast("Invalid Email format")
+        } else if (age.split(" ")[0].toInt() !in 13..80)
+            showCustomToast("Face Scan is available only for users aged 13–80.")
+        else {
             userData.firstName = firstName
             userData.lastName = lastName
             userData.email = email

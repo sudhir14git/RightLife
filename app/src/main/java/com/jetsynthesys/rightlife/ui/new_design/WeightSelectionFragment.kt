@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -206,10 +208,9 @@ class WeightSelectionFragment : Fragment() {
                 )
             )
 
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                OnboardingQuestionnaireActivity.navigateToNextPage()
-            }, 1000)*/
-            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            Handler(Looper.getMainLooper()).postDelayed({
+                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            }, 500)
         }
 
 
