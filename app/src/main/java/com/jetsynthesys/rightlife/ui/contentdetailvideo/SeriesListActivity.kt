@@ -155,7 +155,7 @@ class SeriesListActivity : BaseActivity() {
                 .into(binding.imgContentview)
 
             setModuleColor(contentResponseObj.data.moduleId)
-            binding.category.text = contentResponseObj.data.tags.get(0).name
+            binding.category.text = contentResponseObj.data.categoryName
 
             setReadMoreView(contentResponseObj.data.desc)
 
@@ -351,7 +351,7 @@ class SeriesListActivity : BaseActivity() {
                         gson.fromJson(jsonResponse, SeriesResponse::class.java)
                     //Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
-                    setupEpisodeListData(seriesResponseModel.data.episodes)
+                    setupEpisodeListData(seriesResponseModel.data.episodes,seriesResponseModel.data.categoryName?:"")
                     setupArtistList(seriesResponseModel)
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -378,8 +378,8 @@ class SeriesListActivity : BaseActivity() {
         binding.recyclerArtists.adapter = adapter
     }
 
-    private fun setupEpisodeListData(contentList: ArrayList<Episode>) {
-        val adapter = SeriesListAdapter(this, contentList)
+    private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String) {
+        val adapter = SeriesListAdapter(this, contentList, categoryName)
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerViewSerieslist.setLayoutManager(horizontalLayoutManager)
         binding.recyclerViewSerieslist.setAdapter(adapter)

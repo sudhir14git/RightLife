@@ -29,7 +29,7 @@ class ArtistAdapter(
 
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
         val artist = artists[position]
-        holder.binding.tvArtistname.text = artist.firstName
+        holder.binding.tvArtistname.text = "${artist.firstName ?: ""}"// ${artist.lastName ?: ""}"
 
         val profileUrl =
             if (artist.profilePicture != null && artist.profilePicture.startsWith("http")) {

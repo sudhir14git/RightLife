@@ -84,7 +84,6 @@ import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
-import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
@@ -183,16 +182,35 @@ class HomeNewActivity : BaseActivity() {
 
         // Load default fragment only on first launch
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HomeExploreFragment())
-                .commit()
-            updateMenuSelection(R.id.menu_home)
+            val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
+
+            if (openMyHealth) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_explore)
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeExploreFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_home)
+            }
         } else {
-            // 🟢 Restore menu highlight based on current fragment
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-            when (currentFragment) {
-                is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
-                is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
+            val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
+
+            if (openMyHealth) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_explore)
+            } else {
+                // 🟢 Restore menu highlight based on current fragment
+                val currentFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+                when (currentFragment) {
+                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
+                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
+                }
             }
         }
 
@@ -458,7 +476,7 @@ class HomeNewActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
                 if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                     freeTrialDialogActivity()
-                }else{
+                } else {
                     if (DashboardChecklistManager.facialScanStatus) {
                         startActivity(
                             Intent(
@@ -632,25 +650,6 @@ class HomeNewActivity : BaseActivity() {
                     binding.userName.text = ResponseObj.userdata.firstName
                     val tvGreetingText = findViewById<TextView>(R.id.greetingText)
                     tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
-
-                    val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
-                    /*        if (countDown < 7) {
-                                binding.tvCountDown.text = "${countDown + 1}/7"
-                                binding.llCountDown.visibility = View.VISIBLE
-                                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                                isTrialExpired = false
-                                isCountDownVisible = true
-                            } else {
-                                binding.llCountDown.visibility = View.GONE
-                                isCountDownVisible = false
-                                if (!DashboardChecklistManager.paymentStatus) {
-                                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
-                                    isTrialExpired = true
-                                } else {
-                                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                                    isTrialExpired = false
-                                }
-                            }*/
 
                     if (ResponseObj.isReportGenerated && !ResponseObj.reportView) {
                         binding.rightLifeReportCard.visibility = View.VISIBLE
@@ -2742,8 +2741,8 @@ class HomeNewActivity : BaseActivity() {
                         promotionResponse2, ChecklistResponse::class.java
                     )
                     sharedPreferenceManager.saveChecklistResponse(checklistResponse)
-                     handleChecklistResponse(checklistResponse) 
-                    
+                    handleChecklistResponse(checklistResponse)
+
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -2754,6 +2753,7 @@ class HomeNewActivity : BaseActivity() {
             }
         })
     }
+
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
         if (checklistResponse != null) {
             checklistResponse.data.snap_mealId?.let { snapMealId ->
@@ -2768,6 +2768,9 @@ class HomeNewActivity : BaseActivity() {
         startActivity(intent)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        countDownTimer?.cancel()
     private fun myHealthFragmentSelected() {
         if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
             binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE

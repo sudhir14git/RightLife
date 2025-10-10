@@ -342,7 +342,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
         //val previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3"
-        val url = ApiClient.CDN_URL_QA + (moduleContentDetail.data?.previewUrl
+        val url = ApiClient.VIDEO_CDN_URL + (moduleContentDetail.data?.url
             ?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
         Log.d("API Response", "Sleep aid URL: $url")
         mediaPlayer = MediaPlayer()
@@ -707,7 +707,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     val jsonResponse = gson.toJson(response.body())
                     val seriesResponseModel =
                         gson.fromJson(jsonResponse, SeriesResponse::class.java)
-                    setupEpisodeListData(seriesResponseModel.data.episodes)
+                    setupEpisodeListData(seriesResponseModel.data.episodes,seriesResponseModel.data.categoryName?:"")
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -720,8 +720,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
         })
     }
 
-    private fun setupEpisodeListData(contentList: ArrayList<Episode>) {
-        val adapter = SeriesListAdapter(this, contentList)
+    private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String) {
+        val adapter = SeriesListAdapter(this, contentList,categoryName)
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvAllEpisodes.setLayoutManager(horizontalLayoutManager)
         binding.rvAllEpisodes.setAdapter(adapter)
