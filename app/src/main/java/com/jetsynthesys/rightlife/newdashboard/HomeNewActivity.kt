@@ -17,10 +17,7 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -56,7 +53,6 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryPurchasesParams
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
@@ -83,13 +79,11 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
-import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
@@ -188,16 +182,35 @@ class HomeNewActivity : BaseActivity() {
 
         // Load default fragment only on first launch
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HomeExploreFragment())
-                .commit()
-            updateMenuSelection(R.id.menu_home)
+            val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
+
+            if (openMyHealth) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_explore)
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeExploreFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_home)
+            }
         } else {
-            // 🟢 Restore menu highlight based on current fragment
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-            when (currentFragment) {
-                is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
-                is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
+            val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
+
+            if (openMyHealth) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_explore)
+            } else {
+                // 🟢 Restore menu highlight based on current fragment
+                val currentFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+                when (currentFragment) {
+                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
+                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
+                }
             }
         }
 
@@ -494,7 +507,7 @@ class HomeNewActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
                 if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                     freeTrialDialogActivity()
-                }else{
+                } else {
                     if (DashboardChecklistManager.facialScanStatus) {
                         startActivity(
                             Intent(
@@ -668,25 +681,6 @@ class HomeNewActivity : BaseActivity() {
                     binding.userName.text = ResponseObj.userdata.firstName
                     val tvGreetingText = findViewById<TextView>(R.id.greetingText)
                     tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
-
-                    val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
-                    /*        if (countDown < 7) {
-                                binding.tvCountDown.text = "${countDown + 1}/7"
-                                binding.llCountDown.visibility = View.VISIBLE
-                                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                                isTrialExpired = false
-                                isCountDownVisible = true
-                            } else {
-                                binding.llCountDown.visibility = View.GONE
-                                isCountDownVisible = false
-                                if (!DashboardChecklistManager.paymentStatus) {
-                                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
-                                    isTrialExpired = true
-                                } else {
-                                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                                    isTrialExpired = false
-                                }
-                            }*/
 
                     if (ResponseObj.isReportGenerated && !ResponseObj.reportView) {
                         binding.rightLifeReportCard.visibility = View.VISIBLE
@@ -862,7 +856,7 @@ class HomeNewActivity : BaseActivity() {
             } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
                 showTrailEndedBottomSheet()
                 false // Return false if condition is true and dialog is shown
-            }else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
                 showSubsciptionEndedBottomSheet()
                 false // Return false if condition is true and dialog is shown
             } else {
@@ -872,6 +866,7 @@ class HomeNewActivity : BaseActivity() {
         return true
 
     }
+
     private fun showTrailEndedBottomSheet() {
         DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
@@ -2777,8 +2772,8 @@ class HomeNewActivity : BaseActivity() {
                         promotionResponse2, ChecklistResponse::class.java
                     )
                     sharedPreferenceManager.saveChecklistResponse(checklistResponse)
-                     handleChecklistResponse(checklistResponse) 
-                    
+                    handleChecklistResponse(checklistResponse)
+
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -2789,6 +2784,7 @@ class HomeNewActivity : BaseActivity() {
             }
         })
     }
+
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
         if (checklistResponse != null) {
             checklistResponse.data.snap_mealId?.let { snapMealId ->
@@ -2801,5 +2797,10 @@ class HomeNewActivity : BaseActivity() {
     private fun freeTrialDialogActivity() {
         val intent = Intent(this, BeginMyFreeTrialActivity::class.java)
         startActivity(intent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        countDownTimer?.cancel()
     }
 }

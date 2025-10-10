@@ -32,10 +32,12 @@ import java.util.List;
 public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.ViewHolder> {
     private LayoutInflater inflater;
     private Context ctx;
+    private String categoryName;
     ArrayList<Episode> contentList;
-    public SeriesListAdapter(Context context,ArrayList<Episode> contentList) {
+    public SeriesListAdapter(Context context,ArrayList<Episode> contentList,String categoryName) {
         this.ctx = context;
         this.contentList = contentList;
+        this.categoryName = categoryName;
         this.inflater = LayoutInflater.from(context);
 
     }
@@ -63,7 +65,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
         String result = formatTimeInMinSec(contentList.get(position).getMeta().getDuration()); // Output: "2.19 min"
         holder.tv_time.setText(result);
         holder.tv_time.setVisibility(View.VISIBLE);
-        holder.category.setText(contentList.get(position).getTags().get(0).getName());
+        holder.category.setText(categoryName);//contentList.get(position).getTags().get(0).getName());
         //holder.tv_author_name.setText(contentList.get(position).getArtist().get(0).getFirstName()+" "+contentList.get(position).getArtist().get(0).getLastName());
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
             Glide.with(ctx)
