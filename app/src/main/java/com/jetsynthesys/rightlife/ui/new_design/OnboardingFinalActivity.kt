@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -22,11 +23,8 @@ class OnboardingFinalActivity : BaseActivity() {
     private lateinit var textView1: TextView
     private lateinit var textView2: TextView
     private lateinit var tvRefresh: TextView
-    private lateinit var llOnboardingFinal1: LinearLayout
-    private lateinit var llOnboardingFinal2: LinearLayout
-    private lateinit var llOnboardingFinal3: LinearLayout
-    private lateinit var llOnboardingFinal4: LinearLayout
 
+    private var currentRotation = 0f // Keeps track of total rotation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +35,6 @@ class OnboardingFinalActivity : BaseActivity() {
         textView1 = findViewById(R.id.textview1)
         textView2 = findViewById(R.id.textview2)
         tvRefresh = findViewById(R.id.tv_refresh)
-        llOnboardingFinal1 = findViewById(R.id.ll_final_onboarding1)
-        llOnboardingFinal2 = findViewById(R.id.ll_final_onboarding2)
-        llOnboardingFinal3 = findViewById(R.id.ll_final_onboarding3)
-        llOnboardingFinal4 = findViewById(R.id.ll_final_onboarding4)
 
         val loggedInUsers = sharedPreferenceManager.loggedUserList
 
@@ -73,45 +67,80 @@ class OnboardingFinalActivity : BaseActivity() {
 
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
-            changeUI(1)
+            changeUI(0)
             handler.postDelayed({
-                changeUI(2)
+                changeUI(1)
                 handler.postDelayed({
-                    changeUI(3)
-                    startActivity(Intent(this@OnboardingFinalActivity, WelcomeActivity::class.java))
+                    changeUI(2)
+                    //startActivity(Intent(this@OnboardingFinalActivity, WelcomeActivity::class.java))
+                    handler.postDelayed({
+                        changeUI(3)
+                        //startActivity(Intent(this@OnboardingFinalActivity, WelcomeActivity::class.java))
+                    }, 1000)
                 }, 1000)
             }, 1000)
         }, 1000)
 
     }
 
-    private fun changeUI(position: Int) {
+  /*  private fun changeUI(position: Int) {
         when (position) {
             1 -> {
                 imageRefresh.setImageResource(R.drawable.icon_refresh50)
                 tvRefresh.text = "50 %"
-                llOnboardingFinal2.visibility = View.VISIBLE
-                imageFinalOnboarding.setImageResource(R.drawable.final_onboarding2)
             }
 
             2 -> {
                 imageRefresh.setImageResource(R.drawable.icon_refresh70)
                 tvRefresh.text = "70 %"
-                llOnboardingFinal2.visibility = View.VISIBLE
-                llOnboardingFinal3.visibility = View.VISIBLE
                 imageFinalOnboarding.setImageResource(R.drawable.final_onboarding3)
             }
 
             3 -> {
                 imageRefresh.setImageResource(R.drawable.icon_refresh70)
                 tvRefresh.text = "100 %"
-                llOnboardingFinal2.visibility = View.VISIBLE
-                llOnboardingFinal3.visibility = View.VISIBLE
-                llOnboardingFinal4.visibility = View.VISIBLE
                 imageFinalOnboarding.setImageResource(R.drawable.final_onboarding4)
             }
 
         }
 
+    }*/
+
+
+
+    private var totalRotation = 0f // Keeps total cumulative rotation
+
+    private fun changeUI(position: Int) {
+        // Increment total rotation by 90° every time
+        totalRotation += 90f
+
+        // Animate always clockwise
+        imageRefresh.animate()
+            .rotation(totalRotation)
+            .setDuration(300)
+            .setInterpolator(LinearInterpolator()) // Optional: smooth consistent speed
+            .start()
+
+        // Update text or other UI
+        when (position) {
+            0 -> {
+                tvRefresh.text = "20 %"
+                imageFinalOnboarding.setImageResource(R.drawable.final_onboarding1)
+            }
+            1 -> {
+                tvRefresh.text = "50 %"
+                imageFinalOnboarding.setImageResource(R.drawable.final_onboarding2)
+            }
+            2 -> {
+                tvRefresh.text = "70 %"
+                imageFinalOnboarding.setImageResource(R.drawable.final_onboarding3)
+            }
+            3 -> {
+                tvRefresh.text = "100 %"
+                imageFinalOnboarding.setImageResource(R.drawable.final_onboarding4)
+            }
+        }
     }
+
+
 }

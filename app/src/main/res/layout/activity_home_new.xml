@@ -18,7 +18,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 android:background="#F7F7F7"
                 android:orientation="vertical">
 
@@ -66,6 +66,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/relative_profileImage"
+                        android:layout_toStartOf="@+id/llCountDown"
                         android:orientation="vertical">
 
                         <TextView
@@ -84,6 +85,9 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/dmsans_bold"
                             android:gravity="center"
+                            android:ellipsize="end"
+                            android:text=""
+                            android:singleLine="true"
                             android:textColor="@color/txt_color_header"
                             android:textSize="@dimen/textsize_medium" />
                     </LinearLayout>
@@ -97,6 +101,7 @@
                         android:paddingHorizontal="5dp"
                         android:paddingVertical="2dp"
                         android:gravity="center_vertical"
+                        android:visibility="invisible"
                         android:background="@drawable/roundedcornerborderred"
                         android:layout_height="wrap_content">
 
