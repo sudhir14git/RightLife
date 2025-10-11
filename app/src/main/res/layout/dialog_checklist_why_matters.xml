@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="400dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_food_item"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/checklistDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <!-- Title -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!-- Title -->
+            <TextView
+                android:id="@+id/titleText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center"
+                android:text="Here’s Why It Matters"
+                android:textColor="#000000"
+                android:textSize="@dimen/textsize_large18sp" />
+
+            <ImageView
+                android:id="@+id/ivClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/close_journal"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <!-- Bordered container -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ScrollView
+                android:id="@+id/scrollview_dialog"
+                android:layout_width="match_parent"
+                android:layout_height="550dp"
+                android:layout_marginBottom="10dp"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:id="@+id/boxContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/introText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_card_16dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Completing your checklist helps set your baseline and personalizes your RightLife.  "
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_large" />
+
+                    <TextView
+                        android:id="@+id/introText2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Smart logging, Deep-dive insights."
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_large" />
+
+                    <TextView
+                        android:id="@+id/introText3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_card_16dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Here’s what’s waiting for you on the other side:"
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_large" />
+
+                    <!-- Eat Section -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/eatright_headericon"
+                        android:drawablePadding="10dp"
+                        android:text="Eat"
+                        android:textColor="#000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Get meal insights, nutrient tracking, and food logging tailored to your goals."
+
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_large" />
+
+                    <!-- Move Section -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:drawableStart="@drawable/moverightsvg"
+                        android:drawablePadding="10dp"
+                        android:text="Move"
+                        android:textColor="#000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="See activity trends, heart rate zones, and movement suggestions and insights."
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_large" />
+
+                    <!-- Sleep Section -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:drawableStart="@drawable/sleeprightsvg"
+                        android:drawablePadding="10dp"
+                        android:text="Sleep"
+                        android:textColor="#000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Understand your sleep patterns, consistency, and get smarter wind-down tips."
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_large" />
+
+                    <!-- Think Section -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:drawableStart="@drawable/thinkrightsvg"
+                        android:drawablePadding="10dp"
+                        android:text="Think"
+                        android:textColor="#000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Access affirmations, mood logging, and guided mental wellness tools."
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_large" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="The sooner you complete it, the sooner your health journey truly begins."
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_large" />
+                </LinearLayout>
+            </ScrollView>
+            <!-- Button -->
+            <Button
+                android:id="@+id/btn_close"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_below="@+id/scrollview_dialog"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/button_background_filled"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Let’s Do This!"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textsize_large"
+                app:backgroundTint="@color/menuselected" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

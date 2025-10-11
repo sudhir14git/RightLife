@@ -138,7 +138,7 @@ class HomeDashboardFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //(requireActivity() as? HomeNewActivity)?.showHeader(true)
+        (requireActivity() as? HomeNewActivity)?.showHeader(true)
         fetchDashboardData()
         getAiDashboard()
 
@@ -172,7 +172,7 @@ class HomeDashboardFragment : BaseFragment() {
             startActivity(Intent(requireContext(), PastReportActivity::class.java))
         }
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
-            DialogUtils.showCheckListQuestionCommonDialog(requireContext(), "Why Checklist?")
+            DialogUtils.showWhyChecklistMattersDialog(requireContext(), "Here’s Why It Matters")
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.WHY_CHECKLIST_CLICK)
             /*startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
                 //putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
@@ -181,7 +181,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.FINISH_TO_UNLOCK_CLICK)
-            DialogUtils.showCheckListQuestionCommonDialog(requireContext())
+            DialogUtils.showWhyChecklistMattersDialog(requireContext())
         }
 
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {

@@ -489,16 +489,34 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
-                if (checkTrailEndedAndShowDialog()) {
-                    AnalyticsLogger.logEvent(
-                        this@HomeNewActivity,
-                        AnalyticsEvent.EOS_SNAP_MEAL_CLICK
-                    )
-                    ActivityUtils.startEatRightReportsActivity(
-                        this@HomeNewActivity,
-                        "SnapMealTypeEat",
-                        ""
-                    )
+                if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                    freeTrialDialogActivity()
+                } else {
+                    if (snapMealId.isNotEmpty()) {
+                        if (checkTrailEndedAndShowDialog()) {
+                            AnalyticsLogger.logEvent(
+                                this@HomeNewActivity,
+                                AnalyticsEvent.EOS_SNAP_MEAL_CLICK
+                            )
+                            ActivityUtils.startEatRightReportsActivity(
+                                this@HomeNewActivity,
+                                "SnapMealTypeEat",
+                                ""
+                            )
+                        }else{
+
+                        }
+                    } else {
+                        AnalyticsLogger.logEvent(
+                            this@HomeNewActivity,
+                            AnalyticsEvent.EOS_SNAP_MEAL_CLICK
+                        )
+                        ActivityUtils.startEatRightReportsActivity(
+                            this@HomeNewActivity,
+                            "SnapMealTypeEat",
+                            ""
+                        )
+                    }
                 }
             }
 
@@ -702,6 +720,40 @@ class HomeNewActivity : BaseActivity() {
         })
     }
 
+    private fun checkTrailEndedAndShowDialog(): Boolean {
+        /*return if (!DashboardChecklistManager.paymentStatus) {
+            showTrailEndedBottomSheet()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+                false
+            } else {
+                true // Return true if condition is false
+            }
+        }
+        return true*/
+        return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+                false
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+                showTrailEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+                showSubsciptionEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else {
+                true
+            }
+        }
+        return true
+
+    }
+
     private fun checkForUpdate() {
         val remoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
@@ -775,6 +827,7 @@ class HomeNewActivity : BaseActivity() {
 
     }
 
+
     private fun updateMenuSelection(selectedMenuId: Int) {
         // Reset both to unselected
         binding.iconHome.setImageResource(R.drawable.new_home_unselected_svg)
@@ -799,41 +852,6 @@ class HomeNewActivity : BaseActivity() {
                 binding.labelExplore.setTypeface(null, Typeface.BOLD)
             }
         }
-    }
-
-
-    private fun checkTrailEndedAndShowDialog(): Boolean {
-        /*return if (!DashboardChecklistManager.paymentStatus) {
-            showTrailEndedBottomSheet()
-            false // Return false if condition is true and dialog is shown
-        } else {
-            if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this)
-                false
-            } else {
-                true // Return true if condition is false
-            }
-        }
-        return true*/
-        return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
-            freeTrialDialogActivity()
-            false // Return false if condition is true and dialog is shown
-        } else {
-            if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this)
-                false
-            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
-                showTrailEndedBottomSheet()
-                false // Return false if condition is true and dialog is shown
-            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
-                showSubsciptionEndedBottomSheet()
-                false // Return false if condition is true and dialog is shown
-            } else {
-                true
-            }
-        }
-        return true
-
     }
 
     private fun showTrailEndedBottomSheet() {

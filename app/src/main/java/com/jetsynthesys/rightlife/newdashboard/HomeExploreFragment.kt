@@ -85,7 +85,7 @@ class HomeExploreFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //(requireActivity() as? HomeNewActivity)?.showHeader(false)
+        (requireActivity() as? HomeNewActivity)?.showHeader(false)
 
         // Initialize Handler and Runnable for Auto-Sliding
         sliderHandler = Handler(Looper.getMainLooper())
