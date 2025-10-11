@@ -124,6 +124,7 @@ class HomeNewActivity : BaseActivity() {
     private lateinit var snapMealId: String
     private lateinit var binding: ActivityHomeNewBinding
     private var isAdd = true
+    private var showheaderFlag = false
     var isTrialExpired = false
     private var isCountDownVisible = false
     var isHealthCamFree = true
@@ -503,7 +504,7 @@ class HomeNewActivity : BaseActivity() {
                                 "SnapMealTypeEat",
                                 ""
                             )
-                        }else{
+                        } else {
 
                         }
                     } else {
@@ -694,7 +695,19 @@ class HomeNewActivity : BaseActivity() {
                     Log.d("isHealthCamFree", isHealthCamFree.toString())
                     handleUserSubscriptionStatus(ResponseObj.user_sub_status)
                     if (ResponseObj.freeServiceDate.isNotEmpty()) {
-                        binding.llCountDown.visibility = View.VISIBLE
+                        /*if (showheaderFlag) {
+                            binding.llCountDown.visibility = View.VISIBLE
+                        }*/
+                        // Get the current fragment
+                        val currentFragment =
+                            supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+
+                        // Check if it's HomeDashboardFragment
+                        if (currentFragment is HomeDashboardFragment) {
+                            binding.llCountDown.visibility = View.VISIBLE
+                        } else {
+                            binding.llCountDown.visibility = View.GONE
+                        }
                         showSevenDayCountdown(ResponseObj.freeServiceDate, binding.tvDays)
                     } else {
                         binding.tvDays.text = ""
@@ -933,6 +946,7 @@ class HomeNewActivity : BaseActivity() {
     }*/
 
     fun showHeader(show: Boolean) {
+        showheaderFlag = show
         binding.llCountDown.visibility = if (show && isCountDownVisible) View.VISIBLE else View.GONE
     }
 
