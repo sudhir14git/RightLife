@@ -110,7 +110,7 @@ class WellnessFocusListActivity : BaseActivity() {
                     btnContinue.isEnabled = true
                 } else {
                     btnContinue.backgroundTintList = colorStateList
-                    btnContinue.isEnabled = true
+                    btnContinue.isEnabled = false
                 }
             }
 
@@ -177,7 +177,7 @@ class WellnessFocusListActivity : BaseActivity() {
                         btnContinue.isEnabled = true
                     } else {
                         btnContinue.backgroundTintList = colorStateList
-                        btnContinue.isEnabled = true
+                        btnContinue.isEnabled = false
                     }
 
                 } else {

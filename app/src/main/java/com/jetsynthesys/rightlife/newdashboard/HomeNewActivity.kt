@@ -451,7 +451,7 @@ class HomeNewActivity : BaseActivity() {
             includedhomebottomsheet.llJournal.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
                 //if (checkTrailEndedAndShowDialog()) {
-                    ActivityUtils.startJournalListActivity(this@HomeNewActivity)
+                ActivityUtils.startJournalListActivity(this@HomeNewActivity)
                 //}
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
@@ -489,16 +489,34 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
-                if (checkTrailEndedAndShowDialog()) {
-                    AnalyticsLogger.logEvent(
-                        this@HomeNewActivity,
-                        AnalyticsEvent.EOS_SNAP_MEAL_CLICK
-                    )
-                    ActivityUtils.startEatRightReportsActivity(
-                        this@HomeNewActivity,
-                        "SnapMealTypeEat",
-                        ""
-                    )
+                if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                    freeTrialDialogActivity()
+                } else {
+                    if (snapMealId.isNotEmpty()) {
+                        if (checkTrailEndedAndShowDialog()) {
+                            AnalyticsLogger.logEvent(
+                                this@HomeNewActivity,
+                                AnalyticsEvent.EOS_SNAP_MEAL_CLICK
+                            )
+                            ActivityUtils.startEatRightReportsActivity(
+                                this@HomeNewActivity,
+                                "SnapMealTypeEat",
+                                ""
+                            )
+                        }else{
+
+                        }
+                    } else {
+                        AnalyticsLogger.logEvent(
+                            this@HomeNewActivity,
+                            AnalyticsEvent.EOS_SNAP_MEAL_CLICK
+                        )
+                        ActivityUtils.startEatRightReportsActivity(
+                            this@HomeNewActivity,
+                            "SnapMealTypeEat",
+                            ""
+                        )
+                    }
                 }
             }
 
@@ -702,6 +720,40 @@ class HomeNewActivity : BaseActivity() {
         })
     }
 
+    private fun checkTrailEndedAndShowDialog(): Boolean {
+        /*return if (!DashboardChecklistManager.paymentStatus) {
+            showTrailEndedBottomSheet()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+                false
+            } else {
+                true // Return true if condition is false
+            }
+        }
+        return true*/
+        return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+                false
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+                showTrailEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+                showSubsciptionEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else {
+                true
+            }
+        }
+        return true
+
+    }
+
     private fun checkForUpdate() {
         val remoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
@@ -775,6 +827,7 @@ class HomeNewActivity : BaseActivity() {
 
     }
 
+
     private fun updateMenuSelection(selectedMenuId: Int) {
         // Reset both to unselected
         binding.iconHome.setImageResource(R.drawable.new_home_unselected_svg)
@@ -799,41 +852,6 @@ class HomeNewActivity : BaseActivity() {
                 binding.labelExplore.setTypeface(null, Typeface.BOLD)
             }
         }
-    }
-
-
-    private fun checkTrailEndedAndShowDialog(): Boolean {
-        /*return if (!DashboardChecklistManager.paymentStatus) {
-            showTrailEndedBottomSheet()
-            false // Return false if condition is true and dialog is shown
-        } else {
-            if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this)
-                false
-            } else {
-                true // Return true if condition is false
-            }
-        }
-        return true*/
-        return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
-            freeTrialDialogActivity()
-            false // Return false if condition is true and dialog is shown
-        } else {
-            if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this)
-                false
-            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
-                showTrailEndedBottomSheet()
-                false // Return false if condition is true and dialog is shown
-            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
-                showSubsciptionEndedBottomSheet()
-                false // Return false if condition is true and dialog is shown
-            } else {
-                true
-            }
-        }
-        return true
-
     }
 
     private fun showTrailEndedBottomSheet() {
@@ -2756,7 +2774,7 @@ class HomeNewActivity : BaseActivity() {
 
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
         if (checklistResponse != null) {
-            checklistResponse.data.snap_mealId?.let { snapMealId ->
+            checklistResponse.data.snap_mealId.let { snapMealId ->
                 sharedPreferenceManager.saveSnapMealId(snapMealId)
                 this.snapMealId = snapMealId
             }
@@ -2771,6 +2789,8 @@ class HomeNewActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
+    }
+
     private fun myHealthFragmentSelected() {
         if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
             binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE

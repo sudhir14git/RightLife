@@ -183,7 +183,7 @@ class UserInterestActivity : BaseActivity() {
                     selectedInterests.add(topic)
                 binding.btnSaveInterest.backgroundTintList =
                     if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected
-                //binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
+                binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
 
                 val chip = Chip(this).apply {
                     text = topic.topic
@@ -243,7 +243,7 @@ class UserInterestActivity : BaseActivity() {
 
                         binding.btnSaveInterest.backgroundTintList =
                             if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected
-                       // binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
+                       binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
                     }
                 }
                 chipGroup.addView(chip)

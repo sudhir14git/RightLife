@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.DialogChecklistQuestionsBinding
+import com.jetsynthesys.rightlife.databinding.DialogChecklistWhyMattersBinding
 import com.jetsynthesys.rightlife.databinding.DialogJournalCommonBinding
 import com.jetsynthesys.rightlife.databinding.DialogPlaylistCreatedBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
@@ -77,6 +78,30 @@ object DialogUtils {
     ) {
         val dialog = Dialog(context)
         val binding = DialogChecklistQuestionsBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(binding.root)
+        dialog.setCancelable(true)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val window = dialog.window
+        // Set the dim amount
+        val layoutParams = window!!.attributes
+        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
+        window.attributes = layoutParams
+
+        binding.titleText.text = header
+
+        // Handle close button click
+        binding.btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+    fun showWhyChecklistMattersDialog(
+        context: Context,
+        header: String = "Here’s Why It Matters"
+    ) {
+        val dialog = Dialog(context)
+        val binding = DialogChecklistWhyMattersBinding.inflate(LayoutInflater.from(context))
         dialog.setContentView(binding.root)
         dialog.setCancelable(true)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
