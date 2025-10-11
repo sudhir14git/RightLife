@@ -20,6 +20,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.chipsmodulefilter.ModuleChipCategory
 import com.jetsynthesys.rightlife.databinding.ActivityNewCategorylistBinding
 import com.jetsynthesys.rightlife.databinding.PopupCategoryListBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
@@ -74,11 +75,11 @@ class NewCategoryListActivity : BaseActivity() {
                         if (success) {
                             item.isBookmarked = !item.isBookmarked
                             val msg = if (item.isBookmarked) {
-                                "Added To Bookmarks"
+                                "Added To Your Saved Items"
                             } else {
-                                "Removed From Bookmarks"
+                                "Removed From Saved Items"
                             }
-                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                            showCustomToast(msg, item.isBookmarked)
                             adapter.notifyItemChanged(position)
                         } else {
                             Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT)

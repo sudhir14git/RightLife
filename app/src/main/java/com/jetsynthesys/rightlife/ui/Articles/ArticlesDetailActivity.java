@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -59,6 +58,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.jetsynthesys.rightlife.ShowCustomToastKt.showCustomToast;
 
 public class ArticlesDetailActivity extends BaseActivity {
     private static final String VIDEO_URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"; // Free content URL
@@ -521,11 +522,11 @@ public class ArticlesDetailActivity extends BaseActivity {
                     String jsonResponse = gson.toJson(response.body());
                     String message = "";
                     if (isBookmark) {
-                        message = "Added To Bookmarks";
+                        message = "Added To Your Saved Items";
                     } else {
-                        message = "Removed From Bookmarks";
+                        message = "Removed From Saved Items";
                     }
-                    Toast.makeText(ArticlesDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                    showCustomToast(ArticlesDetailActivity.this, message, isBookmark);
 
 
                 } else {

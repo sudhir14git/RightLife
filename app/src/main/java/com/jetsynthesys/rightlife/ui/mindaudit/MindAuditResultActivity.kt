@@ -905,7 +905,7 @@ class MindAuditResultActivity : BaseActivity() {
 
 
         //if (allAssessments.isNotEmpty()) {
-        addChip("Other")
+        addChip("Others")
         //}
 
         suggestedAssessmentString = allAssessments
@@ -996,7 +996,7 @@ class MindAuditResultActivity : BaseActivity() {
             if (selectedChip.text.toString() == "Sleep Audit") {
 
             } else {
-                if (selectedChip.text.toString() == "Other") {
+                if (selectedChip.text.toString() == "Others") {
                     binding.llOtherSection.visibility = View.VISIBLE
                     binding.scrollviewResult.visibility = View.GONE
                     binding.rlAssessmentNotTaken.visibility = View.GONE

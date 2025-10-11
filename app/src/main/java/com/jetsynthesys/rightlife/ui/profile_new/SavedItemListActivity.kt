@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivitySavedItemListBinding
 import com.jetsynthesys.rightlife.databinding.PopupCategoryListBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.profile_new.adapter.SavedItemsAdapter
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.BookMarkContentDetails
@@ -55,11 +56,11 @@ class SavedItemListActivity : BaseActivity() {
                     if (success) {
                         item.isBookmarked = !item.isBookmarked
                         val msg = if (item.isBookmarked) {
-                            "Added To Bookmarks"
+                            "Added To Your Saved Items"
                         } else {
-                            "Removed From Bookmarks"
+                            "Removed From Saved Items"
                         }
-                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                        showCustomToast(msg, item.isBookmarked)
                         contentDetails.removeAt(position)
                         adapter.notifyDataSetChanged()
                     } else {

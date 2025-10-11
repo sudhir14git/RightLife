@@ -62,6 +62,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.shawnlin.numberpicker.NumberPicker
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -130,41 +131,52 @@ class ProfileNewActivity : BaseActivity() {
 
         // Non-editable field click listeners
         binding.llAge.setOnClickListener {
+            it.disableViewForSeconds()
             showAgeSelectionBottomSheet()
         }
         binding.arrowAge.setOnClickListener {
+            it.disableViewForSeconds()
             showAgeSelectionBottomSheet()
         }
 
         binding.tvGender.setOnClickListener {
+            it.disableViewForSeconds()
             showGenderSelectionBottomSheet()
         }
         binding.arrowGender.setOnClickListener {
+            it.disableViewForSeconds()
             showGenderSelectionBottomSheet()
         }
 
         binding.tvHeight.setOnClickListener {
+            it.disableViewForSeconds()
             showHeightSelectionBottomSheet(userData.gender)
         }
         binding.arrowHeight.setOnClickListener {
+            it.disableViewForSeconds()
             showHeightSelectionBottomSheet(userData.gender)
         }
 
         binding.tvWeight.setOnClickListener {
+            it.disableViewForSeconds()
             showWeightSelectionBottomSheet(userData.gender)
         }
         binding.arrowWeight.setOnClickListener {
+            it.disableViewForSeconds()
             showWeightSelectionBottomSheet(userData.gender)
         }
 
         binding.arrowDeleteAccount.setOnClickListener {
+            it.disableViewForSeconds()
             startActivity(Intent(this, DeleteAccountSelectionActivity::class.java))
         }
         binding.llDeleteAccount.setOnClickListener {
+            it.disableViewForSeconds()
             startActivity(Intent(this, DeleteAccountSelectionActivity::class.java))
         }
 
         binding.ivEditProfile.setOnClickListener {
+            it.disableViewForSeconds()
             showImagePickerDialog()
         }
 
@@ -180,6 +192,7 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         binding.btnSave.setOnClickListener {
+            it.disableViewForSeconds()
             saveData()
         }
         binding.ivBack.setOnClickListener {
