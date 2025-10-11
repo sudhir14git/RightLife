@@ -451,7 +451,7 @@ class HomeNewActivity : BaseActivity() {
             includedhomebottomsheet.llJournal.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
                 //if (checkTrailEndedAndShowDialog()) {
-                    ActivityUtils.startJournalListActivity(this@HomeNewActivity)
+                ActivityUtils.startJournalListActivity(this@HomeNewActivity)
                 //}
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
@@ -649,7 +649,7 @@ class HomeNewActivity : BaseActivity() {
                     }
                     binding.userName.text = ResponseObj.userdata.firstName
                     val tvGreetingText = findViewById<TextView>(R.id.greetingText)
-                    tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
+                    tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + ","
 
                     if (ResponseObj.isReportGenerated && !ResponseObj.reportView) {
                         binding.rightLifeReportCard.visibility = View.VISIBLE
@@ -2756,7 +2756,7 @@ class HomeNewActivity : BaseActivity() {
 
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
         if (checklistResponse != null) {
-            checklistResponse.data.snap_mealId?.let { snapMealId ->
+            checklistResponse.data.snap_mealId.let { snapMealId ->
                 sharedPreferenceManager.saveSnapMealId(snapMealId)
                 this.snapMealId = snapMealId
             }
@@ -2771,6 +2771,8 @@ class HomeNewActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
+    }
+
     private fun myHealthFragmentSelected() {
         if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
             binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE

@@ -237,7 +237,6 @@
                                 android:id="@+id/img_rledit"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
                                 android:src="@drawable/img_rledittop" />
 
                             <!-- Workshop Tag on Top of Image -->
@@ -305,6 +304,12 @@
                                 android:textColor="#0B1215"
                                 android:textSize="@dimen/textsize_extrasmall" />
                         </RelativeLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#DDDDDD"
+                            android:layout_marginHorizontal="10dp"/>
 
                         <RelativeLayout
                             android:id="@+id/relative_rledit2"
@@ -427,6 +432,11 @@
 
                             </LinearLayout>
                         </RelativeLayout>
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#DDDDDD"
+                            android:layout_marginHorizontal="10dp"/>
                         <!--story2 -->
                         <RelativeLayout
                             android:id="@+id/relative_rledit3"
@@ -904,7 +914,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:id="@+id/rl_wellness_main"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_height="wrap_content">
 
                 <androidx.cardview.widget.CardView
@@ -961,7 +971,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="@dimen/textsize_medium"
-                                    android:layout_toLeftOf="@id/img1"
+                                    android:layout_toStartOf="@id/img1"
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
@@ -980,40 +990,29 @@
                                         android:layout_width="wrap_content"
                                         android:src="@drawable/ic_tag"
                                         android:layout_marginStart="10dp"
+                                        android:layout_marginVertical="14dp"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentStart="true"
-                                        android:layout_alignParentBottom="true"
-                                        android:layout_margin="@dimen/textsize_medium"
-
                                         app:tint="@color/thinkright" />
 
                                     <TextView
                                         android:id="@+id/tv1"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentLeft="true"
-                                        android:layout_alignParentBottom="true"
-
-                                        android:layout_below="@+id/tv1_header"
-                                        android:drawablePadding="5dp"
                                         android:fontFamily="@font/dmsans_regular"
-
                                         android:text="Positivity"
+                                        android:layout_marginStart="4dp"
                                         android:textSize="@dimen/textsize_small" />
 
                                     <TextView
                                         android:id="@+id/tv1_viewcount"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentBottom="true"
-                                        android:layout_margin="@dimen/textsize_medium"
-                                        android:layout_toRightOf="@+id/tv1"
-                                        android:drawableStart="@drawable/ic_eye"
+                                        android:layout_margin="14dp"
                                         android:drawablePadding="5dp"
                                         android:fontFamily="@font/dmsans_regular"
-                                        android:layout_alignBaseline="@+id/tv1"
                                         android:text="243"
-                                        android:textSize="@dimen/textsize_small" />
+                                        android:textSize="@dimen/textsize_small"
+                                        app:drawableStartCompat="@drawable/ic_eye" />
                                 </LinearLayout>
                             </RelativeLayout>
 
@@ -1054,7 +1053,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="@dimen/textsize_medium"
-                                    android:layout_toLeftOf="@id/img2"
+                                    android:layout_toStartOf="@id/img2"
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
@@ -1073,34 +1072,27 @@
                                         android:layout_width="wrap_content"
                                         android:src="@drawable/ic_tag"
                                         android:layout_marginStart="10dp"
+                                        android:layout_marginVertical="14dp"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentStart="true"
-                                        android:layout_alignParentBottom="true"
-                                        android:layout_margin="@dimen/textsize_medium"
                                         app:tint="@color/thinkright" />
 
                                     <TextView
                                         android:id="@+id/tv2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentLeft="true"
-                                        android:layout_alignParentBottom="true"
                                         android:fontFamily="@font/dmsans_regular"
                                         android:text="Yoga"
-                                        android:layout_below="@+id/tv2_header"
+                                        android:layout_marginStart="4dp"
                                         android:textSize="@dimen/textsize_small" />
 
                                     <TextView
                                         android:id="@+id/tv2_viewcount"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentBottom="true"
                                         android:layout_margin="@dimen/textsize_medium"
-                                        android:layout_toRightOf="@+id/tv2"
                                         android:drawableStart="@drawable/ic_eye"
                                         android:drawablePadding="5dp"
                                         android:fontFamily="@font/dmsans_regular"
-                                        android:layout_alignBaseline="@+id/tv2"
                                         android:text="243"
                                         android:textSize="@dimen/textsize_small" />
                                 </LinearLayout>
@@ -1143,7 +1135,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="@dimen/textsize_medium"
-                                    android:layout_toLeftOf="@id/img3"
+                                    android:layout_toStartOf="@id/img3"
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
@@ -1162,19 +1154,15 @@
                                         android:layout_width="wrap_content"
                                         android:src="@drawable/ic_tag"
                                         android:layout_marginStart="10dp"
+                                        android:layout_marginVertical="14dp"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentStart="true"
-                                        android:layout_alignParentBottom="true"
-                                        android:layout_margin="@dimen/textsize_medium"
                                         app:tint="@color/thinkright" />
 
                                     <TextView
                                         android:id="@+id/tv3"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentLeft="true"
-                                        android:layout_alignParentBottom="true"
-                                        android:layout_below="@+id/tv3_header"
+                                        android:layout_marginStart="4dp"
                                         android:fontFamily="@font/dmsans_regular"
                                         android:text="Sleep &amp; Performance"
                                         android:textSize="@dimen/textsize_small" />
@@ -1183,15 +1171,12 @@
                                         android:id="@+id/tv3_viewcount"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentBottom="true"
                                         android:layout_margin="@dimen/textsize_medium"
-                                        android:layout_toRightOf="@+id/tv3"
-                                        android:drawableStart="@drawable/ic_eye"
                                         android:drawablePadding="5dp"
                                         android:fontFamily="@font/dmsans_regular"
                                         android:text="243"
-                                        android:layout_alignBaseline="@+id/tv3"
-                                        android:textSize="@dimen/textsize_small" />
+                                        android:textSize="@dimen/textsize_small"
+                                        app:drawableStartCompat="@drawable/ic_eye" />
                                 </LinearLayout>
                             </RelativeLayout>
 
@@ -1226,7 +1211,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="@dimen/textsize_medium"
-                                    android:layout_toLeftOf="@id/img4"
+                                    android:layout_toStartOf="@id/img4"
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
@@ -1245,19 +1230,15 @@
                                         android:layout_width="wrap_content"
                                         android:src="@drawable/ic_tag"
                                         android:layout_marginStart="10dp"
+                                        android:layout_marginVertical="14dp"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentStart="true"
-                                        android:layout_alignParentBottom="true"
-                                        android:layout_margin="@dimen/textsize_medium"
                                         app:tint="@color/thinkright" />
 
                                     <TextView
                                         android:id="@+id/tv4"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentLeft="true"
-                                        android:layout_alignParentBottom="true"
-                                        android:layout_below="@+id/tv4_header"
+                                        android:layout_marginStart="4dp"
                                         android:fontFamily="@font/dmsans_regular"
                                         android:text="Recipes &amp; Cooking"
                                         android:textSize="@dimen/textsize_small" />
@@ -1266,15 +1247,12 @@
                                         android:id="@+id/tv4_viewcount"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_alignParentBottom="true"
                                         android:layout_margin="@dimen/textsize_medium"
-                                        android:layout_toRightOf="@+id/tv4"
-                                        android:drawableStart="@drawable/ic_eye"
                                         android:drawablePadding="5dp"
                                         android:fontFamily="@font/dmsans_regular"
                                         android:text="243"
-                                        android:layout_alignBaseline="@+id/tv4"
-                                        android:textSize="@dimen/textsize_small" />
+                                        android:textSize="@dimen/textsize_small"
+                                        app:drawableStartCompat="@drawable/ic_eye" />
                                 </LinearLayout>
                             </RelativeLayout>
                         </LinearLayout>
@@ -1314,8 +1292,6 @@
                             android:id="@+id/btn_wellness_preference"
                             android:layout_width="150dp"
                             android:layout_height="40dp"
-                            android:layout_alignParentBottom="true"
-                            android:layout_centerHorizontal="true"
                             android:backgroundTint="@color/color_godeeper_orange"
                             android:paddingStart="20dp"
                             android:layout_marginTop="10dp"
@@ -1356,7 +1332,7 @@
                     android:drawableTint="#984C00"
                     android:fontFamily="@font/merriweather_bold"
                     android:gravity="start"
-                    android:text="Think Right"
+                    android:text="ThinkRight"
                     android:textColor="#984C00"
                     android:textSize="@dimen/textsize_extralarge"
                     android:textStyle="bold" />
@@ -1597,7 +1573,7 @@
                     android:drawableTint="@color/move_text_color"
                     android:fontFamily="@font/merriweather_bold"
                     android:gravity="start"
-                    android:text="Move Right"
+                    android:text="MoveRight"
                     android:textColor="@color/move_text_color"
                     android:textSize="@dimen/textsize_extralarge" />
 
@@ -1838,7 +1814,7 @@
                     android:drawableTint="#00543A"
                     android:fontFamily="@font/merriweather_bold"
                     android:gravity="start"
-                    android:text="Eat Right"
+                    android:text="EatRight"
                     android:textColor="#00553A"
                     android:textSize="@dimen/textsize_extralarge" />
 
@@ -2085,7 +2061,7 @@
                     android:drawableTint="#002C5F"
                     android:fontFamily="@font/merriweather_bold"
                     android:gravity="start"
-                    android:text="Sleep Right"
+                    android:text="SleepRight"
                     android:textColor="#002C5F"
                     android:textSize="@dimen/textsize_extralarge"
                     android:textStyle="bold" />

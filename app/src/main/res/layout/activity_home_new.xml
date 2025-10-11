@@ -54,6 +54,7 @@
                             android:background="@drawable/circle_shape"
                             android:backgroundTint="@color/white"
                             android:padding="2dp"
+                            android:visibility="gone"
                             android:src="@drawable/rounded_image"
                             app:tint="@color/dark_green" />
 
@@ -300,7 +301,7 @@
 
                     <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
                         android:layout_width="match_parent"
-                        android:layout_height="140dp"
+                        android:layout_height="142dp"
                         android:layout_gravity="center" />
 
                     <LinearLayout
@@ -309,7 +310,7 @@
                         android:layout_height="136dp"
                         android:orientation="vertical"
                         android:paddingHorizontal="16dp"
-                        android:layout_marginHorizontal="2dp"
+                        android:layout_marginHorizontal="4dp"
                         android:background="@drawable/roundedcornerbutton_medium"
                         android:backgroundTint="@color/white"
                         android:clipToPadding="false"
@@ -328,10 +329,10 @@
 
                             <ImageView
                                 android:id="@+id/nextArrowFreeTrial"
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:src="@drawable/next_arrow" />
+                                android:src="@drawable/forward_arrow_free_trial" />
                         </RelativeLayout>
 
                         <TextView
