@@ -33,6 +33,7 @@ import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse
 import com.jetsynthesys.rightlife.databinding.ActivityContentDetailsBinding
 import com.jetsynthesys.rightlife.shortVibrate
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall
@@ -551,7 +552,12 @@ class ContentDetailsActivity : BaseActivity() {
                     )
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
-                    Utils.showCustomToast(this@ContentDetailsActivity, response.message())
+                    val message = if (isBookmark) {
+                        "Added To Your Saved Items"
+                    } else {
+                        "Removed From Saved Items"
+                    }
+                    showCustomToast(message, isBookmark)
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

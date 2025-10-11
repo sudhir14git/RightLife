@@ -46,7 +46,7 @@
                     android:id="@+id/img_jump_back_in_next"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/next_arrow_dashboard"
+                    android:src="@drawable/forward_arrow_free_trial"
                     android:layout_margin="16dp"
                     android:layout_alignParentEnd="true" />
 
@@ -56,7 +56,7 @@
                     android:layout_margin="16dp"
                     android:text="Jump Back In"
                     android:textSize="18sp"
-                    android:fontFamily="@font/dmsans_bold"
+                    android:fontFamily="@font/merriweather_bold"
                     android:textColor="@color/txt_color_header" />
 
                 <androidx.recyclerview.widget.RecyclerView

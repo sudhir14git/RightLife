@@ -15,6 +15,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityJumpBackInBinding
 import com.jetsynthesys.rightlife.databinding.PopupJumpBackInBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
 import com.jetsynthesys.rightlife.newdashboard.model.ContentResponse
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
@@ -59,7 +60,7 @@ class JumpInBackActivity : BaseActivity() {
                         } else {
                             "Removed From Saved Items"
                         }
-                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                        showCustomToast(msg, it.isBookmarked)
                         adapter.notifyDataSetChanged()
                     } else {
                         Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT).show()
