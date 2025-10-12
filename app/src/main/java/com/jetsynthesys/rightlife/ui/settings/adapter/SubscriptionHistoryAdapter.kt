@@ -24,7 +24,7 @@ class SubscriptionHistoryAdapter(
         fun bind(plan: Subscription, position: Int) {
             binding.planName.text = plan.planInfo
             binding.planDescription.text = plan.name
-            binding.trialEnds.text = DateTimeUtils.convertAPIDate(plan.endDateTime)
+            binding.trialEnds.text = "Valid Till "+DateTimeUtils.convertAPIDate(plan.endDateTime)
             binding.tvPlanAmmount.text = "\u20B9" + plan.orderInfo?.amountPaid.toString()
 
             if (type == 1) {

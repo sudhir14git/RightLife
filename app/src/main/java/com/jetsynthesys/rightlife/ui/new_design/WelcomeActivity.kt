@@ -19,7 +19,7 @@ class WelcomeActivity : BaseActivity() {
 
         val textView = findViewById<TextView>(R.id.textview1)
 
-        val originalText = "Welcome! \nBegin Your RightLife Transformation."
+        val originalText = "Begin Your RightLife Transformation."
 
         val spannable = SpannableString(originalText)
 

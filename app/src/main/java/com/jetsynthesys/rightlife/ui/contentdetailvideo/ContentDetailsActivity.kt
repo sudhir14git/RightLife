@@ -669,12 +669,7 @@ class ContentDetailsActivity : BaseActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (Util.SDK_INT >= 24) {
-            releasePlayer()
-        }
-    }
+
 
     private fun releasePlayer() {
         if (::player.isInitialized) {
@@ -684,7 +679,7 @@ class ContentDetailsActivity : BaseActivity() {
 
     }
 
-    override fun onDestroy() {
+/*    override fun onDestroy() {
         super.onDestroy()
         if (::mediaPlayer.isInitialized) {
             callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
@@ -692,7 +687,7 @@ class ContentDetailsActivity : BaseActivity() {
         }
         handler.removeCallbacks(updateProgress)
         Log.d("contentDetails", "onDestroyCalled")
-    }
+    }*/
 
 
     private fun callTrackAPI(watchDuration: Double) {
@@ -752,6 +747,53 @@ class ContentDetailsActivity : BaseActivity() {
             logContentWatchedEvent()
         } else {
             logContentWatchedEventAudio()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // Pause video
+        if (::player.isInitialized && player.isPlaying) {
+            player.pause()
+        }
+
+        // Pause audio
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Do NOT release here; keep player alive for resume
+        // Only release in onDestroy()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::player.isInitialized) {
+            callTrackAPI(player.currentPosition.toDouble() / 1000)
+            player.release()
+        }
+
+        if (::mediaPlayer.isInitialized) {
+            callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
+            mediaPlayer.release()
+        }
+        handler.removeCallbacks(updateProgress)
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        if (::player.isInitialized && !player.isPlaying) {
+            player.playWhenReady = false // don’t auto-play unless user taps play
+        }
+
+        if (::mediaPlayer.isInitialized && !mediaPlayer.isPlaying) {
+            // keep paused until user presses play
         }
     }
 

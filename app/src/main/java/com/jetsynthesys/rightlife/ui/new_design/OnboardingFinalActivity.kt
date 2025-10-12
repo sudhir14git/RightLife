@@ -75,7 +75,7 @@ class OnboardingFinalActivity : BaseActivity() {
                     //startActivity(Intent(this@OnboardingFinalActivity, WelcomeActivity::class.java))
                     handler.postDelayed({
                         changeUI(3)
-                        //startActivity(Intent(this@OnboardingFinalActivity, WelcomeActivity::class.java))
+                        startActivity(Intent(this@OnboardingFinalActivity, WelcomeActivity::class.java))
                     }, 1000)
                 }, 1000)
             }, 1000)
