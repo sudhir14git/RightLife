@@ -41,6 +41,7 @@ open class BaseFragment : Fragment() {
     }
 
     fun handleNoInternetView(e: Throwable) {
+        if (!isAdded || context == null) return
         /*when (e) {
             is IOException ->
                 baseBinding.noInternetView.visibility = View.VISIBLE

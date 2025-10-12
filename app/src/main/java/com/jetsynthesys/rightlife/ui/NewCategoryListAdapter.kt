@@ -34,8 +34,11 @@ class NewCategoryListAdapter(
 
             binding.itemText.text = item.contentType ?: "Untitled"
             binding.tvTitle.text = item.title
-            binding.tvLeftTime.text = item.leftDuration
-            binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.date)
+            if ("TEXT".equals(item.contentType, ignoreCase = true))
+                binding.tvLeftTime.text = item.readingTime +" m"
+            else
+                binding.tvLeftTime.text = item.leftDuration
+            binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.createdAt)
             binding.tvName.text = item.categoryName
 
             binding.imgSave.setImageResource(if (item.isBookmarked) R.drawable.save_jump_in_back else R.drawable.unsave_jump_in_back)

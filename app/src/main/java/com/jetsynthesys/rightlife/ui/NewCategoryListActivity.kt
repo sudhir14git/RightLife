@@ -436,6 +436,8 @@ class NewCategoryListActivity : BaseActivity() {
 
                     val newItems = responseObj.data?.contentList ?: emptyList()
                     contentDetails.addAll(newItems)
+                    binding.tvNoData.visibility = if (contentDetails.isEmpty())
+                        View.VISIBLE else View.GONE
                     adapter.notifyDataSetChanged()
                     skip += newItems.size
                 }
