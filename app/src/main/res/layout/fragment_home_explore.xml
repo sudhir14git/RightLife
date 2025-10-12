@@ -1404,7 +1404,7 @@
                                         android:id="@+id/imageThinkRightCategory1"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight=".4"
+                                        android:layout_weight=".6"
                                         android:src="@drawable/emotional" />
 
                                     <TextView
@@ -1412,7 +1412,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
-                                        android:layout_weight=".6"
+                                        android:layout_weight=".4"
                                         android:fontFamily="@font/merriweather_bold"
                                         android:gravity="center"
                                         android:text="Positivity"
@@ -1437,14 +1437,14 @@
                                         android:id="@+id/imageThinkRightCategory2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight=".4"
+                                        android:layout_weight=".6"
                                         android:src="@drawable/stressmanagement" />
 
                                     <TextView
                                         android:id="@+id/tvThinkRightCategory2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight=".6"
+                                        android:layout_weight=".4"
                                         android:fontFamily="@font/merriweather_bold"
                                         android:gravity="center"
                                         android:text="Stress\nManagement"

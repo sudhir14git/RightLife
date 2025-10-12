@@ -403,7 +403,7 @@ class HomeExploreFragment : BaseFragment() {
         getPromotionList2() // ModuleService pane
         getRightLifeEdit()
 
-        getAffirmations()
+        //getAffirmations()
 
         getWellnessPlaylist()
 

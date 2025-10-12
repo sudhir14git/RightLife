@@ -20,15 +20,24 @@
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:gravity="center_horizontal">
-
+        <TextView
+            android:id="@+id/textview3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/merriweather_bold"
+            android:gravity="center"
+            android:textSize="22dp"
+            android:text="Welcome!"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/txt_color_header"/>
         <TextView
             android:id="@+id/textview1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:gravity="center"
             android:textSize="18sp"
-            android:text="Welcome! \nBegin Your RightLife Transformation."
+            android:text="Begin Your RightLife Transformation."
             android:layout_marginTop="20dp"
             android:textColor="@color/txt_color_header"/>
 

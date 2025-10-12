@@ -704,6 +704,7 @@ class HomeNewActivity : BaseActivity() {
 
                         // Check if it's HomeDashboardFragment
                         if (currentFragment is HomeDashboardFragment) {
+                            if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status !=3)
                             binding.llCountDown.visibility = View.VISIBLE
                         } else {
                             binding.llCountDown.visibility = View.GONE
@@ -2602,7 +2603,7 @@ class HomeNewActivity : BaseActivity() {
                 // Toast.makeText(this, "Your subscription has ended. Renew to regain access.", Toast.LENGTH_LONG).show()
                 binding.flFreeTrial.visibility = View.GONE
                 binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
-                binding.llFreeTrailExpired.visibility = View.VISIBLE
+                binding.llFreeTrailExpired.visibility = View.GONE
             }
 
             else -> {
@@ -2615,7 +2616,7 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    // handle user subsciption Status Code Explanation imp dont delete
+    // handle user subsciption Status Code Explanation imp Don't delete
     /*USER_SUB_STATUS = 0
 
     0 - New User(Free Trail Not Started) -  trial starts on API Hit
