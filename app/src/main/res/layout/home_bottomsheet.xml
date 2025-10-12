@@ -4,28 +4,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    android:background="@color/colorTransperent">
+    android:background="@color/red"
+    android:clickable="false"
+    android:focusable="false">
 
     <LinearLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/toproundedcornershape"
         android:orientation="vertical"
-        android:padding="5dp"
         android:focusable="true"
         android:clickable="true"
         android:visibility="gone">
-
+        <ImageView
+            android:layout_width="match_parent"
+            android:background="@drawable/bg_transperent_box"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:minHeight="250dp"
+            android:layout_height="match_parent"/>
 
         <LinearLayout
             android:id="@+id/ll_bottomsheet_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:background="@android:color/white"
+
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:paddingHorizontal="5dp"
+            android:background="@drawable/toproundedcornershape"
+
             android:orientation="vertical">
 
             <TextView

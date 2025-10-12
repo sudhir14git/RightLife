@@ -214,20 +214,24 @@ class HomeDashboardFragment : BaseFragment() {
                 freeTrialDialogActivity()
             } else {
                 permissionManager = PermissionManager(
-                    activity = requireActivity(), // or just `this` in Activity
+                    activity = requireActivity(),
                     launcher = permissionLauncher,
                     onPermissionGranted = {
-                        ActivityUtils.startMealScanActivity(requireContext(), snapMealId)
+                        // If local value empty, try from shared prefs
+                        val safeSnapMealId = if (snapMealId.isNotBlank()) snapMealId
+                        else sharedPreferenceManager.snapMealId ?: ""
+
+                        // Always send empty string safely
+                        ActivityUtils.startMealScanActivity(requireContext(), safeSnapMealId)
                     },
                     onPermissionDenied = {
-                        // ❌ Show user-facing message or disable features
-                        Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
                     }
                 )
                 permissionManager.checkAndRequestPermissions()
             }
         }
+
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
@@ -295,7 +299,7 @@ class HomeDashboardFragment : BaseFragment() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+  /*  @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private suspend fun requestPermissionsAndReadAllData() {
         try {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
@@ -336,7 +340,82 @@ class HomeDashboardFragment : BaseFragment() {
             } else {
                 Toast.makeText(requireContext(), "Permissions Denied", Toast.LENGTH_SHORT).show()
             }
+        }*/
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private suspend fun requestPermissionsAndReadAllData() {
+        try {
+            // Get already granted permissions
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+
+            if (allReadPermissions.all { it in granted }) {
+                // ✅ All permissions already granted → mark checklist completed
+                markHealthSyncChecklistCompleted()
+            } else {
+                // 🚀 Ask user for permissions
+                requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            try {
+                val allGranted = permissions.values.all { it }
+
+                if (allGranted) {
+                    Toast.makeText(requireContext(), "Permissions Granted", Toast.LENGTH_SHORT).show()
+                    // ✅ Permissions granted by user → update checklist
+                    markHealthSyncChecklistCompleted()
+                } else {
+                    Toast.makeText(requireContext(), "Permissions Denied", Toast.LENGTH_SHORT).show()
+                    // ❌ Do NOT mark checklist complete here
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+    /**
+     * ✅ Helper function to update checklist on server ONLY after permission confirmed.
+     */
+    private fun markHealthSyncChecklistCompleted() {
+        lifecycleScope.launch {
+            try {
+                CommonAPICall.updateChecklistStatus(
+                    requireContext(),
+                    "sync_health_data",
+                    AppConstants.CHECKLIST_COMPLETED
+                ) { status ->
+                    if (status) {
+                        // 🔁 Refresh checklist UI
+                        lifecycleScope.launch {
+                            getDashboardChecklist()
+                        }
+                        Toast.makeText(
+                            requireContext(),
+                            "Health data sync marked as completed",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Failed to update checklist on server",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "Error updating checklist", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     //getDashboardChecklist
     private fun getDashboardChecklist() {
@@ -449,10 +528,11 @@ class HomeDashboardFragment : BaseFragment() {
             sharedPreferenceManager.saveSnapMealId(snapMealId)
             this.snapMealId = snapMealId
         }*/
-        checklistResponse.data.snap_mealId.let { snapMealId ->
-            sharedPreferenceManager.saveSnapMealId(snapMealId)
-            this.snapMealId = snapMealId
-        }
+        val mealId = checklistResponse.data.snap_mealId ?: ""
+        sharedPreferenceManager.saveSnapMealId(mealId)
+        this.snapMealId = mealId
+
+
         getDashboardChecklistStatus()
     }
 
@@ -841,4 +921,8 @@ class HomeDashboardFragment : BaseFragment() {
         val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
         startActivity(intent)
     }
+
+
+
+
 }

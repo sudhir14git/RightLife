@@ -311,6 +311,12 @@ class HomeNewActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback {
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                }
+
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
@@ -356,6 +362,11 @@ class HomeNewActivity : BaseActivity() {
 
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                }
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
@@ -365,6 +376,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             } else {
                 bottom_sheet.visibility = View.VISIBLE
+                binding.includedhomebottomsheet.bottomSheetParent.visibility = View.VISIBLE
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(
                     Color.parseColor(
                         "#CC000000"
@@ -409,6 +421,11 @@ class HomeNewActivity : BaseActivity() {
         binding.menuHome.setOnClickListener {
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                }
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 binding.fab.animate().rotationBy(180f).setDuration(60)
                     .setInterpolator(DecelerateInterpolator()).withEndAction {
@@ -605,6 +622,13 @@ class HomeNewActivity : BaseActivity() {
         }
         binding.tvStriketroughPrice.paintFlags =
             binding.tvStriketroughPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+        Log.d("UI_DEBUG", """
+    flFreeTrial visible=${binding.flFreeTrial.visibility}
+    flFreeTrial clickable=${binding.flFreeTrial.isClickable}
+    flFreeTrial enabled=${binding.flFreeTrial.isEnabled}
+    homeBottomSheet visible=${binding.includedhomebottomsheet.root.visibility}
+""".trimIndent())
     }
 
     override fun onResume() {
@@ -704,8 +728,8 @@ class HomeNewActivity : BaseActivity() {
 
                         // Check if it's HomeDashboardFragment
                         if (currentFragment is HomeDashboardFragment) {
-                            if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status !=3)
-                            binding.llCountDown.visibility = View.VISIBLE
+                            if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status != 3)
+                                binding.llCountDown.visibility = View.VISIBLE
                         } else {
                             binding.llCountDown.visibility = View.GONE
                         }
@@ -2580,6 +2604,7 @@ class HomeNewActivity : BaseActivity() {
                 //Toast.makeText(this, "Welcome! Start your free trial.", Toast.LENGTH_LONG).show()
                 // maybe trigger free trial flow here
                 binding.flFreeTrial.visibility = View.VISIBLE
+                makeFreeTrialVisible()
                 binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                 binding.llFreeTrailExpired.visibility = View.GONE
             }
@@ -2614,6 +2639,20 @@ class HomeNewActivity : BaseActivity() {
                 ).show()
             }
         }
+
+    }
+
+    private fun makeFreeTrialVisible() {
+        binding.flFreeTrial.apply {
+            visibility = View.VISIBLE        // <-- must be visible
+            isClickable = true               // <-- ensures touch can be received
+            isFocusable = true
+            setOnClickListener {
+                Log.d("FreeTrialDebug", "Clicked!") // should appear in Logcat now
+                startActivity(Intent(this@HomeNewActivity, BeginMyFreeTrialActivity::class.java))
+            }
+        }
+
     }
 
     // handle user subsciption Status Code Explanation imp Don't delete
@@ -2808,7 +2847,12 @@ class HomeNewActivity : BaseActivity() {
 
     private fun myHealthFragmentSelected() {
         if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
-            binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+            binding.includedhomebottomsheet.bottomSheetParent.apply {
+                isClickable = false
+                isFocusable = false
+                visibility = View.GONE
+            }
+            binding.includedhomebottomsheet.bottomSheetParent.visibility = View.GONE
             binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
             binding.fab.animate().rotationBy(180f).setDuration(60)
                 .setInterpolator(DecelerateInterpolator()).withEndAction {

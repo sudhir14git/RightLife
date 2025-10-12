@@ -25,6 +25,10 @@ public class Userdata {
     @SerializedName("newEmailStatus")
     @Expose
     private String newEmailStatus;
+     @SerializedName("newPhoneStatus")
+    @Expose
+    private String newPhoneStatus;
+
     @SerializedName("notificationConfiguration")
     @Expose
     private NotificationConfiguration notificationConfiguration;
@@ -261,5 +265,13 @@ public class Userdata {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public String getNewPhoneStatus() {
+        return newPhoneStatus;
+    }
+
+    public void setNewPhoneStatus(String newPhoneStatus) {
+        this.newPhoneStatus = newPhoneStatus;
     }
 }
