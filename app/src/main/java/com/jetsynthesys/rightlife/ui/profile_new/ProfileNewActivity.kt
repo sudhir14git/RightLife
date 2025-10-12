@@ -190,6 +190,14 @@ class ProfileNewActivity : BaseActivity() {
                 generateOtp("+91$mobileNumber")
             }
         }
+        if ("VERIFIED".equals(userData.newPhoneStatus, ignoreCase = false)) {
+            binding.btnVerify.isEnabled = false
+            binding.btnVerify.text = "Verified"
+        } else {
+            binding.btnVerify.isEnabled = true
+            binding.btnVerify.text = "Verify"
+        }
+
 
         binding.btnSave.setOnClickListener {
             it.disableViewForSeconds()
@@ -208,8 +216,20 @@ class ProfileNewActivity : BaseActivity() {
             binding.etLastName.setText(userData.lastName)
         if (userData.email != null)
             binding.etEmail.setText(userData.email)
-        if (userData.phoneNumber != null)
-            binding.etMobile.setText(userData.phoneNumber)
+        /*if (userData.phoneNumber != null)
+            binding.etMobile.setText(userData.phoneNumber)*/
+
+        userData.phoneNumber?.let { number ->
+            // Remove all non-digit characters (in case number has spaces or symbols)
+            val digitsOnly = number.filter { it.isDigit() }
+
+            // Take the last 10 digits safely (works even if number is shorter)
+            val lastTenDigits = if (digitsOnly.length >= 10) digitsOnly.takeLast(10) else digitsOnly
+
+            binding.etMobile.setText(lastTenDigits)
+        }
+
+
         if (userData.age != null)
             binding.tvAge.text = userData.age.toString() + " years"
         if (userData.gender == "M")

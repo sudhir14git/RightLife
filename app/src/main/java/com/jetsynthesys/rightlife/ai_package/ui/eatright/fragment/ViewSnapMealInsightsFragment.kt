@@ -106,13 +106,23 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                startActivity(Intent(context, HomeNewActivity::class.java))
+                /*startActivity(Intent(context, HomeNewActivity::class.java))
+                requireActivity().finish()*/
+                val intent = Intent(requireContext(), HomeNewActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT) // ✅ bring existing one to front
+                }
+                startActivity(intent)
                 requireActivity().finish()
             }
         })
 
         backButton.setOnClickListener {
-            startActivity(Intent(context, HomeNewActivity::class.java))
+            /*startActivity(Intent(context, HomeNewActivity::class.java))
+            requireActivity().finish()*/
+            val intent = Intent(requireContext(), HomeNewActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            }
+            startActivity(intent)
             requireActivity().finish()
         }
 

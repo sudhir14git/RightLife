@@ -776,6 +776,7 @@ class MindAuditResultActivity : BaseActivity() {
 
     private fun setRainbowView(score: Int) {
         binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
         binding.rainbowView.setRainbowColors(getColorArrayForScore(score))
         binding.rainbowView.setStrokeWidth(60f)
         binding.rainbowView.setArcSpacing(8f)
@@ -783,6 +784,7 @@ class MindAuditResultActivity : BaseActivity() {
 
     private fun setRainbowViewCAS(score: Int) {
         binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
         binding.rainbowView.setRainbowColors(getColorArrayForScoreCAS(score))
         binding.rainbowView.setStrokeWidth(60f)
         binding.rainbowView.setArcSpacing(8f)
@@ -790,6 +792,7 @@ class MindAuditResultActivity : BaseActivity() {
 
     private fun setHappinessRainbowView(score: Float) {
         binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
         binding.rainbowView.setRainbowColors(getColorArrayForHappinessScore(score))
         binding.rainbowView.setStrokeWidth(40f)
         binding.rainbowView.setArcSpacing(8f)

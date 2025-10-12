@@ -202,6 +202,7 @@
                             android:layout_width="300dp"
                             android:layout_height="200dp"
                             android:layout_gravity="center"
+                            android:visibility="invisible"
                             android:layout_centerHorizontal="true"
                             />
 
@@ -666,7 +667,8 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_margin="12dp"
+
+                        android:layout_marginVertical="12dp"
                         app:cardCornerRadius="@dimen/margin_card_16dp"
                         android:elevation="5dp"
                         android:id="@+id/cardview_mainscore"
@@ -723,7 +725,7 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_margin="12dp"
+                        android:layout_marginVertical="12dp"
                         app:cardCornerRadius="@dimen/margin_card_16dp"
                         android:elevation="5dp"
                         android:id="@+id/cardview_mainscore2"
@@ -781,7 +783,7 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_margin="12dp"
+                        android:layout_marginVertical="12dp"
                         app:cardCornerRadius="@dimen/margin_card_16dp"
                         android:elevation="5dp"
                         android:id="@+id/cardview_mainscore3"
@@ -876,9 +878,9 @@ While you do that here are some suggestion to help you in your journey."
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/merriweather_bold"
                     android:padding="16dp"
-                    android:text="You May Also Like"
+                    android:text="Recommended For You"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/textsize_large18sp"
                     android:layout_alignParentStart="true" />
 
                 <TextView
@@ -913,6 +915,7 @@ While you do that here are some suggestion to help you in your journey."
                         android:layout_width="match_parent"
                         android:layout_marginBottom="30dp"
                         android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
                         android:layout_centerHorizontal="true" />
                 </RelativeLayout>
             </LinearLayout>

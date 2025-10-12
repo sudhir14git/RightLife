@@ -195,13 +195,22 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
                 "DASS-21" -> {
                     when (showType.lowercase()) {
                         "anxiety" -> {
-                            assessmentTaken.interpretations.anxiety?.let { showAnxiety(it, assessmentTaken) }
+                            assessmentTaken.interpretations.anxiety?.let {
+                                showAnxiety(it, assessmentTaken)
+                                binding.titleToolbar.text = "Anxiety"
+                            }
                         }
                         "depression" -> {
-                            assessmentTaken.interpretations.depression?.let { showDepression(it, assessmentTaken) }
+                            assessmentTaken.interpretations.depression?.let {
+                                showDepression(it, assessmentTaken)
+                                binding.titleToolbar.text = "Depression"
+                            }
                         }
                         "stress" -> {
-                            assessmentTaken.interpretations.stress?.let { showStress(it, assessmentTaken) }
+                            assessmentTaken.interpretations.stress?.let {
+                                showStress(it, assessmentTaken)
+                                binding.titleToolbar.text = "Stress"
+                            }
                         }
                         else -> {
                             // fallback: show all if no filter passed
