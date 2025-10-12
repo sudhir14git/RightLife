@@ -30,32 +30,32 @@ class BeginMyFreeTrialActivity : BaseActivity() {
 
     private val images = listOf(
         R.drawable.planinfo1,
-        R.drawable.planinfo2,
         R.drawable.planinfo3,
+        R.drawable.planinfo2,
         R.drawable.planinfo4,
-        R.drawable.planinfo5,
         R.drawable.planinfo6,
-        R.drawable.planinfo
+        R.drawable.planinfo,
+        R.drawable.planinfo5
     )
 
     private val headers = listOf(
         "Comprehensive health insights with only a phone",
-        "Monitor your vitals effortlessly",
-        "Smart nutrition tracking, personalised for you",
+        "Smart nutrition tracking, personalized for you.",
+        "Monitor your vitals effortlessly.",
         "Optimise your activity and performance",
-        "Strengthen your mind with powerful tools",
-        "Better sleep, deeper recovery, every night",
-        "Seamless health tracking, all in one place"
+        "Better sleep, deeper recovery, every night.",
+        "Seamless health tracking, all in one place.",
+        "Strengthen your mind with powerful tools."
     )
 
     private val descriptions = listOf(
         "Everyone deserves best-in-class health guidance.\nLog your stats, and we’ll handle the insights for you.",
-        "Scan your face for BP, stress and heart health insights and get expert guidance",
-        "Log meals effortlessly and track macros in real.\nStay hydrated and monitor weight trends with ease.",
+        "Log meals effortlessly and track macros in real time.\nStay hydrated and monitor weight trends with ease.",
+        "Use our face scan to check BP, stress, and heart health.\nGet expert-backed guidance to optimize your vitals.",
         "Monitor daily activity(heart rates, steps,calories) and analyze workout/vital data for enhanced recovery.",
-        "Track moods, journal, and practice guided breathing.\nUse affirmations and audits to build mental resilience.",
-        "Track your sleep stages and consistency, then relax with guided sounds and personalised sleep insights.",
-        "Automatically sync data from your wearable.\nMake your data more actionable with deeper insight."
+        "Monitor sleep stages, consistency, and ideal rest.\nRelax with guided sleep sounds and personalized insights.",
+        "Automatically sync data from your wearable.\n Make your data more actionable with deeper insights.",
+        "Track moods, journal, and practice guided breathing.\nUse affirmations and audits to build mental resilience."
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -272,7 +272,7 @@
         android:id="@+id/btn_enable_notification"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_below="@id/scollView"
+        android:layout_alignParentBottom="true"
         android:layout_marginHorizontal="36dp"
         android:layout_marginVertical="24dp"
         android:backgroundTint="@color/menuselected"
