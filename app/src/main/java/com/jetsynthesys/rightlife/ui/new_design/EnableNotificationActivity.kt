@@ -108,9 +108,9 @@ class EnableNotificationActivity : BaseActivity() {
         val requestBody = mapOf("pushNotification" to true)
         CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
             showToast(message)
-            finishAffinity()
             sharedPreferenceManager.enableNotification = true
             startActivity(Intent(this, OnboardingFinalActivity::class.java))
+            finishAffinity()
         }
     }
 

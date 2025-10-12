@@ -197,7 +197,7 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                                 Intent(
                                     this@OnboardingQuestionnaireActivity,
                                     HomeNewActivity::class.java
-                                ).putExtra("FRAGMENT", "MY_HEALTH")
+                                ).putExtra("FRAGMENT", "OPEN_MY_HEALTH")
                             )
                         finishAffinity()
                         SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity)
