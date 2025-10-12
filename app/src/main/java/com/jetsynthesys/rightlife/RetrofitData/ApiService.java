@@ -1300,6 +1300,11 @@ public interface ApiService {
             @Query("contentType") String contentType
     );
 
+    @GET("user/get-mind-audit-details")
+    Call<ResponseBody> getMindAuditDays(
+            @Header("Authorization") String authToken
+    );
+
 }
 
 

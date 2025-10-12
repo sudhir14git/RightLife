@@ -41,6 +41,7 @@ class MindAuditResultActivity : BaseActivity() {
     private var reportId: String? = null
     private var isFrom: String? = null
     private var isFromThinkRight = false
+    private var MindAuditDateCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +61,8 @@ class MindAuditResultActivity : BaseActivity() {
             }
         })
 
+        getMindAuditCountDays()
+
         binding.btnTakeAssessment.setOnClickListener {
             //startActivity(Intent(this, MindAuditFromActivity::class.java))
             val intent = Intent(
@@ -71,7 +74,7 @@ class MindAuditResultActivity : BaseActivity() {
         }
 
         binding.tvCheckprogressDays.setOnClickListener {
-            if (selectedAssessment == "Other") {
+            if (selectedAssessment == "Others") {
                 startActivity(Intent(this, MindAuditFromActivity::class.java).apply {
                     putExtra("IS_FROM_MIND_AUDIT_RESULT", true)
                 })
@@ -1000,11 +1003,14 @@ class MindAuditResultActivity : BaseActivity() {
                     binding.llOtherSection.visibility = View.VISIBLE
                     binding.scrollviewResult.visibility = View.GONE
                     binding.rlAssessmentNotTaken.visibility = View.GONE
+                    binding.tvCheckprogressDays.visibility =
+                        if (MindAuditDateCount == 0) View.VISIBLE else View.GONE
                     if (suggestedAssessmentString.isEmpty())
                         binding.tvOtherAssessment.visibility = View.GONE
                     else
                         binding.tvOtherAssessment.visibility = View.VISIBLE
                 } else {
+                    binding.tvCheckprogressDays.visibility = View.VISIBLE
                     binding.llOtherSection.visibility = View.GONE
                     binding.scrollviewResult.visibility = View.VISIBLE
                     getAssessmentResult(selectedChip.text.toString())
@@ -1443,5 +1449,42 @@ class MindAuditResultActivity : BaseActivity() {
         binding.recyclerView.layoutManager = horizontalLayoutManager
         binding.recyclerView.adapter = adapter
     }
+
+    private fun getMindAuditCountDays() {
+        val call = apiService.getMindAuditDays(
+            sharedPreferenceManager.accessToken
+        )
+
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonString = response.body()?.string()
+
+                    val responseObj: MindAuditResponse =
+                        gson.fromJson(jsonString, MindAuditResponse::class.java)
+                    MindAuditDateCount = responseObj.data.MindAuditDateCount
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+    data class MindAuditResponse(
+        val success: Boolean,
+        val statusCode: Int,
+        val data: MindAuditData
+    )
+
+    data class MindAuditData(
+        val MindAuditDateCount: Int,
+        val MindAuditBasicAssesmentDate: String
+    )
 
 }

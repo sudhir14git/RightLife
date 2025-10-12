@@ -562,15 +562,16 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
     private fun callTrackAPI(watchDuration: Double) {
         val contentData = ContentResponseObj.data
-        CommonAPICall.postSeriesContentPlayedProgress(
-            this,
-            contentData.meta.duration.toDouble(),
-            contentData.contentId,
-            watchDuration,
-            contentData.moduleId,
-            "SERIES",
-            contentData._id
-        )
+        if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
+            CommonAPICall.postSeriesContentPlayedProgress(
+                this,
+                contentData.meta.duration.toDouble(),
+                contentData.contentId,
+                watchDuration,
+                contentData.moduleId,
+                "SERIES",
+                contentData._id
+            )
     }
 
 
@@ -707,7 +708,10 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     val jsonResponse = gson.toJson(response.body())
                     val seriesResponseModel =
                         gson.fromJson(jsonResponse, SeriesResponse::class.java)
-                    setupEpisodeListData(seriesResponseModel.data.episodes,seriesResponseModel.data.categoryName?:"")
+                    setupEpisodeListData(
+                        seriesResponseModel.data.episodes,
+                        seriesResponseModel.data.categoryName
+                    )
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -721,7 +725,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
     }
 
     private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String) {
-        val adapter = SeriesListAdapter(this, contentList,categoryName)
+        val adapter = SeriesListAdapter(this, contentList, categoryName)
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvAllEpisodes.setLayoutManager(horizontalLayoutManager)
         binding.rvAllEpisodes.setAdapter(adapter)

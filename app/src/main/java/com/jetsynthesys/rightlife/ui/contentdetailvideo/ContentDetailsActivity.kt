@@ -670,7 +670,6 @@ class ContentDetailsActivity : BaseActivity() {
     }
 
 
-
     private fun releasePlayer() {
         if (::player.isInitialized) {
             callTrackAPI(player.currentPosition.toDouble() / 1000)
@@ -679,27 +678,28 @@ class ContentDetailsActivity : BaseActivity() {
 
     }
 
-/*    override fun onDestroy() {
-        super.onDestroy()
-        if (::mediaPlayer.isInitialized) {
-            callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
-            mediaPlayer.release()
-        }
-        handler.removeCallbacks(updateProgress)
-        Log.d("contentDetails", "onDestroyCalled")
-    }*/
+    /*    override fun onDestroy() {
+            super.onDestroy()
+            if (::mediaPlayer.isInitialized) {
+                callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
+                mediaPlayer.release()
+            }
+            handler.removeCallbacks(updateProgress)
+            Log.d("contentDetails", "onDestroyCalled")
+        }*/
 
 
     private fun callTrackAPI(watchDuration: Double) {
         val contentData = contentResponseObj.data
-        CommonAPICall.postVideoPlayedProgress(
-            this,
-            contentData.meta.duration.toDouble(),
-            contentId,
-            watchDuration,
-            contentData.moduleId,
-            contentData.contentType
-        )
+        if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
+            CommonAPICall.postVideoPlayedProgress(
+                this,
+                contentData.meta.duration.toDouble(),
+                contentId,
+                watchDuration,
+                contentData.moduleId,
+                contentData.contentType
+            )
     }
 
     // analytics logger
@@ -762,12 +762,6 @@ class ContentDetailsActivity : BaseActivity() {
         if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
             mediaPlayer.pause()
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        // Do NOT release here; keep player alive for resume
-        // Only release in onDestroy()
     }
 
     override fun onDestroy() {
