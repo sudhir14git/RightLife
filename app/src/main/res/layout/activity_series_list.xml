@@ -146,6 +146,7 @@
                 android:textSize="@dimen/textsize_medium"
                 android:maxLines="2"
                 android:layout_marginHorizontal="5dp"
+
                 android:ellipsize="end"
                 android:textColor="@color/txt_color_header"/>
             <androidx.recyclerview.widget.RecyclerView
@@ -153,7 +154,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="16dp"
+
                 android:overScrollMode="never"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"

@@ -18,9 +18,11 @@
             <RelativeLayout
                 android:id="@+id/rl_header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginHorizontal="16dp">
+                android:layout_height="70dp"
+                android:paddingTop="20dp"
+                android:background="@drawable/bg_home_gradient_new"
+                android:paddingHorizontal="@dimen/margin_card_16dp"
+                >
 
                 <RelativeLayout
                     android:id="@+id/relative_profileImage"
@@ -94,7 +96,7 @@
                     android:paddingHorizontal="5dp"
                     android:paddingVertical="2dp"
                     android:gravity="center_vertical"
-                    android:visibility="invisible"
+                    android:visibility="visible"
                     android:background="@drawable/roundedcornerborderred"
                     android:layout_height="wrap_content">
 
