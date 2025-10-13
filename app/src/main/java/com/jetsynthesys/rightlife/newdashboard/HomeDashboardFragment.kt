@@ -66,6 +66,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -154,6 +155,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
+            it.disableViewForSeconds()
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
             } else {
@@ -161,6 +163,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
+            it.disableViewForSeconds()
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
             } else {
@@ -169,9 +172,11 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.rlViewPastReports.setOnClickListener {
+            it.disableViewForSeconds()
             startActivity(Intent(requireContext(), PastReportActivity::class.java))
         }
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
+            it.disableViewForSeconds()
             DialogUtils.showWhyChecklistMattersDialog(requireContext(), "Here’s Why It Matters")
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.WHY_CHECKLIST_CLICK)
             /*startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
@@ -180,11 +185,13 @@ class HomeDashboardFragment : BaseFragment() {
             })*/
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
+            it.disableViewForSeconds()
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.FINISH_TO_UNLOCK_CLICK)
             DialogUtils.showWhyChecklistMattersDialog(requireContext())
         }
 
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
+            it.disableViewForSeconds()
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
             } else {
@@ -201,6 +208,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
+            it.disableViewForSeconds()
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
             } else {
@@ -210,6 +218,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
+            it.disableViewForSeconds()
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
             } else {
@@ -233,6 +242,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
+            it.disableViewForSeconds()
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
             } else {
@@ -263,12 +273,14 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardThinkRight.setOnClickListener {
+            it.disableViewForSeconds()
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 ActivityUtils.startThinkRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardEatRight.setOnClickListener {
+            it.disableViewForSeconds()
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 ActivityUtils.startEatRightReportsActivity(requireContext(), "Not")
@@ -276,12 +288,14 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardMoveRight.setOnClickListener {
+            it.disableViewForSeconds()
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 ActivityUtils.startMoveRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardSleepRight.setOnClickListener {
+            it.disableViewForSeconds()
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
@@ -846,6 +860,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         dialogBinding.btnExplorePlan.setOnClickListener {
+            it.disableViewForSeconds()
             bottomSheetDialog.dismiss()
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SUBSCRIBE_RIGHT_LIFE_CLICK)
             startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
