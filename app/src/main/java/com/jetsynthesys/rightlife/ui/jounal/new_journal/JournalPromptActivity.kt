@@ -7,15 +7,12 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityJournalPromptBinding
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -61,6 +58,12 @@ class JournalPromptActivity : BaseActivity() {
     <p>Gratitude Journaling has been shown to boost mood, shift perspective, and build emotional resilience.</p>
     <p>Even a few simple entries can help rewire your focus toward the positive.</p>
 """.trimIndent()
+            } else if (journalItem.title == "Bullet") {
+                """
+    <p>Bullet Journaling helps organize your inner world in small, manageable pieces.</p>
+    <p>Use it to list your moods, wins, worries, intentions—or anything else on your mind.</p>
+    <p>It’s a great option when you don’t feel like writing full paragraphs but still want to check in with yourself.</p>
+""".trimIndent()
             } else {
                 """
     <p>Grief Journaling is a safe place to hold pain, memories, questions, or anger.</p>
@@ -80,16 +83,18 @@ class JournalPromptActivity : BaseActivity() {
         // Setup RecyclerView
         adapter = PromptAdapter(questions4, object : PromptAdapter.OnItemClickListener {
             override fun onItemClick(question: Question) {
-                val intent =
-                    Intent(this@JournalPromptActivity, GriefJournalActivity::class.java).apply {
+                startActivity(
+                    Intent(
+                        this@JournalPromptActivity,
+                        GriefJournalActivity::class.java
+                    ).apply {
                         putExtra("Section", journalItem)
                         putExtra("Answer", question.question)
                         putExtra("QuestionList", questionsList)
                         putExtra("Position", questionsList.indexOf(question))
                         putExtra("StartDate", startDate)
                         putExtra("FROM_THINK_RIGHT", isFromThinkRight)
-                    }
-                startActivity(intent)
+                    })
             }
 
             override fun onSwapClick(question: Question, position: Int) {
