@@ -65,6 +65,10 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
         String result = formatTimeInMinSec(contentList.get(position).getMeta().getDuration()); // Output: "2.19 min"
         holder.tv_time.setText(result);
         holder.tv_time.setVisibility(View.VISIBLE);
+        if (contentList.get(position).getYoutubeUrl()!=null){
+            holder.tv_time.setVisibility(View.INVISIBLE);
+            holder.view_time_separator.setVisibility(View.INVISIBLE);
+        }
         holder.category.setText(categoryName);//contentList.get(position).getTags().get(0).getName());
         //holder.tv_author_name.setText(contentList.get(position).getArtist().get(0).getFirstName()+" "+contentList.get(position).getArtist().get(0).getLastName());
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
@@ -128,6 +132,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView,favorite_image,img_iconview;
         TextView textView,tv_author_name,tv_time,category;
+        View view_time_separator;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -135,6 +140,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
             textView = itemView.findViewById(R.id.item_text);
             tv_author_name = itemView.findViewById(R.id.tv_author_name);
             tv_time = itemView.findViewById(R.id.tv_time);
+            view_time_separator = itemView.findViewById(R.id.view_time_separator);
             category = itemView.findViewById(R.id.category);
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);

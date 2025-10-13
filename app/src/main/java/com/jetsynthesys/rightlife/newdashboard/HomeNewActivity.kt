@@ -173,6 +173,13 @@ class HomeNewActivity : BaseActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+       /* window.apply {
+            // Allow content to draw behind status bar
+            decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            statusBarColor = android.graphics.Color.TRANSPARENT // Transparent status bar
+        }*/
+
         binding = ActivityHomeNewBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
         this.let {
