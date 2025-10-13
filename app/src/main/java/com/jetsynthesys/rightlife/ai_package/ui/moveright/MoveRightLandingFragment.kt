@@ -452,7 +452,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val selectedDate = currentDateTime.format(formatter)
-                val response = ApiClient.apiServiceFastApi.getMoveLanding(
+                val response = ApiClient.apiServiceFastApiV2.getMoveLanding(
                     userId = userId,
                     date = selectedDate
                 )

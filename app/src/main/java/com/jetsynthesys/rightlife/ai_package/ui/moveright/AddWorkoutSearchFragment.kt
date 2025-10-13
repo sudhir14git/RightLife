@@ -118,6 +118,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         intensityProgressBar = view.findViewById(R.id.customSeekBar)
         hourPicker.minValue = 0
         hourPicker.maxValue = 23
+        hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+        minutePicker.selectedTextColor = Color.parseColor("#FD6967")
         minutePicker.minValue = 0
         minutePicker.maxValue = 59
         if (mSelectedDate.isNullOrEmpty()){
@@ -136,10 +138,14 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 val numbers = regex.findAll(timeStr).map { it.value.toInt() }.toList()
                 if (numbers.size > 1) {
                     hourPicker.value = numbers.getOrNull(0)!!
+                    hourPicker.selectedTextColor = Color.parseColor("#FD6967")
                     minutePicker.value = numbers.getOrNull(1)!!
+                    minutePicker.selectedTextColor = Color.parseColor("#FD6967")
                 }else{
                     hourPicker.value = 0
                     minutePicker.value = numbers.getOrNull(0)!!
+                    hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+                    minutePicker.selectedTextColor = Color.parseColor("#FD6967")
                 }
                 Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.workoutType}, Calorie ID: ${activityModel?.id}")
             }
@@ -354,11 +360,15 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             if (numbers.size > 1) {
                 hourPicker.value = numbers.getOrNull(0)!!
                 minutePicker.value = numbers.getOrNull(1)!!
+                hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+                minutePicker.selectedTextColor = Color.parseColor("#FD6967")
                 selectedTime = "${numbers.getOrNull(0)!!} hr ${numbers.getOrNull(1)!!} min"
             }else{
                 hourPicker.value = 0
                 minutePicker.value = numbers.getOrNull(0)!!
                 selectedTime = " ${numbers.getOrNull(0)!!} min"
+                hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+                minutePicker.selectedTextColor = Color.parseColor("#FD6967")
             }
             selectedIntensity = normalizeIntensity(activityModel?.intensity ?: "Low")
             // Set progress based on intensity (progress range is 0 to 1)
@@ -387,6 +397,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 hourPicker.value = numbers.getOrNull(0)!!/60
                 minutePicker.value = numbers.getOrNull(0)!!%60
                 selectedTime = "${numbers.getOrNull(0)!!} min"
+                hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+                minutePicker.selectedTextColor = Color.parseColor("#FD6967")
             }
             selectedIntensity = normalizeIntensity(workoutModel?.intensity ?: "Low")
             // Set progress based on intensity (progress range is 0 to 1)
@@ -423,6 +435,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             handler.post {
                 updateNumberPickerText(hourPicker)
                 updateNumberPickerText(minutePicker)
+                hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+                minutePicker.selectedTextColor = Color.parseColor("#FD6967")
             }
         }
 
@@ -473,6 +487,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
         hourPicker.setOnScrollListener { _, scrollState ->
             if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+                hourPicker.selectedTextColor = Color.parseColor("#FD6967")
                 // This is called when the user stops scrolling
                 // Now you can use selectedValue safely
                 Log.d("NumberPicker", "User stopped scrolling. Final value: $hourSelectedValue")
@@ -486,6 +501,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
         minutePicker.setOnScrollListener { _, scrollState ->
             if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+                minutePicker.selectedTextColor = Color.parseColor("#FD6967")
+
                 // This is called when the user stops scrolling
                 // Now you can use selectedValue safely
                 Log.d("NumberPicker", "User stopped scrolling. Final value: $minuteSelectedValue")
@@ -499,10 +516,14 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
         hourPicker.setOnValueChangedListener { _, _, newVal ->
             hourSelectedValue = newVal
+            hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+            minutePicker.selectedTextColor = Color.parseColor("#FD6967")
         }
 
         minutePicker.setOnValueChangedListener { _, _, newVal ->
             minuteSelectedValue = newVal
+            hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+            minutePicker.selectedTextColor = Color.parseColor("#FD6967")
         }
 
         //  hourPicker.setOnValueChangedListener(timeListener)
@@ -572,7 +593,10 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             workout?.let { workout ->
                 hourPicker.value = 0
                 minutePicker.value = 0
+                hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+                minutePicker.selectedTextColor = Color.parseColor("#FD6967")
                 caloriesText.text = "0"
+
                 //  calculateUserCalories(60, selectedIntensity, workout.activityId) // 1 hr default
                 addLog.isEnabled = true
             }
@@ -581,6 +605,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 hourPicker.value = 0
                 minutePicker.value = 0
                 caloriesText.text = "0"
+                hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+                minutePicker.selectedTextColor = Color.parseColor("#FD6967")
                 //   calculateUserCalories(60, selectedIntensity, workout.activityId) // 1 hr default
                 addLog.isEnabled = true
             }
@@ -591,6 +617,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val minutes = durationMinutes % 60
             hourPicker.value = hours // Set to 2
             minutePicker.value = minutes // Set to 1
+            hourPicker.selectedTextColor = Color.parseColor("#FD6967")
+            minutePicker.selectedTextColor = Color.parseColor("#FD6967")
             caloriesText.text = editWorkoutRoutineItem?.caloriesBurned
                 ?.toDoubleOrNull()
                 ?.roundToInt()

@@ -12,8 +12,8 @@
 
         <ImageView
             android:id="@+id/workout_function_icon"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
             android:layout_marginStart="12dp"
             android:src="@drawable/workout_function_icon"
             app:layout_constraintStart_toStartOf="parent"
@@ -28,6 +28,7 @@
             android:textColor="@color/black"
             android:textStyle="normal"
             android:layout_marginStart="6dp"
+            android:fontFamily="@font/dmsans_regular"
             app:layout_constraintBottom_toBottomOf="@+id/workout_function_icon"
             app:layout_constraintStart_toEndOf="@id/workout_function_icon" />
 

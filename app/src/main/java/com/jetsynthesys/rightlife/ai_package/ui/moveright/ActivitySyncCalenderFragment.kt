@@ -258,7 +258,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
             }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val call = ApiClient.apiServiceFastApi.getActivityLogHistoryCalender(userId,"google", dateRange)
+        val call = ApiClient.apiServiceFastApiV2.getActivityLogHistoryCalender(userId,"google", dateRange)
         call.enqueue(object : Callback<WorkoutHistoryResponse> {
             override fun onResponse(call: Call<WorkoutHistoryResponse>, response: Response<WorkoutHistoryResponse>) {
                 if (response.isSuccessful) {

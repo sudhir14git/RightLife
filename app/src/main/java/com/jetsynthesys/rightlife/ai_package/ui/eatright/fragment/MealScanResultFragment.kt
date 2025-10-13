@@ -95,6 +95,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private lateinit var tvFoodName: EditText
     private lateinit var imageFood: ImageView
     private lateinit var tvQuantity: TextView
+    private lateinit var save : TextView
     private lateinit var tvSelectedDate: TextView
     private lateinit var addToLogLayout: LinearLayoutCompat
     private lateinit var saveMealLayout: LinearLayoutCompat
@@ -161,6 +162,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         checkBox = view.findViewById(R.id.saveMealCheckBox)
         backButton = view.findViewById(R.id.backButton)
         tvAddToLog = view.findViewById(R.id.tvAddToLog)
+        save = view.findViewById(R.id.tv_save)
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
         frequentlyLoggedRecyclerView.adapter = mealListAdapter
         macroItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
@@ -209,8 +211,10 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
 
         descriptionName = arguments?.getString("description").toString()
         checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+
             isSaveClick = true
             if (isChecked) {
+                save.setTextColor(ContextCompat.getColor(requireContext(), R.color.meal_log_title))
                 if (mealId != "null" && mealId != null) {
                     updateSnapMealsSave((snapRecipesList))
                 }else{

@@ -25,6 +25,7 @@ import androidx.activity.addCallback
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
@@ -328,6 +329,9 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         dataSet.highLightAlpha = 0 // removes color overlay
         dataSet.barShadowColor = Color.TRANSPARENT
         dataSet.highLightColor = Color.TRANSPARENT
+        val typeface = ResourcesCompat.getFont(requireContext(), R.font.dmsans_bold)
+        dataSet.valueTypeface = typeface
+
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barChart.data = barData
@@ -594,7 +598,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
 
-                val response = ApiClient.apiServiceFastApi.getCalorieAnalysis(
+                val response = ApiClient.apiServiceFastApiV2.getCalorieAnalysis(
                     userId = userId, period = period, date = selectedDate
                 )
                 if (response.isSuccessful) {
