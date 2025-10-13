@@ -18,6 +18,7 @@
             android:layout_alignTop="@+id/trialEnds"
             android:layout_alignParentEnd="true"
             android:src="@drawable/ic_download_pastsub"
+            android:id="@+id/img_download"
             android:visibility="visible" />
 
         <TextView

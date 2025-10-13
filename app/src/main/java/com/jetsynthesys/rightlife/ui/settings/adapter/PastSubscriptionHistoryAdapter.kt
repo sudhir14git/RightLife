@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.settings.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.databinding.RowPastSubscriptionHistoryBinding
 import com.jetsynthesys.rightlife.databinding.RowSubscriptionHistoryBinding
@@ -32,10 +33,16 @@ class PastSubscriptionHistoryAdapter(
 
             binding.root.setOnClickListener {
                 selectedPosition = adapterPosition
-                onPlanSelected(plan)
+                //onPlanSelected(plan)
                 notifyDataSetChanged()
             }
-
+            binding.imgDownload.setOnClickListener {
+                plan.invoice?.url?.let { url ->
+                    onPlanSelected(plan) // pass plan back to Activity
+                } ?: run {
+                    Toast.makeText(binding.root.context, "No invoice available", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
