@@ -123,6 +123,7 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
         val fragment = CreateRoutineFragment()
         val args = Bundle().apply {
             putString("myRoutine", "myRoutine")
+
         }
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction()

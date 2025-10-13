@@ -17,11 +17,12 @@
 
         <ImageView
             android:id="@+id/back_button_calorie_balance"
-            android:layout_width="18dp"
-            android:layout_height="20dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginStart="22dp"
             android:layout_marginTop="20dp"
             android:src="@drawable/back"
+            android:layout_marginBottom="3dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,10 +31,9 @@
             android:layout_height="wrap_content"
             android:text="Calorie Balance"
             android:textSize="25sp"
-            android:textStyle="bold"
             android:textColor="@color/text_color"
             android:layout_marginTop="14dp"
-            android:layout_marginBottom="3dp"
+            android:fontFamily="@font/merriweather_bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
            app:layout_constraintTop_toTopOf="parent" />
@@ -223,6 +223,7 @@
                         android:layout_height="wrap_content"
                         android:text="kCal"
                         android:textSize="12sp"
+                        android:layout_marginBottom="3dp"
                         android:textColor="@color/black_no_meals"
                         android:fontFamily="@font/dmsans_regular"
                         app:layout_constraintBottom_toBottomOf="@+id/averageBurnCalorie"

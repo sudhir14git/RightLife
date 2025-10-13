@@ -19,6 +19,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
@@ -157,7 +158,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
 
         // Update heading to reflect steps
-        averageHeading.text = "Average Steps"
+        averageHeading.text = "Average"
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -340,6 +341,8 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         dataSet.setDrawValues(entries.size <= 7)
         dataSet.barShadowColor = Color.TRANSPARENT
         dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
+        val typeface = ResourcesCompat.getFont(requireContext(), R.font.dmsans_bold)
+        dataSet.valueTypeface = typeface
 
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f

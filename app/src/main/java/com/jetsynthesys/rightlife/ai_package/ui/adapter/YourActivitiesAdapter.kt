@@ -37,6 +37,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         val item = dataLists[position]
 
         holder.mealTitle.text = item.workoutType
+        holder.viewLine.visibility = View.GONE
         if (item.isSynced){
             holder.edit.visibility = View.GONE
             holder.delete.visibility = View.GONE
@@ -44,6 +45,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             holder.bpmUnit.visibility = View.VISIBLE
             holder.wearable.visibility = View.VISIBLE
             holder.bpmUnit.text = "bpm"
+
             holder.subtractionValue.text = item.averageHeartRate.toInt().toString()
             holder.subtraction.setImageResource(R.drawable.avg_heart_rate)
             if (item.averageHeartRate> 0){
@@ -483,6 +485,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 // Handle Wrestling
                 holder.main_heading_icon.setImageResource(R.drawable.wrestling)
             }
+            "Strength Training" -> {
+                // Handle Traditional Strength Training
+                holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
+            }
             "Yoga" -> {
                 // Handle Yoga
                 holder.main_heading_icon.setImageResource(R.drawable.yoga)
@@ -575,6 +581,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
+        val viewLine: View = itemView.findViewById(R.id.view)
         val layoutMain : androidx.constraintlayout.widget.ConstraintLayout = itemView.findViewById(R.id.layout_main)
     }
 
