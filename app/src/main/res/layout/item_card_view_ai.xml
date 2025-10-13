@@ -301,7 +301,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphViewWorkout
             android:id="@+id/line_graph_workout"
             android:layout_width="166dp"

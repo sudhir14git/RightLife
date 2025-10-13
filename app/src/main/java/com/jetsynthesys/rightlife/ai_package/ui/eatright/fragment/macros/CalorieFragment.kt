@@ -25,6 +25,8 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
@@ -47,15 +49,20 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.KValueFormatter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.databinding.FragmentCalorieBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -91,6 +98,9 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     private lateinit var goalLayout : LinearLayoutCompat
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
+    private lateinit var recomendationRecyclerView: RecyclerView
+    private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
+    private lateinit var recomendationAdapter: RecommendedAdapterSleep
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCalorieBinding
         get() = FragmentCalorieBinding::inflate
@@ -124,6 +134,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         totalCalorie = view.findViewById(R.id.totalCalorie)
         goalLayout = view.findViewById(R.id.goalLayout)
         averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
+        recomendationRecyclerView = view.findViewById(R.id.recommendationRecyclerView)
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -254,6 +265,8 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             navigateToFragment(HomeBottomTabFragment(), "landingFragment")
         }
+
+        fetchEatRecommendedData()
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
@@ -856,6 +869,33 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                 // percentageIc.setImageResource(R.drawable.ic_down)
             }
         }
+    }
+
+    private fun fetchEatRecommendedData() {
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","EAT_RIGHT")
+        call.enqueue(object : Callback<ThinkRecomendedResponse> {
+            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
+                if (response.isSuccessful) {
+                    // progressDialog.dismiss()
+                    thinkRecomendedResponse = response.body()!!
+                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
+                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        recomendationRecyclerView.adapter = recomendationAdapter
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    // progressDialog.dismiss()F
+                }
+            }
+            override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //progressDialog.dismiss()
+            }
+        })
     }
 
     private fun convertDate(inputDate: String): String {

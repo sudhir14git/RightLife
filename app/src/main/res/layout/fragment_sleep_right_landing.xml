@@ -2568,7 +2568,8 @@
                         android:layout_height="wrap_content"
                         android:text="Your Playlist"
                         android:textSize="16sp"
-                        android:textColor="#082654"
+                        android:textColor="#002C5F"
+                        android:fontFamily="@font/dmsans_semibold"
                         app:layout_constraintTop_toBottomOf="@id/sleepSound"
                         app:layout_constraintStart_toStartOf="parent"
                         android:layout_marginTop="10dp" />
@@ -2651,15 +2652,16 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
+                            android:scaleType="fitXY"
                             android:src="@drawable/play_sound_icon" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Play Now"
-                            android:textSize="16sp"
+                            android:textSize="15sp"
                             android:textColor="@color/white"
-                            android:fontFamily="@font/dmsans_regular"
+                            android:fontFamily="@font/dmsans_bold"
                             android:paddingStart="8dp" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
