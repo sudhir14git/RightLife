@@ -95,6 +95,21 @@ class NewSleepSoundActivity : BaseActivity() {
             finish()
         }
     }
+    private fun AllTabClick(){
+        if (binding.layoutVerticalCategoryList.visibility == View.VISIBLE) {
+            binding.layoutVerticalCategoryList.visibility = View.GONE
+            binding.llMusicHome.visibility = View.VISIBLE
+            binding.layouthorizontalMusicList.visibility = View.VISIBLE
+            binding.recyclerViewHorizontalList.visibility = View.VISIBLE
+            binding.recyclerViewVerticalList.visibility = View.GONE
+            //fetchSleepSoundsByCategoryId(categoryList[1]._id, true)
+            if (categoryAdapter != null) {
+                categoryAdapter.updateSelectedPosition(1)
+            }
+        }/*else{
+            fetchCategories()
+        }*/
+    }
 
     private fun setupCategoryRecyclerView() {
         categoryAdapter = SleepCategoryAdapter(categoryList) { selectedCategory ->
@@ -108,6 +123,7 @@ class NewSleepSoundActivity : BaseActivity() {
                 getUserCreatedPlaylist(true)
             else if (selectedCategory.title.lowercase() == "all"){
                 //fetchCategories()
+                //AllTabClick()
             }else
                 fetchSleepSoundsByCategoryId(
                     selectedCategory._id,
@@ -151,7 +167,11 @@ class NewSleepSoundActivity : BaseActivity() {
                     categoryAdapter.notifyDataSetChanged()
                     if (categoryList.isNotEmpty()) {
                         for (category in categoryList) {
-                            fetchSleepSoundsByCategoryId(category._id, true, category.title, 0)
+                            if (category.title == "All") {
+                            }else {
+                                fetchSleepSoundsByCategoryId(category._id, true, category.title, 0)
+                                Log.d("category Names", "onResponse: "+category.title+" "+category._id)
+                            }
                         }
                     }
                 } else {

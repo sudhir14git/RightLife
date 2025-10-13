@@ -42,12 +42,13 @@ class MindAuditDass21DetailResultActivity : BaseActivity() {
         selectedAssessment = assessmentHeader
 
 
-        if (reportId != null) {
+        /*if (reportId != null) {
             getAssessmentResultWithId(assessmentHeader, reportId!!)
-        } else {
+        } else
+        {
             getAssessmentResult(assessmentHeader)
-        }
-
+        }*/
+        getAssessmentResult(assessmentHeader)
         binding.iconBack.setOnClickListener {
             onBackPressHandle()
         }

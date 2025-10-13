@@ -222,7 +222,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:elevation="5dp"
+
                         android:orientation="vertical">
 
 
@@ -236,7 +236,9 @@
                             <ImageView
                                 android:id="@+id/img_rledit"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="200dp"
+                                android:scaleType="centerCrop"
+                                android:adjustViewBounds="true"
                                 android:src="@drawable/img_rledittop" />
 
                             <!-- Workshop Tag on Top of Image -->
@@ -248,7 +250,36 @@
                                 android:layout_alignParentBottom="true"
                                 android:layout_margin="10dp"
                                 android:scaleType="fitXY"
+                                android:visibility="gone"
                                 android:src="@drawable/read" />
+                            <LinearLayout
+                                android:id="@+id/ll_contet_type_rledit"
+                                android:layout_width="match_parent"
+                                android:gravity="center"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_alignParentBottom="true"
+                                android:padding="6dp"
+                                android:backgroundTint="#BF000000"
+                                android:background="#BF000000">
+
+                                <ImageView
+                                    android:id="@+id/img_iconview_rledit"
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:layout_centerVertical="true"
+                                    android:src="@drawable/video_jump_back_in" />
+
+                                <TextView
+                                    android:id="@+id/item_text_rledit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="video"
+                                    android:textColor="@color/white"
+                                    android:fontFamily="@font/dmsans_regular"
+                                    android:textSize="12sp"
+                                    android:layout_marginStart="6dp" />
+                            </LinearLayout>
 
                         </RelativeLayout>
 
@@ -261,6 +292,8 @@
                             android:text="5 best exercises to strengthen arthritic knees with physical therapy physical therapy physical thera"
                             android:textAlignment="textStart"
                             android:textColor="#0B1215"
+                            android:maxLines="3"
+                            android:ellipsize="end"
                             android:textSize="@dimen/textsize_large" />
 
                         <RelativeLayout
@@ -275,6 +308,8 @@
                                 android:layout_margin="10dp"
                                 android:fontFamily="@font/dmsans_regular"
                                 android:text="Ventak swami muthu s…"
+                                android:maxLength="20"
+                                android:ellipsize="end"
                                 android:textAlignment="textStart"
                                 android:textColor="#0B1215"
                                 android:textSize="@dimen/textsize_small"
@@ -339,6 +374,34 @@
                                         android:layout_height="120dp"
                                         android:layout_alignParentStart="true"
                                         android:src="@drawable/img_logintop1" />
+                                    <LinearLayout
+                                        android:id="@+id/ll_contet_type_rledit1"
+                                        android:layout_width="match_parent"
+                                        android:gravity="center"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:layout_alignParentBottom="true"
+                                        android:padding="6dp"
+                                        android:backgroundTint="#BF000000"
+                                        android:background="@drawable/roundedcornerbottomshape">
+
+                                        <ImageView
+                                            android:id="@+id/img_iconview_rledit1"
+                                            android:layout_width="12dp"
+                                            android:layout_height="12dp"
+                                            android:layout_centerVertical="true"
+                                            android:src="@drawable/video_jump_back_in" />
+
+                                        <TextView
+                                            android:id="@+id/item_text_rledit1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="video"
+                                            android:textColor="@color/white"
+                                            android:fontFamily="@font/dmsans_regular"
+                                            android:textSize="12sp"
+                                            android:layout_marginStart="6dp" />
+                                    </LinearLayout>
                                 </RelativeLayout>
 
                                 <RelativeLayout
@@ -356,7 +419,7 @@
                                         android:gravity="center"
                                         android:text="The think right Show: Viap- asana Meditation"
                                         android:maxLines="2"
-                                        android:ellipsize="marquee"
+                                        android:ellipsize="end"
                                         android:textAlignment="textStart"
                                         android:textColor="#0B1215"
                                         android:textSize="@dimen/textsize_medium"
@@ -376,7 +439,7 @@
                                             android:fontFamily="@font/dmsans_regular"
                                             android:text="Ventak swami muthu "
                                             android:maxLength="16"
-                                            android:ellipsize="marquee"
+                                            android:ellipsize="end"
                                             android:textAlignment="textStart"
                                             android:textColor="#0B1215"
                                             android:textSize="@dimen/textsize_extrasmall"
@@ -466,6 +529,34 @@
                                         android:layout_height="120dp"
                                         android:layout_alignParentStart="true"
                                         android:src="@drawable/img_rledit2" />
+                                    <LinearLayout
+                                        android:id="@+id/ll_contet_type_rledit2"
+                                        android:layout_width="match_parent"
+                                        android:gravity="center"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:layout_alignParentBottom="true"
+                                        android:padding="6dp"
+                                        android:backgroundTint="#BF000000"
+                                        android:background="@drawable/roundedcornerbottomshape">
+
+                                        <ImageView
+                                            android:id="@+id/img_iconview_rledit2"
+                                            android:layout_width="12dp"
+                                            android:layout_height="12dp"
+                                            android:layout_centerVertical="true"
+                                            android:src="@drawable/video_jump_back_in" />
+
+                                        <TextView
+                                            android:id="@+id/item_text_rledit2"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="video"
+                                            android:textColor="@color/white"
+                                            android:fontFamily="@font/dmsans_regular"
+                                            android:textSize="12sp"
+                                            android:layout_marginStart="6dp" />
+                                    </LinearLayout>
                                 </RelativeLayout>
 
                                 <RelativeLayout
@@ -503,7 +594,7 @@
                                             android:fontFamily="@font/dmsans_regular"
                                             android:text="Ventak swami muthu  "
                                             android:maxLength="16"
-                                            android:ellipsize="marquee"
+                                            android:ellipsize="end"
                                             android:textAlignment="textStart"
                                             android:textColor="#0B1215"
                                             android:textSize="@dimen/textsize_extrasmall"
