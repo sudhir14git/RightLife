@@ -208,7 +208,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="hr"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/dotted_red"
                             android:textSize="24sp"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="8dp"
@@ -223,7 +223,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="min"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/dotted_red"
                             android:textSize="24sp"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="8dp" />

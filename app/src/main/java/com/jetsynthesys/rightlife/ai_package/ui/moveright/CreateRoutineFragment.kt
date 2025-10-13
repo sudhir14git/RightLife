@@ -55,6 +55,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private var workoutList = ArrayList<WorkoutSessionRecord>()
     private var workoutLists: WorkoutRoutineItem? = null
     private var routine: String = ""
+    private var myroutine: String = ""
     private var routineName: String = ""
     private var editRoutine: String = ""
     private var routineIdworkout: String = ""
@@ -76,6 +77,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
         routine = arguments?.getString("routine").toString()
+        myroutine = arguments?.getString("myRoutine").toString()
         routineName = arguments?.getString("routineName").toString()
         editRoutine = arguments?.getString("edit_routine").toString()
         val  newroutineIdworkout = arguments?.getString("routineId").toString()
@@ -214,7 +216,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineRecyclerView.adapter = routineWorkoutListAdapter
 
         createRoutineBackButton.setOnClickListener {
-            if (routine.equals("edit_routine")||editRoutine.equals("edit_routine")){
+            if (routine.equals("edit_routine")||editRoutine.equals("edit_routine")||myroutine.equals("myRoutine")){
                 val fragment = SearchWorkoutFragment()
                 val bundle = Bundle().apply {
                     putInt("selectedTab", 1) // My Routine tab

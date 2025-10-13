@@ -19,6 +19,7 @@
             android:layout_height="25dp"
             android:src="@drawable/back"
             android:layout_marginStart="22dp"
+            android:layout_marginBottom="3dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -27,9 +28,8 @@
             android:layout_height="wrap_content"
             android:text="Resting Heart Rate"
             android:textSize="25dp"
-            android:textStyle="bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textColor="@color/text_color"
-            android:layout_marginBottom="3dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -209,6 +209,7 @@
                         android:layout_height="wrap_content"
                         android:text="Bpm"
                         android:textSize="12sp"
+                        android:layout_marginBottom="3dp"
                         android:fontFamily="@font/dmsans_bold"
                         app:layout_constraintBottom_toBottomOf="@+id/average_number"
                         app:layout_constraintStart_toEndOf="@+id/average_number" />

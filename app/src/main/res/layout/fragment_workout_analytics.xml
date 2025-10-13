@@ -31,6 +31,7 @@
             android:textStyle="bold"
             android:textColor="@color/text_color"
             android:layout_marginTop="15dp"
+            android:fontFamily="@font/merriweather_bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -90,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:layout_marginStart="5dp"
-                android:textSize="10sp"
+                android:textSize="14sp"
                 android:text="6:00 AM to 7:00PM"
                 app:layout_constraintStart_toEndOf="@+id/functional_strength_icon"
                 app:layout_constraintTop_toBottomOf="@+id/functional_strength_text" />

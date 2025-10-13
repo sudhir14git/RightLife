@@ -31,6 +31,7 @@
             android:textSize="25dp"
             android:textStyle="bold"
             android:textColor="@color/text_color"
+            android:fontFamily="@font/merriweather_bold"
             android:layout_marginBottom="3dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -138,7 +139,8 @@
                             android:visibility="gone"
                             android:textSize="14sp"
                             android:textColor="@color/black"
-                            android:background="@drawable/tab_background_heart_rate"                            android:gravity="center"
+                            android:background="@drawable/tab_background_heart_rate"
+                            android:gravity="center"
                             android:button="@null"/>
                     </RadioGroup>
 
@@ -223,6 +225,7 @@
                         android:layout_height="wrap_content"
                         android:text="Steps"
                         android:textSize="12sp"
+                        android:layout_marginBottom="3dp"
                         android:textColor="@color/black_no_meals"
                         android:fontFamily="@font/dmsans_regular"
                         app:layout_constraintBottom_toBottomOf="@+id/averageBurnCalorie"
@@ -394,7 +397,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="A"
                                 android:padding="2dp"
-                                android:background="@color/text_color_kcal"
+                                android:background="@drawable/rounded_text_bg"
                                 android:textColor="@color/white"
                                 android:fontFamily="@font/dmsans_regular"
                                 android:textSize="10sp"
@@ -434,7 +437,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="G"
                                 android:padding="2dp"
-                                android:background="@color/border_green"
+                                android:background="@drawable/rounded_text_bg_one"
                                 android:textColor="@color/white"
                                 android:fontFamily="@font/dmsans_regular"
                                 android:textSize="10sp"
