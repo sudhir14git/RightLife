@@ -123,7 +123,7 @@ class NewSleepSoundActivity : BaseActivity() {
                 getUserCreatedPlaylist(true)
             else if (selectedCategory.title.lowercase() == "all"){
                 //fetchCategories()
-                //AllTabClick()
+
             }else
                 fetchSleepSoundsByCategoryId(
                     selectedCategory._id,
