@@ -21,6 +21,8 @@ class GriefJournalActivity : BaseActivity() {
     private var position: Int = 0
     private var startDate = ""
     var isFromThinkRight: Boolean = false
+    private var previousText = ""
+    private var hasStarted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,26 +84,93 @@ class GriefJournalActivity : BaseActivity() {
             }
         }
 
-        binding.etJournalEntry.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val hasText = (s?.trim()?.length ?: 0) > 0
-                binding.btnSave.isEnabled = hasText
-                binding.btnSave.setTextColor(
-                    if (hasText) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
-                )
-                if ((s?.trim()?.length ?: 0) == 5000) {
-                    Toast.makeText(
-                        this@GriefJournalActivity,
-                        "Maximum character limit reached!!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        if (journalItem?.title == "Bullet") {
+            binding.etJournalEntry.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    val hasText = (s?.trim()?.length ?: 0) > 0
+                    binding.btnSave.isEnabled = hasText
+                    binding.btnSave.setTextColor(
+                        if (hasText) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
+                    )
+
+                    val currentText = s.toString()
+
+                    // Check if Enter was just pressed
+                    if (currentText.length > previousText.length &&
+                        currentText.endsWith("\n")
+                    ) {
+                        val lines = currentText.lines().filter { it.isNotBlank() }
+                        var nextNumber = lines.size + 1
+                        val bullet = "$nextNumber. "
+
+                        // Append the bullet instead of a blank line
+                        binding.etJournalEntry.removeTextChangedListener(this)
+
+                        // Replace last "\n" with "\nX. "
+                        val newText = currentText.dropLast(1) + "\n$bullet"
+                        binding.etJournalEntry.setText(newText)
+                        binding.etJournalEntry.setSelection(newText.length)
+
+                        binding.etJournalEntry.addTextChangedListener(this)
+
+
+                    }
+
+                    if ((s?.trim()?.length ?: 0) == 5000) {
+                        Toast.makeText(
+                            this@GriefJournalActivity,
+                            "Maximum character limit reached!!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                    previousText = s.toString()
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+            binding.etJournalEntry.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus && !hasStarted) {
+                    binding.etJournalEntry.setText("1. ")
+                    binding.etJournalEntry.setSelection(binding.etJournalEntry.text.length)
+                    hasStarted = true
                 }
             }
+        }else {
+            binding.etJournalEntry.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    val hasText = (s?.trim()?.length ?: 0) > 0
+                    binding.btnSave.isEnabled = hasText
+                    binding.btnSave.setTextColor(
+                        if (hasText) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
+                    )
+                    if ((s?.trim()?.length ?: 0) == 5000) {
+                        Toast.makeText(
+                            this@GriefJournalActivity,
+                            "Maximum character limit reached!!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+        }
 
         binding.btnSave.setOnClickListener {
             // Save logic here

@@ -118,7 +118,7 @@ class JournalNewActivity : BaseActivity() {
 
             "Bullet" -> Intent(
                 this@JournalNewActivity,
-                BulletJournalActivity::class.java
+                JournalPromptActivity::class.java
             )
 
             else -> Intent(

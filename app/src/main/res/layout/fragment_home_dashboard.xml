@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#F7F7F7"
-    android:layout_marginHorizontal="16dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="16dp">
 
     <TextView
         android:id="@+id/tv_date_dashboard"
