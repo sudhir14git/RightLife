@@ -594,7 +594,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
 
-                val response = ApiClient.apiServiceFastApi.getCalorieAnalysis(
+                val response = ApiClient.apiServiceFastApiV2.getCalorieAnalysis(
                     userId = userId, period = period, date = selectedDate
                 )
                 if (response.isSuccessful) {
