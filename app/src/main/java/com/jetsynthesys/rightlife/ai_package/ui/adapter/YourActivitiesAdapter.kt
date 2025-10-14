@@ -266,10 +266,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         }else{
             holder.edit.visibility = View.VISIBLE
             holder.delete.visibility = View.VISIBLE
-            holder.tv_subtraction_value_Intensity.visibility = View.VISIBLE
+            holder.tv_subtraction_value_Intensity.visibility = View.GONE
             holder.wearable.visibility = View.GONE
             holder.bpmUnit.visibility = View.GONE
-            holder.subtractionValue.text = item.intensity
+            holder.subtractionValue.text = "${item.intensity} Intensity"
             holder.subtraction.setImageResource(R.drawable.intensity_meter)
             holder.layoutMain.isEnabled = false
             /*Glide.with(context)

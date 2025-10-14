@@ -132,7 +132,7 @@ class StepIntake : View {
 
         // Draw thumb lines with further reduced width and shifted lower
         thumbPaint!!.strokeWidth = lineThickness
-        val verticalOffset = 5f * resources.displayMetrics.density // Shift lines 5dp lower
+        val verticalOffset = 12f * resources.displayMetrics.density // Shift lines 12dp lower (was 5dp)
         val lineY1 = fillRect.top - lineGap / 2 - lineThickness / 2 + verticalOffset
         val lineY2 = fillRect.top + lineGap / 2 + lineThickness / 2 + verticalOffset
         val lineInset = capillaryRect!!.width() * 0.15f // 15% inset from each side (30% total reduction)
