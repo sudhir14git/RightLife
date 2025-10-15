@@ -268,6 +268,7 @@ class UserInterestActivity : BaseActivity() {
             ) {
                 Utils.dismissLoader(this@UserInterestActivity)
                 if (response.isSuccessful && response.body() != null) {
+                    Utils.showNewDesignToast(this@UserInterestActivity, "Interests Saved",true)
                     if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
                         sharedPreferenceManager.setSavedInterest(selectedInterests)
                         finish()
@@ -298,7 +299,7 @@ class UserInterestActivity : BaseActivity() {
                             AnalyticsParam.SAVED_INTEREST to selectedInterestString
                         )
                     )
-                    Utils.showNewDesignToast(this@UserInterestActivity, "Interests Saved.",true)
+
                 } else {
                     Toast.makeText(
                         this@UserInterestActivity,

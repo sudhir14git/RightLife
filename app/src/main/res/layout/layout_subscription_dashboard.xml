@@ -5,7 +5,6 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/margin_card_16dp"
     android:orientation="vertical"
-
     android:visibility="visible">
 
     <FrameLayout
@@ -19,13 +18,13 @@
             android:layout_height="142dp"
             android:layout_gravity="center" />
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             android:id="@+id/trialExpiredLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/margin_card_16dp"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:paddingVertical="@dimen/margin_card_16dp"
             android:visibility="visible">
             <!-- Top Row: Icon and Title -->
             <LinearLayout

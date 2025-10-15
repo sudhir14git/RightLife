@@ -121,7 +121,7 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class HomeNewActivity : BaseActivity() {
-    private var snapMealId =  ""
+    private var snapMealId = ""
     private lateinit var binding: ActivityHomeNewBinding
     private var isAdd = true
     private var showheaderFlag = false
@@ -173,12 +173,12 @@ class HomeNewActivity : BaseActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       /* window.apply {
-            // Allow content to draw behind status bar
-            decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            statusBarColor = android.graphics.Color.TRANSPARENT // Transparent status bar
-        }*/
+        /* window.apply {
+             // Allow content to draw behind status bar
+             decorView.systemUiVisibility =
+                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+             statusBarColor = android.graphics.Color.TRANSPARENT // Transparent status bar
+         }*/
 
         binding = ActivityHomeNewBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
@@ -363,7 +363,7 @@ class HomeNewActivity : BaseActivity() {
         binding.fab.backgroundTintList = ContextCompat.getColorStateList(
             this, android.R.color.white
         )
-        binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.black))
+        binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.rightlife))
         val bottom_sheet = binding.includedhomebottomsheet.bottomSheet
         binding.fab.setOnClickListener { v ->
 
@@ -476,7 +476,7 @@ class HomeNewActivity : BaseActivity() {
             includedhomebottomsheet.llJournal.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startJournalListActivity(this@HomeNewActivity)
+                    ActivityUtils.startJournalListActivity(this@HomeNewActivity)
                 }
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
@@ -514,35 +514,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
-                if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
-                    freeTrialDialogActivity()
-                } else {
-                    if (snapMealId.isNotEmpty()) {
-                        if (checkTrailEndedAndShowDialog()) {
-                            AnalyticsLogger.logEvent(
-                                this@HomeNewActivity,
-                                AnalyticsEvent.EOS_SNAP_MEAL_CLICK
-                            )
-                            ActivityUtils.startEatRightReportsActivity(
-                                this@HomeNewActivity,
-                                "SnapMealTypeEat",
-                                ""
-                            )
-                        } else {
-
-                        }
-                    } else {
-                        AnalyticsLogger.logEvent(
-                            this@HomeNewActivity,
-                            AnalyticsEvent.EOS_SNAP_MEAL_CLICK
-                        )
-                        ActivityUtils.startEatRightReportsActivity(
-                            this@HomeNewActivity,
-                            "SnapMealTypeEat",
-                            ""
-                        )
-                    }
-                }
+                callSnapMealClick()
             }
 
         }
@@ -630,12 +602,14 @@ class HomeNewActivity : BaseActivity() {
         binding.tvStriketroughPrice.paintFlags =
             binding.tvStriketroughPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
-        Log.d("UI_DEBUG", """
+        Log.d(
+            "UI_DEBUG", """
     flFreeTrial visible=${binding.flFreeTrial.visibility}
     flFreeTrial clickable=${binding.flFreeTrial.isClickable}
     flFreeTrial enabled=${binding.flFreeTrial.isEnabled}
     homeBottomSheet visible=${binding.includedhomebottomsheet.root.visibility}
-""".trimIndent())
+""".trimIndent()
+        )
     }
 
     override fun onResume() {
@@ -969,11 +943,12 @@ class HomeNewActivity : BaseActivity() {
 
     fun showHeader(show: Boolean) {
         showheaderFlag = show
-        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 1 || sharedPreferenceManager.userProfile?.freeServiceDate?.isNotEmpty() == true) {
             binding.llCountDown.visibility =
                 if (show && isCountDownVisible) View.VISIBLE else View.GONE
-        }else{
-            handleUserSubscriptionStatus(sharedPreferenceManager.userProfile?.user_sub_status ?: -1)
+        } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+            binding.llFreeTrailExpired.visibility = View.VISIBLE
+            binding.llCountDown.visibility = View.GONE
         }
     }
 
@@ -2766,16 +2741,18 @@ class HomeNewActivity : BaseActivity() {
                     }
 
                     override fun onFinish() {
-                        textView.text = "Trial expired"
+                        //textView.text = "Trial expired"
+                        binding.llFreeTrailExpired.visibility = View.VISIBLE
                     }
                 }.start()
             } else {
                 // Already expired
-                textView.text = "Trial expired"
+                //textView.text = "Trial expired"
+                binding.llFreeTrailExpired.visibility = View.VISIBLE
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            textView.text = "Invalid date"
+            //textView.text = "Invalid date"
         }
     }
 
@@ -2888,5 +2865,61 @@ class HomeNewActivity : BaseActivity() {
                 .commit()
             updateMenuSelection(R.id.menu_explore)
         }
+    }
+
+    fun callSnapMealClick(){
+
+            val userProfile = sharedPreferenceManager.userProfile
+            val userStatus = userProfile?.user_sub_status ?: -1
+            val freeDate = userProfile?.freeServiceDate.orEmpty()
+
+            when {
+                userStatus == 0 -> {
+                    // Not subscribed
+                    freeTrialDialogActivity()
+                }
+
+                userStatus == 1 && freeDate.isNotEmpty() -> {
+                    // Free trial active with date
+                    logAndOpenMeal(snapMealId)
+                }
+
+                userStatus == 1 && freeDate.isEmpty() -> {
+                    // Free trial active but no free date
+                    logAndOpenMeal("")
+                }
+
+                userStatus == 2 && snapMealId.isNotEmpty() -> {
+                    // Free trial expired but has snap meal id
+                    logAndOpenMeal(snapMealId)
+                }
+
+                userStatus == 3 -> {
+                    // Subscription ended
+                    showSubsciptionEndedBottomSheet()
+                }
+
+                snapMealId.isNotEmpty() -> {
+                    // Safety fallback: allow if snapMealId present
+                    logAndOpenMeal(snapMealId)
+                }
+
+                else -> {
+                    // Final fallback: maybe show dialog
+                    checkTrailEndedAndShowDialog()
+                }
+            }
+
+    }
+    private fun logAndOpenMeal(snapId: String) {
+        AnalyticsLogger.logEvent(
+            this@HomeNewActivity,
+            AnalyticsEvent.EOS_SNAP_MEAL_CLICK
+        )
+        ActivityUtils.startEatRightReportsActivity(
+            this@HomeNewActivity,
+            "SnapMealTypeEat",
+            snapId
+        )
     }
 }

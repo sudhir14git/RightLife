@@ -923,7 +923,7 @@ class HomeExploreFragment : BaseFragment() {
                 }
 
                 "Meal Snap" -> {
-                    /*if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                    if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
                             freeTrialDialogActivity()
                         } else {
@@ -935,8 +935,8 @@ class HomeExploreFragment : BaseFragment() {
                             "SnapMealTypeEat",
                             ""
                         )
-                    }*/
-                    ActivityUtils.startMindAuditActivity(requireContext())
+                    }
+                    //ActivityUtils.startMindAuditActivity(requireContext())
                 }
 
                 "Health Cam" -> {

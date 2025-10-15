@@ -30,6 +30,7 @@ import com.jetsynthesys.rightlife.ui.settings.SupportActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -89,7 +90,8 @@ class ProfileSettingsActivity : BaseActivity() {
         } else {
             listOf(
                 SettingItem("Subscription History"),
-                SettingItem("Purchase Plans")
+                SettingItem("Purchase Plans"),
+                SettingItem("View Past Reports")
             )
         }
 
@@ -101,8 +103,13 @@ class ProfileSettingsActivity : BaseActivity() {
                 "Purchase Plans" ->
                     startActivity(Intent(this, PurchasePlansActivity::class.java))
 
-                "View Past Reports" ->
-                    startActivity(Intent(this, PastReportActivity::class.java))
+                "View Past Reports" ->{
+                    if (isShowViewPastReports)
+                        startActivity(Intent(this, PastReportActivity::class.java))
+                    else
+                    Utils.showNewDesignToast(this, "No past reports available",false)
+                }
+
             }
         }
 
@@ -116,7 +123,7 @@ class ProfileSettingsActivity : BaseActivity() {
         val items = listOf(
             SettingItem("Goals"),
             SettingItem("Interests"),
-            SettingItem("Saved Items"),
+            SettingItem("Your Saved Items"),
             //SettingItem("Meal Customisations")
         )
 
@@ -166,8 +173,10 @@ class ProfileSettingsActivity : BaseActivity() {
                 .error(R.drawable.rl_profile)
                 .into(binding.ivProfileImage)
         }
-        if (user.age != null) {
+        if (user.age != 0) {
             binding.tvUserAge.text = user.age.toString() + " years"
+        }else{
+            binding.tvUserAge.visibility = GONE
         }
         binding.tvUserCity.text = user.country
     }

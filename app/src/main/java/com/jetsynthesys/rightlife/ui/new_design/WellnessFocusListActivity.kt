@@ -132,8 +132,6 @@ class WellnessFocusListActivity : BaseActivity() {
             } else {
                 Utils.showNewDesignToast(this, "You can select up to 4 goals only.", false)
             }
-
-
         }
 
         AnalyticsLogger.logEvent(

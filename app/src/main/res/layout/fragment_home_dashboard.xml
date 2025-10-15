@@ -248,7 +248,7 @@
                         android:text="EatRight"
                         android:layout_marginHorizontal="12dp"
                         android:layout_marginTop="12dp"
-                        android:textColor="@color/color_sleep_right"
+                        android:textColor="@color/color_eat_right"
                         android:textSize="18sp" />
 
                     <TextView
@@ -257,7 +257,7 @@
                         android:fontFamily="@font/dmsans_regular"
                         android:text="Your Food Log"
                         android:layout_marginHorizontal="12dp"
-                        android:textColor="@color/color_sleep_right"
+                        android:textColor="@color/color_eat_right"
                         android:textSize="12sp"
                         android:layout_marginBottom="16dp" />
 
@@ -269,7 +269,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/dmsans_bold"
             android:text="All Health Data"
             android:textColor="#0B1215"
@@ -288,7 +288,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
+
             android:scrollbars="vertical"
             android:visibility="visible" />
 

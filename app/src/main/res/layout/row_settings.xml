@@ -21,7 +21,7 @@
             android:layout_weight="1"
             android:textColor="@color/txt_color_mind"
             android:fontFamily="@font/dmsans_regular"
-            android:textSize="14sp"
+            android:textSize="@dimen/textsize_large"
             android:text="Title" />
 
         <ImageView
