@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -29,7 +30,10 @@
             android:text="Bedtime:"
             android:textSize="16sp"
             android:textColor="#000000"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:drawablePadding="@dimen/margin_card_16dp"
+            android:drawableStart="@drawable/ic_sleep_bad"/>
 
         <!-- Bedtime TimePicker -->
         <TimePicker
@@ -47,8 +51,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Wake Time:"
+            android:fontFamily="@font/dmsans_regular"
             android:textSize="16sp"
             android:textColor="#000000"
+            android:drawablePadding="@dimen/margin_card_16dp"
+            android:drawableStart="@drawable/ic_sleep_clock"
             android:layout_marginBottom="8dp"/>
 
         <!-- Wake Time TimePicker -->
@@ -62,14 +69,31 @@
             android:layout_gravity="center"/>
 
         <!-- Sleep Duration -->
-        <TextView
-            android:id="@+id/tvSleepDuration"
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sleep duration: 9 hrs 30 mins"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginBottom="24dp"/>
+            android:gravity="center"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvSleepDuration_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sleep duration: "
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:fontFamily="@font/dmsans_regular"
+                />
+            <TextView
+                android:id="@+id/tvSleepDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="9 hrs 30 mins"
+                android:textSize="16sp"
+                android:textColor="#1292E5"
+                android:fontFamily="@font/dmsans_bold"
+                />
+        </LinearLayout>
+
 
         <!-- Continue Button -->
         <Button

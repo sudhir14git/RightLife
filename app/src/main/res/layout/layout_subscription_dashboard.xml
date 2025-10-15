@@ -3,62 +3,80 @@
     android:id="@+id/trialExpiredLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/roundedcornershape"
-    android:backgroundTint="#FFF1F0"
-    android:elevation="4dp"
     android:layout_marginHorizontal="@dimen/margin_card_16dp"
-    android:visibility="gone">
+    android:orientation="vertical"
 
-    <!-- Top Row: Icon and Title -->
-    <LinearLayout
+    android:visibility="visible">
+
+    <FrameLayout
+        android:id="@+id/flFreeTrial"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:visibility="visible">
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_hourglass_bottom" />
+        <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
+            android:layout_width="match_parent"
+            android:layout_height="142dp"
+            android:layout_gravity="center" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/trialExpiredLayout2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Trial Expired"
-            android:textStyle="bold"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_header"
-            android:paddingStart="8dp"
-            android:textSize="14sp" />
-    </LinearLayout>
+            android:layout_marginHorizontal="@dimen/margin_card_16dp"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="visible">
+            <!-- Top Row: Icon and Title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:background="#FED3D2"/>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_hourglass_bottom" />
 
-    <!-- Message Text -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Don't Lose Your Progress, Go Premium Today."
-        android:textColor="@color/txt_color_header"
-        android:textSize="13sp"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:paddingStart="8dp"
+                    android:text="Trial Expired"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
-    <!-- Subscribe Button -->
-    <Button
-        android:id="@+id/btnSubscription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Subscribe To RightLife"
-        android:backgroundTint="@color/menuselected"
-        android:textColor="@color/white"
-        android:fontFamily="@font/dmsans_bold"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="4dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="#FED3D2" />
+
+            <!-- Message Text -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp"
+                android:text="Don't Lose Your Progress, Go Premium Today."
+                android:textColor="@color/txt_color_header"
+                android:textSize="13sp" />
+
+            <!-- Subscribe Button -->
+            <Button
+                android:id="@+id/btnSubscription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="4dp"
+                android:backgroundTint="@color/menuselected"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Subscribe To RightLife"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

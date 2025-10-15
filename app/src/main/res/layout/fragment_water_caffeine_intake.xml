@@ -15,6 +15,16 @@
         android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"
         android:textColor="@color/menu_icon_color_unselected" />
+    <TextView
+        android:id="@+id/tvQuestion2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scroll to select cups."
+        android:textSize="@dimen/textsize_large"
+        android:fontFamily="@font/dmsans_regular"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/menu_icon_color_unselected" />
+
 
     <RelativeLayout
         android:layout_width="match_parent"

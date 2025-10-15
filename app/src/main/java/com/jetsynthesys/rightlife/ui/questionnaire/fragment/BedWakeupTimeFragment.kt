@@ -97,7 +97,7 @@ class BedWakeupTimeFragment : Fragment() {
 
         val hours = duration.toHours()
         val minutes = duration.toMinutes() % 60
-        binding.tvSleepDuration.text = "Sleep duration: ${hours} hrs ${minutes} mins"
+        binding.tvSleepDuration.text = "${hours} hrs ${minutes} mins"
     }
 
     private fun getSelectedTimeFromTimePicker(timePicker: TimePicker): String {
