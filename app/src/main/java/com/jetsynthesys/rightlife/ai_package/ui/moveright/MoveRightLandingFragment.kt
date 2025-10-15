@@ -85,6 +85,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var carouselViewPager: ViewPager2
     private lateinit var dotsLayout: LinearLayout
     private lateinit var nodataWorkout: ConstraintLayout
+    private lateinit var horizontalStepsSection: ConstraintLayout
+    private lateinit var stepsBottomSection: ConstraintLayout
     private lateinit var dataFilledworkout: ConstraintLayout
     private lateinit var calorie_no_data_filled_layout: ConstraintLayout
     private lateinit var calorie_layout_data_filled: ConstraintLayout
@@ -123,7 +125,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var moveRightImageBack: ImageView
     private lateinit var stepLineGraphView: LineGrapghViewSteps
     private lateinit var todayStepsTv: TextView
+    private lateinit var today_steps_count: TextView
     private lateinit var averageStepsTv: TextView
+    private lateinit var yesterday_steps_count: TextView
     private lateinit var steps_no_data_text: TextView
     private lateinit var stes_no_data_text_description: TextView
     private lateinit var syncWithHealthConnectButton: ConstraintLayout
@@ -209,6 +213,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         peakHighl = view.findViewById(R.id.peakHigh)
         text_activity = view.findViewById(R.id.text_activity)
         nodataWorkout = view.findViewById(R.id.no_data_workout_landing)
+        horizontalStepsSection = view.findViewById(R.id.horizontalStepsSection)
+        stepsBottomSection = view.findViewById(R.id.stepsBottomSection)
         dataFilledworkout = view.findViewById(R.id.data_filled_workout)
         step_forward_icon = view.findViewById(R.id.step_forward_icon)
         totalIntakeCalorieText = view.findViewById(R.id.textView1)
@@ -226,7 +232,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         tvBurnValue = view.findViewById(R.id.textViewBurnValue)
         stepLineGraphView = view.findViewById(R.id.line_graph_steps)
         todayStepsTv = view.findViewById(R.id.todayStepsTv)
+        today_steps_count = view.findViewById(R.id.today_steps_count)
         averageStepsTv = view.findViewById(R.id.averageStepsTv)
+        yesterday_steps_count = view.findViewById(R.id.yesterday_steps_count)
         goalStepsTv = view.findViewById(R.id.goal_tex)
         progressBarCalorieBalance = view.findViewById(R.id.progressBar)
         circleIndicator = view.findViewById(R.id.circleIndicator)
@@ -747,8 +755,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
                                     stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
                                     stepLineGraphView.invalidate()
+                                    if (goalStepCount <= 0) {
+                                        horizontalStepsSection.visibility = View.VISIBLE
+                                        stepsBottomSection.visibility = View.GONE
+                                    } else {
+                                        horizontalStepsSection.visibility = View.GONE
+                                        stepsBottomSection.visibility = View.VISIBLE
+                                    }
                                     todayStepsTv.text = todayStepCount.toString()
+                                    today_steps_count.text = todayStepCount.toString()
                                     averageStepsTv.text = averageStepCount.toString()
+                                    yesterday_steps_count.text = averageStepCount.toString()
                                     goalStepsTv.text = goalStepCount.toString()
                                 }else{
                                    if(it.data.caloriesBurned.today.toDouble() == 0.0){
@@ -764,8 +781,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                            val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
                                            stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
                                            stepLineGraphView.invalidate()
+                                           if (goalStepCount <= 0) {
+                                               horizontalStepsSection.visibility = View.VISIBLE
+                                               stepsBottomSection.visibility = View.GONE
+                                           } else {
+                                               horizontalStepsSection.visibility = View.GONE
+                                               stepsBottomSection.visibility = View.VISIBLE
+                                           }
                                            todayStepsTv.text = todayStepCount.toString()
+                                           today_steps_count.text = todayStepCount.toString()
                                            averageStepsTv.text = averageStepCount.toString()
+                                           yesterday_steps_count.text = averageStepCount.toString()
                                            goalStepsTv.text = goalStepCount.toString()
                                        }else{
                                            step_forward_icon.visibility = View.INVISIBLE
@@ -783,8 +809,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                        val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
                                        stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
                                        stepLineGraphView.invalidate()
+                                       if (goalStepCount <= 0) {
+                                           horizontalStepsSection.visibility = View.VISIBLE
+                                           stepsBottomSection.visibility = View.GONE
+                                       } else {
+                                           horizontalStepsSection.visibility = View.GONE
+                                           stepsBottomSection.visibility = View.VISIBLE
+                                       }
                                        todayStepsTv.text = todayStepCount.toString()
+                                       today_steps_count.text = todayStepCount.toString()
                                        averageStepsTv.text = averageStepCount.toString()
+                                       yesterday_steps_count.text = averageStepCount.toString()
                                        goalStepsTv.text = goalStepCount.toString()
                                    }
                                 }

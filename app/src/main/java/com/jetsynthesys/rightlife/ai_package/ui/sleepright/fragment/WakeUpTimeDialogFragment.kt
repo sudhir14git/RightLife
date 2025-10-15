@@ -4,12 +4,14 @@ import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,6 +82,8 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         amPmPicker.displayedValues = arrayOf("AM", "PM")
         hourPicker.value = mHour
         minutePicker.value = mMinute
+
+
         if (mAmPm == "AM"){
             amPmPicker.value = 0
         }else{
@@ -100,6 +104,32 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
             listener.onWakeUpTimeSelected(result)
             dismiss()
         }
+         fun setNumberPickerTextSize(picker: NumberPicker, textSizeSp: Float) {
+            try {
+                val numberPickerFields = NumberPicker::class.java.declaredFields
+                for (field in numberPickerFields) {
+                    if (field.name == "mSelectorWheelPaint") {
+                        field.isAccessible = true
+                        val paint = field.get(picker) as Paint
+                        paint.textSize = textSizeSp * picker.resources.displayMetrics.scaledDensity
+                    }
+                }
+
+                // Update the EditText used for the center value
+                for (i in 0 until picker.childCount) {
+                    val child = picker.getChildAt(i)
+                    if (child is EditText) {
+                        child.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp)
+                        child.invalidate()
+                    }
+                }
+
+                picker.invalidate()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
 
         fun updateNumberPickerText(picker: NumberPicker) {
             try {
@@ -151,6 +181,32 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         val dateTime = parseIsoDateTime(isoDateTime)
         return if (dateTime.hour < 12) "AM" else "PM"
     }
+    private fun setNumberPickerTextSize(picker: NumberPicker, textSizeSp: Float) {
+        try {
+            val numberPickerFields = NumberPicker::class.java.declaredFields
+            for (field in numberPickerFields) {
+                if (field.name == "mSelectorWheelPaint") {
+                    field.isAccessible = true
+                    val paint = field.get(picker) as Paint
+                    paint.textSize = textSizeSp * picker.resources.displayMetrics.scaledDensity
+                }
+            }
+
+            // Update the EditText used for the center value
+            for (i in 0 until picker.childCount) {
+                val child = picker.getChildAt(i)
+                if (child is EditText) {
+                    child.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp)
+                    child.invalidate()
+                }
+            }
+
+            picker.invalidate()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
     private fun updateWakeupTime(result: String) {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
