@@ -350,12 +350,12 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.rlBreathingPracticeMain.visibility = View.GONE
         binding.btnExit.setOnClickListener {
             showCompletedBottomSheet()
-        /*    if (isHapticFeedBack)
+            if (isHapticFeedBack)
                 showCompletedBottomSheet()
             else {
                 callPostMindFullDataAPI()
                 finish()
-            }*/
+            }
         }
         binding.btnRepeat.setOnClickListener {
             // Reset for a new session

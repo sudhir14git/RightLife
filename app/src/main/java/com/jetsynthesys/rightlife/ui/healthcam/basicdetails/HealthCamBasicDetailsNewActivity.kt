@@ -45,6 +45,7 @@ import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
 import com.jetsynthesys.rightlife.ui.sdkpackage.HealthCamRecorderActivity
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -82,6 +83,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.infoIcon.setOnClickListener {
+            it.disableViewForSeconds()
             DialogUtils.showCommonBottomSheetDialog(
                 this,
                 header = "Gender At Birth",
@@ -90,6 +92,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtAge.setOnClickListener {
+            it.disableViewForSeconds()
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
@@ -99,6 +102,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtHeight.setOnClickListener {
+            it.disableViewForSeconds()
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
@@ -108,6 +112,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtWeight.setOnClickListener {
+            it.disableViewForSeconds()
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
@@ -117,18 +122,21 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtGender.setOnClickListener {
+            it.disableViewForSeconds()
             showOptionPopup(binding.edtGender, genderOptions, "Select Gender") { option: Option ->
                 binding.edtGender.setText(option.optionText)
             }
         }
 
         binding.edtBloodPressure.setOnClickListener {
+            it.disableViewForSeconds()
             showOptionPopup(binding.edtBloodPressure, bpMedicationOptions) { option: Option ->
                 binding.edtBloodPressure.setText(option.optionText)
             }
         }
 
         binding.edtSmoke.setOnClickListener {
+            it.disableViewForSeconds()
             showOptionPopup(binding.edtSmoke, smokeOptions) { option: Option ->
                 binding.edtSmoke.setText(option.optionText)
             }
@@ -141,6 +149,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.btnProceed.setOnClickListener {
+            it.disableViewForSeconds()
             val name = binding.edtName.text.toString()
             val height = binding.edtHeight.text.toString()
             val weight = binding.edtWeight.text.toString()
@@ -431,6 +440,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
 
         dialogBinding.btnConfirm.setOnClickListener {
+            it.disableViewForSeconds()
             bottomSheetDialog.dismiss()
             binding.edtAge.setText(selectedAge)
         }
@@ -504,6 +514,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.kgOption.setOnClickListener {
+            it.disableViewForSeconds()
             dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.kgOption.setTextColor(Color.WHITE)
 
@@ -522,6 +533,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.lbsOption.setOnClickListener {
+            it.disableViewForSeconds()
             dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
             dialogBinding.lbsOption.setTextColor(Color.WHITE)
 
@@ -583,6 +595,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.btnConfirm.setOnClickListener {
+            it.disableViewForSeconds()
             bottomSheetDialog.dismiss()
             dialogBinding.rulerView.adapter = null
             binding.edtWeight.setText(selectedWeight)
@@ -651,6 +664,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
 
         dialogBinding.feetOption.setOnClickListener {
+            it.disableViewForSeconds()
             dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.feetOption.setTextColor(Color.WHITE)
 
@@ -676,6 +690,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.cmsOption.setOnClickListener {
+            it.disableViewForSeconds()
             dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
             dialogBinding.cmsOption.setTextColor(Color.WHITE)
 
@@ -781,6 +796,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.btnConfirm.setOnClickListener {
+            it.disableViewForSeconds()
             if (validateInput(selectedLabel, selectedHeight)) {
                 bottomSheetDialog.dismiss()
                 dialogBinding.rulerView.adapter = null
