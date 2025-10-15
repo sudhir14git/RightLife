@@ -295,9 +295,9 @@ class HomeNewActivity : BaseActivity() {
             R.drawable.ft_warning,
             onOkayClick = {})*/
 
-            binding.flFreeTrial.setOnClickListener {
-                startActivity(Intent(this, BeginMyFreeTrialActivity::class.java))
-            }
+        binding.flFreeTrial.setOnClickListener {
+            startActivity(Intent(this, BeginMyFreeTrialActivity::class.java))
+        }
 
         binding.scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
             binding.swipeRefreshLayout.isEnabled = scrollY <= 5
@@ -414,6 +414,10 @@ class HomeNewActivity : BaseActivity() {
 
         // Handle menu item clicks
         binding.menuHome.setOnClickListener {
+            val currentFragment =
+                supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment is HomeExploreFragment) return@setOnClickListener
+
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 bottom_sheet.visibility = View.GONE
                 binding.includedhomebottomsheet.bottomSheetParent.apply {
@@ -457,27 +461,30 @@ class HomeNewActivity : BaseActivity() {
         }
 
         binding.menuExplore.setOnClickListener {
+            val currentFragment =
+                supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment is HomeDashboardFragment) return@setOnClickListener
             myHealthFragmentSelected()
         }
 
         with(binding) {
             includedhomebottomsheet.llJournal.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
-                if (checkTrailEndedAndShowDialog()) {
+                //if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startJournalListActivity(this@HomeNewActivity)
-                }
+                //}
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
-               // if (checkTrailEndedAndShowDialog()) {
+                if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
-                //}
+                }
             }
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)
-                //if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
-                //}
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
+                }
             }
             includedhomebottomsheet.llBreathwork.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
@@ -2855,50 +2862,51 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    fun callSnapMealClick(){
+    fun callSnapMealClick() {
 
-            val userProfile = sharedPreferenceManager.userProfile
-            val userStatus = userProfile?.user_sub_status ?: -1
-            val freeDate = userProfile?.freeServiceDate.orEmpty()
+        val userProfile = sharedPreferenceManager.userProfile
+        val userStatus = userProfile?.user_sub_status ?: -1
+        val freeDate = userProfile?.freeServiceDate.orEmpty()
 
-            when {
-                userStatus == 0 -> {
-                    // Not subscribed
-                    freeTrialDialogActivity()
-                }
-
-                userStatus == 1 && freeDate.isNotEmpty() -> {
-                    // Free trial active with date
-                    logAndOpenMeal(snapMealId)
-                }
-
-                userStatus == 1 && freeDate.isEmpty() -> {
-                    // Free trial active but no free date
-                    logAndOpenMeal("")
-                }
-
-                userStatus == 2 && snapMealId.isNotEmpty() -> {
-                    // Free trial expired but has snap meal id
-                    logAndOpenMeal(snapMealId)
-                }
-
-                userStatus == 3 -> {
-                    // Subscription ended
-                    showSubsciptionEndedBottomSheet()
-                }
-
-                snapMealId.isNotEmpty() -> {
-                    // Safety fallback: allow if snapMealId present
-                    logAndOpenMeal(snapMealId)
-                }
-
-                else -> {
-                    // Final fallback: maybe show dialog
-                    checkTrailEndedAndShowDialog()
-                }
+        when {
+            userStatus == 0 -> {
+                // Not subscribed
+                freeTrialDialogActivity()
             }
 
+            userStatus == 1 && freeDate.isNotEmpty() -> {
+                // Free trial active with date
+                logAndOpenMeal(snapMealId)
+            }
+
+            userStatus == 1 && freeDate.isEmpty() -> {
+                // Free trial active but no free date
+                logAndOpenMeal("")
+            }
+
+            userStatus == 2 && snapMealId.isNotEmpty() -> {
+                // Free trial expired but has snap meal id
+                logAndOpenMeal(snapMealId)
+            }
+
+            userStatus == 3 -> {
+                // Subscription ended
+                showSubsciptionEndedBottomSheet()
+            }
+
+            snapMealId.isNotEmpty() -> {
+                // Safety fallback: allow if snapMealId present
+                logAndOpenMeal(snapMealId)
+            }
+
+            else -> {
+                // Final fallback: maybe show dialog
+                checkTrailEndedAndShowDialog()
+            }
+        }
+
     }
+
     private fun logAndOpenMeal(snapId: String) {
         AnalyticsLogger.logEvent(
             this@HomeNewActivity,

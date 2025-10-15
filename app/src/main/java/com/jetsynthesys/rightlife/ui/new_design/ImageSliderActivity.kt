@@ -10,8 +10,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -33,6 +39,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
+import com.jetsynthesys.rightlife.ui.drawermenu.PrivacyPolicyActivity
+import com.jetsynthesys.rightlife.ui.drawermenu.TermsAndConditionsActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
@@ -106,6 +114,8 @@ class ImageSliderActivity : BaseActivity() {
             AnalyticsEvent.LOGIN_SCREEN_VISIT,
             mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
         )
+
+        clickForPrivacyPolicyAndTermsOfService()
 
         // Set up the TabLayoutMediator to sync dots with the images
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -587,5 +597,60 @@ class ImageSliderActivity : BaseActivity() {
         }
 
         dialog.show()
+    }
+
+    private fun clickForPrivacyPolicyAndTermsOfService(){
+        val textView = findViewById<TextView>(R.id.textView)
+        val fullText = "By signing up, I agree to RightLife’s Terms of Service & Privacy Policy."
+
+        val spannableString = SpannableString(fullText)
+
+// Define clickable ranges
+        val termsStart = fullText.indexOf("Terms of Service")
+        val termsEnd = termsStart + "Terms of Service".length
+
+        val privacyStart = fullText.indexOf("Privacy Policy")
+        val privacyEnd = privacyStart + "Privacy Policy".length
+
+// ClickableSpan for Terms of Service
+        val termsClickable = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(
+                    this@ImageSliderActivity,
+                    TermsAndConditionsActivity::class.java
+                )
+                startActivity(intent)
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = Color.parseColor("#808080") // link color (blue)
+            }
+        }
+
+// ClickableSpan for Privacy Policy
+        val privacyClickable = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(
+                    this@ImageSliderActivity,
+                    PrivacyPolicyActivity::class.java
+                )
+                startActivity(intent)
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = Color.parseColor("#808080")
+            }
+        }
+
+// Apply spans
+        spannableString.setSpan(termsClickable, termsStart, termsEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(privacyClickable, privacyStart, privacyEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        textView.text = spannableString
+        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.highlightColor = Color.TRANSPARENT
+
     }
 }

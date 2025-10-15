@@ -94,7 +94,6 @@
         android:fontFamily="@font/dmsans_bold"
         android:backgroundTint="@color/rightlife"
         android:textColor="@color/white"
-        android:enabled="false"
         android:layout_alignParentBottom="true" />
 
 
