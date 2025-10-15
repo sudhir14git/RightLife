@@ -7,16 +7,31 @@
     android:paddingVertical="20dp"
     android:background="@drawable/toproundedcornershape">
 
-    <TextView
-        android:id="@+id/tvHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="@font/dmsans_bold"
-        android:text="Set Activity Frequency"
-        android:textColor="@color/txt_color_header"
-        android:textSize="18sp"
-        android:layout_margin="20dp" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/merriweather_bold"
+            android:text="Set Activity Frequency"
+            android:textColor="@color/txt_color_header"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_margin="20dp" />
+        <ImageView
+            android:id="@+id/imgClose"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/close_breathwork"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp" />
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPhysicalActivityDialog"

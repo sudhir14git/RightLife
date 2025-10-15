@@ -62,7 +62,7 @@
                 android:id="@+id/dialog_text"
                 android:layout_width="wrap_content"
                 android:layout_height="250dp"
-                android:text="This facial scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
+                android:text="This Face scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
                 android:textColor="@color/txt_color_mind"
                 android:textSize="@dimen/textsize_large"
                 android:gravity="center"

@@ -17,11 +17,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
@@ -141,7 +143,6 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
                 new BottomSheetDialog(this, R.style.TransparentBottomSheetDialogTheme);
         bottomSheetDialog.setContentView(binding.getRoot());
         bottomSheetDialog.setCancelable(true);
-
         // ✅ Force transparent background for system container
         bottomSheetDialog.setOnShowListener(dialog -> {
             BottomSheetDialog d = (BottomSheetDialog) dialog;
@@ -199,6 +200,24 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
             intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
             startActivity(intent);
         });
+        bottomSheetDialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
+// Handle slide-down dismiss (when user swipes down the bottom sheet)
+        bottomSheetDialog.getBehavior().addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN ||
+                        newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheetDialog.dismiss();
+                    if (selectedAssessment != null) finish();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // You can optionally animate dim or background blur here if needed
+            }
+        });
+
 
         bottomSheetDialog.show();
     }

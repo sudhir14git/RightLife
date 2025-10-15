@@ -12,6 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/tv_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/merriweather_bold"
+            android:gravity="center"
+            android:text="Add Tag"
+            android:textColor="@color/txt_color_header"
+            android:textSize="20sp" />
         <ImageView
             android:id="@+id/imgClose"
             android:layout_width="28dp"
@@ -21,16 +31,7 @@
             android:layout_margin="16dp" />
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/tv_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-20dp"
-        android:fontFamily="@font/merriweather_bold"
-        android:gravity="center"
-        android:text="Add Tag"
-        android:textColor="@color/txt_color_header"
-        android:textSize="20sp" />
+
 
     <EditText
         android:id="@+id/edtTag"

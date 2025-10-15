@@ -35,8 +35,9 @@
 
         <ImageView
             android:id="@+id/leftImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
             android:src="@drawable/ft_used" />
         <!-- Title -->
         <TextView
@@ -55,7 +56,7 @@
         android:id="@+id/tvDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="@dimen/textsize_large"
         android:fontFamily="@font/dmsans_regular"
         android:layout_marginVertical="@dimen/margin_card_16dp"
         android:textColor="@color/txt_color_header"

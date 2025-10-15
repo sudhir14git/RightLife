@@ -1,8 +1,9 @@
 package com.jetsynthesys.rightlife.ui
 
 import com.google.gson.annotations.SerializedName
-import com.jetsynthesys.rightlife.ui.profile_new.pojo.Artist
 import com.jetsynthesys.rightlife.apimodel.rlpagemodels.continuemodela.EpisodeDetails
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Tag
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.Artist
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.Meta
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.SubCategory
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.Thumbnail
@@ -63,8 +64,8 @@ data class CategoryListItem(
     @SerializedName("desc")
     val desc: String? = null,
 
-    /*@SerializedName("tags")
-    val tags: List<String>? = null,*/
+    @SerializedName("tags")
+    var tags: List<Tag?>? = null,
 
     @SerializedName("episodeCount")
     val episodeCount: Int? = null,

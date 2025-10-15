@@ -11,7 +11,7 @@
         android:id="@+id/llClaimBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/roundedcornershape"
+        android:background="@drawable/toproundedcornershape"
         android:orientation="vertical"
         android:padding="@dimen/margin_card_16dp">
 

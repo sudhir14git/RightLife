@@ -644,6 +644,7 @@ class HomeNewActivity : BaseActivity() {
         getUserDetails()
         initBillingAndRecover()
         getDashboardChecklistStatus()
+        getDashboardChecklist()
     }
 
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -766,18 +767,7 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun checkTrailEndedAndShowDialog(): Boolean {
-        /*return if (!DashboardChecklistManager.paymentStatus) {
-            showTrailEndedBottomSheet()
-            false // Return false if condition is true and dialog is shown
-        } else {
-            if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this)
-                false
-            } else {
-                true // Return true if condition is false
-            }
-        }
-        return true*/
+
         return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity()
             false // Return false if condition is true and dialog is shown
@@ -902,7 +892,7 @@ class HomeNewActivity : BaseActivity() {
     private fun showTrailEndedBottomSheet() {
         DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
-            "Free Trial ended",
+            "Free Trial Ended",
             "Explore Plans",
             false,
             R.drawable.ft_ended,
@@ -979,7 +969,12 @@ class HomeNewActivity : BaseActivity() {
 
     fun showHeader(show: Boolean) {
         showheaderFlag = show
-        binding.llCountDown.visibility = if (show && isCountDownVisible) View.VISIBLE else View.GONE
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            binding.llCountDown.visibility =
+                if (show && isCountDownVisible) View.VISIBLE else View.GONE
+        }else{
+            handleUserSubscriptionStatus(sharedPreferenceManager.userProfile?.user_sub_status ?: -1)
+        }
     }
 
     private fun showInternetError() {

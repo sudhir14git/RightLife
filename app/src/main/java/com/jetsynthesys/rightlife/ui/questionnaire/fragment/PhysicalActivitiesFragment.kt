@@ -27,6 +27,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.PhysicalActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ServingItem
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class PhysicalActivitiesFragment : Fragment() {
@@ -297,14 +298,15 @@ class PhysicalActivitiesFragment : Fragment() {
                 bottomSheetDialog.dismiss()
                 submit(selectedActivities)
             } else {
-                Toast.makeText(
+                Utils.showNewDesignToast(
                     requireContext(),
-                    "The total activity frequency should match the workout frequency in a week",
-                    Toast.LENGTH_SHORT
-                ).show()
+                    "Please match activity frequency with your weekly workout total.",false)
             }
         }
 
+        dialogBinding.imgClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
         bottomSheetDialog.show()
     }
 

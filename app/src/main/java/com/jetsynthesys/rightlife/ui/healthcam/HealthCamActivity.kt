@@ -70,7 +70,7 @@ class HealthCamActivity : BaseActivity() {
                 binding.viewPager.currentItem = currentItem + 1
             } else {
                 val desc =
-                    "This facial scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
+                    "This Face scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
                 DialogUtils.showCommonBottomSheetDialog(this, description = desc,
                     onOkayClick = {
                         startActivity(
