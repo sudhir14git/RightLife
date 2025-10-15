@@ -348,39 +348,63 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:id="@+id/tv_mindfull_title"
-                android:layout_width="0dp"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/calorie_balance_layout_discription"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:visibility="visible"
-                android:text=""
-                android:textColor="@color/black"
-                android:fontFamily="@font/dmsans_bold"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                android:layout_marginBottom="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
+            app:layout_constraintStart_toStartOf="parent">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_mindfull_desc"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:textSize="14dp"
-                android:visibility="visible"
-                android:fontFamily="@font/dmsans_regular"
-                android:layout_marginTop="8dp"
-                android:text=""
-                android:ellipsize="end"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_mindfull_title"
-                app:layout_constraintStart_toStartOf="parent"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_mindfull_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="20dp"
+                    android:visibility="visible"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_mindfull_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:textSize="14dp"
+                    android:visibility="visible"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:layout_marginTop="8dp"
+                    android:text=""
+                    android:ellipsize="end"
+                    android:paddingBottom="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_mindfull_title"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_mindfulness_analysis"
@@ -390,7 +414,7 @@
                 android:clipToPadding="false"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_mindfull_desc"/>
+                app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout_discription"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

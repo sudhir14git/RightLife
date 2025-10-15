@@ -38,7 +38,7 @@ class YourActivitiesWeeklyListAdapter(private val context: Context, private var 
                 if (clickPos == position && mealLogListData == item && isClickView == true){
                     holder.layoutMain.setBackgroundResource(R.drawable.red_meal_date_bg)
                 }else{
-                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
+                    holder.layoutMain.setBackgroundResource(R.drawable.white_date_meal_bg)
                 }
             }
         }else{
@@ -49,7 +49,7 @@ class YourActivitiesWeeklyListAdapter(private val context: Context, private var 
                 if (clickPos == position && mealLogListData == item && isClickView == true){
                     holder.layoutMain.setBackgroundResource(R.drawable.red_meal_date_bg)
                 }else{
-                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
+                    holder.layoutMain.setBackgroundResource(R.drawable.white_date_meal_bg)
                 }
             }
         }

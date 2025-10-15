@@ -68,7 +68,7 @@ class DeleteRecipeBottomSheet : BottomSheetDialogFragment() {
         val layoutCancel = view.findViewById<LinearLayoutCompat>(R.id.noBtn)
         val layoutDelete = view.findViewById<LinearLayoutCompat>(R.id.yesBtn)
         deleteTitle.text = "Delete Recipe"
-        deleteConfirmTv.text = "Are you sure you want to delete this recipe entry?"
+        deleteConfirmTv.text = "Are you sure you want to delete this recipe?"
 
         recipeId = arguments?.getString("recipeId").toString()
         recipeName = arguments?.getString("recipeName").toString()

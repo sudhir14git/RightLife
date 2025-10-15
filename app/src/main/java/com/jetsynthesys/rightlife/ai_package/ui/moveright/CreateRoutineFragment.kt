@@ -44,6 +44,8 @@ import kotlinx.coroutines.withContext
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText: EditText
     private lateinit var textViewRoutine: TextView
+    private lateinit var no_workout_heading: TextView
+    private lateinit var no_workout_discription: TextView
     private lateinit var createRoutineBackButton: ImageView
     private lateinit var edit_icon_create_routine: ImageView
     private lateinit var createRoutineRecyclerView: RecyclerView
@@ -59,6 +61,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private var routineName: String = ""
     private var editRoutine: String = ""
     private var routineIdworkout: String = ""
+    private var newBooleanBack:Boolean = false
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
         get() = FragmentCreateRoutineBinding::inflate
@@ -68,6 +71,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             requireContext(),
             arrayListOf(),
             ::onWorkoutItemClick,
+            ::onListEmptyCallback,
             ::onWorkoutItemRemove
         )
     }
@@ -104,6 +108,8 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         editText = view.findViewById(R.id.editText)
         edit_icon_create_routine = view.findViewById(R.id.edit_icon_create_routine)
         textViewRoutine = view.findViewById(R.id.name_routine_text_view)
+        no_workout_heading = view.findViewById(R.id.no_workout_heading)
+        no_workout_discription = view.findViewById(R.id.no_workout_discription)
         layoutBtnLog = view.findViewById(R.id.layout_btn_log)
         createRoutineBackButton = view.findViewById(R.id.back_button)
         addNameLayout = view.findViewById(R.id.add_name_layout)
@@ -112,6 +118,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
         edit_icon_create_routine.setOnClickListener {
             addNameLayout.visibility = View.VISIBLE
+            newBooleanBack = true
             createListRoutineLayout.visibility = View.GONE
             editText.setText(textViewRoutine.text.toString())
         }
@@ -121,6 +128,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             if (workoutList.isNotEmpty()) {
                 addNameLayout.visibility = View.GONE
                 createListRoutineLayout.visibility = View.VISIBLE
+                newBooleanBack = true
                 textViewRoutine.text = routineName
                 // Map workoutList to RoutineWorkoutDisplayModel and update the adapter
                 val routineWorkoutModels = mapWorkoutSessionRecordsToRoutineWorkoutModels(workoutList)
@@ -129,6 +137,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             } else {
                 addNameLayout.visibility = View.GONE
                 createListRoutineLayout.visibility = View.VISIBLE
+                newBooleanBack = true
                 textViewRoutine.text = routineName
                 createRoutineRecyclerView.visibility = View.GONE
             }
@@ -136,6 +145,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             if (workoutList.isNotEmpty()) {
                 addNameLayout.visibility = View.GONE
                 createListRoutineLayout.visibility = View.VISIBLE
+                newBooleanBack = true
                 //textViewRoutine.text = routineName
                 textViewRoutine.text = workoutLists?.routineName?:routineName
                 // Map workoutList to RoutineWorkoutDisplayModel and update the adapter
@@ -145,13 +155,22 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             } else {
                 addNameLayout.visibility = View.GONE
                 createListRoutineLayout.visibility = View.VISIBLE
+                newBooleanBack = true
                 textViewRoutine.text = routineName
                 createRoutineRecyclerView.visibility = View.GONE
             }
         } else{
             addNameLayout.visibility = View.VISIBLE
             createListRoutineLayout.visibility = View.GONE
+            newBooleanBack = true
             routine = "routine"
+        }
+        if(workoutList.isEmpty()){
+            no_workout_discription.visibility = View.VISIBLE
+            no_workout_heading.visibility = View.VISIBLE
+        }else{
+            no_workout_discription.visibility = View.GONE
+            no_workout_heading.visibility = View.GONE
         }
 
         /* if (workoutLists != null) {
@@ -216,22 +235,41 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineRecyclerView.adapter = routineWorkoutListAdapter
 
         createRoutineBackButton.setOnClickListener {
-            if (routine.equals("edit_routine")||editRoutine.equals("edit_routine")||myroutine.equals("myRoutine")){
-                val fragment = SearchWorkoutFragment()
-                val bundle = Bundle().apply {
-                    putInt("selectedTab", 1) // My Routine tab
+            if (newBooleanBack) {
+                val bottomSheet = ExitConfirmationBottomSheet {
+                    // ✅ On "Yes" click — run your existing logic
+                    if (routine.equals("edit_routine") || editRoutine.equals("edit_routine") || myroutine.equals("myRoutine")) {
+                        val fragment = SearchWorkoutFragment()
+                        val bundle = Bundle().apply { putInt("selectedTab", 1) }
+                        fragment.arguments = bundle
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                            addToBackStack("SearchWorkoutFragment")
+                            commit()
+                        }
+                    } else {
+                        navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+                    }
                 }
-                fragment.arguments = bundle
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
-                    addToBackStack("SearchWorkoutFragment")
-                    commit()
+                bottomSheet.isCancelable = false
+                bottomSheet.show(parentFragmentManager, "CustomExitBottomSheet")
+            } else {
+                // Normal flow if newBooleanBack = false
+                if (routine.equals("edit_routine") || editRoutine.equals("edit_routine") || myroutine.equals("myRoutine")) {
+                    val fragment = SearchWorkoutFragment()
+                    val bundle = Bundle().apply { putInt("selectedTab", 1) }
+                    fragment.arguments = bundle
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack("SearchWorkoutFragment")
+                        commit()
+                    }
+                } else {
+                    navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
                 }
-            }else{
-                navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
             }
-
         }
+
 
         editText.addTextChangedListener(object : TextWatcher {
             private val maxLength = 20
@@ -283,6 +321,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         layoutBtnLog.setOnClickListener {
             addNameLayout.visibility = View.GONE
             createListRoutineLayout.visibility = View.VISIBLE
+            newBooleanBack = true
             textViewRoutine.text = editText.text
         }
     }
@@ -425,6 +464,11 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             addToBackStack(null)
             commit()
         }
+    }
+    private fun onListEmptyCallback() {
+        no_workout_discription.visibility = View.VISIBLE
+        no_workout_heading.visibility = View.VISIBLE
+        createRoutineRecyclerView.visibility = View.GONE
     }
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun updateWorkoutRoutine(routineName: String) {

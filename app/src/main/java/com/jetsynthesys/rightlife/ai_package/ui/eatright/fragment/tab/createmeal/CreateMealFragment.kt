@@ -36,9 +36,13 @@ import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.MealSaveQuitBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.MealSaveQuitBottomSheet.OnMealSaveQuitListener
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.DishListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DeleteDishBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DeleteLogDishBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.databinding.FragmentCreateMealBinding
@@ -49,7 +53,7 @@ import retrofit2.Response
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
+class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQuitBottomSheet.OnMealSaveQuitListener {
 
     private lateinit var addedDishItemRecyclerview : RecyclerView
     private lateinit var etAddName : EditText
@@ -150,6 +154,29 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                if (dishLists.size > 0){
+                    mealSaveQuitDialog()
+                }else{
+                    val fragment = HomeTabMealFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
+                    args.putString("selectedMealDate", selectedMealDate)
+                    args.putString("tabType", "MyMeal")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }
+            }
+        })
+
+        backButton.setOnClickListener {
+            if (dishLists.size > 0){
+                mealSaveQuitDialog()
+            }else{
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
@@ -162,21 +189,6 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                     addToBackStack("landing")
                     commit()
                 }
-            }
-        })
-
-        backButton.setOnClickListener {
-            val fragment = HomeTabMealFragment()
-            val args = Bundle()
-            args.putString("ModuleName", moduleName)
-            args.putString("mealType", mealType)
-            args.putString("selectedMealDate", selectedMealDate)
-            args.putString("tabType", "MyMeal")
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
             }
         }
 
@@ -311,7 +323,6 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         val valueLists : ArrayList<IngredientRecipeDetails> = ArrayList()
         valueLists.addAll(dishLists as Collection<IngredientRecipeDetails>)
         dishListAdapter.addAll(valueLists, position, mealItem, isRefresh)
-
         deleteMealDialog(mealItem)
     }
 
@@ -353,128 +364,6 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
         deleteDishBottomSheet.arguments = args
         activity?.supportFragmentManager?.let { deleteDishBottomSheet.show(it, "DeleteDishBottomSheet") }
-    }
-
-    private fun getMealList() {
-        if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
-        }
-         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-       // val userId = "64763fe2fa0e40d9c0bc8264"
-        val startDate = "2025-04-10"
-        val call = ApiClient.apiServiceFastApi.getMealList(userId, startDate)
-        call.enqueue(object : Callback<MealsResponse> {
-            override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    val mealPlanLists = response.body()?.meals ?: emptyList()
-                  //  mealLogLists.addAll(mealPlanLists)
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                }
-            }
-            override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-                    }
-                }
-            }
-        })
-    }
-
-    private fun createMeal(mealDetails: ArrayList<SnapRecipeData>) {
-        if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
-        }
-         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-       // val userId = "64763fe2fa0e40d9c0bc8264"
-        val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedDate = currentDateTime.format(formatter)
-        val dishIds = mutableListOf<String>()
-
-        for (item in mealDetails){
-            dishIds.add(item.id!!)
-        }
-
-        val mealLogRequest = MealPlanRequest(
-            meal_plan_name = addedNameTv.text.toString(),
-            dish_ids = dishIds,
-            date = formattedDate
-        )
-
-//        val mealLogRequest = MealLogRequest(
-//            mealId = mealDetails._id,
-//            userId = "64763fe2fa0e40d9c0bc8264",
-//            meal = mealDetails.name,
-//            date = formattedDate,
-//            image = mealDetails.image,
-//            mealType = mealDetails.mealType,
-//            mealQuantity = mealDetails.mealQuantity,
-//            unit = mealDetails.unit,
-//            isRepeat = mealDetails.isRepeat,
-//            isFavourite = mealDetails.isFavourite,
-//            isLogged = true
-//        )
-        val call = ApiClient.apiServiceFastApi.createLogMeal(userId, mealLogRequest)
-        call.enqueue(object : Callback<MealPlanResponse> {
-            override fun onResponse(call: Call<MealPlanResponse>, response: Response<MealPlanResponse>) {
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    val mealData = response.body()?.message
-                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
-                    val fragment = CreateMealFragment()
-                    val args = Bundle()
-                    args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "mealLog")
-                        addToBackStack("mealLog")
-                        commit()
-                    }
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                }
-            }
-            override fun onFailure(call: Call<MealPlanResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-                    }
-                }
-            }
-        })
     }
 
     private fun createMealsSave(snapRecipeList : ArrayList<IngredientRecipeDetails>) {
@@ -670,6 +559,12 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         toast.show()
     }
 
+    private fun mealSaveQuitDialog() {
+        val mealSaveQuitBottomSheet = MealSaveQuitBottomSheet()
+        mealSaveQuitBottomSheet.isCancelable = true
+        parentFragment.let { mealSaveQuitBottomSheet.show(childFragmentManager, "MealSaveQuitBottomSheet") }
+    }
+
     fun showLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.VISIBLE
@@ -677,5 +572,20 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    override fun onMealSaveQuit(mealData: String) {
+        val fragment = HomeTabMealFragment()
+        val args = Bundle()
+        args.putString("ModuleName", moduleName)
+        args.putString("mealType", mealType)
+        args.putString("selectedMealDate", selectedMealDate)
+        args.putString("tabType", "MyMeal")
+        fragment.arguments = args
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, "landing")
+            addToBackStack("landing")
+            commit()
+        }
     }
 }

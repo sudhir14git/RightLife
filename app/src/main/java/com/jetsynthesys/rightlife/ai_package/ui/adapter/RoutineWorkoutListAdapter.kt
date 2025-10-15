@@ -20,6 +20,7 @@ class RoutineWorkoutListAdapter(
     private val context: Context,
     private var dataList: ArrayList<RoutineWorkoutDisplayModel>,
     private val onItemClick: (RoutineWorkoutDisplayModel, Int) -> Unit,
+    private val onListEmpty: () -> Unit,
     private val onItemRemove: (Int) -> Unit // New callback for removing item from parent fragment
 ) : RecyclerView.Adapter<RoutineWorkoutListAdapter.ViewHolder>() {
 
@@ -317,6 +318,9 @@ class RoutineWorkoutListAdapter(
                 notifyItemRemoved(position)
                 notifyItemRangeChanged(position, dataList.size)
                 onItemRemove(position) // Notify parent fragment to remove from workoutList
+                if (dataList.isEmpty()) {
+                    onListEmpty()
+                }
             }
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "RemoveWorkoutBottomSheet")
         }

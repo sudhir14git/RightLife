@@ -49,6 +49,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDeta
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.MealSaveQuitBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.OnImageSelectedListener
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SearchDishToLogFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
@@ -66,7 +67,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
+class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSaveQuitBottomSheet.OnMealSaveQuitListener {
 
     private val sharedViewModel: SharedMealViewModel by activityViewModels()
 
@@ -277,29 +278,37 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val fragment = YourMealLogsFragment()
-                    val args = Bundle()
-                    args.putString("ModuleName", moduleName)
-                    args.putString("selectedMealDate", selectedMealDate)
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
+                    if (ingredientsList.size > 0){
+                        mealSaveQuitDialog()
+                    }else{
+                        val fragment = YourMealLogsFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        fragment.arguments = args
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flFragment, fragment, "landing")
+                            addToBackStack("landing")
+                            commit()
+                        }
                     }
                 }
             })
 
         backIc.setOnClickListener {
-            val fragment = YourMealLogsFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            args.putString("ModuleName", moduleName)
-            args.putString("selectedMealDate", selectedMealDate)
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
+            if (ingredientsList.size > 0){
+                mealSaveQuitDialog()
+            }else{
+                val fragment = YourMealLogsFragment()
+                val args = Bundle()
+                args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
             }
         }
 
@@ -985,6 +994,12 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
     }
 
+    private fun mealSaveQuitDialog() {
+        val mealSaveQuitBottomSheet = MealSaveQuitBottomSheet()
+        mealSaveQuitBottomSheet.isCancelable = true
+        parentFragment.let { mealSaveQuitBottomSheet.show(childFragmentManager, "MealSaveQuitBottomSheet") }
+    }
+
     fun showLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.VISIBLE
@@ -1130,5 +1145,18 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         sharedViewModel.recipeLogAndFrequentlyLogUpdateMealData(emptyList())
         sharedViewModel.mealLogUpdateMealData(emptyList())
         sharedViewModel.snapMealLogUpdateMealData(emptyList())
+    }
+
+    override fun onMealSaveQuit(mealData: String) {
+        val fragment = YourMealLogsFragment()
+        val args = Bundle()
+        args.putString("ModuleName", moduleName)
+        args.putString("selectedMealDate", selectedMealDate)
+        fragment.arguments = args
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, "landing")
+            addToBackStack("landing")
+            commit()
+        }
     }
 }

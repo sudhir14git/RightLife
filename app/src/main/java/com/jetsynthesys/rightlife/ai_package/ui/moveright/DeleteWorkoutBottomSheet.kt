@@ -1,6 +1,5 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
-import android.R.color.transparent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,6 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

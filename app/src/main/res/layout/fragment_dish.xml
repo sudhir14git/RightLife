@@ -21,7 +21,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="20dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -59,8 +58,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 app:layout_constraintTop_toBottomOf="@id/layout_toolbar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -68,13 +65,23 @@
                 <ImageView
                     android:id="@+id/imgFood"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="220dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_view_meal_place"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Green Circle Indicator -->
+                <View
+                    android:id="@+id/greenCircle"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/green_circle"
+                    app:layout_constraintBottom_toBottomOf="@id/imgFood"
+                    app:layout_constraintStart_toStartOf="@id/imgFood"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/layout_food_name"
@@ -84,6 +91,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/white_bg"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
@@ -143,6 +152,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:background="@drawable/white_bg"
                     android:padding="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:visibility="gone"
                     android:orientation="vertical"
                     android:layout_marginTop="12dp">
@@ -177,6 +188,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:orientation="horizontal"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:gravity="center_vertical"
                     android:layout_marginTop="8dp">
 
@@ -316,6 +329,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:paddingBottom="10dp"
                     android:background="@drawable/white_meal_date_bg"
                     app:layout_constraintTop_toBottomOf="@+id/layout_quantity_selector"
@@ -396,6 +411,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:paddingBottom="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/white_meal_date_bg"
                     app:layout_constraintTop_toBottomOf="@+id/layout_macro_list"
                     app:layout_constraintStart_toStartOf="parent"

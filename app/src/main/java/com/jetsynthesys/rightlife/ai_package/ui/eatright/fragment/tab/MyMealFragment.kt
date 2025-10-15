@@ -87,20 +87,20 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val fragment = YourMealLogsFragment()
-                val args = Bundle()
-                args.putString("ModuleName", moduleName)
-                args.putString("selectedMealDate", selectedMealDate)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
-                }
-            }
-        })
+//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                val fragment = YourMealLogsFragment()
+//                val args = Bundle()
+//                args.putString("ModuleName", moduleName)
+//                args.putString("selectedMealDate", selectedMealDate)
+//                fragment.arguments = args
+//                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                    replace(R.id.flFragment, fragment, "landing")
+//                    addToBackStack("landing")
+//                    commit()
+//                }
+//            }
+//        })
 
         getMyMealList()
 
