@@ -68,7 +68,7 @@ class DeleteLogDishBottomSheet : BottomSheetDialogFragment() {
         val yesBtn = view.findViewById<LinearLayoutCompat>(R.id.yesBtn)
         val noBtn = view.findViewById<LinearLayoutCompat>(R.id.noBtn)
        // deleteTitle.text = "Delete Log"
-        deleteConfirmTv.text = "Are you sure you want to delete this log recipe entry?"
+        deleteConfirmTv.text = "Are you sure you want to delete this meal?"
 
         val mealId = arguments?.getString("mealId").toString()
         val recipeId = arguments?.getString("recipeId").toString()
