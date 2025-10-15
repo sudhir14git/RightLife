@@ -85,7 +85,7 @@ class ImageSliderActivity : BaseActivity() {
     )
 
     private val descriptions = listOf(
-        "Four foundations: mind, body, nutrition, and rest working together for lifelong wellbeing.",
+        "Four foundations: mind, body, nutrition, and rest - working together for lifelong wellbeing.",
         "AI that listens to your body, predicts risks, and helps you build better habits.",
         "From stretching at sunrise to meditating at midnight, RightLife adapts to you and guides your progress.",
         "No influencer fluff. Just personalized content backed by evidence you can trust."

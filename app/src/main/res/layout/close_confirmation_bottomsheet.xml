@@ -27,6 +27,7 @@
         android:layout_margin="20dp"
         android:fontFamily="@font/dmsans_regular"
         android:layout_gravity="center"
+        android:gravity="center"
         android:text="Your changes were not saved. You can still continue."
         android:textColor="@color/txt_color_header"
         android:textSize="14sp" />
