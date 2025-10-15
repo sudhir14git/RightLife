@@ -12,14 +12,14 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart="13dp"
         android:layout_marginEnd="13dp"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:orientation="vertical"
         android:gravity="center"
         android:layout_gravity="center"
-        android:background="@drawable/white_meal_date_bg"
+        android:background="@drawable/white_date_meal_bg"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="3dp"
             android:fontFamily="@font/dmsans_bold"
             android:textColor="@color/black_no_meals"
             android:text="Item Text" />
@@ -48,7 +48,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:scaleType="fitXY"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="3dp"
             android:src="@drawable/circle_uncheck" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

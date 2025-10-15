@@ -46,7 +46,7 @@
                     android:textColor="@color/text_color"
                     android:fontFamily="@font/merriweather_bold"
                     android:layout_marginTop="20dp"
-                    android:text="Create Routines"/>
+                    android:text="Create Routine"/>
                 <ImageView
                     android:id="@+id/activities_sync"
                     android:layout_width="30dp"
@@ -177,6 +177,7 @@
                         android:text="Add"/>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerview_my_meals_item"
                     android:layout_width="match_parent"
@@ -189,6 +190,38 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
                 </androidx.recyclerview.widget.RecyclerView>
+                <TextView
+                    android:id="@+id/no_workout_heading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No Workout/ Activities Added"
+                    android:layout_marginTop="40dp"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:visibility="gone"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/recyclerview_my_meals_item"
+                    />
+                <TextView
+                    android:id="@+id/no_workout_discription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="30dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="Tap ‘Add’ to add workouts to your routine"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/no_workout_heading"
+                    app:layout_constraintBottom_toTopOf="@+id/save_workout_routine_btn"
+                    />
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/save_workout_routine_btn"
                     android:layout_width="310dp"

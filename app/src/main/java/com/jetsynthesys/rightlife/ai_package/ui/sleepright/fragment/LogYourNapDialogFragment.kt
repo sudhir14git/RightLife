@@ -166,9 +166,11 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
             }
 
             if (hasNegative) {
-                Toast.makeText(context, "Sleep duration cannot be negative", Toast.LENGTH_SHORT).show()
+                showCustomToastNew(requireContext,"Sleep Time Must Be After Wake Time!")
+                //Toast.makeText(context, "Sleep duration cannot be negative", Toast.LENGTH_SHORT).show()
             } else if (totalDuration == 0) {
-                Toast.makeText(context, "Sleep duration cannot be 0", Toast.LENGTH_SHORT).show()
+                showCustomToastNew(requireContext,"Sleep Time Must Be After Wake Time!")
+                //Toast.makeText(context, "Sleep duration cannot be 0", Toast.LENGTH_SHORT).show()
             } else {
                 val sleepTime = tvStartTime.text.toString()
                 val inputFmt  = DateTimeFormatter.ofPattern("hh:mm a")
@@ -394,6 +396,30 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         currentToast?.cancel()
         val inflater = LayoutInflater.from(context)
         val toastLayout = inflater.inflate(R.layout.custom_toast_ai_eat, null)
+        val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+        // ✅ Wrap layout inside FrameLayout to apply margins
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val marginInPx = (20 * context.resources.displayMetrics.density).toInt()
+        params.setMargins(marginInPx, 0, marginInPx, 0)
+        toastLayout.layoutParams = params
+        container.addView(toastLayout)
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = container
+        toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 100)
+        currentToast = toast
+        toast.show()
+    }
+    private fun showCustomToastNew(context: Context, message: String?) {
+        // Cancel any old toast
+        currentToast?.cancel()
+        val inflater = LayoutInflater.from(context)
+        val toastLayout = inflater.inflate(R.layout.custom_toast_ai_sleep, null)
         val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
         textView.text = message
         // ✅ Wrap layout inside FrameLayout to apply margins
