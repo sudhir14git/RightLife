@@ -121,7 +121,7 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class HomeNewActivity : BaseActivity() {
-    private var snapMealId =  ""
+    private var snapMealId = ""
     private lateinit var binding: ActivityHomeNewBinding
     private var isAdd = true
     private var showheaderFlag = false
@@ -173,12 +173,12 @@ class HomeNewActivity : BaseActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       /* window.apply {
-            // Allow content to draw behind status bar
-            decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            statusBarColor = android.graphics.Color.TRANSPARENT // Transparent status bar
-        }*/
+        /* window.apply {
+             // Allow content to draw behind status bar
+             decorView.systemUiVisibility =
+                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+             statusBarColor = android.graphics.Color.TRANSPARENT // Transparent status bar
+         }*/
 
         binding = ActivityHomeNewBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
@@ -189,14 +189,10 @@ class HomeNewActivity : BaseActivity() {
         }
 
         // Load default fragment only on first launch
+        val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
         if (savedInstanceState == null) {
-            val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
-
             if (openMyHealth) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                    .commit()
-                updateMenuSelection(R.id.menu_explore)
+                myHealthFragmentSelected()
             } else {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainer, HomeExploreFragment())
@@ -204,13 +200,8 @@ class HomeNewActivity : BaseActivity() {
                 updateMenuSelection(R.id.menu_home)
             }
         } else {
-            val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
-
             if (openMyHealth) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                    .commit()
-                updateMenuSelection(R.id.menu_explore)
+                myHealthFragmentSelected()
             } else {
                 // 🟢 Restore menu highlight based on current fragment
                 val currentFragment =
@@ -221,9 +212,6 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
         }
-
-        val fragmentName = intent.getStringExtra("FRAGMENT")
-        if ("MY_HEALTH" == fragmentName)
 
         /*DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Unlock RightLife Pro to keep your health journey uninterrupted.",
@@ -476,14 +464,14 @@ class HomeNewActivity : BaseActivity() {
             includedhomebottomsheet.llJournal.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startJournalListActivity(this@HomeNewActivity)
+                    ActivityUtils.startJournalListActivity(this@HomeNewActivity)
                 }
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
-                if (checkTrailEndedAndShowDialog()) {
+               // if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
-                }
+                //}
             }
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)
@@ -630,12 +618,14 @@ class HomeNewActivity : BaseActivity() {
         binding.tvStriketroughPrice.paintFlags =
             binding.tvStriketroughPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
-        Log.d("UI_DEBUG", """
+        Log.d(
+            "UI_DEBUG", """
     flFreeTrial visible=${binding.flFreeTrial.visibility}
     flFreeTrial clickable=${binding.flFreeTrial.isClickable}
     flFreeTrial enabled=${binding.flFreeTrial.isEnabled}
     homeBottomSheet visible=${binding.includedhomebottomsheet.root.visibility}
-""".trimIndent())
+""".trimIndent()
+        )
     }
 
     override fun onResume() {
@@ -972,7 +962,7 @@ class HomeNewActivity : BaseActivity() {
         if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             binding.llCountDown.visibility =
                 if (show && isCountDownVisible) View.VISIBLE else View.GONE
-        }else{
+        } else {
             handleUserSubscriptionStatus(sharedPreferenceManager.userProfile?.user_sub_status ?: -1)
         }
     }
