@@ -47,8 +47,9 @@
                     android:id="@+id/img_jump_back_in_next"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/forward_arrow_free_trial"
-                    android:layout_margin="16dp"
+                    android:src="@drawable/forward_jump_back_in"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="8dp"
                     android:layout_alignParentEnd="true" />
 
                 <TextView

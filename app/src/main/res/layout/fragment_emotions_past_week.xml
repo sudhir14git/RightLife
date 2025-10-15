@@ -14,7 +14,7 @@
         android:fontFamily="@font/merriweather_bold"
         android:text="How have your emotions been over the past week?"
         android:textColor="@color/menu_icon_color_unselected"
-        android:textSize="@dimen/textsize_large18sp" />
+        android:textSize="22sp" />
 
 
     <androidx.cardview.widget.CardView

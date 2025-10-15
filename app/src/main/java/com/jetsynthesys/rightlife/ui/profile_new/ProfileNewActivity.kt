@@ -181,6 +181,7 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         binding.btnVerify.setOnClickListener {
+            it.disableViewForSeconds()
             val mobileNumber = binding.etMobile.text.toString()
             if (mobileNumber.isEmpty()) {
                 showToast("Please enter 10 digit mobile number")
