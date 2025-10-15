@@ -63,8 +63,8 @@ data class CategoryListItem(
     @SerializedName("desc")
     val desc: String? = null,
 
-    @SerializedName("tags")
-    val tags: List<String>? = null,
+    /*@SerializedName("tags")
+    val tags: List<String>? = null,*/
 
     @SerializedName("episodeCount")
     val episodeCount: Int? = null,
