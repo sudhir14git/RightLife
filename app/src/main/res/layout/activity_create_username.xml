@@ -91,6 +91,6 @@
         android:textSize="@dimen/textsize_large20sp"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/white"
-        android:backgroundTint="@color/menuselected"/>
+        android:backgroundTint="@color/rightlife"/>
 
 </LinearLayout>
