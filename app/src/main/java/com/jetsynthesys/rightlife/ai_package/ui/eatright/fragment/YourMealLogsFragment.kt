@@ -665,6 +665,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         if (mealLogHistory.size > 0 && weekList.isNotEmpty()){
             mealLogHistory.forEach { mealLog ->
                 for (item in weekList){
+                    val todayDateTime = LocalDateTime.now()
+                    val todayDate = todayDateTime.format(formatter)
+                    if (item.fullDate.toString() == todayDate){
+                        nextWeekBtn.setImageResource(R.drawable.right_arrow_grey)
+                    }
                     if (item.fullDate.toString() == mealLog.date){
                         if (mealLog.isAvailable == true){
                            item.is_available = true

@@ -70,20 +70,20 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
         recipeRecyclerView.layoutManager = LinearLayoutManager(context)
         recipeRecyclerView.adapter = recipeAdapter
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val fragment = YourMealLogsFragment()
-                val args = Bundle()
-                args.putString("ModuleName", moduleName)
-                args.putString("selectedMealDate", selectedMealDate)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
-                }
-            }
-        })
+//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                val fragment = YourMealLogsFragment()
+//                val args = Bundle()
+//                args.putString("ModuleName", moduleName)
+//                args.putString("selectedMealDate", selectedMealDate)
+//                fragment.arguments = args
+//                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                    replace(R.id.flFragment, fragment, "landing")
+//                    addToBackStack("landing")
+//                    commit()
+//                }
+//            }
+//        })
 
         getRecipeList()
 

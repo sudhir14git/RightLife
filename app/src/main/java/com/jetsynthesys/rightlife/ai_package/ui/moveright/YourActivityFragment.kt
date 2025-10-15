@@ -371,7 +371,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val userid = "68da95fcd4b1a4fab520ab9b"//SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = userid,
@@ -651,7 +651,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 showLoader(requireView())
             }
         }
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = "68da95fcd4b1a4fab520ab9b"//SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApiV2.getActivityLogHistory(userId, "android", formattedDate)
         call.enqueue(object : Callback<WorkoutHistoryResponse> {
             override fun onResponse(call: Call<WorkoutHistoryResponse>, response: Response<WorkoutHistoryResponse>) {
@@ -699,6 +699,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {
                 workoutLogHistory.forEach { workoutLog ->
                     for (item in weekList) {
+                        val todayDateTime = LocalDateTime.now()
+                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val todayDate = todayDateTime.format(formatter)
+                        if (item.fullDate.toString() == todayDate){
+                            nextWeekBtn.setImageResource(R.drawable.right_arrow_grey)
+                        }
                         if (item.fullDate.toString() == workoutLog.date) {
                             if (workoutLog.is_available_workout == true) {
                                 item.is_available = true

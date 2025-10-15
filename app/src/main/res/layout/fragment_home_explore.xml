@@ -239,7 +239,6 @@
                                 android:id="@+id/img_rledit"
                                 android:layout_width="match_parent"
                                 android:layout_height="200dp"
-                                android:scaleType="centerCrop"
                                 android:adjustViewBounds="true"
                                 android:src="@drawable/img_rledittop" />
 
@@ -437,12 +436,12 @@
 
                                         <TextView
                                             android:id="@+id/nameeditor1"
-                                            android:layout_width="wrap_content"
+                                            android:layout_width="90dp"
                                             android:layout_height="wrap_content"
                                             android:layout_centerVertical="true"
                                             android:fontFamily="@font/dmsans_regular"
                                             android:text="Ventak swami muthu "
-                                            android:maxLength="16"
+                                            android:maxLines="1"
                                             android:ellipsize="end"
                                             android:textAlignment="textStart"
                                             android:textColor="#0B1215"
@@ -593,12 +592,12 @@
 
                                         <TextView
                                             android:id="@+id/nameeditor2"
-                                            android:layout_width="wrap_content"
+                                            android:layout_width="90dp"
                                             android:layout_height="wrap_content"
                                             android:layout_centerVertical="true"
                                             android:fontFamily="@font/dmsans_regular"
-                                            android:text="Ventak swami muthu  "
-                                            android:maxLength="16"
+                                            android:text="Ventak swami muthu"
+                                            android:maxLines="1"
                                             android:ellipsize="end"
                                             android:textAlignment="textStart"
                                             android:textColor="#0B1215"

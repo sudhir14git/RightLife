@@ -20,6 +20,7 @@ import com.google.android.material.chip.ChipGroup
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityUserInterestBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.new_design.pojo.InterestTopic
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
@@ -80,7 +81,7 @@ class UserInterestActivity : BaseActivity() {
         }
         binding.btnSaveInterest.setOnClickListener {
             if (selectedInterests.size < 2) {
-                Utils.showNewDesignToast(this, "Please choose at least 2 options to continue.",false)
+                showCustomToast( "Please choose at least 2 options to continue.",false)
                 return@setOnClickListener
             }
 
@@ -183,7 +184,6 @@ class UserInterestActivity : BaseActivity() {
                     selectedInterests.add(topic)
                 binding.btnSaveInterest.backgroundTintList =
                     if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected
-                binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
 
                 val chip = Chip(this).apply {
                     text = topic.topic
@@ -243,7 +243,6 @@ class UserInterestActivity : BaseActivity() {
 
                         binding.btnSaveInterest.backgroundTintList =
                             if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected
-                       binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
                     }
                 }
                 chipGroup.addView(chip)

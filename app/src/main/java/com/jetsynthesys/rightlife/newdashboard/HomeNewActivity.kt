@@ -189,14 +189,10 @@ class HomeNewActivity : BaseActivity() {
         }
 
         // Load default fragment only on first launch
+        val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
         if (savedInstanceState == null) {
-            val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
-
             if (openMyHealth) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                    .commit()
-                updateMenuSelection(R.id.menu_explore)
+                myHealthFragmentSelected()
             } else {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainer, HomeExploreFragment())
@@ -204,13 +200,8 @@ class HomeNewActivity : BaseActivity() {
                 updateMenuSelection(R.id.menu_home)
             }
         } else {
-            val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
-
             if (openMyHealth) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                    .commit()
-                updateMenuSelection(R.id.menu_explore)
+                myHealthFragmentSelected()
             } else {
                 // 🟢 Restore menu highlight based on current fragment
                 val currentFragment =
@@ -221,9 +212,6 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
         }
-
-        val fragmentName = intent.getStringExtra("FRAGMENT")
-        if ("MY_HEALTH" == fragmentName)
 
         /*DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Unlock RightLife Pro to keep your health journey uninterrupted.",
@@ -481,9 +469,9 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
-                if (checkTrailEndedAndShowDialog()) {
+               // if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
-                }
+                //}
             }
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)

@@ -93,7 +93,7 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
             }else{
                 tvTitles.text = "What Can We Do Better ?"
             }
-            Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
         }
 
         closeIcon.setOnClickListener {

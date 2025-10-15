@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.Toast
@@ -57,10 +58,14 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
         val closeIcon = view.findViewById<ImageView>(R.id.closeIc)
         val layoutSubmit = view.findViewById<LinearLayoutCompat>(R.id.layoutSubmit)
         val ratingLayout = view.findViewById<ConstraintLayout>(R.id.rating_snap_meal_layout)
+        val afterRatingLayout = view.findViewById<ConstraintLayout>(R.id.afterRatingLayout)
         val successLayout = view.findViewById<ConstraintLayout>(R.id.rate_successfull_layout)
         val disabledLayoutCancel = view.findViewById<LinearLayoutCompat>(R.id.disabled_layoutCancel)
         val layoutNotNow = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNow)
         val ratingBar = view.findViewById<RatingBar>(R.id.ratingBar)
+        val layoutSubmitAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutSubmitAfter)
+        val layoutNotNowAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNowAfter)
+        val editText = view.findViewById<EditText>(R.id.editText)
 
         val isSave = arguments?.getBoolean("isSave") ?: false
         /*  if (isRating){
@@ -81,7 +86,7 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
             isRating = true
             layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
             layoutSubmit.isEnabled = true
-            Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
         }
 
         closeIcon.setOnClickListener {
@@ -90,19 +95,17 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
 
         layoutSubmit.setOnClickListener {
             ratingLayout.visibility = View.GONE
-            successLayout.visibility = View.VISIBLE
+            afterRatingLayout.visibility = View.VISIBLE
+          //  successLayout.visibility = View.VISIBLE
             //dismiss()
-            listener?.onSnapMealRating(1.0, isSave)
-
+         //   listener?.onSnapMealRating(1.0, isSave)
             val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
-
             var productId = ""
             sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
                 if (subscription.status) {
                     productId = subscription.productId
                 }
             }
-
             context?.let { it1 ->
                 AnalyticsLogger.logEvent(
                     it1, AnalyticsEvent.MEAL_SCAN_RATING
@@ -111,6 +114,28 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
         }
 
         layoutNotNow.setOnClickListener {
+            dismiss()
+            //   Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
+            listener?.onSnapMealRating(1.0, isSave)
+        }
+
+        layoutSubmitAfter.setOnClickListener {
+            if (editText.text.length > 1 && editText.text.isNotEmpty()){
+                ratingLayout.visibility = View.GONE
+                afterRatingLayout.visibility = View.GONE
+                successLayout.visibility = View.VISIBLE
+                //dismiss()
+                view.postDelayed({
+                    listener?.onSnapMealRating(1.0, isSave)
+                }, 1000) // 5000ms = 5 seconds
+
+                val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+            }else{
+                Toast.makeText(view.context, "Please input comment", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        layoutNotNowAfter.setOnClickListener {
             dismiss()
             //   Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
             listener?.onSnapMealRating(1.0, isSave)
@@ -124,7 +149,6 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "LoggedBottomSheet"
-
         @JvmStatic
         fun newInstance() = RatingMealBottomSheet().apply {
             arguments = Bundle().apply {

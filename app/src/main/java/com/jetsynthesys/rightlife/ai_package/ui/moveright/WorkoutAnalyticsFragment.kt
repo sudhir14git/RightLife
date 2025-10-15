@@ -446,9 +446,6 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             val peakSecond = item.heartRateZones.peakZone[1]
             peak_bpm_text.text = "${peakFirst}-${peakSecond} BPM"
 
-
-
-
             // Set progress bar percentages and overlay widths from heartRateZonePercentages
             customProgressBar.post {
                 customProgressBar.progress = item.heartRateZonePercentages.peakZone
@@ -505,11 +502,13 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                 transparentOverlayCardio.layoutParams = layoutParams
             }
             // Convert heartRateData to HRDataPoint and set it on the graph
+            val formatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
             dataPoints.clear()
             item.heartRateData.forEach { heartRateData ->
                 val zdt = ZonedDateTime.parse(heartRateData.date)
                 val millis = zdt.toInstant().toEpochMilli()
-                val time = parseTime(heartRateData.date)
+               // val time = parseTime(heartRateData.date)
+             //   val formattedTime = zdt.format(formatter).uppercase(Locale.ENGLISH)
                 val bpm = heartRateData.heartRate.toInt()
                 dataPoints.add(HRDataPoint(millis, bpm))
             }
@@ -531,13 +530,10 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
     fun getTimeDifference(isoTime1: String, isoTime2: String): String {
         val time1 = ZonedDateTime.parse(isoTime1)
         val time2 = ZonedDateTime.parse(isoTime2)
-
         val duration = Duration.between(time2, time1).abs()
-
         val hours = duration.toHours()
         val minutes = duration.toMinutes() % 60
         val seconds = duration.seconds % 60
-
         return "%02d:%02d:%02d".format(hours, minutes, seconds)
     }
 
@@ -546,7 +542,7 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         return try {
             val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
             val date = sdf.parse(timestamp)
-            timeFormat.format(date).lowercase()
+            timeFormat.format(date).uppercase()
         } catch (e: Exception) {
             "N/A"
         }

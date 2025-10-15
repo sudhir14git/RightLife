@@ -63,7 +63,9 @@ import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealsNutrientsRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealNutrientsResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingMealBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
@@ -84,10 +86,9 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
+class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetectBottomSheet.SnapMealDetectListener {
 
     private var moduleName : String = ""
-
     lateinit var apiService: ApiService
     private var preSignedUrlData: PreSignedUrlData? = null
     private var imageGeneratedUrl = ""
@@ -105,6 +106,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private lateinit var imagePathsecond : Uri
     private var isProceedResult : Boolean = false
     private var isGalleryOpen : Boolean = false
+    private lateinit var snapMealDetectBottomSheet : SnapMealDetectBottomSheet
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var backButton : ImageView
     private var loadingOverlay : FrameLayout? = null
@@ -388,6 +390,20 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
             }
         })
+    }
+
+    private fun notMealDetectItem() {
+        val snapMealDetectBottomSheet = SnapMealDetectBottomSheet()
+        snapMealDetectBottomSheet.isCancelable = true
+//        val bundle = Bundle()
+//        bundle.putBoolean("isSave", isSave)
+//        snapMealDetectBottomSheet.arguments = bundle
+        parentFragment.let {
+            snapMealDetectBottomSheet.show(
+                childFragmentManager,
+                "SnapMealDetectBottomSheet"
+            )
+        }
     }
 
      fun openGalleryForImage() {
@@ -848,10 +864,12 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                                 commit()
                             }
                         }else{
-                            Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
+                            notMealDetectItem()
+                           // Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
                         }
                     }else{
-                        Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
+                        notMealDetectItem()
+                        //Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     println("Error: ${response.errorBody()?.string()}")
@@ -884,6 +902,21 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    override fun onSnapMealDetect(notDetect: Boolean) {
+        if (imagePath != ""){
+            //  imagePathsecond
+            if (imageGeneratedUrl != ""){
+                getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+            }else{
+                imagePathsecond?.let { getUrlFromURI(it) }
+            }
+            // imagePathString.let { Uri.parse(it) }!!
+            // uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+        }else{
+            Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
+        }
     }
 }
 
@@ -1071,7 +1104,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             }
         }
     }
-
 
     private fun requestGalleryPermissionIfNeeded(): Boolean {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&

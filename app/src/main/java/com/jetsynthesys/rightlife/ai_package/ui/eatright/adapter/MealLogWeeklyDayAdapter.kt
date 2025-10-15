@@ -55,7 +55,7 @@ class MealLogWeeklyDayAdapter(private val context: Context, private var dataList
                     holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.white))
                     holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.white))
                 }else{
-                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
+                    holder.layoutMain.setBackgroundResource(R.drawable.white_date_meal_bg)
                     holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
                     holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
                 }
