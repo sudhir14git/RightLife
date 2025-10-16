@@ -50,11 +50,22 @@
 
             <ImageView
                 android:id="@+id/imageFood"
-                android:layout_width="350dp"
+                android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_view_meal_place"
                 android:scaleType="centerCrop" />
+
+            <View
+                android:id="@+id/greenCircle"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="-35dp"
+                android:background="@drawable/green_circle"
+                app:layout_constraintBottom_toBottomOf="@id/imgFood"
+                app:layout_constraintStart_toStartOf="@id/imgFood"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
