@@ -223,7 +223,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         val dateTime = LocalDateTime.parse(isoDateString, formatter)
 
         // Convert to desired format (dd MMMM, yyyy)
-        val outputFormatter = DateTimeFormatter.ofPattern("dd MMMM, yyyy").withZone(ZoneId.of("UTC"))
+        val outputFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy").withZone(ZoneId.of("UTC"))
         return outputFormatter.format(dateTime)
     }
     fun convertUtcTo12HourFormat(input: String): String {

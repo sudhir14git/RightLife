@@ -339,7 +339,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     commit()
                 }
         } else{
-                startActivity(Intent(context, HomeNewActivity::class.java))
+               // startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }
         }
@@ -381,7 +381,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                         commit()
                     }
         } else{
-                startActivity(Intent(context, HomeNewActivity::class.java))
+              //  startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }  
                 }
@@ -462,7 +462,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     updateSnapMealLog(mealId, snapRecipesList)
                 } else {
                    // currentPhotoPathsecound?.let { getUrlFromURI(it) }
-                    createSnapMealLog(snapRecipesList, false)
+                    ratingMealLogDialog(false)
                 }
             }
         }
@@ -991,7 +991,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                                 AnalyticsEvent.MEAL_SCAN_COMPLETE,
                                 mapOf(AnalyticsParam.MEAL_SCAN_COMPLETE to true)
                             )
-                            startActivity(Intent(context, HomeNewActivity::class.java))
+                           // startActivity(Intent(context, HomeNewActivity::class.java))
                             requireActivity().finish()
                         }
                     } else {

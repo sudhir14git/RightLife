@@ -340,7 +340,10 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
         leftYAxis.granularity = 1f
 
+        leftYAxis.granularity = 1000f
+        leftYAxis.labelCount = ((leftYAxis.axisMaximum / 1000).toInt() + 1)
         leftYAxis.valueFormatter = KValueFormatter()
+
 
         if (entries.size < 30){
             val minValue = minOf(

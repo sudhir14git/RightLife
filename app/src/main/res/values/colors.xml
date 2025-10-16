@@ -215,6 +215,7 @@
     <color name="sync_button_color">#FD6967</color>
     <color name="weight_loss_background">#FFECEB</color>
     <color name="pink">#FFC0CB</color>
+    <color name="recommendationText">#767676</color>
     <color name="progress_subtraction">#F8D6CA</color>
     <color name="progress_subtraction_fill">#EF8B6A</color>
     <color name="progress_baguette">#D8E3FC</color>
