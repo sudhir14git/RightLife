@@ -523,6 +523,8 @@ class MindAuditResultActivity : BaseActivity() {
                     binding.tvResultExplanationTitle.text = ""
                     binding.tvResultExplanation.text = ""
                     setFanArcView(assessmentTaken)
+
+                    showAssessmentScorebar("DASS-21")
                 }
 
                 "PHQ-9" -> {
@@ -534,10 +536,10 @@ class MindAuditResultActivity : BaseActivity() {
                         binding.mainScoreLevel.visibility = View.VISIBLE
                         binding.tvMainScore.text =
                             assessmentTaken.interpretations.depression.score.toString()
-                        setRainbowView(assessmentTaken.interpretations.depression.score.toInt())
+                        setRainbowViewPHQ9(assessmentTaken.interpretations.depression.score.toInt())
                         binding.cardviewMainscore.setCardBackgroundColor(
                             resources.getColor(
-                                getColorResForScore(assessmentTaken.interpretations.depression.score)
+                                getColorResForScorePhq9(assessmentTaken.interpretations.depression.score)
                             )
                         )
                         setExplanationTitle(
@@ -571,6 +573,8 @@ class MindAuditResultActivity : BaseActivity() {
                         tvExtSevere.visibility = View.VISIBLE
                         tvRange5.gravity = Gravity.START
                     }
+                    imgScorebarPhq9.visibility = View.VISIBLE
+                    showAssessmentScorebar("PHQ-9")
                 }
 
                 "OHQ" -> {
@@ -626,6 +630,7 @@ class MindAuditResultActivity : BaseActivity() {
                                 if (binding.mainScoreLevelDesciption.visibility == View.VISIBLE) View.GONE else View.VISIBLE
 
                     })
+                    showAssessmentScorebar("OHQ")
                 }
 
                 "GAD-7" -> {
@@ -639,7 +644,7 @@ class MindAuditResultActivity : BaseActivity() {
                         setRainbowViewGAD(assessmentTaken.interpretations.anxiety.score)
                         binding.cardviewMainscore.setCardBackgroundColor(
                             resources.getColor(
-                                getColorResForScoreCASandGAD(assessmentTaken.interpretations.anxiety.level)
+                                getColorResForScoreGAD7(assessmentTaken.interpretations.anxiety.score)
                             )
                         )
                         setExplanationTitle(
@@ -679,6 +684,7 @@ class MindAuditResultActivity : BaseActivity() {
                         tvRange4.gravity = Gravity.START
                         tvRange5.gravity = Gravity.END
                     }
+                    showAssessmentScorebar("GAD-7")
                 }
 
                 "CAS" -> {
@@ -692,7 +698,8 @@ class MindAuditResultActivity : BaseActivity() {
                         setRainbowViewCAS(assessmentTaken.interpretations.anger.score)
                         binding.cardviewMainscore.setCardBackgroundColor(
                             resources.getColor(
-                                getColorResForScoreCASandGAD(assessmentTaken.interpretations.anger.level)
+                                getColorResForScoreCAS(assessmentTaken.interpretations.anger.score)
+                                //getColorResForScoreCASandGAD(assessmentTaken.interpretations.anger.level)
                             )
                         )
                         setExplanationTitle(assessmentTaken.interpretations.anger.level, "Anger")
@@ -726,6 +733,8 @@ class MindAuditResultActivity : BaseActivity() {
                         tvRange4.gravity = Gravity.START
                         tvRange5.gravity = Gravity.END
                     }
+                    showAssessmentScorebar("CAS")
+
                 }
 
                 else -> {}
@@ -799,6 +808,13 @@ class MindAuditResultActivity : BaseActivity() {
         binding.rainbowView.visibility = View.VISIBLE
         binding.fanArcView.visibility = View.GONE
         binding.rainbowView.setRainbowColors(getColorArrayForScore(score))
+        binding.rainbowView.setStrokeWidth(60f)
+        binding.rainbowView.setArcSpacing(8f)
+    }
+    private fun setRainbowViewPHQ9(score: Int) {
+        binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
+        binding.rainbowView.setRainbowColors(getColorArrayForScorePHQ9(score))
         binding.rainbowView.setStrokeWidth(60f)
         binding.rainbowView.setArcSpacing(8f)
     }
@@ -1082,6 +1098,33 @@ class MindAuditResultActivity : BaseActivity() {
             else -> R.color.red_ext_severe
         }
     }
+    private fun getColorResForScorePhq9(score: Int): Int {
+        return when (score) {
+            in 1..4 -> R.color.green_minimal
+            in 5..9-> R.color.cyan_mild
+            in 10..14 -> R.color.blue_moderate
+            in 15..19 -> R.color.orange_severe
+            else -> R.color.red_ext_severe
+        }
+    }
+    private fun getColorResForScoreCAS(score: Int): Int {
+        return when (score) {
+            in 0..13 -> R.color.green_minimal
+            in 14..19-> R.color.cyan_mild
+            in 20..28 -> R.color.blue_moderate
+            in 29..63 -> R.color.orange_severe
+            else -> R.color.red_ext_severe
+        }
+    }
+    private fun getColorResForScoreGAD7(score: Int): Int {
+        return when (score) {
+            in 0..4 -> R.color.green_minimal
+            in 5..9-> R.color.blue_moderate
+            in 10..14 -> R.color.orange_severe
+            in 15..21 -> R.color.red_ext_severe
+            else -> R.color.red_ext_severe
+        }
+    }
 
     private fun getColorResForScore(score: String): Int {
         return when (score.lowercase()) {
@@ -1226,10 +1269,10 @@ class MindAuditResultActivity : BaseActivity() {
         val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
 
         val activeColorCount = when (score) {
-            in 0..3 -> 1
-            in 4..8 -> 2
-            in 9..13 -> 3
-            in 14..18 -> 4
+            in 0..4 -> 1
+            in 5..9 -> 2
+            in 10..14 -> 3
+            in 15..21 -> 4
             else -> 5
         }
 
@@ -1261,6 +1304,29 @@ class MindAuditResultActivity : BaseActivity() {
         }
     }
 
+    fun getColorArrayForScorePHQ9(score: Int): IntArray {
+        val colorLevels = listOf(
+            0xFF06B27B.toInt(), // green_minimal
+            0xFF54C8DB.toInt(), // cyan_mild
+            0xFF57A3FC.toInt(), // blue_moderate
+            0xFFFFBD44.toInt(), // orange_severe
+            0xFFFC6656.toInt()  // red_ext_severe
+        )
+
+        val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
+
+        val activeColorCount = when (score) {
+            in 1..4 -> 1
+            in 5..9 -> 2
+            in 10..14 -> 3
+            in 15..19 -> 4
+            else -> 5
+        }
+
+        return IntArray(5) { index ->
+            if (index < activeColorCount) colorLevels[index] else fallbackColor
+        }
+    }
 
     fun getColorArrayForHappinessScore(score: Float): IntArray {
         /*val colorLevels = listOf(
@@ -1542,5 +1608,58 @@ class MindAuditResultActivity : BaseActivity() {
         val MindAuditDateCount: Int,
         val MindAuditBasicAssesmentDate: String
     )
+
+
+    fun showAssessmentScorebar(assessment: String) {
+        when (assessment) {
+            "DASS-21" -> {
+                binding.imgScorebarDass21.visibility = View.VISIBLE
+                binding.imgScorebarGad7.visibility = View.GONE
+                binding.imgScorebarPhq9.visibility = View.GONE
+                binding.imgScorebarCas.visibility = View.GONE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.GONE
+
+            }
+
+            "PHQ-9" -> {
+                binding.imgScorebarDass21.visibility = View.GONE
+                binding.imgScorebarGad7.visibility = View.GONE
+                binding.imgScorebarPhq9.visibility = View.VISIBLE
+                binding.imgScorebarCas.visibility = View.GONE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.GONE
+            }
+
+            "OHQ" -> {
+                binding.imgScorebarDass21.visibility = View.GONE
+                binding.imgScorebarGad7.visibility = View.GONE
+                binding.imgScorebarPhq9.visibility = View.GONE
+                binding.imgScorebarCas.visibility = View.GONE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.VISIBLE
+            }
+
+            "GAD-7" -> {
+                binding.imgScorebarDass21.visibility = View.GONE
+                binding.imgScorebarGad7.visibility = View.VISIBLE
+                binding.imgScorebarPhq9.visibility = View.GONE
+                binding.imgScorebarCas.visibility = View.GONE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.GONE
+            }
+
+            "CAS" -> {
+                binding.imgScorebarDass21.visibility = View.GONE
+                binding.imgScorebarGad7.visibility = View.GONE
+                binding.imgScorebarPhq9.visibility = View.GONE
+                binding.imgScorebarCas.visibility = View.VISIBLE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.GONE
+            }
+
+            else -> {}
+        }
+    }
 
 }
