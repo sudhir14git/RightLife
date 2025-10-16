@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_food_item"
     android:gravity="center"
+    android:paddingHorizontal="8dp"
     android:orientation="vertical">
 
     <LinearLayout
@@ -37,8 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/close_journal"
-                android:visibility="gone" />
+                android:src="@drawable/close_breathwork"
+                android:visibility="visible" />
         </RelativeLayout>
 
         <!-- Bordered container -->
@@ -196,7 +197,8 @@
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/textsize_large"
-                app:backgroundTint="@color/menuselected" />
+                app:backgroundTint="@color/menuselected"
+                android:visibility="gone"/>
         </RelativeLayout>
     </LinearLayout>
 

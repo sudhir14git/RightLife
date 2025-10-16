@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -98,21 +99,25 @@ class CreateUsernameActivity : BaseActivity() {
         })
 
         btnContinue.setOnClickListener {
-            Utils.hideSoftKeyboard(this@CreateUsernameActivity)
-            sharedPreferenceManager.userName = edtUsername.text.toString()
-            val userdata = Userdata()
-            userdata.firstName = username
-            userdata.email = email
-            //updateUserData(userdata)
-            sharedPreferenceManager.createUserName = true
-            val intent = Intent(this, HappyToHaveYouActivity::class.java)
-            startActivity(intent)
+            if (edtUsername.text.isNotEmpty()) {
+                Utils.hideSoftKeyboard(this@CreateUsernameActivity)
+                sharedPreferenceManager.userName = edtUsername.text.toString()
+                val userdata = Userdata()
+                userdata.firstName = username
+                userdata.email = email
+                //updateUserData(userdata)
+                sharedPreferenceManager.createUserName = true
+                val intent = Intent(this, HappyToHaveYouActivity::class.java)
+                startActivity(intent)
+            }else{
+                showCustomToast("Username should not be empty!")
+            }
         }
     }
 
     fun validateUsername(username: String): Boolean {
         if (username.isEmpty()) {
-            return false
+            return true
         }
         // Check if the username only contains alphabetic characters
         val regex = "^[A-Za-z]+$".toRegex()

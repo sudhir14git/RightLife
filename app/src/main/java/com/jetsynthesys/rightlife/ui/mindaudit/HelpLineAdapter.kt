@@ -12,7 +12,8 @@ import com.jetsynthesys.rightlife.databinding.RowHelplineBinding
 
 class HelpLineAdapter(
     private val context: Context,
-    private val items: List<Organization>
+    private val items: List<Organization>,
+    private val isForState: Boolean = false
 ) : RecyclerView.Adapter<HelpLineAdapter.CountryViewHolder>() {
 
     inner class CountryViewHolder(val binding: RowHelplineBinding) :
@@ -38,10 +39,8 @@ class HelpLineAdapter(
                 tvPhoneNumber2.text = phoneNumbers?.get(1) ?: ""
             }
 
-            if (position % 2 == 0) {
-                rlHelpLine.setBackgroundColor(Color.parseColor("#FDD3D2"))
-            } else {
-                rlHelpLine.setBackgroundColor(Color.parseColor("#FFA8A5"))
+            if (isForState) {
+                rlHelpLine.setBackgroundColor(Color.parseColor(if (position % 2 == 0) "#FFA8A5" else "#FEB4B2"))
             }
 
             rlPhoneNumber1.setOnClickListener {

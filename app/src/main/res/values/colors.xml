@@ -77,6 +77,8 @@
     <color name="light_red">#FDD3D2</color>
     <color name="medium_red">#FFA8A5</color>
     <color name="dark_red">#FD6967</color>
+    <color name="helpline_card_bg">#FFA8A5</color>
+    <color name="helpline_card_bg_light">#FEB4B2</color>
 
     <color name="light_green">#A6E0CE</color>
     <color name="medium_green">#4ED6AC</color>
