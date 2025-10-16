@@ -42,15 +42,14 @@
                 android:textSize="@dimen/textsize_medium" />
 
             <ImageView
-                android:id="@+id/ic_close_dialog"
+                android:id="@+id/ic_bookmark"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="16dp"
                 android:src="@drawable/ic_video_bookmark"
-                android:visibility="invisible"
-                app:tint="@color/text_color_app" />
+                android:visibility="visible"/>
         </RelativeLayout>
 
         <androidx.core.widget.NestedScrollView

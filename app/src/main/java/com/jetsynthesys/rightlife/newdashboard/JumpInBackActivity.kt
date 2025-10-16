@@ -52,7 +52,12 @@ class JumpInBackActivity : BaseActivity() {
 
         adapter = JumpInBackAdapter(this, contentDetails, onBookMarkedClick = {
             it.id?.let { it1 ->
-                CommonAPICall.contentBookMark(this, it1, !it.isBookmarked) { success, message ->
+                CommonAPICall.contentBookMark(
+                    this,
+                    it1,
+                    !it.isBookmarked,
+                    contentType = it.contentType!!
+                ) { success, message ->
                     if (success) {
                         it.isBookmarked = !it.isBookmarked
                         val msg = if (it.isBookmarked) {

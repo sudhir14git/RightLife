@@ -8,12 +8,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.new_design.pojo.StressManagement
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 
 class StressManagementAdapter(
     private val context: Context,
@@ -38,18 +35,10 @@ class StressManagementAdapter(
         holder.tvDescription.text = stressManagementList[position].description
         holder.imageView.setImageResource(stressManagementList[position].imageResource)
 
-        val bgDrawable = AppCompatResources.getDrawable(context, R.drawable.bg_gray_border_transperent)
-
-        val unwrappedDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray)
-        val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
-        DrawableCompat.setTint(
-            wrappedDrawable,
-            Utils.getModuleColor(context, SharedPreferenceManager.getInstance(context).selectedOnboardingModule)
+        holder.llStressManagement.background = AppCompatResources.getDrawable(
+            context,
+            if (selectedPosition == position) R.drawable.bg_light_red_rounded else R.drawable.bg_gray_border
         )
-
-        holder.llStressManagement.background =
-            if (selectedPosition == position) wrappedDrawable else bgDrawable
 
         holder.itemView.setOnClickListener {
 

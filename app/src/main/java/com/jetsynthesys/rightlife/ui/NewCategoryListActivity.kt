@@ -70,7 +70,8 @@ class NewCategoryListActivity : BaseActivity() {
                     CommonAPICall.contentBookMark(
                         this,
                         it1,
-                        !item.isBookmarked
+                        !item.isBookmarked,
+                        contentType = item.contentType!!
                     ) { success, message ->
                         if (success) {
                             item.isBookmarked = !item.isBookmarked

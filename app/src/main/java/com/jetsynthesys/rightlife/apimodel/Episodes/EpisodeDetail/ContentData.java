@@ -31,4 +31,5 @@ public class ContentData {
     public String moduleName;
     public Object recommended; // This is null in response thats why its object
     public NextEpisode nextEpisode;
+    public boolean isBookmarked;
 }
