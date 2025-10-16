@@ -48,7 +48,7 @@ object CommonAPICall {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     if (isSelectedModule)
-                        context.showCustomToast("Added to toolkit.",true)
+                        context.showCustomToast("Added to toolkit.", true)
                     else
                         context.showCustomToast("Removed from toolkit.")
                 } else {
@@ -419,11 +419,13 @@ object CommonAPICall {
         context: Context,
         contentId: String,
         isBookmark: Boolean,
+        episodeId: String = "",
+        contentType: String,
         onResult: (Boolean, String) -> Unit
     ) {
         val apiService = ApiClient.getClient(context).create(ApiService::class.java)
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
-        val request = ArticleBookmarkRequest(contentId, isBookmark)
+        val request = ArticleBookmarkRequest(contentId, isBookmark, episodeId, contentType)
         val call = apiService.ArticleBookmarkRequest(
             sharedPreferenceManager.accessToken,
             request

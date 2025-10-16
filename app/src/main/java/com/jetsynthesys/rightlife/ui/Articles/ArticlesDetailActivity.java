@@ -120,11 +120,11 @@ public class ArticlesDetailActivity extends BaseActivity {
             if (articleDetailsResponse.getData().getBookmarked()) {
                 binding.icSaveArticle.setImageResource(R.drawable.ic_save_article);
                 articleDetailsResponse.getData().setBookmarked(false);
-                postArticleBookMark(articleDetailsResponse.getData().getId(), false);
+                postArticleBookMark(articleDetailsResponse.getData().getId(), false, articleDetailsResponse.getData().getContentType());
             } else {
                 binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active);
                 articleDetailsResponse.getData().setBookmarked(true);
-                postArticleBookMark(articleDetailsResponse.getData().getId(), true);
+                postArticleBookMark(articleDetailsResponse.getData().getId(), true, articleDetailsResponse.getData().getContentType());
             }
 
 
@@ -508,8 +508,8 @@ public class ArticlesDetailActivity extends BaseActivity {
 
     }
 
-    private void postArticleBookMark(String contentId, boolean isBookmark) {
-        ArticleBookmarkRequest request = new ArticleBookmarkRequest(contentId, isBookmark);
+    private void postArticleBookMark(String contentId, boolean isBookmark, String contentType) {
+        ArticleBookmarkRequest request = new ArticleBookmarkRequest(contentId, isBookmark, "", contentType);
         // Make the API call
         Call<ResponseBody> call = apiService.ArticleBookmarkRequest(sharedPreferenceManager.getAccessToken(), request);
         call.enqueue(new Callback<ResponseBody>() {
