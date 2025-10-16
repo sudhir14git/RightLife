@@ -3540,19 +3540,15 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:textSize="20sp"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
                             android:src="@drawable/ic_water_cup"
-                            android:textStyle="bold"
-                            android:layout_gravity="center"
-                            android:textColor="@color/meal_log_title" />
+                           />
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="50dp"
-                            android:layout_marginTop="13dp"
-                            android:layout_marginStart="8dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
                             android:fontFamily="@font/dmsans_bold"
                             android:text="Log Your Water Intake"
                             android:textSize="14sp"

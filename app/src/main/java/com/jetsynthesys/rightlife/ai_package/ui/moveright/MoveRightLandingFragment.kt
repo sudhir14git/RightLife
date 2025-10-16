@@ -606,10 +606,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             val startX = (barWidth * startFrac).toInt() + progressBarCalorieBalance.paddingStart
                                             val endX = (barWidth * endFrac).toInt() + progressBarCalorieBalance.paddingStart
                                             // Overlay width
+                                            val context = context ?: return@post
                                             val minWidthPx = TypedValue.applyDimension(
                                                 TypedValue.COMPLEX_UNIT_DIP,
                                                 5f,
-                                                resources.displayMetrics
+                                                context.resources.displayMetrics
                                             ).toInt()
                                             val overlayWidth = (endX - startX).coerceAtLeast(minWidthPx)
                                             // Apply layout params
@@ -1525,9 +1526,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         // Combine synced and unsynced CardItems
                         val allCardItems = syncedCardItems + unsyncedCardItems
 
-                        if (isAdded  && view != null){
+                        if (isAdded && view != null) {
                             requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
+                                view?.let {
+                                    dismissLoader(it)
+                                }
                             }
                         }
 

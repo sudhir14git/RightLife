@@ -59,7 +59,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentIdealActualSleepTimeBinding
         get() = FragmentIdealActualSleepTimeBinding::inflate
     var snackbar: Snackbar? = null
-
     private lateinit var sixMonthGraph: SixMonthGraphView
     private lateinit var lineChart:LineChart
     private lateinit var radioGroup: RadioGroup
@@ -76,6 +75,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private lateinit var tvIdealTitle: TextView
     private lateinit var sleep_actual_time_box: ConstraintLayout
     private lateinit var tvIdealMessage: TextView
+    private lateinit var ideal_extra_text: TextView
     private lateinit var tv_ideal_actual_date: TextView
     private lateinit var tv_ideal_time: TextView
     private lateinit var tv_actual_time: TextView
@@ -108,6 +108,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         tvAverageNeeded = view.findViewById(R.id.tv_average_needed_time)
         tvIdealTitle = view.findViewById(R.id.ideal_title)
         tvIdealMessage = view.findViewById(R.id.ideal_message)
+        ideal_extra_text = view.findViewById(R.id.ideal_extra_text)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -627,6 +628,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                             if (idealActualResponse.message != "No sleep time data retrieved successfully") {
                                 tvIdealTitle.visibility = View.VISIBLE
                                 tvIdealMessage.visibility = View.VISIBLE
+                                ideal_extra_text.visibility = View.VISIBLE
                                 sleepCard.visibility = View.VISIBLE
                                 sleepNoCard.visibility = View.GONE
                                 percentage_text.text = "${response.body()!!.data?.progress_detail?.actual_sleep?.progress_percentage?.toInt().toString()}% of past week"
@@ -636,6 +638,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                 sleepCard.visibility = View.GONE
                                 sleepNoCard.visibility = View.VISIBLE
                                 tvIdealTitle.visibility = View.GONE
+                                ideal_extra_text.visibility = View.GONE
                                 tvIdealMessage.visibility = View.GONE
                             }
                         }
@@ -644,6 +647,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                         sleepCard.visibility = View.GONE
                         sleepNoCard.visibility = View.VISIBLE
                         tvIdealTitle.visibility = View.GONE
+                        ideal_extra_text.visibility = View.GONE
                         tvIdealMessage.visibility = View.GONE
                         Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                     }else {
@@ -702,6 +706,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
     private fun setSleepRightData(period: String, endDate: String) {
         tvIdealTitle.setText(idealActualResponse.data?.sleepInsightDetail?.title)
+        ideal_extra_text.setText(idealActualResponse.data?.sleepInsightDetail?.action)
         tvIdealMessage.setText(idealActualResponse.data?.sleepInsightDetail?.message)
         if (idealActualResponse.data?.averageSleep!=null && idealActualResponse.data?.averageNeeded!=null) {
             tvAverageSleep.setText(convertDecimalHoursToHrMinFormat(idealActualResponse.data?.averageSleep!!))

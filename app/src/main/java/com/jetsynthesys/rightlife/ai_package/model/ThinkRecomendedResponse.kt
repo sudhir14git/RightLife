@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.model
 
 import com.google.gson.annotations.SerializedName
+import com.jetsynthesys.rightlife.ai_package.model.response.Tags
 
 data class ThinkRecomendedResponse(
     @SerializedName("success")
@@ -20,65 +21,65 @@ data class RecomendedAllData (
 
 data class ContentList (
     @SerializedName("_id")
-    var Id            : String?  ,
+    var Id            : String?,
     @SerializedName("contentType")
-    var contentType   : String? ,
+    var contentType   : String?,
     @SerializedName("url")
-    var url           : String?  ,
+    var url           : String?,
     @SerializedName("previewUrl")
-    var previewUrl    : String?  ,
+    var previewUrl    : String?,
     @SerializedName("moduleId")
-    var moduleId      : String?  ,
+    var moduleId      : String?,
     @SerializedName("categoryId" )
-    var categoryId    : String?   ,
+    var categoryId    : String?,
     @SerializedName("subCategories" )
     var subCategories : ArrayList<SubCategories> = arrayListOf(),
     @SerializedName("artist"        )
     var artist        : ArrayList<Artist>        = arrayListOf(),
     @SerializedName("title"         )
-    var title         : String?  ,
+    var title         : String?,
     @SerializedName("pricing"       )
-    var pricing       : String?  ,
+    var pricing       : String?,
     @SerializedName("thumbnail"     )
-    var thumbnail     : Thumbnail?  ,
+    var thumbnail     : Thumbnail?,
     @SerializedName("desc"          )
-    var desc          : String?   ,
+    var desc          : String?,
     @SerializedName("tags"          )
-    var tags          : ArrayList<String>        = arrayListOf(),
+    var tags          : ArrayList<Tags>        = arrayListOf(),
     @SerializedName("episodeCount"  )
-    var episodeCount  : Int?      ,
+    var episodeCount  : Int?,
     @SerializedName("readingTime"  )
-    var readingTime  : String?      ,
+    var readingTime  : String?,
     @SerializedName("isPromoted"    )
-    var isPromoted    : Boolean?  ,
+    var isPromoted    : Boolean?,
     @SerializedName("youtubeUrl"    )
-    var youtubeUrl    : String?   ,
+    var youtubeUrl    : String?,
     @SerializedName("seriesType"    )
-    var seriesType    : String?    ,
+    var seriesType    : String?,
     @SerializedName("meta"          )
-    var meta          : Meta?   ,
+    var meta          : Meta?,
     @SerializedName("viewCount"     )
-    var viewCount     : Int?      ,
+    var viewCount     : Int?,
     @SerializedName("order"         )
-    var order         : Int?      ,
+    var order         : Int?,
     @SerializedName("isActive"      )
-    var isActive      : Boolean?   ,
+    var isActive      : Boolean?,
     @SerializedName("createdAt"     )
-    var createdAt     : String?    ,
+    var createdAt     : String?,
     @SerializedName("updatedAt"     )
-    var updatedAt     : String?    ,
+    var updatedAt     : String?,
     @SerializedName("promotedAt"    )
-    var promotedAt    : String?    ,
+    var promotedAt    : String?,
     @SerializedName("moduleName"    )
-    var moduleName    : String?    ,
+    var moduleName    : String?,
     @SerializedName("categoryName"  )
-    var categoryName  : String?     ,
+    var categoryName  : String?,
     @SerializedName("isWatched"     )
-    var isWatched     : Boolean?    ,
+    var isWatched     : Boolean?,
     @SerializedName("isAffirmated"  )
-    var isAffirmated  : Boolean?    ,
+    var isAffirmated  : Boolean?,
     @SerializedName("isFavourited"  )
-    var isFavourited  : Boolean?    ,
+    var isFavourited  : Boolean?,
     @SerializedName("isAlarm"       )
     var isAlarm       : Boolean?
 )
