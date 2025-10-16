@@ -172,7 +172,7 @@ class SchedulePreferenceFragment : Fragment() {
                     requireContext(),
                     "Reminders Set  ", Toast.LENGTH_SHORT
                 ).show()*/
-                Utils.showCustomToast(requireContext(), "Reminders Set")
+                Utils.showCustomToast(requireContext(), "Reminder Time Saved")
                 submit(answer)
             }
         }

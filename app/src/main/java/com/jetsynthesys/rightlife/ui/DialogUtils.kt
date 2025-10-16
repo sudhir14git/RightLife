@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.os.Looper
 import android.text.Html
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -96,6 +95,7 @@ object DialogUtils {
 
         dialog.show()
     }
+
     fun showWhyChecklistMattersDialog(
         context: Context,
         header: String = "Here’s Why It Matters"
@@ -115,6 +115,10 @@ object DialogUtils {
 
         // Handle close button click
         binding.btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        binding.ivClose.setOnClickListener {
             dialog.dismiss()
         }
 

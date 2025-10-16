@@ -62,7 +62,7 @@ class RedFlagAlertActivity : BaseActivity() {
             binding.rvStateHelpLine.isVisible = true
         }
         adapterCountry = HelpLineAdapter(this, countryList)
-        adapterState = HelpLineAdapter(this, stateList)
+        adapterState = HelpLineAdapter(this, stateList, true)
         binding.rvCountryHelpLine.layoutManager = LinearLayoutManager(this)
         binding.rvCountryHelpLine.adapter = adapterCountry
         binding.rvStateHelpLine.layoutManager = LinearLayoutManager(this)
