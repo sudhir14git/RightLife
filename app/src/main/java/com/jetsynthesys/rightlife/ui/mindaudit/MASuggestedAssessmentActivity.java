@@ -74,12 +74,6 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         selectedAssessment = getIntent().getStringExtra("SelectedAssessment");
         isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT", false);
 
-        if (selectedAssessment != null) {
-            showDisclaimerDialog(selectedAssessment);
-        } else {
-            fetchThinkRecomendedData();
-        }
-
         if (assessments != null) {
             SuggestedAssessments suggestedAssessments = assessments.suggestedAssessments;
 
@@ -135,6 +129,16 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (selectedAssessment != null) {
+            showDisclaimerDialog(selectedAssessment);
+        } else {
+            fetchThinkRecomendedData();
+        }
+    }
+
     private void showDisclaimerDialog(String header) {
         DialogMindAuditDisclaimerBinding binding =
                 DialogMindAuditDisclaimerBinding.inflate(LayoutInflater.from(this));
@@ -142,7 +146,8 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         BottomSheetDialog bottomSheetDialog =
                 new BottomSheetDialog(this, R.style.TransparentBottomSheetDialogTheme);
         bottomSheetDialog.setContentView(binding.getRoot());
-        bottomSheetDialog.setCancelable(true);
+        bottomSheetDialog.setCanceledOnTouchOutside(false);
+        bottomSheetDialog.setCancelable(false);
         // ✅ Force transparent background for system container
         bottomSheetDialog.setOnShowListener(dialog -> {
             BottomSheetDialog d = (BottomSheetDialog) dialog;

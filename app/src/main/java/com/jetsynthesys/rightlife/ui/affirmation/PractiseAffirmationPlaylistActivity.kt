@@ -582,6 +582,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
                                 TodaysAffirmationActivity::class.java
                             )
                         )
+                        finish()
                     }
                     setCardPlaylistAdapter(affirmationList)
                     startTimer()

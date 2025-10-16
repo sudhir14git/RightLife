@@ -75,7 +75,7 @@ public class MindAuditQuestionListFragment extends Fragment {
 
             String currentOption = scoringPattern.getOption();
 
-            if (activity.adapter.getItemCount() - 1 == position && "PHQ-9".equalsIgnoreCase(header) && (!(currentOption.equalsIgnoreCase("Not difficult at all") || currentOption.equalsIgnoreCase("Not at all")))) {
+            if (activity.adapter.getItemCount() - 1 == position && ("PHQ-9".equalsIgnoreCase(header) || "DASS-21".equalsIgnoreCase(header)) && (!(currentOption.equalsIgnoreCase("Not difficult at all") || currentOption.equalsIgnoreCase("Not at all")|| currentOption.equalsIgnoreCase("Did not apply to me at all")))) {
                 isSubmitClickable = false;
                 activity.openSecondActivity();
             } else {
