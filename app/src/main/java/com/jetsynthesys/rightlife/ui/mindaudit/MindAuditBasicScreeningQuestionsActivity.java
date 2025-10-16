@@ -71,7 +71,7 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
             int totalItems = adapter.getItemCount();
 
             if (currentItem == 0) {
-                finish();
+                showExitDialog();
             }
             // If on any other page, move to the previous page
             else {
@@ -149,11 +149,10 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
         });
         dialogButtonExit.setOnClickListener(v -> {
             dialog.dismiss();
-            //this.finish();
-            finishAffinity(); // Finishes Activity D and all activities below it in the same task
             Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
             intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
             startActivity(intent);
+            finishAffinity();
         });
 
         // Show the dialog
