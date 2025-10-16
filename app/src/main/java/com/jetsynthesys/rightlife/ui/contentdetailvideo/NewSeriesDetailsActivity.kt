@@ -28,6 +28,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailContentResponse
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode
 import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonAPICall.updateViewCount
@@ -60,6 +61,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
     private lateinit var ContentResponseObj: EpisodeDetailContentResponse
     private lateinit var seriesId: String
     private var lastPosition: Float = 0f
+    private var isBookmarked = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -83,6 +85,29 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
         binding.icBackDialog.setOnClickListener {
             finish()
+        }
+
+        binding.icBookmark.setOnClickListener {
+            CommonAPICall.contentBookMark(
+                this,
+                seriesId,
+                isBookmarked,
+                episodeId!!,
+                contentTypeForTrack
+            ) { success, message ->
+                if (success) {
+                    isBookmarked = !isBookmarked
+                    val msg = if (isBookmarked) {
+                        "Added To Your Saved Items"
+                    } else {
+                        "Removed From Saved Items"
+                    }
+                    showCustomToast(msg, isBookmarked)
+                    binding.icBookmark.setImageResource(if (isBookmarked) R.drawable.ic_save_article_active else R.drawable.ic_save_article)
+                } else {
+                    Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
     }
@@ -146,9 +171,11 @@ class NewSeriesDetailsActivity : BaseActivity() {
         binding.tvContentDesc.text = contentResponseObj.data?.desc
         binding.category.text = contentResponseObj.data?.tags?.get(0)?.name ?: ""
         binding.tvTime.text = contentResponseObj.data?.meta?.let { formatTimeInMinSec(it.duration) }
+
         if (contentResponseObj != null) {
             //binding.authorName.setText(contentResponseObj.data.artist.get(0).firstName + " " + contentResponseObj.data.artist.get(0).lastName)
-
+            isBookmarked = contentResponseObj.data.isBookmarked
+            binding.icBookmark.setImageResource(if (isBookmarked) R.drawable.ic_save_article_active else R.drawable.ic_save_article)
             setArtistname(contentResponseObj)
 
             Glide.with(applicationContext)

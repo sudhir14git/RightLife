@@ -36,7 +36,9 @@ data class IdealActualInsightDetail(
     @SerializedName("message")
     var message : String? ,
     @SerializedName("title")
-    var title  : String?
+    var title  : String? ,
+    @SerializedName("action")
+    var action  : String?
 )
 
 data class ProgressInfo(

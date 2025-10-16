@@ -52,7 +52,12 @@ class SavedItemListActivity : BaseActivity() {
 
         adapter = SavedItemsAdapter(this, contentDetails, onBookMarkedClick = { item, position ->
             item.id?.let { it1 ->
-                CommonAPICall.contentBookMark(this, it1, !item.isBookmarked) { success, message ->
+                CommonAPICall.contentBookMark(
+                    this,
+                    it1,
+                    !item.isBookmarked,
+                    contentType = item.contentType!!
+                ) { success, message ->
                     if (success) {
                         item.isBookmarked = !item.isBookmarked
                         val msg = if (item.isBookmarked) {

@@ -184,11 +184,19 @@ class SeriesListActivity : BaseActivity() {
                     if (contentResponseObj.data.bookmarked) {
                         contentResponseObj.data.bookmarked = false
                         binding.icBookmark.setImageResource(R.drawable.ic_save_article)
-                        postArticleBookMark(contentResponseObj.data.id, false)
+                        postArticleBookMark(
+                            contentResponseObj.data.id,
+                            false,
+                            contentResponseObj.data.contentType
+                        )
                     } else {
                         contentResponseObj.data.bookmarked = true
                         binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
-                        postArticleBookMark(contentResponseObj.data.id, true)
+                        postArticleBookMark(
+                            contentResponseObj.data.id,
+                            true,
+                            contentResponseObj.data.contentType
+                        )
                     }
                 }
             }
@@ -266,8 +274,8 @@ class SeriesListActivity : BaseActivity() {
 
 
     // post Bookmark api
-    private fun postArticleBookMark(contentId: String, isBookmark: Boolean) {
-        val request = ArticleBookmarkRequest(contentId, isBookmark)
+    private fun postArticleBookMark(contentId: String, isBookmark: Boolean, contentType: String) {
+        val request = ArticleBookmarkRequest(contentId, isBookmark, "", contentType)
         // Make the API call
         val call = apiService.ArticleBookmarkRequest(sharedPreferenceManager.accessToken, request)
         call.enqueue(object : Callback<ResponseBody?> {
@@ -324,10 +332,11 @@ class SeriesListActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
 
-        val shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
-                "Check it out here. " +
-                "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
-                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
+        val shareText =
+            "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
+                    "Check it out here. " +
+                    "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
+                    "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
 
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText)
@@ -357,7 +366,10 @@ class SeriesListActivity : BaseActivity() {
                         gson.fromJson(jsonResponse, SeriesResponse::class.java)
                     //Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
-                    setupEpisodeListData(seriesResponseModel.data.episodes,seriesResponseModel.data.categoryName?:"")
+                    setupEpisodeListData(
+                        seriesResponseModel.data.episodes,
+                        seriesResponseModel.data.categoryName
+                    )
                     setupArtistList(seriesResponseModel)
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();

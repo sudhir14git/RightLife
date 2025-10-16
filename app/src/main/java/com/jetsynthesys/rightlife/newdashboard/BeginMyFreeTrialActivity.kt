@@ -15,6 +15,7 @@ import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeRightLifeContextScreenActivity
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.zhpan.indicator.enums.IndicatorSlideMode
 import com.zhpan.indicator.enums.IndicatorStyle
 import retrofit2.Call
@@ -79,6 +80,7 @@ class BeginMyFreeTrialActivity : BaseActivity() {
         }
 
         binding.btnClaimFreeTrial.setOnClickListener {
+            it.disableViewForSeconds()
             if (NetworkUtils.isInternetAvailable(this)) {
                 beginFreeTrial()
             } else {

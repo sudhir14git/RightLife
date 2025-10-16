@@ -16,8 +16,9 @@ class TabContentAdapter(private val onItemClick: (String, Int, Boolean) -> Unit)
     private var selectedPosition: Int = -1
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textView: TextView = itemView.findViewById(R.id.tabText)
+        val textView: TextView = itemView.findViewById(R.id.contentTabText)
         val iconClose : ImageView = itemView.findViewById(R.id.iconClose)
+        val contentTabLayout : View = itemView.findViewById(R.id.contentTabLayout)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,9 +34,9 @@ class TabContentAdapter(private val onItemClick: (String, Int, Boolean) -> Unit)
             // Set the selected state based on the selectedPosition
             if (position == selectedPosition){
                 holder.iconClose.visibility = View.VISIBLE
-                holder.textView.isSelected = (position == selectedPosition)
+                holder.contentTabLayout.isSelected = (position == selectedPosition)
             }else{
-                holder.textView.isSelected = false
+                holder.contentTabLayout.isSelected = false
                 holder.iconClose.visibility = View.GONE
             }
 

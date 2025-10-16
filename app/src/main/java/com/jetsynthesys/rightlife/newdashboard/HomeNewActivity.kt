@@ -736,6 +736,23 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun checkTrailEndedAndShowDialog(): Boolean {
+        binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+        binding.includedhomebottomsheet.bottomSheetParent.apply {
+            isClickable = false
+            isFocusable = false
+            visibility = View.GONE
+        }
+        binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+        binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+            this@HomeNewActivity, R.color.white
+        )
+        binding.fab.imageTintList = ColorStateList.valueOf(
+            resources.getColor(
+                R.color.rightlife
+            )
+        )
+        isAdd = !isAdd // Toggle the state
 
         return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity()

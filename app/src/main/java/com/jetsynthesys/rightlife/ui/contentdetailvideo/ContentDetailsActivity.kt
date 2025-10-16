@@ -212,11 +212,19 @@ class ContentDetailsActivity : BaseActivity() {
                 if (contentResponseObj.data.bookmarked) {
                     contentResponseObj.data.bookmarked = false
                     binding.icBookmark.setImageResource(R.drawable.ic_save_article)
-                    postArticleBookMark(contentResponseObj.data.id, false)
+                    postArticleBookMark(
+                        contentResponseObj.data.id,
+                        false,
+                        contentResponseObj.data.contentType
+                    )
                 } else {
                     contentResponseObj.data.bookmarked = true
                     binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
-                    postArticleBookMark(contentResponseObj.data.id, true)
+                    postArticleBookMark(
+                        contentResponseObj.data.id,
+                        true,
+                        contentResponseObj.data.contentType
+                    )
                 }
             }
         }
@@ -538,8 +546,8 @@ class ContentDetailsActivity : BaseActivity() {
 
 
     // post Bookmark api
-    private fun postArticleBookMark(contentId: String, isBookmark: Boolean) {
-        val request = ArticleBookmarkRequest(contentId, isBookmark)
+    private fun postArticleBookMark(contentId: String, isBookmark: Boolean, contentType: String) {
+        val request = ArticleBookmarkRequest(contentId, isBookmark, "", contentType)
         // Make the API call
         val call = apiService.ArticleBookmarkRequest(sharedPreferenceManager.accessToken, request)
         call.enqueue(object : Callback<ResponseBody?> {
