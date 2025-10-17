@@ -76,6 +76,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
+                <View
+                    android:id="@+id/greenCircle"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="-30dp"
+                    android:background="@drawable/green_circle"
+                    app:layout_constraintBottom_toBottomOf="@id/imgFood"
+                    app:layout_constraintStart_toStartOf="@id/imgFood"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp" />
+
                 <!-- Food Items Description -->
                 <TextView
                     android:id="@+id/tvMealName"

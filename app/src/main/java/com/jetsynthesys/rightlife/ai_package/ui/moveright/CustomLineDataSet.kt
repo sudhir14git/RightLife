@@ -67,7 +67,7 @@ class CustomHeartRateGraph @JvmOverloads constructor(
     private var minBpm = 60f
     private var maxBpm = 180f
     private var bpmRange = maxBpm - minBpm
-    private val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("h:mm a", Locale.ENGLISH)
 
     private var selectedDataPoint: HRDataPoint? = null
     private var showLabel = false
@@ -175,11 +175,11 @@ class CustomHeartRateGraph @JvmOverloads constructor(
         // Draw Y-axis labels and grid lines (dynamic based on data)
         drawYAxisLabels(canvas, paddingLeft, paddingTop, paddingRight, graphHeight)
 
-        // Draw X-axis labels (improved time labels)
-        drawXAxisLabels(canvas, paddingLeft, paddingBottom, graphWidth)
-
         // Draw the heart rate line
         drawHeartRateLine(canvas, paddingLeft, paddingTop, graphWidth, graphHeight)
+
+        // Draw X-axis labels (improved time labels)
+        drawXAxisLabels(canvas, paddingLeft, paddingBottom, graphWidth)
 
         // Draw workout statistics at bottom
         workoutData?.let { workout ->
@@ -239,7 +239,7 @@ class CustomHeartRateGraph @JvmOverloads constructor(
             // Split time into hour-minute and AM/PM parts
             val parts = time.split(" ")
             val timePart = parts.getOrNull(0) ?: time
-            val amPmPart = parts.getOrNull(1) ?: ""
+            val amPmPart = (parts.getOrNull(1) ?: "").uppercase(Locale.ENGLISH) // Capitalize AM/PM
 
             // Calculate text widths
             val timeWidth = textPaint.measureText(timePart)
@@ -289,7 +289,7 @@ class CustomHeartRateGraph @JvmOverloads constructor(
 
         // Add zone information if available
         if (workout.heartRateZonePercentages.peakZone > 0 || workout.heartRateZonePercentages.cardioZone > 0) {
-            stats.add("Peak: ${workout.heartRateZonePercentages.peakZone}% | Cardio: ${workout.heartRateZonePercentages.cardioZone}%")
+            // stats.add("Peak: ${workout.heartRateZonePercentages.peakZone}% | Cardio: ${workout.heartRateZonePercentages.cardioZone}%")
         }
 
         stats.take(4).forEachIndexed { index, stat ->
@@ -352,9 +352,9 @@ class CustomHeartRateGraph @JvmOverloads constructor(
             val startBpm = startPoint.bpm.toFloat()
             val endBpm = endPoint.bpm.toFloat()
             val startX = paddingLeft + (i.toFloat() / (totalPoints - 1)) * graphWidth
-            val startY = height - paddingTop - ((startBpm - minBpm) / bpmRange) * graphHeight
+            val startY = height - paddingBottom - (((startBpm - minBpm) / bpmRange).coerceIn(0f, 1f) * graphHeight)
             val endX = paddingLeft + ((i + 1).toFloat() / (totalPoints - 1)) * graphWidth
-            val endY = height - paddingTop - ((endBpm - minBpm) / bpmRange) * graphHeight
+            val endY = height - paddingBottom - (((endBpm - minBpm) / bpmRange).coerceIn(0f, 1f) * graphHeight)
 
             if (startBpm == endBpm) {
                 linePaint.color = getColorForBpm(startBpm)
@@ -390,7 +390,11 @@ class CustomHeartRateGraph @JvmOverloads constructor(
 
     private fun drawBpmLabel(canvas: Canvas, dataPoint: HRDataPoint) {
         val bpmText = "${dataPoint.bpm} bpm"
-        val timeText = timeFormat.format(dataPoint.time)
+        val time = timeFormat.format(dataPoint.time)
+        val parts = time.split(" ")
+        val timePart = parts.getOrNull(0) ?: time
+        val amPmPart = (parts.getOrNull(1) ?: "").uppercase(Locale.ENGLISH) // Capitalize AM/PM
+        val timeText = "$timePart $amPmPart" // Reconstruct as "9:23 AM"
         val bpmTextWidth = labelTextPaint.measureText(bpmText)
         val timeTextWidth = labelTextPaint.measureText(timeText)
         val heartIconSize = 24f
