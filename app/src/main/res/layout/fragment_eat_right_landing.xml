@@ -3454,11 +3454,11 @@
                         android:orientation="horizontal">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="172dp"
-                            android:layout_height="85dp"
-                            android:layout_marginStart="10dp"
+                            android:layout_width="180dp"
+                            android:layout_height="80dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             android:background="@drawable/border_water_intek"
                             android:id="@+id/lyt_water_intake">
 
@@ -3513,6 +3513,7 @@
                             android:layout_marginBottom="10dp"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             android:layout_marginEnd="30dp"
                             android:src="@drawable/glass_image_0"
                             android:layout_gravity="center"

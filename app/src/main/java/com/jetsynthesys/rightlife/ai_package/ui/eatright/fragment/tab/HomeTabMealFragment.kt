@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.net.Uri
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import java.time.LocalDate
 import android.view.LayoutInflater
 import android.view.View
@@ -104,6 +106,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
     var imageSelectedListener: OnImageSelectedListener? = null
     private lateinit var imagePathsecond : Uri
     private var mealQuantity : String = ""
+    private var currentToast: Toast? = null
     private lateinit var permissionManager: PermissionManager
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
@@ -866,7 +869,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
                         }
                     }
                     val mealData = response.body()?.message
-                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    showCustomToast(requireContext(), mealData)
+                   // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     flexboxLayout.visibility = View.GONE
                     layoutTitle.visibility = View.GONE
                     btnLogMeal.visibility = View.GONE
@@ -951,7 +955,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
                         }
                         snapMealRequestCount++
                         val mealData = response.body()?.message
-                        Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                        showCustomToast(requireContext(), mealData)
+                       // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                         if (snapMealLogRequestList.size == snapMealRequestCount){
                             flexboxLayout.visibility = View.GONE
                             layoutTitle.visibility = View.GONE
@@ -992,6 +997,31 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
                 }
             })
         }
+    }
+
+    private fun showCustomToast(context: Context, message: String?) {
+        // Cancel any old toast
+        currentToast?.cancel()
+        val inflater = LayoutInflater.from(context)
+        val toastLayout = inflater.inflate(R.layout.custom_toast_ai_eat, null)
+        val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+        // ✅ Wrap layout inside FrameLayout to apply margins
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val marginInPx = (20 * context.resources.displayMetrics.density).toInt()
+        params.setMargins(marginInPx, 0, marginInPx, 0)
+        toastLayout.layoutParams = params
+        container.addView(toastLayout)
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = container
+        toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 100)
+        currentToast = toast
+        toast.show()
     }
 
     private fun mealSaveQuitDialog() {

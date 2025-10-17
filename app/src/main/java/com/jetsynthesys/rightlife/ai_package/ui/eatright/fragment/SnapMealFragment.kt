@@ -885,10 +885,12 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
                             val message = json.optString("text", "Unknown error")
                             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                         } catch (e: Exception) {
-                            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
+                          //  Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
+                            notMealDetectItem()
                         }
                     }else{
-                        Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
+                       // Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
+                        notMealDetectItem()
                     }
                 }
             }
@@ -899,7 +901,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
                         dismissLoader(requireView())
                     }
                 }
-                Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
+                notMealDetectItem()
+              //  Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
             }
         })
     }

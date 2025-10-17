@@ -656,7 +656,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             microValueTv.text = landingPageResponse.micros.value.toInt().toString()
             unitMicroTv.text = landingPageResponse.micros.unit
             energyTypeTv.text = landingPageResponse.micros.micros_name
-        }else{
+        }else {
+            if (landingPageResponse.insight != null){
+                macroTitle.text = landingPageResponse.insight.heading
+                macroOnTrackTextLine.text = landingPageResponse.insight.macros_message
+            }
             todayMacrosWithDataLayout.visibility = View.VISIBLE
             todayMacroNoDataLayout.visibility = View.GONE
             todayMicrosWithDataLayout.visibility = View.GONE
