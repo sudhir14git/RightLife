@@ -271,12 +271,18 @@ class HeightSelectionFragment : Fragment() {
         }
 
         rulerView.post {
-            if (gender == "Male" || gender == "M") {
-                rulerView.scrollToPosition(68)
-            } else {
-                rulerView.scrollToPosition(64)
-            }
+            val layoutManager = rulerView.layoutManager as LinearLayoutManager
+            val targetPosition = if (gender == "Male" || gender == "M") 68 else 64
+
+            // Compute the vertical center offset
+            val viewHeight = rulerView.height
+            val itemView = layoutManager.findViewByPosition(targetPosition)
+            val itemHeight = itemView?.height ?: 0
+            val offset = (viewHeight / 2) - (itemHeight / 2)
+
+            layoutManager.scrollToPositionWithOffset(targetPosition, offset)
         }
+
 
         return view
     }
