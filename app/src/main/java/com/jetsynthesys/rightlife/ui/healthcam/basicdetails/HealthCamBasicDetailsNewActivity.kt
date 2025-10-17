@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.healthcam.basicdetails
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -634,10 +635,15 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
         dialogBinding.rulerView.adapter = adapterHeight
 
+        // ⬇️ ADD THIS SECTION — just before you read from edtHeight
+        binding.edtHeight.clearFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.edtHeight.windowToken, 0)
         selectedHeight = binding.edtHeight.text.toString()
         if (selectedHeight.isEmpty()) {
             selectedHeight = "5 ft 10 in"
         } else {
+            dialogBinding.selectedNumberText.text = selectedHeight
             val h = selectedHeight.split(" ")
             selectedLabel = if (h[1].equals("cm", ignoreCase = true))
                 " cm"
@@ -651,12 +657,28 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 dialogBinding.cmsOption.setTextColor(Color.BLACK)
                 setFtIn()
             } else {
+                setCms()
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
                 dialogBinding.cmsOption.setTextColor(Color.WHITE)
 
                 dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
                 dialogBinding.feetOption.setTextColor(Color.BLACK)
                 setCms()
+                selectedLabel = " cm"
+
+                selectedHeight = if (gender == "Male" || gender == "M")
+                    "173 cm"
+                else
+                    "163 cm"
+                setCms()
+
+                dialogBinding.rulerView.post {
+                    if (gender == "Male" || gender == "M") {
+                        dialogBinding.rulerView.scrollToPosition(173 + 8)
+                    } else {
+                        dialogBinding.rulerView.scrollToPosition(163 + 8)
+                    }
+                }
             }
         }
 

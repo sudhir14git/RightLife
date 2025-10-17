@@ -212,24 +212,28 @@
                         android:layout_width="match_parent"
                         android:id="@+id/img_scorebar_cas"
                         android:src="@drawable/img_cas_scorebar"
+                        android:visibility="gone"
                         android:layout_height="wrap_content"/>
 
                     <ImageView
                         android:layout_width="match_parent"
                         android:id="@+id/img_scorebar_dass21"
                         android:src="@drawable/img_dass21_scorebar"
+                        android:visibility="gone"
                         android:layout_height="wrap_content"/>
 
                     <ImageView
                         android:layout_width="match_parent"
                         android:id="@+id/img_scorebar_gad7"
                         android:src="@drawable/img_gad7_scorebar"
+                        android:visibility="gone"
                         android:layout_height="wrap_content"/>
 
                     <ImageView
                         android:layout_width="match_parent"
                         android:id="@+id/img_scorebar_phq9"
                         android:src="@drawable/img_phq9_scorebar"
+                        android:visibility="gone"
                         android:layout_height="wrap_content"/>
 
 
@@ -238,6 +242,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:visibility="gone"
                         android:padding="8dp">
 
                         <!-- Score Number Row -->
@@ -676,7 +681,7 @@
                                 android:layout_width="60dp"
                                 android:src="@drawable/rounded_corder_border_gray"
                                 android:layout_alignParentEnd="true"
-                                android:layout_marginTop="30dp"
+                                android:layout_alignBottom="@+id/tv_main_score_happiness"
                                 android:layout_height="60dp"/>
 
 

@@ -149,10 +149,11 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
         });
         dialogButtonExit.setOnClickListener(v -> {
             dialog.dismiss();
-            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
+            /*Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
             intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
             startActivity(intent);
-            finishAffinity();
+            finishAffinity();*/
+            finish();
         });
 
         // Show the dialog
