@@ -38,6 +38,7 @@ class GridAdapter(
         val item = items[position]
         holder.textView.text = item.name
         holder.imageView.setImageResource(item.imageRes)
+
         holder.additionalTextView.text = item.additionalInfo
         holder.valueTv.text = item.fourthParameter
 
@@ -49,12 +50,14 @@ class GridAdapter(
             holder.lastSevenDayTv.visibility = View.GONE
             holder.valueTv.visibility = View.GONE
             holder.todayTv.visibility = View.GONE
+            holder.additionalTextView.visibility = View.GONE
             holder.view.visibility = View.INVISIBLE
         } else {
             holder.no_data_cardview.visibility = View.GONE
             holder.lastSevenDayTv.visibility = View.VISIBLE
             holder.valueTv.visibility = View.VISIBLE
             holder.todayTv.visibility = View.VISIBLE
+            holder.additionalTextView.visibility = View.VISIBLE
             holder.view.visibility = View.VISIBLE
             if (item.name == "Burn") {
                 holder.barGraphView.visibility = View.VISIBLE

@@ -78,9 +78,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.FragmentThinkRightLandingBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
-import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
-import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
