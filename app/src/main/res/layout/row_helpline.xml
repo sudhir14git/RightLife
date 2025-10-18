@@ -31,9 +31,10 @@
             android:layout_weight="1"
             android:textSize="14sp"
             android:gravity="end"
+            android:maxLines="2"
+            android:text="Monday to Saturday: 8am to 7pm"
             android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/txt_color_mind"
-            android:maxLength="25"
             android:layout_margin="8dp" />
     </LinearLayout>
 

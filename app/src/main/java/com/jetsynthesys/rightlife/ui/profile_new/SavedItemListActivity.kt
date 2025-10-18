@@ -68,6 +68,7 @@ class SavedItemListActivity : BaseActivity() {
                         showCustomToast(msg, item.isBookmarked)
                         contentDetails.removeAt(position)
                         adapter.notifyDataSetChanged()
+                        setNoDataStatus()
                     } else {
                         Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT).show()
                     }
@@ -260,6 +261,7 @@ class SavedItemListActivity : BaseActivity() {
             )
         }
         adapter.notifyDataSetChanged()
+        setNoDataStatus()
     }
 
     private fun fetchContent(skipValue: Int, contentType: String) {
@@ -293,6 +295,7 @@ class SavedItemListActivity : BaseActivity() {
                     contentDetails.addAll(newItems)
                     allContentDetails.addAll(newItems)
                     adapter.notifyDataSetChanged()
+                    setNoDataStatus()
                     skip += newItems.size
                 }
                 isLoading = false
@@ -304,5 +307,9 @@ class SavedItemListActivity : BaseActivity() {
                 handleNoInternetView(t)
             }
         })
+    }
+
+    private fun setNoDataStatus() {
+        binding.tvNoData.visibility = if (contentDetails.isEmpty()) View.VISIBLE else View.GONE
     }
 }

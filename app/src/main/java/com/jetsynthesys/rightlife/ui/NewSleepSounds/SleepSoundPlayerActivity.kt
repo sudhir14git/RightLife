@@ -24,7 +24,6 @@ import com.jetsynthesys.rightlife.databinding.ActivitySleepSoundPlayerBinding
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.bottomplaylist.PlaylistBottomSheetDialogFragment
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -61,22 +60,22 @@ class SleepSoundPlayerActivity : BaseActivity() {
         if (isFromUserPlayList) {
             binding.playlistButton.visibility = View.VISIBLE
             binding.myPlaylist.visibility = View.VISIBLE
-            showBalloonWithDim(
+            /*showBalloonWithDim(
                 binding.playlistButton,
                 "Tap to view the queue.",
                 "SleepSoundPlayList",
                 xOff = -200,
                 yOff = 20
-            )
+            )*/
             binding.imageAddToPlayList.visibility = View.GONE
         } else {
-            showBalloonWithDim(
+            /*showBalloonWithDim(
                 binding.imageAddToPlayList,
                 "Tap to add to your playlist.",
                 "SleepSoundPlayListAddButton",
                 xOff = -200,
                 yOff = 20
-            )
+            )*/
             binding.imageAddToPlayList.visibility = View.VISIBLE
             updateAddButtonUI(soundList[selectedPosition])
         }
@@ -416,7 +415,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun handleBackPressed(){
+    private fun handleBackPressed() {
         if (isListUpdated) {
             val returnIntent = Intent()
             val list = ArrayList<Service>()

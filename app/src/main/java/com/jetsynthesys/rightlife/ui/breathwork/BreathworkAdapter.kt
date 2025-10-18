@@ -11,9 +11,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ItemBreathworkBinding
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 
 class BreathworkAdapter(
     private val items: List<BreathingData>,
@@ -48,7 +45,7 @@ class BreathworkAdapter(
             plusButton.setImageResource(if (item.isAddedToToolKit) R.drawable.correct_green else R.drawable.add_breath_work)
 
             plusButton.setOnClickListener {
-                val sharedPreferenceManager =
+                /*val sharedPreferenceManager =
                     SharedPreferenceManager.getInstance(holder.itemView.context)
                 if (!sharedPreferenceManager.isTooltipShowed("BreathWorkAddButton")) {
                     sharedPreferenceManager.saveTooltip("BreathWorkAddButton", true)
@@ -57,11 +54,11 @@ class BreathworkAdapter(
                         "Tap to add this routine to your toolkit.",
                         "BreathWorkAdd", xOff = -200, yOff = 20, arrowPosition = 0.9f
                     )
-                } else {
-                    onItemClick.onAddToolTip(item)
-                    item.isAddedToToolKit = !item.isAddedToToolKit
-                    notifyDataSetChanged()
-                }
+                } else {*/
+                onItemClick.onAddToolTip(item)
+                item.isAddedToToolKit = !item.isAddedToToolKit
+                notifyDataSetChanged()
+                //}
             }
 
             cardView.setOnClickListener {
