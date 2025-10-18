@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityNewSleepSoundBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.SleepCategory
@@ -95,20 +96,18 @@ class NewSleepSoundActivity : BaseActivity() {
             finish()
         }
     }
-    private fun AllTabClick(){
-        if (binding.layoutVerticalCategoryList.visibility == View.VISIBLE) {
-            binding.layoutVerticalCategoryList.visibility = View.GONE
-            binding.llMusicHome.visibility = View.VISIBLE
-            binding.layouthorizontalMusicList.visibility = View.VISIBLE
-            binding.recyclerViewHorizontalList.visibility = View.VISIBLE
-            binding.recyclerViewVerticalList.visibility = View.GONE
-            //fetchSleepSoundsByCategoryId(categoryList[1]._id, true)
-            if (categoryAdapter != null) {
-                categoryAdapter.updateSelectedPosition(1)
-            }
-        }/*else{
-            fetchCategories()
-        }*/
+
+    private fun allTabClick() {
+        binding.layoutVerticalCategoryList.visibility = View.GONE
+        binding.llMusicHome.visibility = View.VISIBLE
+        binding.layouthorizontalMusicList.visibility = View.VISIBLE
+        binding.recyclerViewHorizontalList.visibility = View.VISIBLE
+        binding.recyclerViewVerticalList.visibility = View.GONE
+        categoryAdapter.updateSelectedPosition(1)
+        setupCategoryRecyclerView()
+        fetchCategories()
+        getUserCreatedPlaylist()
+        getNewReleases()
     }
 
     private fun setupCategoryRecyclerView() {
@@ -121,10 +120,10 @@ class NewSleepSoundActivity : BaseActivity() {
             servicesList.clear()
             if (selectedCategory.title == "Your Playlist")
                 getUserCreatedPlaylist(true)
-            else if (selectedCategory.title.lowercase() == "all"){
-                //fetchCategories()
+            else if (selectedCategory.title.lowercase() == "all") {
+                allTabClick()
 
-            }else
+            } else
                 fetchSleepSoundsByCategoryId(
                     selectedCategory._id,
                     false,
@@ -168,9 +167,13 @@ class NewSleepSoundActivity : BaseActivity() {
                     if (categoryList.isNotEmpty()) {
                         for (category in categoryList) {
                             if (category.title == "All") {
-                            }else {
+                                selectedCategoryForTitle = category
+                            } else {
                                 fetchSleepSoundsByCategoryId(category._id, true, category.title, 0)
-                                Log.d("category Names", "onResponse: "+category.title+" "+category._id)
+                                Log.d(
+                                    "category Names",
+                                    "onResponse: " + category.title + " " + category._id
+                                )
                             }
                         }
                     }
@@ -197,6 +200,8 @@ class NewSleepSoundActivity : BaseActivity() {
         title: String,
         skip: Int
     ) {
+        if (title == "Your Playlist" || title == "All")
+            return
         isLoading = true
         Utils.showLoader(this)
 
@@ -442,10 +447,10 @@ class NewSleepSoundActivity : BaseActivity() {
                 call: Call<AddPlaylistResponse>,
                 response: Response<AddPlaylistResponse>
             ) {
-                getUserCreatedPlaylist()
+                getUserCreatedPlaylist(false)
                 Utils.dismissLoader(this@NewSleepSoundActivity)
                 if (response.isSuccessful && response.body() != null) {
-                    showToast(response.body()?.successMessage ?: "Added to Playlist!")
+                    showCustomToast("Added To Playlist", true)
                 } else {
                     showToast("Failed to add to playlist: ${response.code()}")
                 }
@@ -467,10 +472,10 @@ class NewSleepSoundActivity : BaseActivity() {
                 call: Call<AddPlaylistResponse>,
                 response: Response<AddPlaylistResponse>
             ) {
-                getUserCreatedPlaylist()
+                getUserCreatedPlaylist(false)
                 Utils.dismissLoader(this@NewSleepSoundActivity)
                 if (response.isSuccessful && response.body() != null) {
-                    showToast(response.body()?.successMessage ?: "Song removed from Playlist!")
+                    showCustomToast("Removed From Playlist")
                 } else {
                     showToast("try again!: ${response.code()}")
                 }
@@ -528,16 +533,20 @@ class NewSleepSoundActivity : BaseActivity() {
                             //binding.tvYourPlayList.visibility = View.GONE
                             binding.recyclerViewPlayList.visibility = View.GONE
                             if (categoryList.isNotEmpty() && categoryList[0].title == "Your Playlist") {
-                            //categoryList.removeAt(0)
+                                //categoryList.removeAt(0)
                             }
                         }
                         categoryAdapter.notifyDataSetChanged()
                     } else {
-                        showToast("No playlist data available")
+                        //showToast("No playlist data available")
                         /*if (categoryList.isNotEmpty() && categoryList[0].title == "Your Playlist")
                             categoryList.removeAt(0)*/
                         categoryAdapter.notifyDataSetChanged()
-                        binding.llNoData.visibility = View.VISIBLE
+                        binding.llNoData.visibility =
+                            if (selectedCategoryForTitle == null || selectedCategoryForTitle?.title == "Your Playlist")
+                                View.VISIBLE
+                            else
+                                View.GONE
                         binding.llMusicHome.visibility = View.GONE
                         binding.layouthorizontalMusicList.visibility = View.GONE
                         binding.layoutVerticalCategoryList.visibility = View.GONE
