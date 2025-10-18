@@ -66,6 +66,17 @@
 
         <include layout="@layout/loader_layout" />
 
+        <TextView
+            android:id="@+id/tvNoData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Data Available"
+            android:gravity="center"
+            android:fontFamily="@font/dmsans_bold"
+            android:textSize="@dimen/textsize_large18sp"
+            android:visibility="gone"
+            android:layout_centerInParent="true"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvSavedItems"
             android:layout_width="match_parent"

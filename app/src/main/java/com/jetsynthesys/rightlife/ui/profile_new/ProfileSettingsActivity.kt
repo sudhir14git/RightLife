@@ -139,7 +139,7 @@ class ProfileSettingsActivity : BaseActivity() {
                         putExtra("FROM", "ProfileSetting")
                     })
 
-                "Saved Items" ->
+                "Your Saved Items" ->
                     startActivity(Intent(this, SavedItemListActivity::class.java))
 
                 "Meal Customisations" ->

@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowJournalNewBinding
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 
 class JournalAdapter(
     private val context: Context,
@@ -29,14 +28,14 @@ class JournalAdapter(
 
     override fun onBindViewHolder(holder: JournalViewHolder, position: Int) {
 
-        if (position == 0) {
+        /*if (position == 0) {
             context.showBalloonWithDim(
                 holder.binding.imageViewAdd,
                 "Tap to add this journaling type to your toolkit.",
                 "JournalAdapter",
                 xOff = -200
             )
-        }
+        }*/
 
         val item = items[position]
         with(holder.binding) {

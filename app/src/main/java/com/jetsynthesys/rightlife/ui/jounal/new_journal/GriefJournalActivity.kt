@@ -7,7 +7,6 @@ import android.text.TextWatcher
 import android.widget.Toast
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityGriefBinding
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -56,13 +55,13 @@ class GriefJournalActivity : BaseActivity() {
         binding.btnSave.isEnabled = binding.etJournalEntry.text.isNotEmpty()
 
         setupListeners()
-        showBalloonWithDim(
+        /*showBalloonWithDim(
             binding.ivRefresh,
             "Tap to swap your prompt.",
             "GriefJournalActivity",
             xOff = -200,
             yOff = 20
-        )
+        )*/
     }
 
     private fun setupListeners() {
@@ -143,7 +142,7 @@ class GriefJournalActivity : BaseActivity() {
                     hasStarted = true
                 }
             }
-        }else {
+        } else {
             binding.etJournalEntry.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     val hasText = (s?.trim()?.length ?: 0) > 0

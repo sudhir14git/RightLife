@@ -12,7 +12,7 @@
         android:text="Does your mood influence \nhow you eat?"
         android:textSize="@dimen/textsize_large18sp"
         android:fontFamily="@font/merriweather_bold"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="36dp"
         android:textColor="@color/menu_icon_color_unselected"/>
 
     <androidx.recyclerview.widget.RecyclerView

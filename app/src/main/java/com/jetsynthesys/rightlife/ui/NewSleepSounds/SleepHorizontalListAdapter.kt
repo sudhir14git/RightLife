@@ -11,8 +11,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ItemHorizontalSongCardBinding
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class SleepHorizontalListAdapter(
     private val soundList: ArrayList<Service>,
@@ -24,7 +22,7 @@ class SleepHorizontalListAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(service: Service) {
             binding.tvItemName.text = service.title
-            binding.tvItemTime.text = formatDuration(service.meta?.duration ?: 0)
+            binding.tvItemTime.text = formatDuration(service.meta.duration)
 
             // Load image using Glide/Picasso
 
@@ -48,7 +46,7 @@ class SleepHorizontalListAdapter(
             binding.ivAddPlaylist.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
 
             binding.ivAddPlaylist.setOnClickListener {
-                val sharedPreferenceManager =
+                /*val sharedPreferenceManager =
                     SharedPreferenceManager.getInstance(binding.ivAddPlaylist.context)
                 if (!sharedPreferenceManager.isTooltipShowed("SleepSoundAddButton")) {
                     sharedPreferenceManager.saveTooltip("SleepSoundAddButton", true)
@@ -57,11 +55,11 @@ class SleepHorizontalListAdapter(
                         "Tap to add to your playlist.",
                         "SleepSoundAdd", xOff = -200, yOff = 20, arrowPosition = 0.9f
                     )
-                } else {
-                    service.isActive = !service.isActive
-                    onAddToPlaylistClick(service, adapterPosition) // 👈 Call new lambda
-                    notifyDataSetChanged()
-                }
+                } else {*/
+                service.isActive = !service.isActive
+                onAddToPlaylistClick(service, adapterPosition) // 👈 Call new lambda
+                notifyDataSetChanged()
+                //}
             }
         }
     }
