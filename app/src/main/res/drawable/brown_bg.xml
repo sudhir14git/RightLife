@@ -3,4 +3,5 @@
     <solid
         android:color="@color/thinkright_text_color" />
     <corners android:radius="25dp" />
+
 </shape>

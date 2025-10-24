@@ -1298,8 +1298,9 @@
                             app:layout_constraintTop_toBottomOf="@id/lyt_quote_icon">
 
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="17dp"
+                                android:layout_height="12dp"
+                                android:layout_marginTop="3dp"
                                 android:src="@drawable/practice_icon" />
 
                             <TextView
@@ -1552,7 +1553,7 @@
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:paddingBottom="10dp"
                                 android:background="@drawable/white_grey_meal_bg"
                                 android:layout_weight="5"
@@ -1655,7 +1656,7 @@
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:paddingBottom="10dp"
                                 android:layout_marginStart="5dp"
                                 android:background="@drawable/white_grey_meal_bg"
