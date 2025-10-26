@@ -189,6 +189,7 @@
 
                     <RelativeLayout
                         android:layout_width="match_parent"
+                        android:paddingBottom="@dimen/margin_card_16dp"
                         android:layout_height="wrap_content">
 
                         <com.jetsynthesys.rightlife.quiestionscustomviews.DynamicRainbowView
@@ -202,7 +203,8 @@
                             android:layout_width="300dp"
                             android:layout_height="200dp"
                             android:layout_gravity="center"
-                            android:visibility="invisible"
+                            android:visibility="visible"
+                            android:paddingBottom="@dimen/margin_card_16dp"
                             android:layout_centerHorizontal="true"
                             />
 

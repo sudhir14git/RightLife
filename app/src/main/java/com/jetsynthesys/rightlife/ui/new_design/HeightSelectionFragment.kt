@@ -180,6 +180,7 @@ class HeightSelectionFragment : Fragment() {
         }
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
+
         btnContinue.setOnClickListener {
             if (validateInput()) {
                 btnContinue.disableViewForSeconds()
@@ -207,7 +208,12 @@ class HeightSelectionFragment : Fragment() {
                 )
 
                 Handler(Looper.getMainLooper()).postDelayed({
-                    (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+                    // Add null safety check
+                    activity?.let { act ->
+                        if (act is OnboardingQuestionnaireActivity && isAdded) {
+                            act.submitAnswer(onboardingQuestionRequest)
+                        }
+                    }
                 }, 500)
             }
         }

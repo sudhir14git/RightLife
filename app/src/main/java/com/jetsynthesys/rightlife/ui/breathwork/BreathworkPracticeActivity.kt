@@ -350,18 +350,21 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.rlBreathingPracticeMain.visibility = View.GONE
         binding.btnExit.setOnClickListener {
             showCompletedBottomSheet()
+            callPostMindFullDataAPI()
+            /*
             if (isHapticFeedBack)
                 showCompletedBottomSheet()
             else {
                 callPostMindFullDataAPI()
                 finish()
-            }
+            }*/
         }
         binding.btnRepeat.setOnClickListener {
             // Reset for a new session
             currentSet = 1
             binding.rlPracticeComplete.visibility = View.GONE
             startPreparationCountdown()
+            callPostMindFullDataAPI()
         }
     }
 
@@ -571,7 +574,6 @@ class BreathworkPracticeActivity : BaseActivity() {
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
         }
-
         dialogBinding.tvTitle.text = "How do you feel after the exercise?"
         dialogBinding.tvDescription.text =
             "A few more minutes of breathing practise will make a world of difference."
@@ -581,12 +583,12 @@ class BreathworkPracticeActivity : BaseActivity() {
         dialogBinding.btnWorse.text = "worse than before"
 
         bottomSheetDialog.setOnDismissListener {
-            callPostMindFullDataAPI()
+            //callPostMindFullDataAPI()
             finish()
         }
 
         bottomSheetDialog.setOnCancelListener {
-            callPostMindFullDataAPI()
+            //callPostMindFullDataAPI()
             finish()
         }
 

@@ -232,7 +232,7 @@ class BreathworkSessionActivity : BaseActivity() {
         // Get the actual color value
         val mainColor = resources.getColor(colorResource, null)
         val textColor = resources.getColor(colorResourceText, null)
-        // Apply color to the Continue button
+// Apply color to the Continue button
         binding.btnContinue.backgroundTintList = ColorStateList.valueOf(mainColor)
         binding.btnContinue.setTextColor(resources.getColor(colorResourceText, null))
         binding.btnPlus.backgroundTintList = ColorStateList.valueOf(mainColor)

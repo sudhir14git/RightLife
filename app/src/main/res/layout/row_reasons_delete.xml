@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            app:buttonTint="@color/checkbox_color"
             android:clickable="false" />
 
         <TextView
