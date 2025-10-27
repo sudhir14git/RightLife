@@ -1591,7 +1591,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             } else {
                                 nodataWorkout.visibility = View.VISIBLE
                                 dataFilledworkout.visibility = View.GONE
-                                Toast.makeText(requireContext(), "No workout data available", Toast.LENGTH_SHORT).show()
+                               // Toast.makeText(requireContext(), "No workout data available", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } ?: withContext(Dispatchers.Main) {

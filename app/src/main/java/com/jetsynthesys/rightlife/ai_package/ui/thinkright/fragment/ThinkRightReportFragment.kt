@@ -259,7 +259,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchThinkRecomendedData()
         //getBreathingData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
-        tvWellnessDays.text = data.wellnessStreak.toString() + " days"
+        tvWellnessDays.text = data.wellnessStreak.toString() + " day"
 
         // add_tools_think_right = view.findViewById(R.id.add_tools_think_right)
         instruction_your_mindfullness_review.setOnClickListener {
