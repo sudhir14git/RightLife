@@ -168,7 +168,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/rl_practice_complete"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_height="match_parent">
 
         <LinearLayout

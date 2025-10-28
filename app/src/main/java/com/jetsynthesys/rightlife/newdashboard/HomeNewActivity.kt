@@ -661,7 +661,7 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
     }
 
-    override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
+    /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
         super.onNewIntent(intent, caller)
         if (intent.getBooleanExtra("start_journal", false)) {
             startActivity(Intent(this, JournalListActivity::class.java))
@@ -682,7 +682,48 @@ class HomeNewActivity : BaseActivity() {
                 })
             }
         }
+    }*/
+
+    // API 35+ (Android 15)
+    override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
+        super.onNewIntent(intent, caller)
+        handleIncomingIntent(intent)
+        // Make sure getIntent() returns the latest one if you use it elsewhere
+        setIntent(intent)
     }
+
+    // Older platforms
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIncomingIntent(intent)
+        setIntent(intent)
+    }
+
+    private fun handleIncomingIntent(intent: Intent) {
+        when {
+            intent.getBooleanExtra("start_journal", false) -> {
+                startActivity(Intent(this, JournalListActivity::class.java))
+            }
+            intent.getBooleanExtra("start_profile", false) -> {
+                startActivity(Intent(this, ProfileSettingsActivity::class.java))
+            }
+            intent.getBooleanExtra("finish_MindAudit", false) &&
+                    intent.getBooleanExtra("FROM_THINK_RIGHT", false) -> {
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+            intent.getBooleanExtra("finish_Journal", false) &&
+                    intent.getBooleanExtra("FROM_THINK_RIGHT", false) -> {
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+    }
+
 
 
     // get user details
@@ -2865,8 +2906,13 @@ class HomeNewActivity : BaseActivity() {
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
         if (checklistResponse != null) {
             checklistResponse.data.snap_mealId.let { snapMealId ->
-                sharedPreferenceManager.saveSnapMealId(snapMealId)
-                this.snapMealId = snapMealId
+                if (!snapMealId.isNullOrEmpty())
+                {
+                    sharedPreferenceManager.saveSnapMealId(snapMealId)
+                    this.snapMealId = snapMealId
+                }else{
+                    this.snapMealId = ""
+                }
             }
         }
     }

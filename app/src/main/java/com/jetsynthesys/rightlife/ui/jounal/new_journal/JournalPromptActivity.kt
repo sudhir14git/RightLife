@@ -98,14 +98,15 @@ class JournalPromptActivity : BaseActivity() {
             }
 
             override fun onSwapClick(question: Question, position: Int) {
-                if (questionsList.isNotEmpty() && questionsList.size > 4) {
+           /*     if (questionsList.isNotEmpty() && questionsList.size > 4) {
                     questionsList[position] = questionsList[4]
                     questionsList.removeAt(position)
                     questionsList.add(question)
                     questions4.clear()
                     questions4.addAll(questionsList.take(4))
                     adapter.notifyDataSetChanged()
-                }
+                }*/
+                handleQuestionReplacement(position)
             }
 
         })
@@ -207,12 +208,30 @@ class JournalPromptActivity : BaseActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     response.body()?.data?.let { sectionList.addAll(it) }
-                    for (i in 0 until sectionList.size) {
-                        if (i == 0) {
-                            sectionList[0].sectionName?.let { addChip(it, true) }
-                            sectionList[0].id?.let { getQuestions(it) }
-                        } else
-                            sectionList[i].sectionName?.let { addChip(it, false) }
+
+                    // Check if only default section exists
+                    val hasOnlyDefaultSection = sectionList.size == 1 &&
+                            (sectionList[0].sectionName.equals("default", ignoreCase = true))
+
+                    if (hasOnlyDefaultSection) {
+                        // Hide chip list/chip group
+                        binding.chipGroup.visibility = View.GONE  // Replace with your actual chip container ID
+
+                        // Still load the questions for the default section
+                        sectionList[0].id?.let { getQuestions(it) }
+                    } else {
+                        // Show chip list
+                        binding.chipGroup.visibility = View.VISIBLE  // Replace with your actual chip container ID
+
+                        // Add chips for all sections
+                        for (i in 0 until sectionList.size) {
+                            if (i == 0) {
+                                sectionList[0].sectionName?.let { addChip(it, true) }
+                                sectionList[0].id?.let { getQuestions(it) }
+                            } else {
+                                sectionList[i].sectionName?.let { addChip(it, false) }
+                            }
+                        }
                     }
                 } else {
                     Toast.makeText(
@@ -259,4 +278,50 @@ class JournalPromptActivity : BaseActivity() {
 
         })
     }
+
+    //single question replacement function
+    /**
+     * Replaces the clicked question with the next available question
+     * The clicked question is moved to the end of the list (can come back later)
+     */
+    private fun handleQuestionReplacement(position: Int) {
+        // Validate we have more questions to show
+        if (questionsList.size <= 4) {
+            Toast.makeText(
+                this,
+                "No more prompts available",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        // Safety check for position
+        if (position < 0 || position >= questions4.size || position >= questionsList.size) {
+            return
+        }
+
+        // Store the old question that will be replaced
+        val oldQuestion = questionsList[position]
+
+        // Get the next question (always at index 4 since we only show first 4)
+        val nextQuestion = questionsList[4]
+
+        // Replace the clicked question at its position with the next question
+        questionsList[position] = nextQuestion
+
+        // Remove the next question from index 4 (since we just moved it to 'position')
+        questionsList.removeAt(4)
+
+        // Add the old question to the end of the list (so it can come back later)
+        questionsList.add(oldQuestion)
+
+        // Update the display list (first 4 items)
+        questions4.clear()
+        questions4.addAll(questionsList.take(4))
+
+        // Animate only the changed item for smooth UX
+        adapter.notifyItemChanged(position)
+    }
+
+
 }

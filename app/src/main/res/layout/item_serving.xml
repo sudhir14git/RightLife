@@ -20,6 +20,7 @@
         android:orientation="vertical"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/imageIcon"
+        android:layout_toStartOf="@+id/layoutCounter"
         android:layout_marginStart="12dp">
 
         <TextView
@@ -46,6 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:id="@+id/layoutCounter"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true">
 

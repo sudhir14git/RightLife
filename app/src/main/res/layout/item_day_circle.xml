@@ -3,6 +3,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
+    android:paddingHorizontal="5dp"
     android:layout_marginHorizontal="6dp">
 
     <TextView
@@ -11,6 +12,7 @@
         android:layout_height="wrap_content"
         android:text="M"
         android:textSize="12sp"
+        android:fontFamily="@font/dmsans_bold"
         android:textColor="@android:color/black"
         android:layout_marginTop="4dp" />
 

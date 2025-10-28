@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/margin_card_16dp"
     android:orientation="vertical"
-    android:visibility="visible">
+    android:visibility="gone">
 
     <FrameLayout
         android:id="@+id/flFreeTrial"

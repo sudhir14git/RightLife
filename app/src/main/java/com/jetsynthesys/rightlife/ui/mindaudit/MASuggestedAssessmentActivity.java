@@ -50,6 +50,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
     private Assessments assessments;
     private String selectedAssessment;
     private boolean isFromThinkRight = false;
+    private TextView tv_all_assessment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
+        tv_all_assessment = findViewById(R.id.tv_all_assessment);
 
         ic_back_dialog.setOnClickListener(view -> {
             finish();
@@ -125,6 +127,9 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
             allAssessmentAdapter = new AllAssessmentAdapter(this, allAssessments, this::showDisclaimerDialog);
             rvAllAssessment.setAdapter(allAssessmentAdapter);
             rvAllAssessment.scrollToPosition(0);
+            if (allAssessments.isEmpty()) {
+                tv_all_assessment.setVisibility(View.GONE);
+            }
         }
 
     }

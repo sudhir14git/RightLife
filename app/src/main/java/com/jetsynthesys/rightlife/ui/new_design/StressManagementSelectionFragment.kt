@@ -14,6 +14,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -23,8 +25,13 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class StressManagementSelectionFragment : Fragment() {
+    private var submitJob: Job? = null
+
     private lateinit var llSelectedStressManagement: LinearLayout
     private lateinit var rlStressManagement: RelativeLayout
     private lateinit var tvSelectedStressManagementHeader: TextView
@@ -126,18 +133,41 @@ class StressManagementSelectionFragment : Fragment() {
                 )
             )
 
-            Handler(Looper.getMainLooper()).postDelayed({
+         /*   Handler(Looper.getMainLooper()).postDelayed({
                 (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
-            }, 500)
+            }, 500)*/
+            // cancel any pending submit
+            submitJob?.cancel()
+
+            // launch lifecycle-aware delayed submit
+            submitJob = viewLifecycleOwner.lifecycleScope.launch {
+                delay(500)
+                // only submit if we’re still at least STARTED (i.e., not backing away)
+                if (!isAdded || !lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return@launch
+                (activity as? OnboardingQuestionnaireActivity)?.submitAnswer(onboardingQuestionRequest)
+            }
         }
 
         return view
     }
 
-    override fun onPause() {
+/*    override fun onPause() {
         super.onPause()
         llSelectedStressManagement.visibility = GONE
         rlStressManagement.visibility = VISIBLE
+    }*/
+
+    override fun onPause() {
+        super.onPause()
+        // ensure pending submit won't fire after back
+        submitJob?.cancel()
+        llSelectedStressManagement.visibility = GONE
+        rlStressManagement.visibility = VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        submitJob?.cancel()
     }
 
     private fun setList() {

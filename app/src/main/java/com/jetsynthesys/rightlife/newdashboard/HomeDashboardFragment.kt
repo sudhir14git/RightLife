@@ -222,7 +222,7 @@ class HomeDashboardFragment : BaseFragment() {
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
             } else {
-                permissionManager = PermissionManager(
+                    permissionManager = PermissionManager(
                     activity = requireActivity(),
                     launcher = permissionLauncher,
                     onPermissionGranted = {
@@ -675,9 +675,9 @@ class HomeDashboardFragment : BaseFragment() {
                                         View.VISIBLE
                                     binding.llDiscoverLayout.visibility = View.VISIBLE
                                 }
-                                (requireActivity() as? HomeNewActivity)?.showSubsribeLayout(
+                                /*(requireActivity() as? HomeNewActivity)?.showSubsribeLayout(
                                     DashboardChecklistManager.paymentStatus
-                                )
+                                )*/
                                 (requireActivity() as? HomeNewActivity)?.getUserDetails()
                                 setChecklistRowArrow(DashboardChecklistManager.paymentStatus)
                             } else {

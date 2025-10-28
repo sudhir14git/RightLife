@@ -21,7 +21,7 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_back" />
+            android:src="@drawable/ic_back_articlepage" />
 
         <TextView
             android:layout_width="0dp"
@@ -31,6 +31,7 @@
         <ImageView
             android:id="@+id/btnInfo"
             android:layout_width="24dp"
+            android:padding="3dp"
             android:layout_height="24dp"
             android:src="@drawable/info_affirmation" />
     </LinearLayout>
@@ -43,7 +44,7 @@
         android:text="Choose a prompt"
         android:textSize="26sp"
         android:fontFamily="@font/dmsans_bold"
-        android:layout_marginHorizontal="12dp"
+        android:paddingHorizontal="@dimen/margin_card_16dp"
         android:textColor="@color/txt_color_mind" />
 
     <!-- Subtitle -->
@@ -54,7 +55,7 @@
         android:text="Each question is here to help you process, remember, and heal - one step at a time."
         android:textSize="16sp"
         android:fontFamily="@font/dmsans_regular"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="@dimen/margin_card_16dp"
         android:layout_marginTop="4dp"
         android:textColor="@color/txt_color_journal_gray" />
 
