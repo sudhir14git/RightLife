@@ -1425,7 +1425,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
