@@ -44,6 +44,7 @@ class HelpLineAdapter(
             }
 
             rlPhoneNumber1.setOnClickListener {
+                if (tvPhoneNumber1.text.isNullOrEmpty()) return@setOnClickListener
                 val intent = Intent(Intent.ACTION_DIAL).apply {
                     data = Uri.parse("tel:${tvPhoneNumber1.text}")
                 }

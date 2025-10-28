@@ -1,10 +1,12 @@
 package com.jetsynthesys.rightlife.ui.jounal.new_journal
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import androidx.core.graphics.ColorUtils
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityGriefBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -48,9 +50,10 @@ class GriefJournalActivity : BaseActivity() {
         journalEntry?.let {
             binding.etJournalEntry.setText(it.answer)
         }
-
+        val activeColor = Color.parseColor("#984C01")
+        val disabledColor = ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
         binding.btnSave.setTextColor(
-            if (binding.etJournalEntry.text.isNotEmpty()) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
+            if (binding.etJournalEntry.text.isNotEmpty()) activeColor else disabledColor
         )
         binding.btnSave.isEnabled = binding.etJournalEntry.text.isNotEmpty()
 
@@ -88,9 +91,13 @@ class GriefJournalActivity : BaseActivity() {
                 override fun afterTextChanged(s: Editable?) {
                     val hasText = (s?.trim()?.length ?: 0) > 0
                     binding.btnSave.isEnabled = hasText
+                    val activeColor = Color.parseColor("#984C01")
+                    val disabledColor = ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
+
                     binding.btnSave.setTextColor(
-                        if (hasText) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
+                        if (hasText) activeColor else disabledColor
                     )
+
 
                     val currentText = s.toString()
 
@@ -147,8 +154,11 @@ class GriefJournalActivity : BaseActivity() {
                 override fun afterTextChanged(s: Editable?) {
                     val hasText = (s?.trim()?.length ?: 0) > 0
                     binding.btnSave.isEnabled = hasText
+                    val activeColor = Color.parseColor("#984C01")
+                    val disabledColor = ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
+
                     binding.btnSave.setTextColor(
-                        if (hasText) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
+                        if (hasText) activeColor else disabledColor
                     )
                     if ((s?.trim()?.length ?: 0) == 5000) {
                         Toast.makeText(

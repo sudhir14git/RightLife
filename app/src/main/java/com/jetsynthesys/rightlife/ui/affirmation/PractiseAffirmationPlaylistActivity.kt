@@ -18,6 +18,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
@@ -32,6 +33,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -302,6 +304,17 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
         // Set up the animation
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        bottomSheetView.post {
+            val bottomSheet =
+                reminderBottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+                it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                it.requestLayout()
+            }
+        }
         if (bottomSheetLayout != null) {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)

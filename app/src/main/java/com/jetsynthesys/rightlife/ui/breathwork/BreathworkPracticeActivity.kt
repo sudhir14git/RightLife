@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.breathwork
 
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -584,6 +585,10 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         bottomSheetDialog.setOnDismissListener {
             //callPostMindFullDataAPI()
+            startActivity(
+                Intent(this, BreathworkActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
             finish()
         }
 

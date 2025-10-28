@@ -119,6 +119,7 @@ public class MindAuditReasonsFragment extends Fragment implements MindAuditBasic
                         intent.putExtra("AssessmentData", assessments);
                         intent.putExtra("FROM_THINK_RIGHT", ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).isFromThinkRight);
                         startActivity(intent);
+                        requireActivity().finish();
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);

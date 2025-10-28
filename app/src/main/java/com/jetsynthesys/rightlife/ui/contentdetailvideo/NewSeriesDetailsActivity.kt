@@ -588,6 +588,12 @@ class NewSeriesDetailsActivity : BaseActivity() {
     }
 
     private fun callTrackAPI(watchDuration: Double) {
+        // ✅ Check if ContentResponseObj is initialized before accessing
+        if (!::ContentResponseObj.isInitialized) {
+            Log.d("contentDetails", "ContentResponseObj not initialized, skipping track API")
+            return
+        }
+
         val contentData = ContentResponseObj.data
         if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
             CommonAPICall.postSeriesContentPlayedProgress(

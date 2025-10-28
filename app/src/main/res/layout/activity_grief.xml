@@ -116,14 +116,13 @@
     <Button
         android:id="@+id/btnSave"
         android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_height="56dp"
         android:text="Save"
         android:layout_margin="16dp"
-        android:fontFamily="@font/dmsans_regular"
-        android:textSize="18sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:textSize="@dimen/textsize_large20sp"
         android:backgroundTint="#FFDD80"
-        android:textColor="#FFBFBFBF"
+        android:textColor="#80984C01"
         android:enabled="false"
-        android:paddingVertical="12dp"
         android:layout_gravity="center_horizontal"/>
 </LinearLayout>

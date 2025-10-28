@@ -1100,7 +1100,7 @@ class MindAuditResultActivity : BaseActivity() {
     }
     private fun getColorResForScorePhq9(score: Int): Int {
         return when (score) {
-            in 1..4 -> R.color.green_minimal
+            in 0..4 -> R.color.green_minimal
             in 5..9-> R.color.cyan_mild
             in 10..14 -> R.color.blue_moderate
             in 15..19 -> R.color.orange_severe
@@ -1316,7 +1316,7 @@ class MindAuditResultActivity : BaseActivity() {
         val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
 
         val activeColorCount = when (score) {
-            in 1..4 -> 1
+            in 0..4 -> 1
             in 5..9 -> 2
             in 10..14 -> 3
             in 15..19 -> 4

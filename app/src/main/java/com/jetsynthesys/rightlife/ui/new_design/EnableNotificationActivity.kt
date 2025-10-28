@@ -18,6 +18,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class EnableNotificationActivity : BaseActivity() {
+    var lastClickTime = 0L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setChildContentView(R.layout.activity_enable_notification)
@@ -38,16 +39,21 @@ class EnableNotificationActivity : BaseActivity() {
         }
 
         btnEnableNotification.setOnClickListener {
-            checkPermission()
-            AnalyticsLogger.logEvent(
-                AnalyticsEvent.ENABLE_NOTIFICATION_CLICK,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime > 500) { // 500ms debounce
+                lastClickTime = currentTime
+                checkPermission()
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.ENABLE_NOTIFICATION_CLICK,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                        AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                    )
                 )
-            )
+            }
+
         }
     }
 

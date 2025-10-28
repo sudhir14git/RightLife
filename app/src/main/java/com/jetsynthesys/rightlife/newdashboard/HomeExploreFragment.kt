@@ -930,11 +930,12 @@ class HomeExploreFragment : BaseFragment() {
                             showInternetError()
                         }
                     } else {
-                        ActivityUtils.startEatRightReportsActivity(
+                      /*  ActivityUtils.startEatRightReportsActivity(
                             requireContext(),
                             "SnapMealTypeEat",
                             ""
-                        )
+                        )*/
+                        (requireActivity() as? HomeNewActivity)?.callSnapMealClick()
                     }
                     //ActivityUtils.startMindAuditActivity(requireContext())
                 }
