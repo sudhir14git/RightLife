@@ -102,7 +102,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         if (query.isNotEmpty()) {
             searchResultTextView.isVisible = true
             searchResultView.isVisible = true
-            searchResultTextView.text = "Search Result: ${filteredList.size}"
+            searchResultTextView.text = "Search Results: ${filteredList.size}"
         } else {
             searchResultTextView.isVisible = false
             searchResultView.isVisible = false

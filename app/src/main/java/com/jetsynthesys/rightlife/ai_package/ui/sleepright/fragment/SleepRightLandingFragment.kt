@@ -1874,7 +1874,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
          //   }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
+        //val userId = "68db9e49be43133bb0ff8463"
         val date = getCurrentDate()
+        //val date = "2025-09-29"
         val source = "android"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
@@ -2723,7 +2725,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val dur = Duration.ofMinutes((entry.durationHrs * 60).roundToInt().toLong())
             val hrs = dur.toHours()
             val mins = dur.minusHours(hrs).toMinutes()
-            tvConsistencyTime.text = "${hrs}hr ${mins}mins"
+            tvConsistencyTime.text = String.format("%02dhr %02dmins", hrs, mins)
         }
         /*val result = async {
             parseSleepData(parseSleepData)
@@ -3187,11 +3189,15 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
         super.onDraw(canvas)
         val w = width.toFloat()
         val h = height.toFloat()
-        // Set the background color (replace with desired color)
-        canvas.drawColor(Color.parseColor("#F5F9FF")) // Example: light gray
+
+        // Background
+        canvas.drawColor(Color.parseColor("#F5F9FF"))
+
         val barHeight = h * 0.25f
         val cornerRadius = barHeight / 4
         var currentX = 0f
+
+        // Draw sleep bars (unchanged)
         sleepSegments.forEach { segment ->
             paint.color = segment.color
             val top = when (segment.position) {
@@ -3202,6 +3208,24 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
             val right = currentX + (segment.widthFraction * w)
             canvas.drawRoundRect(RectF(currentX, top, right, bottom), cornerRadius, cornerRadius, paint)
             currentX = right
+        }
+
+        // === RULER – THODA NICHE, HORIZONTAL LINE TRANSPARENT ===
+        val rulerY = h * 0.95f          // Ruler ko neeche shift kiya (0.75f → 0.85f)
+        val tickHeight = 10f            // Thoda bada tick (optional)
+        val tickSpacing = w / 12f       // 12 ticks
+
+        // Horizontal line – Transparent (alpha = 0)
+        paint.color = Color.TRANSPARENT
+        paint.strokeWidth = 2f
+        canvas.drawLine(0f, rulerY, w, rulerY, paint)   // Invisible line (keeps layout)
+
+        // Vertical ticks – Black
+        paint.color = Color.BLACK
+        paint.strokeWidth = 2f
+        for (i in 0..12) {
+            val x = i * tickSpacing
+            canvas.drawLine(x, rulerY - tickHeight / 2, x, rulerY + tickHeight / 2, paint)
         }
     }
 

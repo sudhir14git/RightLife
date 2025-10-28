@@ -127,6 +127,11 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString()
                 workoutViewModel.setSearchQuery(query)
+                if (query.isNotEmpty()) {
+                    tabLayout.visibility = View.GONE
+                } else {
+                    tabLayout.visibility = View.VISIBLE
+                }
                 Log.d("SearchWorkoutFragment", "Search query set in ViewModel: $query")
             }
 
