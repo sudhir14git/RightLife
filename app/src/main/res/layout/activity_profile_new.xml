@@ -1,383 +1,390 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/settings_bg_color">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:layout_above="@id/btnSave">
 
-        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <ImageView
-                android:id="@+id/ivBack"
-                android:layout_width="wrap_content"
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_back"
-                android:layout_marginEnd="8dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
+                <ImageView
+                    android:id="@+id/ivBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_back"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Account Info "
+                    android:textSize="18sp"
+                    android:fontFamily="@font/merriweather_bold"
+                    android:textColor="@color/txt_color_mind"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+
+            <!-- Profile Picture -->
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp">
+
+                <!-- Profile Image (Initially hidden) -->
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivProfileImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/circle_background"
+                    android:visibility="gone"
+                    android:layout_gravity="center" />
+
+                <!-- First Letter -->
+                <TextView
+                    android:id="@+id/tvProfileLetter"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle_white_bg"
+                    android:gravity="center"
+                    android:text="K"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="36sp" />
+
+                <!-- Edit icon -->
+                <ImageView
+                    android:id="@+id/ivEditProfile"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/edit_profile"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="8dp" />
+            </FrameLayout>
+
+
+            <!-- First Name -->
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="My Account Info "
-                android:textSize="18sp"
+                android:text="First Name"
                 android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_mind"
-                android:layout_marginStart="4dp" />
-        </LinearLayout>
-
-        <!-- Profile Picture -->
-        <FrameLayout
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp">
-
-            <!-- Profile Image (Initially hidden) -->
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/ivProfileImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:background="@drawable/circle_background"
-                android:visibility="gone"
-                android:layout_gravity="center" />
-
-            <!-- First Letter -->
-            <TextView
-                android:id="@+id/tvProfileLetter"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/circle_white_bg"
-                android:gravity="center"
-                android:text="K"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="36sp" />
-
-            <!-- Edit icon -->
-            <ImageView
-                android:id="@+id/ivEditProfile"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/edit_profile"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="8dp" />
-        </FrameLayout>
-
-
-        <!-- First Name -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="First Name"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_journal_date"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp" />
-
-        <EditText
-            android:id="@+id/etFirstName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Test"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:maxLength="30"
-            android:inputType="textPersonName"
-            android:fontFamily="@font/dmsans_regular"
-            android:textColor="@color/txt_color_mind" />
-
-        <!-- Last Name -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Last Name"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_journal_date"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
-
-        <EditText
-            android:id="@+id/etLastName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="123"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:maxLength="30"
-            android:inputType="textPersonName"
-            android:fontFamily="@font/dmsans_regular"
-            android:textColor="@color/txt_color_mind" />
-
-        <!-- Email -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Email"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_journal_date"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="sampleemail@123.com"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:focusable="false"
-            android:clickable="false"
-            android:cursorVisible="false"
-            android:longClickable="false"
-            android:inputType="none"
-            android:fontFamily="@font/dmsans_regular"
-            android:textColor="@color/txt_color_mind" />
-
-        <!-- Mobile Number with Verify -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Mobile Number"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_journal_date"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+                android:textColor="@color/txt_color_journal_date"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="4dp" />
 
             <EditText
-                android:id="@+id/etMobile"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:id="@+id/etFirstName"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:maxLength="10"
-                android:inputType="number"
+                android:text="Test"
                 android:background="@drawable/edittext_bg"
                 android:padding="12dp"
                 android:textSize="16sp"
+                android:maxLength="30"
+                android:inputType="textPersonName"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_mind" />
 
-            <Button
-                android:id="@+id/btnVerify"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Verify"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/menuselected"
-                android:visibility="visible"
-                android:layout_marginStart="8dp" />
-        </LinearLayout>
-
-        <!-- Age -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Age"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_journal_date"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
-
-        <LinearLayout
-            android:id="@+id/llAge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:foreground="?attr/selectableItemBackground">
-
+            <!-- Last Name -->
             <TextView
-                android:id="@+id/tvAge"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="25 years"
+                android:text="Last Name"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_journal_date"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etLastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="123"
+                android:background="@drawable/edittext_bg"
+                android:padding="12dp"
                 android:textSize="16sp"
+                android:maxLength="30"
+                android:inputType="textPersonName"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_mind" />
 
-            <ImageView
-                android:id="@+id/arrowAge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/right_arrow_journal"
-                android:layout_gravity="end" />
-        </LinearLayout>
-
-        <!-- Gender -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gender"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_journal_date"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
-
-        <LinearLayout
-            android:id="@+id/llGender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:foreground="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
-
+            <!-- Email -->
             <TextView
-                android:id="@+id/tvGender"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Male"
+                android:text="Email"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_journal_date"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="sampleemail@123.com"
+                android:background="@drawable/edittext_bg"
+                android:padding="12dp"
                 android:textSize="16sp"
+                android:focusable="false"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:longClickable="false"
+                android:inputType="none"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_mind" />
 
-            <ImageView
-                android:id="@+id/arrowGender"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/right_arrow_journal" />
-        </LinearLayout>
-
-        <!-- Height -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Height"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_journal_date"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
-
-        <LinearLayout
-            android:id="@+id/llHeight"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:foreground="?attr/selectableItemBackground">
-
+            <!-- Mobile Number with Verify -->
             <TextView
-                android:id="@+id/tvHeight"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text=""
-                android:textSize="16sp"
-                android:fontFamily="@font/dmsans_regular"
-                android:textColor="@color/txt_color_mind" />
+                android:text="Mobile Number"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_journal_date"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
 
-            <ImageView
-                android:id="@+id/arrowHeight"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/right_arrow_journal" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-        <!-- Weight -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Weight"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_journal_date"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
+                <EditText
+                    android:id="@+id/etMobile"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:maxLength="10"
+                    android:inputType="number"
+                    android:background="@drawable/edittext_bg"
+                    android:padding="12dp"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/txt_color_mind" />
 
-        <LinearLayout
-            android:id="@+id/llWeight"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:foreground="?attr/selectableItemBackground">
+                <Button
+                    android:id="@+id/btnVerify"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Verify"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/menuselected"
+                    android:visibility="visible"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
 
+            <!-- Age -->
             <TextView
-                android:id="@+id/tvWeight"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text=""
-                android:textSize="16sp"
-                android:fontFamily="@font/dmsans_regular"
-                android:textColor="@color/txt_color_mind" />
+                android:text="Age"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_journal_date"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
 
-            <ImageView
-                android:id="@+id/arrowWeight"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/llAge"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/right_arrow_journal" />
-        </LinearLayout>
+                android:background="@drawable/edittext_bg"
+                android:padding="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:foreground="?attr/selectableItemBackground">
 
-        <!-- Delete Account -->
-        <LinearLayout
-            android:id="@+id/llDeleteAccount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/edittext_bg"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical"
-            android:padding="14dp"
-            android:visibility="gone"
-            android:foreground="?attr/selectableItemBackground">
+                <TextView
+                    android:id="@+id/tvAge"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="25 years"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/txt_color_mind" />
 
+                <ImageView
+                    android:id="@+id/arrowAge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_arrow_journal"
+                    android:layout_gravity="end" />
+            </LinearLayout>
+
+            <!-- Gender -->
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Delete Account"
-                android:textSize="16sp"
-                android:fontFamily="@font/dmsans_regular"
-                android:textColor="@color/txt_color_mind" />
+                android:text="Gender"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_journal_date"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
 
-            <ImageView
-                android:id="@+id/arrowDeleteAccount"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/llGender"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/right_arrow_journal" />
+                android:background="@drawable/edittext_bg"
+                android:padding="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/tvGender"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Male"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/txt_color_mind" />
+
+                <ImageView
+                    android:id="@+id/arrowGender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_arrow_journal" />
+            </LinearLayout>
+
+            <!-- Height -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Height"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_journal_date"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
+            <LinearLayout
+                android:id="@+id/llHeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_bg"
+                android:padding="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/tvHeight"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/txt_color_mind" />
+
+                <ImageView
+                    android:id="@+id/arrowHeight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_arrow_journal" />
+            </LinearLayout>
+
+            <!-- Weight -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Weight"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_journal_date"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
+            <LinearLayout
+                android:id="@+id/llWeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_bg"
+                android:padding="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/tvWeight"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/txt_color_mind" />
+
+                <ImageView
+                    android:id="@+id/arrowWeight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_arrow_journal" />
+            </LinearLayout>
+
+            <!-- Delete Account -->
+            <LinearLayout
+                android:id="@+id/llDeleteAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/edittext_bg"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:visibility="gone"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Delete Account"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/txt_color_mind" />
+
+                <ImageView
+                    android:id="@+id/arrowDeleteAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_arrow_journal" />
+            </LinearLayout>
+
         </LinearLayout>
+    </ScrollView>
 
-        <!-- Save Button -->
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            android:backgroundTint="@color/menuselected"
-            android:textColor="@color/white"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:fontFamily="@font/dmsans_regular"
-            android:textSize="18sp"
-            android:padding="12dp" />
-    </LinearLayout>
-</ScrollView>
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:backgroundTint="@color/menuselected"
+        android:textColor="@color/white"
+        android:layout_margin="16dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="18sp"
+        android:padding="12dp"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>
