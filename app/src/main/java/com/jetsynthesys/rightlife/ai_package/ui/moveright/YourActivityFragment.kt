@@ -652,7 +652,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val call = ApiClient.apiServiceFastApiV2.getActivityLogHistory(userId, "android", formattedDate)
+        val call = ApiClient.apiServiceFastApi.getActivityLogHistory(userId, "android", formattedDate)
         call.enqueue(object : Callback<WorkoutHistoryResponse> {
             override fun onResponse(call: Call<WorkoutHistoryResponse>, response: Response<WorkoutHistoryResponse>) {
                 if (response.isSuccessful) {

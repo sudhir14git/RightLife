@@ -1001,7 +1001,7 @@
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
                                 android:layout_marginStart="10dp"
-                                android:src="@drawable/rem_icon" />
+                                android:src="@drawable/rem_color_new" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -1065,7 +1065,7 @@
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
                                 android:layout_marginStart="10dp"
-                                android:src="@drawable/core_icon" />
+                                android:src="@drawable/core_icon_new" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -1141,7 +1141,7 @@
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
                                 android:layout_marginStart="10dp"
-                                android:src="@drawable/deep_icon" />
+                                android:src="@drawable/deep_icon_new" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -1205,7 +1205,7 @@
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
                                 android:layout_marginStart="10dp"
-                                android:src="@drawable/awake_icon" />
+                                android:src="@drawable/awake_icon_new" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -1633,7 +1633,7 @@
                                 android:layout_height="11dp"
                                 android:scaleType="fitXY"
                                 android:layout_marginStart="10dp"
-                                android:src="@drawable/green_icon" />
+                                android:src="@drawable/green_icon_new" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -1668,7 +1668,7 @@
                                 android:layout_height="11dp"
                                 android:scaleType="fitXY"
                                 android:layout_marginStart="5dp"
-                                android:src="@drawable/core_icon" />
+                                android:src="@drawable/core_icon_new" />
 
                             <TextView
                                 android:layout_width="wrap_content"

@@ -460,7 +460,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val selectedDate = currentDateTime.format(formatter)
-                val response = ApiClient.apiServiceFastApiV2.getMoveLanding(
+                val response = ApiClient.apiServiceFastApi.getMoveLanding(
                     userId = userId,
                     date = selectedDate
                 )
@@ -1425,7 +1425,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())

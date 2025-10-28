@@ -36,12 +36,11 @@ import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapSearchDishesAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.DishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.SearchDishesToLogViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentSearchDishBinding
 import retrofit2.Call
@@ -60,7 +59,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
     private lateinit var allDishesRecyclerview : RecyclerView
     private lateinit var searchType : String
     private lateinit var appPreference: AppPreference
-    private val dishesViewModel: DishesViewModel by activityViewModels()
+    private val dishesViewModel: SearchDishesToLogViewModel by activityViewModels()
     private var recipesList : ArrayList<RecipeList> = ArrayList()
     private var snapRecipesList : ArrayList<IngredientRecipeList> = ArrayList()
     private var dishLocalListModel : DishLocalListModel? = null
@@ -245,17 +244,17 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                                     Log.d("Keyboard", "Opened")
                                 } else {
                                     Log.d("Keyboard", "Closed")
-                                    val fragment = HomeTabMealFragment()
-                                    val args = Bundle()
-                                    args.putString("ModuleName", moduleName)
-                                    args.putString("mealType", mealType)
-                                    args.putString("selectedMealDate", selectedMealDate)
-                                    fragment.arguments = args
-                                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                                        replace(R.id.flFragment, fragment, "mealLog")
-                                        addToBackStack("mealLog")
-                                        commit()
-                                    }
+//                                    val fragment = HomeTabMealFragment()
+//                                    val args = Bundle()
+//                                    args.putString("ModuleName", moduleName)
+//                                    args.putString("mealType", mealType)
+//                                    args.putString("selectedMealDate", selectedMealDate)
+//                                    fragment.arguments = args
+//                                    requireActivity().supportFragmentManager.beginTransaction().apply {
+//                                        replace(R.id.flFragment, fragment, "mealLog")
+//                                        addToBackStack("mealLog")
+//                                        commit()
+//                                    }
                                 }
                             }
                         }
