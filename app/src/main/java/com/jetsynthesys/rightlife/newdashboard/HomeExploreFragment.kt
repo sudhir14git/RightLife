@@ -46,6 +46,7 @@ import com.jetsynthesys.rightlife.ui.TestAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
+import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.zhpan.bannerview.constants.PageStyle
 import com.zhpan.indicator.enums.IndicatorStyle
@@ -925,7 +926,7 @@ class HomeExploreFragment : BaseFragment() {
                 "Meal Snap" -> {
                     if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
-                            freeTrialDialogActivity()
+                            freeTrialDialogActivity(FeatureFlags.MEAL_SCAN)
                         } else {
                             showInternetError()
                         }
@@ -943,7 +944,7 @@ class HomeExploreFragment : BaseFragment() {
                 "Health Cam" -> {
                     if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
-                            freeTrialDialogActivity()
+                            freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
                         } else {
                             showInternetError()
                         }
@@ -1317,8 +1318,10 @@ class HomeExploreFragment : BaseFragment() {
         return isAdded && activity != null && !requireActivity().isFinishing && !requireActivity().isDestroyed
     }
 
-    private fun freeTrialDialogActivity() {
-        val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
+    private fun freeTrialDialogActivity(featureFlag: String = "") {
+        val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java).apply {
+            putExtra(FeatureFlags.EXTRA_ENTRY_DEST, featureFlag)
+        }
         startActivity(intent)
     }
 }

@@ -66,6 +66,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -220,7 +221,7 @@ class HomeDashboardFragment : BaseFragment() {
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
             it.disableViewForSeconds()
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
-                freeTrialDialogActivity()
+                freeTrialDialogActivity(FeatureFlags.MEAL_SCAN)
             } else {
                     permissionManager = PermissionManager(
                     activity = requireActivity(),
@@ -231,7 +232,8 @@ class HomeDashboardFragment : BaseFragment() {
                         else sharedPreferenceManager.snapMealId ?: ""
 
                         // Always send empty string safely
-                        ActivityUtils.startMealScanActivity(requireContext(), safeSnapMealId)
+                        //ActivityUtils.startMealScanActivity(requireContext(), safeSnapMealId)
+                        logAndOpenMeal(safeSnapMealId)
                     },
                     onPermissionDenied = {
                         Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
@@ -244,7 +246,7 @@ class HomeDashboardFragment : BaseFragment() {
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
             it.disableViewForSeconds()
             if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
-                freeTrialDialogActivity()
+                freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
             } else {
                 val activity = requireActivity() as HomeNewActivity
                 /*val isHealthCamFree = activity.isHealthCamFree*/
@@ -932,12 +934,25 @@ class HomeDashboardFragment : BaseFragment() {
         }
     }
 
-    private fun freeTrialDialogActivity() {
-        val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
+    private fun freeTrialDialogActivity(featureFlag: String = "") {
+        val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java).apply {
+            putExtra(FeatureFlags.EXTRA_ENTRY_DEST, featureFlag)
+        }
         startActivity(intent)
     }
 
 
 
+    private fun logAndOpenMeal(snapId: String) {
+        AnalyticsLogger.logEvent(
+                requireContext(),
+                AnalyticsEvent.EOS_SNAP_MEAL_CLICK
+        )
+        ActivityUtils.startEatRightReportsActivity(
+                requireContext(),
+                "SnapMealTypeEat",
+                snapId
+        )
+    }
 
 }

@@ -44,7 +44,7 @@
             android:ellipsize="end"
             android:fontFamily="@font/dmsans_bold"
             android:gravity="center"
-            android:text="BETA\n V1.0"
+            android:text="Beta\n V1.2"
             android:elevation="5dp"
             android:background="@drawable/grey_border_bg"
             android:textColor="@color/txt_color_mind"

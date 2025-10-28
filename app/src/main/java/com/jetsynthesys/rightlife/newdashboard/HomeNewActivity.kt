@@ -97,6 +97,7 @@ import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -540,7 +541,7 @@ class HomeNewActivity : BaseActivity() {
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
                 if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
-                    freeTrialDialogActivity()
+                    freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
                 } else {
                     if (DashboardChecklistManager.facialScanStatus) {
                         startActivity(
@@ -2917,10 +2918,13 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    private fun freeTrialDialogActivity() {
-        val intent = Intent(this, BeginMyFreeTrialActivity::class.java)
+    private fun freeTrialDialogActivity(featureFlag: String = "") {
+        val intent = Intent(this, BeginMyFreeTrialActivity::class.java).apply {
+            putExtra(FeatureFlags.EXTRA_ENTRY_DEST, featureFlag)
+        }
         startActivity(intent)
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -2979,7 +2983,7 @@ class HomeNewActivity : BaseActivity() {
         when {
             userStatus == 0 -> {
                 // Not subscribed
-                freeTrialDialogActivity()
+                freeTrialDialogActivity(FeatureFlags.MEAL_SCAN)
             }
 
             userStatus == 1 && freeDate.isNotEmpty() -> {
