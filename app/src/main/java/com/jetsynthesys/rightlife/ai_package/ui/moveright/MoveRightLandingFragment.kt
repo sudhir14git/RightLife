@@ -696,11 +696,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             val startX = (barWidth * startFrac).toInt() + progressBarCalorieBalance.paddingStart
                                             val endX = (barWidth * endFrac).toInt() + progressBarCalorieBalance.paddingStart
                                             // Overlay width
+                                            val ctx = context ?: return@post  // stop if fragment not attached
                                             val minWidthPx = TypedValue.applyDimension(
                                                 TypedValue.COMPLEX_UNIT_DIP,
                                                 5f,
-                                                resources.displayMetrics
+                                                ctx.resources.displayMetrics
                                             ).toInt()
+
                                             val overlayWidth = (endX - startX).coerceAtLeast(minWidthPx)
                                             // Apply layout params
                                             val lp = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
@@ -2315,28 +2317,31 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     private fun fetchThinkRecomendedData() {
+
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","MOVE_RIGHT")
+        val call = ApiClient.apiService.fetchThinkRecomended(token, "HOME", "MOVE_RIGHT")
         call.enqueue(object : Callback<ThinkRecomendedResponse> {
-            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
+            override fun onResponse(
+                call: Call<ThinkRecomendedResponse>,
+                response: Response<ThinkRecomendedResponse>
+            ) {
+                val ctx = context ?: return  // ✅ Stop if fragment is not attached
+                val viewLifecycleOwner = viewLifecycleOwner
                 if (response.isSuccessful) {
-                    // progressDialog.dismiss()
-                    thinkRecomendedResponse = response.body()!!
-                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        recomendationAdapter = RecommendedAdapterSleep(requireContext(), thinkRecomendedResponse.data?.contentList!!)
-                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-                        recomendationRecyclerView.adapter = recomendationAdapter
+                    val data = response.body()?.data?.contentList ?: return
+                    if (data.isNotEmpty()) {
+                        recomendationAdapter = RecommendedAdapterSleep(ctx, data)
+                        recomendationRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(ctx)
+                            adapter = recomendationAdapter
+                        }
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    // progressDialog.dismiss()F
                 }
             }
             override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                //progressDialog.dismiss()
             }
         })
     }

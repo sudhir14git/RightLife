@@ -24,8 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1285"
-            android:textSize="16sp"
-            android:textColor="@color/workout_textcolor"
+            android:textSize="19sp"
+            android:textColor="@color/black_no_meals"
             android:fontFamily="@font/dmsans_bold" />
 
         <TextView
@@ -33,8 +33,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="kcal"
-            android:textSize="12sp"
-            android:fontFamily="@font/dmsans_medium"
+            android:textSize="9sp"
+            android:fontFamily="@font/dmsans_bold"
             android:textColor="@color/workout_textcolor"
             android:gravity="center" />
 
@@ -56,7 +56,7 @@
                 android:id="@+id/tv_energy_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:gravity="center"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/workout_textcolor"

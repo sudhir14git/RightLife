@@ -452,12 +452,9 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
     }
 
     private fun setupSpinner(servingsList: List<Serving>, default: Serving?) {
-        val adapter = ArrayAdapter(
-            requireActivity(),
-            android.R.layout.simple_spinner_item,
-            servingsList.map {it.type }
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val adapter =
+            ArrayAdapter(requireActivity(), R.layout.snap_mealtype_spinner,  servingsList.map {it.type })
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         spinner.adapter = adapter
         // Store default serving
         defaultServing = default
