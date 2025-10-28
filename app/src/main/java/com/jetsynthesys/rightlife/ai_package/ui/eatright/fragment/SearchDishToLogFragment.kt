@@ -173,6 +173,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                    dishesViewModel.setSearchQuery("")
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
@@ -187,6 +188,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             })
 
         backButton.setOnClickListener {
+            dishesViewModel.setSearchQuery("")
             val fragment = YourMealLogsFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
@@ -348,6 +350,16 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                 searchResultLayout.visibility = View.VISIBLE
                 tvSearchResult.visibility = View.GONE
                 cancel.visibility = View.GONE
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!searchType.contentEquals("HomeTabMeal")){
+            dishesViewModel.searchQuery.value?.let {
+                searchEditText.setText(it)
+                filterDishes(it)
             }
         }
     }

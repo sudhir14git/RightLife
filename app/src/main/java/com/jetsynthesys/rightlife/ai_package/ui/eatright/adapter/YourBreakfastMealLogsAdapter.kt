@@ -117,7 +117,12 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
             proteinValue.text = round(data.recipe.protein_g!!).toInt().toString()
             carbsValue.text = round(data.recipe.carbs_g!!).toInt().toString()
             fatsValue.text = round(data.recipe.fat_g!!).toInt().toString()
-            val imageUrl = getDriveImageUrl(data.recipe.photo_url)
+            var imageUrl : String? = ""
+            imageUrl = if (data.recipe.photo_url.contains("drive.google.com")) {
+                getDriveImageUrl(data.recipe.photo_url)
+            }else{
+                data.recipe.photo_url
+            }
             Glide.with(this.itemView)
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_view_meal_place)
@@ -207,7 +212,12 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
                 proteinValue.text = round(snapData.protein_g)?.toInt().toString()
                 carbsValue.text = round(snapData.carbs_g)?.toInt().toString()
                 fatsValue.text = round(snapData.fat_g)?.toInt().toString()
-                val imageUrl = data.image_url//getDriveImageUrl(data.photo_url)
+                var imageUrl : String? = ""
+                imageUrl = if (data.image_url.contains("drive.google.com")) {
+                    getDriveImageUrl(data.image_url)
+                }else{
+                    data.image_url
+                }
                 Glide.with(this.itemView)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_view_meal_place)

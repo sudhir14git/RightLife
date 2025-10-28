@@ -72,6 +72,7 @@ class OtherRecipeLogFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var ivEdit : ImageView
     private lateinit var tvMeasure :TextView
     private var measureType : String = ""
+    private var selectedDefaultValue : Double? = 0.0
     private lateinit var backButton : ImageView
     private var dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
     private var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
@@ -81,6 +82,9 @@ class OtherRecipeLogFragment : BaseFragment<FragmentDishBinding>() {
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
     private var loadingOverlay : FrameLayout? = null
+    private var defaultServing: Serving? = null
+    private var userSelectedServing: Serving? = null
+    private var isSpinnerInitialized = false
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -200,6 +204,7 @@ class OtherRecipeLogFragment : BaseFragment<FragmentDishBinding>() {
             setDishData(foodDetailsResponse, false)
             onMacroNutrientsList(foodDetailsResponse, 1.0, 1.0)
             onMicroNutrientsList(foodDetailsResponse, 1.0, 1.0)
+            setupSpinner(foodDetailsResponse.available_serving, foodDetailsResponse.selected_serving)
         }
 
         var isProgrammaticChange = false
@@ -411,44 +416,9 @@ class OtherRecipeLogFragment : BaseFragment<FragmentDishBinding>() {
 
     private fun setDishData(snapRecipeData: IngredientRecipeDetails, isEdit: Boolean) {
             addToTheMealTV.text = "Log Your Meal"
-
             val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
             tvMealName.text = capitalized
-            val servingsList = mutableListOf<Serving>()
-            servingsList.addAll(snapRecipeData.available_serving)
-            val servingLabels = servingsList.map { it.type }
-            // Use ArrayAdapter
-            val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, servingLabels)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
 
-//            if (snapRecipeData.standard_serving_size != null && snapRecipeData.standard_serving_size !=  ""){
-//                tvMeasure.text = snapRecipeData.standard_serving_size
-//            }else{
-//                tvMeasure.text = snapRecipeData.serving_size_for_calorific_breakdown
-//            }
-            if (!isEdit){
-//                if (snapRecipeData.quantity != null ){
-//                    quantityEdit.setText(snapRecipeData.quantity.toString())
-//                }
-                var isSpinnerInitialized = false
-                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                        if (!isSpinnerInitialized) {
-                            isSpinnerInitialized = true
-                            return
-                        }
-                        val selectedServing = servingsList[position]
-                        val newQuantity = selectedServing.value.toString()
-                        // ✅ Update only if different
-                        if (quantityEdit.text.toString() != newQuantity) {
-                            quantityEdit.setText(newQuantity)
-                            measureType = selectedServing.type.toString()
-                        }
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>) {}
-                }
-            }
             var imageUrl : String? = ""
             imageUrl = if (snapRecipeData.photo_url.contains("drive.google.com")) {
                 getDriveImageUrl(snapRecipeData.photo_url)
@@ -460,6 +430,43 @@ class OtherRecipeLogFragment : BaseFragment<FragmentDishBinding>() {
                 .placeholder(R.drawable.ic_view_meal_place)
                 .error(R.drawable.ic_view_meal_place)
                 .into(imgFood)
+    }
+
+    private fun setupSpinner(servingsList: List<Serving>, default: Serving?) {
+        val adapter =
+            ArrayAdapter(requireActivity(), R.layout.snap_mealtype_spinner,  servingsList.map {it.type })
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+        spinner.adapter = adapter
+        // Store default serving
+        defaultServing = default
+        // Pre-select default serving in spinner
+        val defaultIndex = servingsList.indexOfFirst {
+            it.type == default?.type
+        }
+        val safeIndex = if (defaultIndex >= 0) defaultIndex else 0
+        spinner.setSelection(safeIndex)
+        val defaultSelectedServing = servingsList[safeIndex]
+        measureType = defaultSelectedServing.type.toString()
+        selectedDefaultValue = defaultSelectedServing.value
+        quantityEdit.setText(defaultSelectedServing.value.toString())
+        // Listener
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                if (!isSpinnerInitialized) {
+                    isSpinnerInitialized = true
+                    return
+                }
+                val selectedServing = servingsList[position]
+                userSelectedServing = selectedServing  // ✅ track user choice
+                val newQuantity = selectedServing.value.toString()
+                if (quantityEdit.text.toString() != newQuantity) {
+                    measureType = selectedServing.type.toString()
+                    selectedDefaultValue = selectedServing.value
+                    quantityEdit.setText(newQuantity)
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
     }
 
     private fun onMacroNutrientsList(mealDetails: IngredientRecipeDetails, defaultValue: Double, targetValue: Double) {
