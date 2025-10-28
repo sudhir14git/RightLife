@@ -18,6 +18,8 @@ import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -29,6 +31,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
@@ -37,6 +40,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
+import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteSettingBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.drawermenu.PrivacyPolicyActivity
@@ -513,7 +517,7 @@ class ImageSliderActivity : BaseActivity() {
                             "Server Error: 500 - Internal Server Error",
                             Toast.LENGTH_SHORT
                         ).show()*/
-                        showSwitchAccountDialog(this@ImageSliderActivity,"","")
+                        showSwitchBottomSheet()
                     } else {
                         // Try to parse errorBody if present
                         val errorBodyString = response.errorBody()?.string()
@@ -563,7 +567,7 @@ class ImageSliderActivity : BaseActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 // You can navigate or perform a specific action here if needed
-                showSwitchAccountDialog(this, "", "")
+                showSwitchBottomSheet()
             }
 
             else -> {
@@ -572,31 +576,39 @@ class ImageSliderActivity : BaseActivity() {
         }
     }
 
-    fun showSwitchAccountDialog(context: Context, header: String, htmlText: String) {
-        val dialog = Dialog(context)
-        val binding = DialogSwitchAccountBinding.inflate(LayoutInflater.from(context))
-        dialog.setContentView(binding.root)
-        dialog.setCancelable(true)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val window = dialog.window
-        // Set the dim amount
-        val layoutParams = window!!.attributes
-        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
-        window.attributes = layoutParams
+    private fun showSwitchBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val dialogBinding = BottomsheetDeleteSettingBinding.inflate(layoutInflater)
+        val bottomSheetView = dialogBinding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
 
-        /*binding.tvTitle.text = header
-        binding.tvDescription.text = Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)*/
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
 
-        // Handle close button click
-        binding.btnOk.setOnClickListener {
-            dialog.dismiss()
+        dialogBinding.tvTitle.text = "You're Logged In with a Different Account"
+        dialogBinding.tvDescription.text = "This device is already logged in with a different account. As a result, free services are not available.\\n\\nPlease log out and sign in with your original account to access free features."
+
+        dialogBinding.ivDialogClose.setImageResource(R.drawable.close_breathwork)
+
+        dialogBinding.ivDialogClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        dialogBinding.btnYes.text = "Switch Account"
+        dialogBinding.btnCancel.text = "OK"
+
+        dialogBinding.btnCancel.setOnClickListener {
             fetchApiData(accessTokenGoogle)
+            bottomSheetDialog.dismiss()
         }
-        binding.btnSwitchAccount.setOnClickListener {
-            dialog.dismiss()
+        dialogBinding.btnYes.setOnClickListener {
+            bottomSheetDialog.dismiss()
         }
-
-        dialog.show()
+        bottomSheetDialog.show()
     }
 
     private fun clickForPrivacyPolicyAndTermsOfService(){

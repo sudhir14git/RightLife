@@ -954,13 +954,13 @@ class ProfileNewActivity : BaseActivity() {
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
-                    showToast("Otp sent to your mobile number")
+                    showCustomToast("OTP sent to your mobile number", true)
                     if (dialogOtp != null && dialogOtp?.isShowing == true) {
                         dialogOtp?.dismiss()
                     }
                     showOtpDialog(this@ProfileNewActivity, mobileNumber)
                 } else {
-                    showToast(response.message())
+                    showCustomToast("Retry too early")
                 }
             }
 
@@ -988,6 +988,8 @@ class ProfileNewActivity : BaseActivity() {
                 override fun afterTextChanged(s: Editable?) {
                     if (s?.length == 1 && index < otpFields.size - 1) {
                         otpFields[index + 1].requestFocus()
+                    } else if (s?.length == 0 && index > 0) {
+                        otpFields[index - 1].requestFocus()
                     }
                 }
 
@@ -1037,11 +1039,9 @@ class ProfileNewActivity : BaseActivity() {
         binding.btnVerify.setOnClickListener {
             val otp = otpFields.joinToString("") { it.text.toString().trim() }
             if (otp.length == 6) {
-                showToast("OTP Verified: $otp")
-                verifyOtp(mobileNumber, otp, binding)
-                timer.cancel()
+                verifyOtp(mobileNumber, otp, binding, timer)
             } else {
-                showToast("Enter all 6 digits")
+                showCustomToast("Enter all 6 digits")
             }
         }
 
@@ -1051,7 +1051,8 @@ class ProfileNewActivity : BaseActivity() {
     private fun verifyOtp(
         mobileNumber: String,
         otp: String,
-        bindingDialog: DialogOtpVerificationBinding
+        bindingDialog: DialogOtpVerificationBinding,
+        timer: CountDownTimer
     ) {
         val call = apiService.verifyOtpForPhoneNumber(
             sharedPreferenceManager.accessToken,
@@ -1063,14 +1064,14 @@ class ProfileNewActivity : BaseActivity() {
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
-                    showToast(response.message())
+                    timer.cancel()
                     bindingDialog.tvResult.text = "(Verification Success)"
                     bindingDialog.tvResult.setTextColor(getColor(R.color.color_green))
                     binding.btnVerify.text = "Verified"
                     binding.btnVerify.isEnabled = false
                     Handler(Looper.getMainLooper()).postDelayed({
                         dialogOtp?.dismiss()
-                    }, 2000)
+                    }, 1000)
                 } else {
                     bindingDialog.tvResult.text = "(Verification Failed-Incorrect OTP)"
                     bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
@@ -1202,7 +1203,7 @@ class ProfileNewActivity : BaseActivity() {
                     setResult(RESULT_OK)
                     userDataResponse.userdata = userdata
                     sharedPreferenceManager.saveUserProfile(userDataResponse)
-                    showToast("Profile Updated Successfully")
+                    showCustomToast("Profile Updated Successfully", true)
                     finish()
                 } else {
                     showToast("Server Error: " + response.code())

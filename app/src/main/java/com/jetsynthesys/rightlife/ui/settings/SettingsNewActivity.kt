@@ -144,6 +144,8 @@ class SettingsNewActivity : BaseActivity() {
         dialogBinding.tvTitle.text = "Logout?"
         dialogBinding.tvDescription.text = "Are you sure you want to Logout?"
 
+        dialogBinding.ivDialogClose.setImageResource(R.drawable.close_breathwork)
+
         dialogBinding.ivDialogClose.setOnClickListener {
             bottomSheetDialog.dismiss()
         }
