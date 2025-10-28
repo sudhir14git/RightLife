@@ -40,6 +40,7 @@ class ReminderReceiver : BroadcastReceiver() {
                     "It's time for your scheduled meal!"
                 )
         }
-
+        val time = intent.getStringExtra("Time") ?: ""
+        NotificationHelper.setReminder(context, intent.action!!, time)
     }
 }

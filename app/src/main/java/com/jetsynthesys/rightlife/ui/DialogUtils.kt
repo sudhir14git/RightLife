@@ -73,7 +73,8 @@ object DialogUtils {
 
     fun showCheckListQuestionCommonDialog(
         context: Context,
-        header: String = "Finish Checklist to Unlock"
+        header: String = "Finish Checklist to Unlock",
+        onLetsDoItClick: (() -> Unit)? = null
     ) {
         val dialog = Dialog(context)
         val binding = DialogChecklistQuestionsBinding.inflate(LayoutInflater.from(context))
@@ -91,6 +92,7 @@ object DialogUtils {
         // Handle close button click
         binding.btnClose.setOnClickListener {
             dialog.dismiss()
+            onLetsDoItClick?.invoke()
         }
 
         dialog.show()
