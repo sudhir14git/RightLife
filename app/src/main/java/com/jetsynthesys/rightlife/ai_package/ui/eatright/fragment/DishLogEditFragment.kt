@@ -416,8 +416,8 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         spinner.setSelection(safeIndex)
         val defaultSelectedServing = servingsList[safeIndex]
         measureType = defaultSelectedServing.type.toString()
-        selectedDefaultValue = defaultSelectedServing.value
-        quantityEdit.setText(defaultSelectedServing.value.toString())
+        selectedDefaultValue = default?.value ?: defaultSelectedServing.value
+        quantityEdit.setText(selectedDefaultValue.toString())
         // Listener
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
