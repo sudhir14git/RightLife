@@ -169,10 +169,10 @@ public class MindAuditFromActivity extends BaseActivity {
                     if (isFromMindAuditResult)
                         finish();
                     else {
-                        finishAffinity();
                         Intent intent = new Intent(MindAuditFromActivity.this, HomeNewActivity.class);
                         intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
                         startActivity(intent);
+                        finishAffinity();
                     }
                     return null;
                 });

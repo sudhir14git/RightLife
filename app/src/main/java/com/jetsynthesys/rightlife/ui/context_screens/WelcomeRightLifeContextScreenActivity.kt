@@ -14,13 +14,12 @@ class WelcomeRightLifeContextScreenActivity : BaseActivity() {
         setChildContentView(binding.root)
 
         binding.btnNext.setOnClickListener {
-            val intent = Intent(this, HomeNewActivity::class.java).apply {
-                putExtra("OPEN_MY_HEALTH", true)
-                // Optional: Clear back stack
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            startActivity(intent)
-            finish()
+            startActivity(
+                Intent(
+                    this@WelcomeRightLifeContextScreenActivity, HomeNewActivity::class.java
+                ).putExtra("OPEN_MY_HEALTH", true)
+            )
+            finishAffinity()
         }
     }
 }

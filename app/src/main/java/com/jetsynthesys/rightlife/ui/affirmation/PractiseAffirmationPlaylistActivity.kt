@@ -1,9 +1,7 @@
 package com.jetsynthesys.rightlife.ui.affirmation
 
 import android.Manifest
-import android.app.AlarmManager
 import android.app.Dialog
-import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.Context
@@ -412,45 +410,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         if (!checkPermission()) {
             return
         }
-
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(this, ReminderReceiver::class.java).apply {
-            action = "PRACTICE_ALARM_TRIGGERED"
-        }
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            100, // Unique code
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Parse "6:40 PM" properly
-        val sdf = SimpleDateFormat("h:mm a", Locale.getDefault())
-        val date = sdf.parse(time)
-
-        val calendar = Calendar.getInstance()
-        calendar.time = date!!
-        // Set today's date
-        val now = Calendar.getInstance()
-        calendar.set(Calendar.YEAR, now.get(Calendar.YEAR))
-        calendar.set(Calendar.MONTH, now.get(Calendar.MONTH))
-        calendar.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH))
-
-        // If time already passed, schedule for tomorrow
-        if (calendar.before(now)) {
-            calendar.add(Calendar.DATE, 1)
-        }
-
-        val triggerTime = calendar.timeInMillis
-
-
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            pendingIntent
-        )
+        NotificationHelper.setReminder(this, "PRACTICE_ALARM_TRIGGERED", time)
     }
 
     private fun setupReminderSetBottomSheet() {
