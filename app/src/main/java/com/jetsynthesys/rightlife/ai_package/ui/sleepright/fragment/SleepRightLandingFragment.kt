@@ -371,8 +371,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         fetchThinkRecomendedData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
+            val ctx = context ?: return   // ✅ Safe guard
             val dialog = LogYourNapDialogFragment(
-                requireContext = requireContext(),
+                requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
                     override fun onLogTimeSelected(time: String) {
                         fetchSleepLandingData()
@@ -430,8 +431,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         logYourNap.setOnClickListener {
+            val ctx = context ?: return@setOnClickListener   // ✅ Safe guard
             val dialog = LogYourNapDialogFragment(
-                requireContext = requireContext(),
+                requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
                     override fun onLogTimeSelected(time: String) {
                         fetchSleepLandingData()
@@ -2525,8 +2527,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 performCardView.visibility = View.VISIBLE
                 tvPerformStartTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
                 tvPerformWakeTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
+            val ctx = context ?: return   // ✅ Safe guard
             val dialog = LogYourNapDialogFragment(
-                requireContext = requireContext(),
+                requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
                     override fun onLogTimeSelected(time: String) {
                         fetchSleepLandingData()
@@ -2624,15 +2627,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
             if (!isRepeat) {
+                val ctx = context ?: return   // ✅ Safe guard
                 val dialog = LogYourNapDialogFragment(
-                    requireContext = requireContext(),
+                    requireContext = ctx,
                     listener = object : OnLogYourNapSelectedListener {
                         override fun onLogTimeSelected(time: String) {
                             fetchSleepLandingData()
                         }
                     }
                 )
-                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+                dialog.show(parentFragmentManager, "LogYourNapDialog")
             }
         }
     }

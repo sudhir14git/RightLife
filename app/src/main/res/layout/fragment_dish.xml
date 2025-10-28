@@ -241,8 +241,8 @@
 
                             <ImageView
                                 android:id="@+id/ivEdit"
-                                android:layout_width="15dp"
-                                android:layout_height="15dp"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
                                 android:layout_marginTop="3dp"
                                 android:layout_marginEnd="5dp"
                                 android:scaleType="fitXY"
@@ -250,7 +250,7 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintHorizontal_weight=".1"
-                                android:src="@drawable/material_edit"
+                                android:src="@drawable/ic_edit_eat"
                                 />
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
@@ -360,7 +360,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             android:textSize="16sp"
                             android:fontFamily="@font/dmsans_bold"
-                            android:textColor="@color/black_no_meals"
+                            android:textColor="@color/meal_log_title"
                             android:text="Macro Nutrients Breakdown" />
 
                         <ImageView
@@ -441,7 +441,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             android:textSize="16sp"
                             android:fontFamily="@font/dmsans_bold"
-                            android:textColor="@color/black_no_meals"
+                            android:textColor="@color/meal_log_title"
                             android:text="Micro Nutrients Breakdown" />
 
                         <ImageView

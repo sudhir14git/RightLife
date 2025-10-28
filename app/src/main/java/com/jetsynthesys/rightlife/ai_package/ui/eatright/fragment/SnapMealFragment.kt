@@ -143,7 +143,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         val imagePathString = arguments?.getString("ImagePathsecound")
         if (imagePathString != null){
             currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
-
         }else{
             currentPhotoPathsecound = null
         }
