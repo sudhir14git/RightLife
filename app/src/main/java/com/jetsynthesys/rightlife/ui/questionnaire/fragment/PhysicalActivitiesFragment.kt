@@ -14,10 +14,11 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
+import com.google.gson.Gson
+import com.jetsynthesys.rightlife.BaseFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.BottomsheetPhysicalActivityBinding
 import com.jetsynthesys.rightlife.databinding.FragmentPhysicalActivitiesBinding
@@ -25,12 +26,17 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.PhysicalActivityDialogAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.PhysicalActivity
+import com.jetsynthesys.rightlife.ui.questionnaire.pojo.PhysicalActivityResponse
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ServingItem
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class PhysicalActivitiesFragment : Fragment() {
+class PhysicalActivitiesFragment : BaseFragment() {
 
     private var _binding: FragmentPhysicalActivitiesBinding? = null
     private val binding get() = _binding!!
@@ -65,8 +71,10 @@ class PhysicalActivitiesFragment : Fragment() {
         activities.forEach { physicalActivity ->
             physicalActivity.isSelected = false
         }
-        val noOfSelectedActivities = QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer
-        val headerText = if (noOfSelectedActivities?.toInt() == 1) "Select Top $noOfSelectedActivities activity" else "Select Top $noOfSelectedActivities activities"
+        val noOfSelectedActivities =
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer
+        val headerText =
+            if (noOfSelectedActivities?.toInt() == 1) "Select Top $noOfSelectedActivities activity" else "Select Top $noOfSelectedActivities activities"
         binding.tvNoOfActivities.text = headerText
     }
 
@@ -80,70 +88,12 @@ class PhysicalActivitiesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        activities = arrayListOf(
-            PhysicalActivity("American Football"),
-            PhysicalActivity("Archery"),
-            PhysicalActivity("Athletics"),
-            PhysicalActivity("Australian Football"),
-            PhysicalActivity("Badminton"),
-            PhysicalActivity("Barre"),
-            PhysicalActivity("Baseball"),
-            PhysicalActivity("Basketball"),
-            PhysicalActivity("Boxing"),
-            PhysicalActivity("Climbing"),
-            PhysicalActivity("Core Training"),
-            PhysicalActivity("Cricket"),
-            PhysicalActivity("Cross Training"),
-            PhysicalActivity("Cycling"),
-            PhysicalActivity("Dance (Zumba, Hip-Hop)"),
-            PhysicalActivity("Disc Sports"),
-            PhysicalActivity("Elliptical"),
-            PhysicalActivity("Field Events"),
-            PhysicalActivity("Football"),
-            PhysicalActivity("Functional Strength Training"),
-            PhysicalActivity("Golf"),
-            PhysicalActivity("Gymnastics"),
-            PhysicalActivity("Handball"),
-            PhysicalActivity("Hiking"),
-            PhysicalActivity("HIIT"),
-            PhysicalActivity("Hockey"),
-            PhysicalActivity("Kickboxing"),
-            PhysicalActivity("Martial Arts"),
-            PhysicalActivity("Other"),
-            PhysicalActivity("Pickleball"),
-            PhysicalActivity("Pilates"),
-            PhysicalActivity("Power Yoga"),
-            PhysicalActivity("Powerlifting"),
-            PhysicalActivity("Pranayama"),
-            PhysicalActivity("Rowing Machine"),
-            PhysicalActivity("Rugby"),
-            PhysicalActivity("Running"),
-            PhysicalActivity("Skating"),
-            PhysicalActivity("Skipping"),
-            PhysicalActivity("Squash"),
-            PhysicalActivity("Stairs"),
-            PhysicalActivity("Stretching"),
-            PhysicalActivity("Swimming"),
-            PhysicalActivity("Table Tennis"),
-            PhysicalActivity("Tennis"),
-            PhysicalActivity("Track and Field Events"),
-            PhysicalActivity("Traditional Strength Training"),
-            PhysicalActivity("Trekking"),
-            PhysicalActivity("Volleyball"),
-            PhysicalActivity("Walking"),
-            PhysicalActivity("Watersports"),
-            PhysicalActivity("Weightlifting"),
-            PhysicalActivity("Wrestling"),
-            PhysicalActivity("Yoga")
-        )
+        getPhysicalActivities()
 
-
-        activities.forEach { physicalActivity ->
-            addChip(physicalActivity.title)
-        }
-
-        val noOfSelectedActivities = QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer
-        val headerText = if (noOfSelectedActivities?.toInt() == 1) "Select Top $noOfSelectedActivities activity" else "Select Top $noOfSelectedActivities activities"
+        val noOfSelectedActivities =
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer
+        val headerText =
+            if (noOfSelectedActivities?.toInt() == 1) "Select Top $noOfSelectedActivities activity" else "Select Top $noOfSelectedActivities activities"
         binding.tvNoOfActivities.text = headerText
 
         binding.btnContinue.setOnClickListener {
@@ -152,9 +102,8 @@ class PhysicalActivitiesFragment : Fragment() {
                 showPhysicalActivitiesBottomSheet()
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.btnContinue.isEnabled = true
-                },2000)
-            }
-            else
+                }, 2000)
+            } else
                 Toast.makeText(
                     requireContext(),
                     "Please select at least one activity",
@@ -300,7 +249,8 @@ class PhysicalActivitiesFragment : Fragment() {
             } else {
                 Utils.showNewDesignToast(
                     requireContext(),
-                    "Please match activity frequency with your weekly workout total.",false)
+                    "Please match activity frequency with your weekly workout total.", false
+                )
             }
         }
 
@@ -318,5 +268,31 @@ class PhysicalActivitiesFragment : Fragment() {
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
+    }
+
+    private fun getPhysicalActivities() {
+        val call = apiService.getPhysicalActivities(sharedPreferenceManager.accessToken)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonString = response.body()?.string()
+
+                    val responseObj: PhysicalActivityResponse =
+                        gson.fromJson(jsonString, PhysicalActivityResponse::class.java)
+                    activities.addAll(responseObj.data)
+                    activities.forEach { physicalActivity ->
+                        addChip(physicalActivity.title)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
     }
 }
