@@ -3,11 +3,8 @@ package com.jetsynthesys.rightlife.ui.settings
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityFaqNewBinding
 import com.jetsynthesys.rightlife.ui.settings.adapter.FAQNewAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.FAQDetails
@@ -20,7 +17,7 @@ import retrofit2.Response
 class FAQNewActivity : BaseActivity() {
     private lateinit var binding: ActivityFaqNewBinding
     private lateinit var faqNewAdapter: FAQNewAdapter
-    private val faqList = mutableListOf<FAQDetails>()
+    private val mixedItems = mutableListOf<Any>()   // Now stores both section titles and FAQDetails
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,25 +26,27 @@ class FAQNewActivity : BaseActivity() {
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
-        //back button
+        // Back button
         binding.iconBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        getFAQ()
+        // Setup RecyclerView
+        binding.rvFaq.layoutManager = LinearLayoutManager(this)
 
-        faqNewAdapter = FAQNewAdapter(faqList, object : FAQNewAdapter.OnItemClickListener {
+        // Create adapter (empty for now)
+        faqNewAdapter = FAQNewAdapter(mixedItems, object : FAQNewAdapter.OnItemClickListener {
             override fun onItemClick(faqData: FAQDetails) {
+                // Open details screen exactly as before
                 startActivity(Intent(this@FAQNewActivity, FAQDetailsActivity::class.java).apply {
                     putExtra("FAQDetails", faqData)
                 })
             }
         })
+        binding.rvFaq.adapter = faqNewAdapter
 
-        binding.rvFaq.apply {
-            layoutManager = LinearLayoutManager(this@FAQNewActivity)
-            adapter = faqNewAdapter
-        }
+        // Load data
+        getFAQ()
     }
 
     private fun getFAQ() {
@@ -55,19 +54,28 @@ class FAQNewActivity : BaseActivity() {
         call.enqueue(object : Callback<FAQResponse> {
             override fun onResponse(call: Call<FAQResponse>, response: Response<FAQResponse>) {
                 if (response.isSuccessful && response.body() != null) {
-                    response.body()!!.data?.forEach { faqData ->
-                        faqData.details?.let { faqList.addAll(it) }
+                    val faqResponse = response.body()!!
+                    mixedItems.clear()
+
+                    // ✅ Build combined list: section title + questions
+                    faqResponse.data?.forEach { section ->
+                        section.title?.let { title ->
+                            mixedItems.add(title)   // Add section header
+                        }
+                        section.details?.let { details ->
+                            mixedItems.addAll(details)   // Add question rows
+                        }
                     }
+
                     faqNewAdapter.notifyDataSetChanged()
                 } else {
-                    showToast("Server Error: " + response.code())
+                    showToast("Server Error: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<FAQResponse>, t: Throwable) {
-                showToast("Network Error: " + t.message)
+                showToast("Network Error: ${t.message}")
             }
-
         })
     }
 
