@@ -10,7 +10,7 @@
     android:id="@+id/search_result_allWorkouts"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Search Result :"
+    android:text="Search Results :"
     android:visibility="gone"
     android:layout_marginStart="20dp"
     android:textSize="18dp"

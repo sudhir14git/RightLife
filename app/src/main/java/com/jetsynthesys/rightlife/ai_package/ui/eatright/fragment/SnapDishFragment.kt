@@ -131,6 +131,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         snapMyMeal = arguments?.getString("snapMyMeal").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         homeTab = arguments?.getString("homeTab").toString()
+        view.findViewById<ImageView>(R.id.ivMealDropdown).visibility = View.GONE
 //        if (mealQuantitys != "null"){
 //            if (mealQuantitys.toDouble() > 0.0){
 //                mealQuantity = mealQuantitys.toDouble()
@@ -655,7 +656,13 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 newServingList.addAll(servingsList)
             }
         }else{
-            newServingList.addAll(servingsList)
+            if (servingsList.isEmpty()){
+                if (default != null) {
+                    newServingList.add(default)
+                }
+            }else{
+                newServingList.addAll(servingsList)
+            }
         }
         val adapter =
             ArrayAdapter(requireActivity(), R.layout.snap_mealtype_spinner,  servingsList.map {it.type })

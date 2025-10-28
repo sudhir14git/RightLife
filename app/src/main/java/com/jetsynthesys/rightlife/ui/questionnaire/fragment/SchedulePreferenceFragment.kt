@@ -1,11 +1,7 @@
 package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
 import android.Manifest
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.app.TimePickerDialog
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -25,7 +21,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.BottomsheetFoodScheduleReminderBinding
 import com.jetsynthesys.rightlife.databinding.FragmentSchedulePreferenceBinding
-import com.jetsynthesys.rightlife.ui.affirmation.ReminderReceiver
+import com.jetsynthesys.rightlife.ui.affirmation.NotificationHelper
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionThree
@@ -34,9 +30,6 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 class SchedulePreferenceFragment : Fragment() {
 
@@ -247,45 +240,7 @@ class SchedulePreferenceFragment : Fragment() {
         if (!checkPermission()) {
             return
         }
-
-        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(requireContext(), ReminderReceiver::class.java).apply {
-            action = "EAT_ALARM_TRIGGERED"
-        }
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            requireContext(),
-            100, // Unique code
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Parse "6:40 PM" properly
-        val sdf = SimpleDateFormat("h:mm a", Locale.getDefault())
-        val date = sdf.parse(time)
-
-        val calendar = Calendar.getInstance()
-        calendar.time = date!!
-        // Set today's date
-        val now = Calendar.getInstance()
-        calendar.set(Calendar.YEAR, now.get(Calendar.YEAR))
-        calendar.set(Calendar.MONTH, now.get(Calendar.MONTH))
-        calendar.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH))
-
-        // If time already passed, schedule for tomorrow
-        if (calendar.before(now)) {
-            calendar.add(Calendar.DATE, 1)
-        }
-
-        val triggerTime = calendar.timeInMillis
-
-
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            pendingIntent
-        )
+        NotificationHelper.setReminder(requireContext(), "EAT_ALARM_TRIGGERED", time)
     }
 
 

@@ -30,7 +30,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.IngredientResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.IngredientSearchAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.SearchIngredientsViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentSearchDishBinding
 import retrofit2.Call
@@ -49,7 +49,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private lateinit var allDishesRecyclerview : RecyclerView
     private lateinit var searchType : String
     private lateinit var appPreference: AppPreference
-    private val dishesViewModel: DishesViewModel by activityViewModels()
+    private val dishesViewModel: SearchIngredientsViewModel by activityViewModels()
     private var ingredientLocalListModel : IngredientLocalListModel? = null
     private lateinit var backButton : ImageView
     private var searchIngredientList : ArrayList<IngredientRecipeList> = ArrayList()

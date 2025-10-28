@@ -846,7 +846,9 @@ class HomeNewActivity : BaseActivity() {
             false // Return false if condition is true and dialog is shown
         } else {
             if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this)
+                DialogUtils.showCheckListQuestionCommonDialog(this){
+                    myHealthFragmentSelected()
+                }
                 false
             } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
                 showTrailEndedBottomSheet()
