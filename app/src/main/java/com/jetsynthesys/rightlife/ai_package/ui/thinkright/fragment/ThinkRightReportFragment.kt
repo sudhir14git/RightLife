@@ -1204,10 +1204,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
         for (assessmentResult in listData) {
             for (taken in assessmentResult.assessmentsTaken) {
-                for ((_, interpretation) in taken.interpretations) {
+                for ((interpretationName, interpretation) in taken.interpretations) {
                     resultList.add(
                         AssessmentResultData(
                             assessment = taken.assessment,
+                            interpretation = interpretationName,  // "depression" string
                             score = interpretation.score,
                             level = interpretation.level
                         )
@@ -1367,7 +1368,10 @@ class AssessmentPagerAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.tvAssessmentTitle)
-        val scoreText = itemView.findViewById<TextView>(R.id.tvScore)
+        val scoreText = itemView.findViewById<TextView>(R.id.score_result_text)
+        val mind_audit_scale = itemView.findViewById<TextView>(R.id.mind_audit_scale_category)
+        val mind_audit_scale_new = itemView.findViewById<TextView>(R.id.mind_audit_scale)
+        val new_score_layout = itemView.findViewById<CardView>(R.id.new_score_layout)
         val scaleLayout = itemView.findViewById<LinearLayout>(R.id.scoreScaleLayout)
         val pointer = itemView.findViewById<FrameLayout>(R.id.lyt_score)
         val scoreScaleImage = itemView.findViewById<ImageView>(R.id.scoreScaleImage)
@@ -1385,7 +1389,9 @@ class AssessmentPagerAdapter(
         val item = assessments[position]
         holder.title.text = item.assessment
         val result = item.score.substringBefore(".")
-        holder.scoreText.text = "Your Score: ${result}"
+        holder.scoreText.text = result
+        holder.mind_audit_scale.text = item.level
+        holder.mind_audit_scale_new.text = "Depression"
         when (item?.assessment) {
             "DASS-21" -> {
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)
@@ -1417,6 +1423,18 @@ class AssessmentPagerAdapter(
             Color.parseColor("#F39C12"), // Severe - orange
             Color.parseColor("#E74C3C")  // Ext Severe - red
         )
+       // val score = item.score.toFloatOrNull() ?: 0f
+
+        // === NEW: Set CardView Background Color Based on JB Score ===
+        val backgroundColor = when {
+            score <= 4 -> "#06B27B"
+            score <= 9 -> "#54C8DB"
+            score <= 14 -> "#57A3FC"
+            score <= 19 -> "#FFBD44"
+            else -> "#FC6656"
+        }
+
+        holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
       //  holder.scaleLayout.removeAllViews()
 //        for (i in labels.indices) {
 //            val column = LinearLayout(context).apply {
@@ -1503,6 +1521,7 @@ class AssessmentPagerAdapter(
 
 data class AssessmentResultData(
     val assessment: String,
+    val interpretation: String,
     val score: String,
     val level: String
 )
