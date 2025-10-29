@@ -56,6 +56,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedMagnesiumRes
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
+import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
 import com.jetsynthesys.rightlife.databinding.FragmentMagnesiumBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -383,7 +384,11 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
             avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
             avgStepsLine.textSize = 10f
             avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
-
+            barChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+                barChart.viewPortHandler,
+                barChart.axisLeft,
+                barChart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
             leftYAxis.removeAllLimitLines()
             leftYAxis.addLimitLine(avgStepsLine)
             averageGoalLayout.visibility = View.VISIBLE

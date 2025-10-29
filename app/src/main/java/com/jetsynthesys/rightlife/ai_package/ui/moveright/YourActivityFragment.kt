@@ -369,6 +369,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 showLoader(requireView())
             }
         }
+
+        // Capture context and activity safely at the start
+        val context = if (isAdded) requireContext() else null
+        val activity = if (isAdded) requireActivity() else null
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -380,6 +385,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     page = 1,
                     limit = 10
                 )
+
                 if (response.isSuccessful) {
                     val workouts = response.body()
                     workouts?.let {
@@ -433,7 +439,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 icon = "",
                                 intensity = "",
                                 isSynced = true,
-                                activityId = workout.activity_id ?: "" // Handle null activity_id
+                                activityId = workout.activity_id ?: ""
                             )
                         }
 
@@ -460,7 +466,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 icon = workout.icon,
                                 intensity = workout.intensity,
                                 isSynced = false,
-                                activityId = workout.activity_id ?: "" // Handle null activity_id
+                                activityId = workout.activity_id ?: ""
                             )
                         }
 
@@ -492,14 +498,17 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 isSynced = true
                             )
                         }
+
                         // Combine synced and unsynced CardItems
                         val newActivities = ArrayList<ActivityModel>()
                         val allCardItems = syncedCardItems + unsyncedCardItems
+
                         withContext(Dispatchers.Main) {
-                            if (!isAdded || view == null || !isVisible) {
+                            if (!isAdded || view == null || context == null) {
                                 Log.w("FetchCalories", "Fragment not attached after API call for date $formattedDate, skipping UI update")
                                 return@withContext
                             }
+
                             // Update activityList and adapter
                             newActivities.addAll(allCardItems)
                             activityList.clear()
@@ -507,8 +516,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             activityList.addAll(newActivities)
                             newActivityList.addAll(unsyncedCardItems)
                             Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
-                            myActivityAdapter.addAll(newActivities, syncedCardItemsView,-1, null, false)
+                            myActivityAdapter.addAll(newActivities, syncedCardItemsView, -1, null, false)
                             myActivityAdapter.notifyDataSetChanged()
+
                             // Update RecyclerView visibility
                             if (activityList.isNotEmpty()) {
                                 myActivityRecyclerView.visibility = View.VISIBLE
@@ -526,26 +536,36 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 Log.d("FetchCalories", "No activities to display for date $formattedDate")
                             }
                             layoutSaveWorkout.isEnabled = true
-                            if (isAdded && view != null) {
-                                requireActivity().runOnUiThread {
-                                    dismissLoader(requireView())
-                                }
+
+                            // Safe dismiss loader
+                            activity?.runOnUiThread {
+                                dismissLoader(requireView())
                             }
                         }
                     } ?: withContext(Dispatchers.Main) {
-                        myActivityRecyclerView.visibility = View.GONE
-                        layoutAddWorkout.visibility = View.VISIBLE
-                        layoutSaveWorkout.visibility = View.GONE
-                        layoutWorkoutData.visibility = View.GONE
-                        layoutNoDataCard.visibility = View.VISIBLE
-                        Toast.makeText(requireContext(), "No workout data received", Toast.LENGTH_SHORT).show()
+                        // Handle null workouts
+                        if (context != null && isAdded && view != null) {
+                            myActivityRecyclerView.visibility = View.GONE
+                            layoutAddWorkout.visibility = View.VISIBLE
+                            layoutSaveWorkout.visibility = View.GONE
+                            layoutWorkoutData.visibility = View.GONE
+                            layoutNoDataCard.visibility = View.VISIBLE
+                            Toast.makeText(context, "No workout data received", Toast.LENGTH_SHORT).show()
+                        }
+                        activity?.runOnUiThread {
+                            if (isAdded && view != null) {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        myActivityRecyclerView.visibility = View.GONE
-                        Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
-                        if (isAdded && view != null) {
-                            requireActivity().runOnUiThread {
+                        if (context != null && isAdded && view != null) {
+                            myActivityRecyclerView.visibility = View.GONE
+                            Toast.makeText(context, "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        }
+                        activity?.runOnUiThread {
+                            if (isAdded && view != null) {
                                 dismissLoader(requireView())
                             }
                         }
@@ -554,10 +574,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    myActivityRecyclerView.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
+                    if (context != null && isAdded && view != null) {
+                        myActivityRecyclerView.visibility = View.GONE
+                        Toast.makeText(context, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                    activity?.runOnUiThread {
+                        if (isAdded && view != null) {
                             dismissLoader(requireView())
                         }
                     }
@@ -671,7 +693,10 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    activity?.let { ctx ->
+                        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    }
+
                     if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
@@ -682,7 +707,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
             override fun onFailure(call: Call<WorkoutHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                activity?.let { ctx ->
+                    Toast.makeText(ctx, "Failure", Toast.LENGTH_SHORT).show()
+                }
                 if (isAdded && view != null) {
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
