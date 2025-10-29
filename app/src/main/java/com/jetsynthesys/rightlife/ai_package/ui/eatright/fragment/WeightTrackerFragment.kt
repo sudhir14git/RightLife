@@ -51,6 +51,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.FragmentWeightTrackerBinding
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
@@ -924,6 +925,11 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                 leftYAxis.setDrawZeroLine(true)
                 // leftYAxis.zeroLineColor = Color.BLACK
                 leftYAxis.zeroLineWidth = 1f
+                lineChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+                    lineChart.viewPortHandler,
+                    lineChart.axisLeft,
+                    lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+                )
 
 //                val totalStepsLine = LimitLine(data.todaysWaterLog.goal.toFloat(), "G")
 //                totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.border_green)

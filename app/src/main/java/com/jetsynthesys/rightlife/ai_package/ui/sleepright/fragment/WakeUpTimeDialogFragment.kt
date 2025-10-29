@@ -37,7 +37,6 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
 ) : BottomSheetDialogFragment() {
 
     private val handler = Handler(Looper.getMainLooper())
-
     private val mContext = context
     private val mWakeupTime = wakeupTime
     private val mRecordId = recordId
