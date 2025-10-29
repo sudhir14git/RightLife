@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.databinding.RowCategoryListNewBinding
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 
 // Import your Utils class
 class HealthCamRecommendationAdapter(
@@ -33,10 +34,32 @@ class HealthCamRecommendationAdapter(
 
             binding.itemText.text = item.contentType ?: "Untitled"
             binding.tvTitle.text = item.title
-            //binding.tvLeftTime.text = item.leftDuration
-            //binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.date)
+            binding.tvLeftTime.text = item.readingTime
+            binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.createdAt)
             binding.tvName.text = item.categoryName
 
+            var duration = ""
+
+            if (item.contentType.equals("SERIES")){
+                duration = item.episodeCount.toString() + " ep"
+            }else{
+                duration = item.meta?.duration.toString()
+            }
+            when (item.contentType) {
+                "SERIES" -> {
+                    duration=  "${item.episodeCount ?: 0} ep"
+                }
+
+                "TEXT" -> {
+                    duration = "${item.readingTime ?: ""} min read"
+                }
+
+                else -> {
+
+                    duration = item.meta?.duration?.let { formattedDuration(it) }.toString()
+                }
+            }
+            binding.tvLeftTime.text = duration
             binding.imgIconview.setImageResource(
                 if ("VIDEO".equals(item.contentType, ignoreCase = true))
                     R.drawable.video_jump_back_in
@@ -90,6 +113,13 @@ class HealthCamRecommendationAdapter(
                 }
             }
         }
+    }
+
+    fun formattedDuration(duration:Int): String {
+        val totalSeconds = duration ?: 0
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecommendedViewHolder {
