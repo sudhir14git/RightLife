@@ -54,7 +54,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResp
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.KValueFormatter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
-import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
+import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
 import com.jetsynthesys.rightlife.databinding.FragmentCalorieBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
@@ -344,6 +344,11 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         leftYAxis.labelCount = ((leftYAxis.axisMaximum / 1000).toInt() + 1)
         leftYAxis.valueFormatter = KValueFormatter()
 
+        barChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+            barChart.viewPortHandler,
+            barChart.axisLeft,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
 
         if (entries.size < 30){
             val minValue = minOf(
@@ -366,10 +371,10 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
             leftYAxis.zeroLineWidth = 1f
 
             val totalStepsLine = LimitLine(activeCaloriesResponse.goal.toFloat(), "G")
-            totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+            totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_minimal)
             totalStepsLine.lineWidth = 1f
             totalStepsLine.enableDashedLine(10f, 10f, 0f)
-            totalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+            totalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
             totalStepsLine.textSize = 10f
             totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
@@ -377,9 +382,9 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
             avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
             avgStepsLine.lineWidth = 1f
             avgStepsLine.enableDashedLine(10f, 10f, 0f)
-            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
             avgStepsLine.textSize = 10f
-            avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+            avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_BOTTOM
 
             leftYAxis.removeAllLimitLines()
             leftYAxis.addLimitLine(totalStepsLine)

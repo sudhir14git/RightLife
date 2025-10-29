@@ -48,6 +48,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.Basi
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.SimpleProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
+import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
 import com.jetsynthesys.rightlife.databinding.FragmentStepBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -402,23 +403,20 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
         avgStepsLine.lineWidth = 1f
         avgStepsLine.enableDashedLine(10f, 10f, 0f)
-        avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+        avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
         avgStepsLine.textSize = 10f
         avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
-// Goal Steps Line बनाएं
         val goalStepsLine = LimitLine(stepData.stepsGoal.toFloat(), "G")
-        goalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_text)
+        goalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_minimal)
         goalStepsLine.lineWidth = 1f
         goalStepsLine.enableDashedLine(10f, 10f, 0f)
-        goalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.green_text)
+        goalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
         goalStepsLine.textSize = 10f
         goalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
-// सभी पुरानी lines हटाएं सिर्फ एक बार
         leftYAxis.removeAllLimitLines()
 
-// दोनों lines add करें
         leftYAxis.addLimitLine(avgStepsLine)
         leftYAxis.addLimitLine(goalStepsLine)
         currentGoal = stepData.stepsGoal
@@ -484,6 +482,12 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         legend.setDrawInside(false) // Keep outside but reduce box
         legend.form = Legend.LegendForm.NONE // Remove the box, keep labels if any
         legend.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals) // Match text color
+
+        barChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+            barChart.viewPortHandler,
+            barChart.axisLeft,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
 
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {

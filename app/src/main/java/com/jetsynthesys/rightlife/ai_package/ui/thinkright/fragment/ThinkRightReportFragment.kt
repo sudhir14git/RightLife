@@ -1081,7 +1081,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                 lytAffirmation1.visibility = View.VISIBLE
                                 lytAffirmation2.visibility = View.VISIBLE
                                 lytAffirmation3.visibility = View.VISIBLE
-                            } else if (count == 2) {
+                            }else{
+                                cardAffirmations.visibility = View.GONE
+                            }/*else if (count == 2) {
                                 lytAffirmation1.visibility = View.VISIBLE
                                 lytAffirmation2.visibility = View.VISIBLE
                                 lytAffirmation3.visibility = View.GONE
@@ -1089,7 +1091,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                 lytAffirmation1.visibility = View.VISIBLE
                                 lytAffirmation2.visibility = View.GONE
                                 lytAffirmation3.visibility = View.GONE
-                            }
+                            }*/
                         } else {
                             cardAffirmations.visibility = View.GONE
                         }

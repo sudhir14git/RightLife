@@ -30,9 +30,12 @@ import com.google.android.flexbox.FlexboxLayout
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipesResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DishToLogFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapDishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.DishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
@@ -245,7 +248,12 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
 
     private fun onFrequentlyLoggedItem(frequentRecipe: FrequentRecipe, position: Int, isRefresh: Boolean) {
 
-        getRecipesDetails(frequentRecipe.id)
+        if (frequentRecipe.source != null){
+            when (frequentRecipe.source) {
+                "recipe" -> getRecipesDetails(frequentRecipe.id)
+                "ingredient" -> getIngredientDetails(frequentRecipe.id)
+            }
+        }
 //        val valueLists : ArrayList<FrequentRecipe> = ArrayList()
 //        valueLists.addAll(frequentRecipeLogList as Collection<FrequentRecipe>)
 //        frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
@@ -344,6 +352,61 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
                 }
             }
             override fun onFailure(call: Call<FrequentRecipesResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun getIngredientDetails(ingredientId : String?) {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
+        val call = ApiClient.apiServiceFastApiV2.getIngredientDetails(ingredientId!!)
+        call.enqueue(object : Callback<IngredientDetailResponse> {
+            override fun onResponse(call: Call<IngredientDetailResponse>, response: Response<IngredientDetailResponse>) {
+                if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    val ingredientRecipesDetails = response.body()?.data
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val snapMealFragment = DishToLogFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        args.putString("searchType", "homeTab")
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        args.putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
+                        args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
+                        args.putParcelable("selectedMealLogList", mealLogRequests)
+                        args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
+                        args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
+                        snapMealFragment.arguments = args
+                        replace(R.id.flFragment, snapMealFragment, "Steps")
+                        addToBackStack(null)
+                        commit()
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<IngredientDetailResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
