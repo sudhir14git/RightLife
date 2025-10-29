@@ -111,7 +111,7 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                     }
                     "4-7-8 Breathing" ->{
                         Glide.with(contexts)
-                            .load(  "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/c88072eb32c47a1e385fae66696dc293.png")
+                            .load(  R.drawable.four_seven_image)
                             .placeholder(R.drawable.ic_plus)
                             .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
                     }
@@ -139,6 +139,12 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                     "Grief" -> {
                         Glide.with(contexts)
                             .load(  R.drawable.grief_image)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Custom" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.custom_image)
                             .placeholder(R.drawable.ic_plus)
                             .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
                     }
