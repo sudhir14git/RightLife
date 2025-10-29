@@ -576,7 +576,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         }
         val base64Image = encodeImageToBase64(imagePath)
         val apiKey = "HanN8X1baCEM0E49xNcN"
-        val request = AnalysisRequest(apiKey, base64Image, description)
+        val request = AnalysisRequest(apiKey, base64Image!!, description)
         val call = ApiClient.apiServiceFoodCaptureImageApi.analyzeFoodImage(
             "analysis", request)
         call.enqueue(object : Callback<ScanMealNutritionResponse> {
@@ -645,19 +645,29 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         })
     }
 
-    private fun encodeImageToBase64(imagePath: String): String {
+    private fun encodeImageToBase64(imagePath: String): String? {
+        return try {
+
         val bitmap = BitmapFactory.decodeFile(imagePath)
-        // Resize if too large (e.g. max 1080px width)
-        val scaledBitmap = Bitmap.createScaledBitmap(
-            bitmap,
-            1080,
-            (bitmap.height * 1080f / bitmap.width).toInt(),
-            true
-        )
-        val outputStream = ByteArrayOutputStream()
-        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream) // 75% quality
-        val compressedBytes = outputStream.toByteArray()
-        return Base64.encodeToString(compressedBytes, Base64.NO_WRAP)
+        if (bitmap != null) {
+            // Resize if too large (e.g. max 1080px width)
+            val scaledBitmap = Bitmap.createScaledBitmap(
+                bitmap,
+                1080,
+                (bitmap.height * 1080f / bitmap.width).toInt(),
+                true
+            )
+            val outputStream = ByteArrayOutputStream()
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream) // 75% quality
+            val compressedBytes = outputStream.toByteArray()
+             Base64.encodeToString(compressedBytes, Base64.NO_WRAP)
+        } else {
+        null
+    }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 //    private fun encodeImageToBase64(imagePath: String): String {
@@ -825,83 +835,135 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         })
     }
 
+//    private fun getSnapMealsNutrients(imageUrl: String, description: String) {
+//        if (isAdded  && view != null){
+//            requireActivity().runOnUiThread {
+//                showLoader(requireView())
+//            }
+//        }
+//        val base64Image = encodeImageToBase64(imagePath)
+//        val request = SnapMealsNutrientsRequest(imageUrl, description)
+//        val call = ApiClient.apiServiceFastApiV2.getSnapMealsNutrients(
+//            request)
+//        call.enqueue(object : Callback<SnapMealNutrientsResponse> {
+//            override fun onResponse(call: Call<SnapMealNutrientsResponse>, response: Response<SnapMealNutrientsResponse>) {
+//                if (response.isSuccessful) {
+//                    if (isAdded  && view != null){
+//                        requireActivity().runOnUiThread {
+//                            dismissLoader(requireView())
+//                        }
+//                    }
+//                    println("Success: ${response.body()}")
+//                    if (response.body()?.data != null){
+//                        if (response.body()?.data!!.dish.isNotEmpty()){
+//                            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                                val snapMealFragment = MealScanResultFragment()
+//                                val args = Bundle()
+//                                args.putString("homeTab", homeTab)
+//                                args.putString("selectedMealDate", selectedMealDate)
+//                                args.putString("mealType", mealType)
+//                                args.putString("ModuleName", moduleName)
+//                                args.putString("ImagePath", imagePath)
+//                                args.putString("description", mealDescriptionET.text.toString())
+//                                args.putString("ImagePathsecound", imagePathsecond.toString())
+//                                args.putParcelable("foodDataResponses", response.body())
+//                                snapMealFragment.arguments = args
+//                                replace(R.id.flFragment, snapMealFragment, "Steps")
+//                                addToBackStack(null)
+//                                commit()
+//                            }
+//                        }else{
+//                            notMealDetectItem()
+//                           // Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }else{
+//                        notMealDetectItem()
+//                        //Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
+//                    }
+//                } else {
+//                    println("Error: ${response.errorBody()?.string()}")
+//                    if (isAdded  && view != null){
+//                        requireActivity().runOnUiThread {
+//                            dismissLoader(requireView())
+//                        }
+//                    }
+//                    val errorBody = response.errorBody()?.string()
+//                    if (!errorBody.isNullOrEmpty()) {
+//                        try {
+//                            val json = JSONObject(errorBody)
+//                            val message = json.optString("text", "Unknown error")
+//                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+//                        } catch (e: Exception) {
+//                          //  Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
+//                            notMealDetectItem()
+//                        }
+//                    }else{
+//                       // Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
+//                        notMealDetectItem()
+//                    }
+//                }
+//            }
+//            override fun onFailure(call: Call<SnapMealNutrientsResponse>, t: Throwable) {
+//                println("Failure: ${t.message}")
+//                if (isAdded  && view != null){
+//                    requireActivity().runOnUiThread {
+//                        dismissLoader(requireView())
+//                    }
+//                }
+//                notMealDetectItem()
+//              //  Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
+//            }
+//        })
+//    }
+
     private fun getSnapMealsNutrients(imageUrl: String, description: String) {
-        if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
-        }
+        if (!isAdded) return
+        val act = activity ?: return
+        act.runOnUiThread { showLoader(requireView()) }
         val base64Image = encodeImageToBase64(imagePath)
         val request = SnapMealsNutrientsRequest(imageUrl, description)
-        val call = ApiClient.apiServiceFastApiV2.getSnapMealsNutrients(
-            request)
+        val call = ApiClient.apiServiceFastApiV2.getSnapMealsNutrients(request)
         call.enqueue(object : Callback<SnapMealNutrientsResponse> {
-            override fun onResponse(call: Call<SnapMealNutrientsResponse>, response: Response<SnapMealNutrientsResponse>) {
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    println("Success: ${response.body()}")
-                    if (response.body()?.data != null){
-                        if (response.body()?.data!!.dish.isNotEmpty()){
-                            requireActivity().supportFragmentManager.beginTransaction().apply {
-                                val snapMealFragment = MealScanResultFragment()
-                                val args = Bundle()
-                                args.putString("homeTab", homeTab)
-                                args.putString("selectedMealDate", selectedMealDate)
-                                args.putString("mealType", mealType)
-                                args.putString("ModuleName", moduleName)
-                                args.putString("ImagePath", imagePath)
-                                args.putString("description", mealDescriptionET.text.toString())
-                                args.putString("ImagePathsecound", imagePathsecond.toString())
-                                args.putParcelable("foodDataResponses", response.body())
-                                snapMealFragment.arguments = args
-                                replace(R.id.flFragment, snapMealFragment, "Steps")
-                                addToBackStack(null)
-                                commit()
+            override fun onResponse(
+                call: Call<SnapMealNutrientsResponse>,
+                response: Response<SnapMealNutrientsResponse>
+            ) {
+                if (!isAdded) return
+                val act = activity ?: return
+                act.runOnUiThread { dismissLoader(requireView()) }
+                val body = response.body()
+                if (response.isSuccessful && body?.data != null) {
+                    if (body.data.dish.isNotEmpty()) {
+                        if (!isAdded) return
+                        val fm = act.supportFragmentManager
+                        val snapMealFragment = MealScanResultFragment().apply {
+                            arguments = Bundle().apply {
+                                putString("homeTab", homeTab)
+                                putString("selectedMealDate", selectedMealDate)
+                                putString("mealType", mealType)
+                                putString("ModuleName", moduleName)
+                                putString("ImagePath", imagePath)
+                                putString("description", mealDescriptionET.text.toString())
+                                putString("ImagePathsecound", imagePathsecond.toString())
+                                putParcelable("foodDataResponses", body)
                             }
-                        }else{
-                            notMealDetectItem()
-                           // Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
                         }
-                    }else{
+                        fm.beginTransaction()
+                            .replace(R.id.flFragment, snapMealFragment, "Steps")
+                            .addToBackStack(null)
+                            .commit()
+                    } else {
                         notMealDetectItem()
-                        //Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    println("Error: ${response.errorBody()?.string()}")
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    val errorBody = response.errorBody()?.string()
-                    if (!errorBody.isNullOrEmpty()) {
-                        try {
-                            val json = JSONObject(errorBody)
-                            val message = json.optString("text", "Unknown error")
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                        } catch (e: Exception) {
-                          //  Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
-                            notMealDetectItem()
-                        }
-                    }else{
-                       // Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
-                        notMealDetectItem()
-                    }
+                    notMealDetectItem()
                 }
             }
             override fun onFailure(call: Call<SnapMealNutrientsResponse>, t: Throwable) {
-                println("Failure: ${t.message}")
-                if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-                    }
-                }
+                if (!isAdded) return
+                val act = activity ?: return
+                act.runOnUiThread { dismissLoader(requireView()) }
                 notMealDetectItem()
-              //  Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
             }
         })
     }
