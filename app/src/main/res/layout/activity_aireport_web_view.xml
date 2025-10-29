@@ -20,7 +20,8 @@
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_back" />
+            android:layout_centerVertical="true"
+            android:src="@drawable/ai_report_back" />
 
         <TextView
             android:id="@+id/headerTitle"
@@ -29,28 +30,38 @@
             android:layout_centerInParent="true"
             android:layout_marginHorizontal="20dp"
             android:ellipsize="end"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:gravity="center"
             android:text="RightLife Report"
             android:textColor="@color/txt_color_mind"
-            android:textSize="18sp" />
-        <TextView
-            android:id="@+id/tv_beta_number"
+            android:textSize="20sp" />
+
+        <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginHorizontal="10dp"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:ellipsize="end"
-            android:fontFamily="@font/dmsans_bold"
-            android:gravity="center"
-            android:text="Beta\n V1.2"
-            android:elevation="5dp"
-            android:background="@drawable/grey_border_bg"
-            android:textColor="@color/txt_color_mind"
-            android:paddingHorizontal="5dp"
-            android:paddingVertical="2dp"
-            android:textSize="14sp" />
+            app:cardCornerRadius="7dp"
+            app:cardElevation="5dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="true">
+
+            <TextView
+                android:id="@+id/tv_beta_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="5dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center"
+                android:includeFontPadding="true"
+                android:lineSpacingExtra="0dp"
+                android:text="Beta\nV1.2"
+                android:textColor="@color/txt_color_mind"
+                android:textSize="14sp" />
+        </androidx.cardview.widget.CardView>
+
 
     </RelativeLayout>
 
@@ -73,15 +84,14 @@
                 android:layout_height="match_parent" />
 
 
-
             <!-- Loader -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyleLarge"
-                android:layout_gravity="center"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
         </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

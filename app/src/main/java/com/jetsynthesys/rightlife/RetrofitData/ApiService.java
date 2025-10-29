@@ -1305,6 +1305,10 @@ public interface ApiService {
             @Header("Authorization") String authToken
     );
 
+    @GET("activityMaster")
+    Call<ResponseBody> getPhysicalActivities(
+            @Header("Authorization") String authToken
+    );
 }
 
 

@@ -44,9 +44,9 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
     private var mHour = 0
     private var mMinute = 0
     private var mAmPm = ""
-    private lateinit var hourPicker : NumberPicker
-    private lateinit var minutePicker : NumberPicker
-    private lateinit var amPmPicker : NumberPicker
+    private lateinit var hourPicker : com.shawnlin.numberpicker.NumberPicker
+    private lateinit var minutePicker : com.shawnlin.numberpicker.NumberPicker
+    private lateinit var amPmPicker : com.shawnlin.numberpicker.NumberPicker
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -63,9 +63,9 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         bottomSheet.backgroundTintMode = PorterDuff.Mode.CLEAR
         bottomSheet.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
         bottomSheet.setBackgroundColor(Color.TRANSPARENT)
-        hourPicker = view.findViewById<NumberPicker>(R.id.hourPickerWake)
-        minutePicker = view.findViewById<NumberPicker>(R.id.minutePickerWake)
-        amPmPicker = view.findViewById<NumberPicker>(R.id.amPmPickerWake)
+        hourPicker = view.findViewById<com.shawnlin.numberpicker.NumberPicker>(R.id.hourPickerWake)
+        minutePicker = view.findViewById<com.shawnlin.numberpicker.NumberPicker>(R.id.minutePickerWake)
+        amPmPicker = view.findViewById<com.shawnlin.numberpicker.NumberPicker>(R.id.amPmPickerWake)
         val imgClose = view.findViewById<ImageView>(R.id.img_close)
 
         mHour = getHourFromIso(mWakeupTime)
@@ -115,7 +115,6 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
                     }
                 }
 
-                // Update the EditText used for the center value
                 for (i in 0 until picker.childCount) {
                     val child = picker.getChildAt(i)
                     if (child is EditText) {
@@ -131,14 +130,23 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         }
 
 
-        fun updateNumberPickerText(picker: NumberPicker) {
+        fun updateNumberPickerText(picker: com.shawnlin.numberpicker.NumberPicker) {
+            picker.apply {
+                textColor = Color.GRAY
+                selectedTextColor = resources.getColor(R.color.sleep_duration_blue)
+                textSize = 35f
+                selectedTextSize = 45f
+                typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                dividerColor = Color.TRANSPARENT
+            }
+
             try {
-                val field = NumberPicker::class.java.getDeclaredField("mInputText")
-                field.isAccessible = true
-                val editText = field.get(picker) as EditText
-                editText.setTextColor( resources.getColor(R.color.sleep_duration_blue))
-                editText.textSize = 24f
-                editText.typeface = Typeface.DEFAULT_BOLD
+                for (i in 0 until picker.childCount) {
+                    val child = picker.getChildAt(i)
+                    if (child is EditText) {
+                        child.typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+                    }
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -152,7 +160,11 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         }
 
 
-        val listener = NumberPicker.OnValueChangeListener { _, _, _ -> refreshPickers() }
+        val listener = com.shawnlin.numberpicker.NumberPicker.OnValueChangeListener { _, _, _ ->
+            updateNumberPickerText(hourPicker)
+            updateNumberPickerText(minutePicker)
+            updateNumberPickerText(amPmPicker)
+        }
         hourPicker.setOnValueChangedListener(listener)
         minutePicker.setOnValueChangedListener(listener)
         amPmPicker.setOnValueChangedListener(listener)
@@ -163,20 +175,20 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         return LocalDateTime.parse(isoDateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     }
 
-    // 1. Return the hour in 12-hour format
+
     fun getHourFromIso(isoDateTime: String): Int {
         val dateTime = parseIsoDateTime(isoDateTime)
         val hour = dateTime.hour % 12
         return if (hour == 0) 12 else hour
     }
 
-    // 2. Return the minutes
+
     fun getMinuteFromIso(isoDateTime: String): Int {
         val dateTime = parseIsoDateTime(isoDateTime)
         return dateTime.minute
     }
 
-    // 3. Return AM or PM
+
     fun getAmPmFromIso(isoDateTime: String): String {
         val dateTime = parseIsoDateTime(isoDateTime)
         return if (dateTime.hour < 12) "AM" else "PM"
@@ -192,7 +204,7 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
                 }
             }
 
-            // Update the EditText used for the center value
+
             for (i in 0 until picker.childCount) {
                 val child = picker.getChildAt(i)
                 if (child is EditText) {

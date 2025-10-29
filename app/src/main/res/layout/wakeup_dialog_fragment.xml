@@ -80,17 +80,17 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <NumberPicker
+                <com.shawnlin.numberpicker.NumberPicker
                     android:id="@+id/hourPickerWake"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <NumberPicker
+                <com.shawnlin.numberpicker.NumberPicker
                     android:id="@+id/minutePickerWake"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <NumberPicker
+                <com.shawnlin.numberpicker.NumberPicker
                     android:id="@+id/amPmPickerWake"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
