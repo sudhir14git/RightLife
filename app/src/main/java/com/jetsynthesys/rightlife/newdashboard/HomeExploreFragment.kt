@@ -397,7 +397,9 @@ class HomeExploreFragment : BaseFragment() {
         getPromotionList()
         getRightLifeEdit()
         getWellnessPlaylist()
-        getJumpBackInData()
+        Handler(Looper.getMainLooper()).postDelayed({
+            getJumpBackInData()
+        }, 2000)
     }
 
     private fun callAPIS() {
@@ -931,11 +933,11 @@ class HomeExploreFragment : BaseFragment() {
                             showInternetError()
                         }
                     } else {
-                      /*  ActivityUtils.startEatRightReportsActivity(
-                            requireContext(),
-                            "SnapMealTypeEat",
-                            ""
-                        )*/
+                        /*  ActivityUtils.startEatRightReportsActivity(
+                              requireContext(),
+                              "SnapMealTypeEat",
+                              ""
+                          )*/
                         (requireActivity() as? HomeNewActivity)?.callSnapMealClick()
                     }
                     //ActivityUtils.startMindAuditActivity(requireContext())
@@ -1021,7 +1023,7 @@ class HomeExploreFragment : BaseFragment() {
                     .error(R.drawable.rl_placeholder)
                     .into(binding.imgRledit)
             }
-            setcontenttypeIcon(binding.itemTextRledit,binding.imgIconviewRledit, item0.contentType)
+            setcontenttypeIcon(binding.itemTextRledit, binding.imgIconviewRledit, item0.contentType)
         } else {
             binding.rlRightlifeEdit.visibility = View.GONE
         }
@@ -1048,7 +1050,11 @@ class HomeExploreFragment : BaseFragment() {
                     .transform(CenterCrop(), RoundedCorners(25))
                     .into(binding.imgRledit1)
             }
-            setcontenttypeIcon(binding.itemTextRledit1,binding.imgIconviewRledit1, item1.contentType)
+            setcontenttypeIcon(
+                binding.itemTextRledit1,
+                binding.imgIconviewRledit1,
+                item1.contentType
+            )
         } else {
             binding.relativeRledit2.visibility = View.GONE
         }
@@ -1075,7 +1081,11 @@ class HomeExploreFragment : BaseFragment() {
                     .transform(CenterCrop(), RoundedCorners(25))
                     .into(binding.imgRledit2)
             }
-            setcontenttypeIcon(binding.itemTextRledit2,binding.imgIconviewRledit2, item2.contentType)
+            setcontenttypeIcon(
+                binding.itemTextRledit2,
+                binding.imgIconviewRledit2,
+                item2.contentType
+            )
         } else {
             binding.relativeRledit3.visibility = View.GONE
         }
@@ -1091,14 +1101,17 @@ class HomeExploreFragment : BaseFragment() {
                 imgContenttypeRledit.setImageResource(R.drawable.video_jump_back_in)
                 contentTypeRledit1.text = "Video"
             }
+
             "AUDIO".equals(contentType, ignoreCase = true) -> {
                 imgContenttypeRledit.setImageResource(R.drawable.audio_jump_back_in)
                 contentTypeRledit1.text = "Audio"
             }
+
             "TEXT".equals(contentType, ignoreCase = true) -> {
                 imgContenttypeRledit.setImageResource(R.drawable.ic_text_content)
                 contentTypeRledit1.text = "Text"
             }
+
             else -> {
                 imgContenttypeRledit.setImageResource(R.drawable.series_jump_back_in)
                 contentTypeRledit1.text = "Series"
