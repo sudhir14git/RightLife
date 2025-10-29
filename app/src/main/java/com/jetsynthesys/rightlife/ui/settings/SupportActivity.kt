@@ -35,12 +35,12 @@ class SupportActivity : BaseActivity() {
         )
 
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
-            when (item.title) {
-                "FAQ" -> {
+            when (item.title.lowercase()) {
+                "faq" -> {
                     startActivity(Intent(this, FAQNewActivity::class.java))
                 }
 
-                "Write to us!" -> {
+                "write to us!" -> {
                     WriteToUsUtils.sendEmail(this@SupportActivity)
                     AnalyticsLogger.logEvent(
                         this,

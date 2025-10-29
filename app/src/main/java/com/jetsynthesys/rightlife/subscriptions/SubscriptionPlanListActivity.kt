@@ -221,7 +221,9 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                 response: Response<PaymentIntentResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    showToast("Subscribed Successfully!!")
+                    //showToast("Subscribed Successfully!!")
+                    showToast(response.message())
+                    response.message()
                     getSubscriptionList(type)
                 } else {
                     showToast(response.message())
