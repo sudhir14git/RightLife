@@ -54,6 +54,7 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MindfullChartRenderer
+import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -612,7 +613,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
             avgStepsLine.lineWidth = 1f
             avgStepsLine.enableDashedLine(10f, 10f, 0f)
-            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
             avgStepsLine.textSize = 10f
             avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
             leftYAxis.removeAllLimitLines()
@@ -651,7 +652,11 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 chart.getTransformer(YAxis.AxisDependency.LEFT)
             )
         )
-        chart.invalidate()
+        barChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+            barChart.viewPortHandler,
+            barChart.axisLeft,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
         cardPercent.visibility = View.VISIBLE
         tvBarDate.text = selectedDate.getOrNull(entries.size-1) ?: ""
         tvBarPercent.text = entries.get(entries.size-1).y.toInt().toString()
