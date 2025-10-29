@@ -36,7 +36,7 @@
                         android:layout_alignParentStart="true"
                         android:background="@drawable/rounded_image"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/profile_man"
+                        android:src="@drawable/rl_profile"
                         android:tint="@color/txt_color_header" />
 
                     <androidx.appcompat.widget.AppCompatImageView
@@ -307,7 +307,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="16dp"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_marginVertical="16dp">
 
                         <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView

@@ -154,7 +154,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginStart="21dp"
-                            android:src="@drawable/backward_create_heart_rate"
+                            android:src="@drawable/backward_create_heart_rate_svg"
                             android:layout_marginTop="14dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
@@ -164,7 +164,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="21dp"
-                            android:src="@drawable/forward_image_create_heartrate"
+                            android:src="@drawable/forward_image_create_heartrate_svg"
                             android:layout_marginTop="14dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
@@ -193,7 +193,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             android:orientation="vertical"
                             android:padding="10dp"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate">
 
                             <TextView
@@ -234,6 +234,7 @@
                                     android:layout_width="15dp"
                                     android:src="@drawable/ic_db_report_heart_rate"
                                     android:layout_marginBottom="5dp"
+                                    android:visibility="gone"
                                     android:layout_height="15dp" />
                             </LinearLayout>
 
@@ -327,7 +328,8 @@
                             android:gravity="center"
                             android:layout_weight="1"
                             android:layout_marginHorizontal="5dp"
-                            android:background="@drawable/bg_edittext_gray">
+                            android:backgroundTint="@color/gray_light_bg"
+                            android:background="@drawable/rounded_corder_border_gray_radius_small">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -371,7 +373,8 @@
                             android:gravity="center"
                             android:layout_weight="1"
                             android:layout_marginHorizontal="5dp"
-                            android:background="@drawable/bg_edittext_gray">
+                            android:backgroundTint="@color/gray_light_bg"
+                            android:background="@drawable/rounded_corder_border_gray_radius_small">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -414,8 +417,8 @@
                             android:padding="12dp"
                             android:gravity="center"
                             android:layout_weight="1"
-                            android:layout_marginHorizontal="5dp"
-                            android:background="@drawable/bg_edittext_gray">
+                            android:backgroundTint="@color/gray_light_bg"
+                            android:background="@drawable/rounded_corder_border_gray_radius_small">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -490,8 +493,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Normal"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
+                        android:textSize="@dimen/textsize_large18sp"
+                        android:fontFamily="@font/merriweather_bold"
                         android:layout_weight="1" />
 
                     <LinearLayout
@@ -562,28 +565,27 @@
                     android:background="@drawable/roundedcornerbutton"
                     android:backgroundTint="@color/light_blue"
                     android:layout_marginTop="10dp"
-                    android:layout_height="wrap_content">
+                    android:layout_height="33dp">
 
                     <TextView
                         android:id="@+id/txt_inthisarticle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/merriweather_regular"
+                        android:fontFamily="@font/dmsans_bold"
                         android:layout_centerVertical="true"
-                        android:paddingStart="32dp"
-                        android:paddingEnd="30dp"
+                        android:layout_centerHorizontal="true"
                         android:text="View More About The Ranges"
                         android:textColor="#1292E5"
+                        android:layout_marginHorizontal="5dp"
                         android:textSize="@dimen/textsize_medium" />
 
                     <ImageView
                         android:id="@+id/icon_arrow_ranges"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_alignParentEnd="true"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="30dp"
-                        android:padding="15dp"
+                        android:padding="3dp"
+                        android:layout_toEndOf="@+id/txt_inthisarticle"
                         android:src="@drawable/icon_arrow_article"
                         app:tint="#1292E5" />
                 </RelativeLayout>

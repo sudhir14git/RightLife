@@ -414,6 +414,8 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
     private fun getWeekRange(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val displayFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+        val displayFormatWithYear = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
         // Apply offset in days
@@ -427,11 +429,20 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         val endDate = dateFormat.format(calendar.time)
         startDateAPI = endDate
 
-        return "$endDate - $startDate"
+        // New display values for UI text
+        val startDisplayDate = displayFormat.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(endDate)!!)
+        val endDisplayDate = displayFormatWithYear.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(startDate)!!)
+
+        val formattedRange = "$startDisplayDate - $endDisplayDate"
+        return formattedRange
+
+
     }
 
     private fun getMonthRange(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val displayFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+        val displayFormatWithYear = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
         // Current date with offset applied
@@ -444,7 +455,13 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         val startDate = dateFormat.format(calendar.time)
         startDateAPI = startDate
 
-        return "$startDate - $endDate"
+        // New display values for UI text
+        val startDisplayDate = displayFormat.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(startDate)!!)
+        val endDisplayDate = displayFormatWithYear.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(endDate)!!)
+
+        val formattedRange = "$startDisplayDate - $endDisplayDate"
+        return formattedRange
+
     }
 
     private fun getSixMonthRange(): String {
@@ -769,8 +786,8 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             if (it.y == 0f) Entry(it.x, Float.NaN) else it
         }
 
-        val dataSet = LineDataSet(modifiedEntries, "Data Set").apply {
-            color = Color.parseColor("#05AB26")
+        val dataSet = LineDataSet(modifiedEntries, "").apply {
+            color = Color.parseColor("#FFFFFF")
             setCircleColors(circleColors)
             lineWidth = 2f
             circleRadius = 4f
