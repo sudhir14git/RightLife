@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="12dp"
+    android:paddingVertical="@dimen/margin_card_16dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_card_16dp"
@@ -22,11 +22,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:paddingEnd="@dimen/margin_card_16dp"
         android:src="@drawable/arrow_drop_up"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerOptions"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="never"
         android:scrollbars="vertical"

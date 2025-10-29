@@ -202,9 +202,11 @@ class ProfileNewActivity : BaseActivity() {
         if ("VERIFIED".equals(userData.newPhoneStatus, ignoreCase = false)) {
             binding.btnVerify.isEnabled = false
             binding.btnVerify.text = "Verified"
+            binding.etMobile.isEnabled = false
         } else {
             binding.btnVerify.isEnabled = true
             binding.btnVerify.text = "Verify"
+            binding.etMobile.isEnabled = true
         }
 
 
