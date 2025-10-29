@@ -19,13 +19,16 @@ import android.os.Looper
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -37,6 +40,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
@@ -49,6 +54,7 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetGenderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetHeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.DialogOtpVerificationBinding
+import com.jetsynthesys.rightlife.newdashboard.HomeDashboardFragment
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
@@ -61,6 +67,8 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.shawnlin.numberpicker.NumberPicker
@@ -242,11 +250,14 @@ class ProfileNewActivity : BaseActivity() {
             binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
 
         if (userData.profilePicture.isNullOrEmpty())
-            if (userData.firstName.isNotEmpty())
+        {
+            /*if (userData.firstName.isNotEmpty())
                 binding.tvProfileLetter.text = userData.firstName.first().toString()
             else
-                binding.tvProfileLetter.text = "R"
-        else {
+                binding.tvProfileLetter.text = "R"*/
+            binding.ivProfileImage.visibility = VISIBLE
+            binding.tvProfileLetter.visibility = GONE
+        }else {
             binding.ivProfileImage.visibility = VISIBLE
             binding.tvProfileLetter.visibility = GONE
             Glide.with(this)
@@ -1136,6 +1147,9 @@ class ProfileNewActivity : BaseActivity() {
         } else if (age.split(" ")[0].toInt() !in 13..80)
             showCustomToast("Face Scan is available only for users aged 13–80.")
         else {
+            // ✅ Compare old and new phone number
+            val oldPhone = userData.phoneNumber?.filter { it.isDigit() } ?: ""
+            val newPhone = mobileNumber.filter { it.isDigit() }
             userData.firstName = firstName
             userData.lastName = lastName
             userData.email = email
@@ -1171,6 +1185,10 @@ class ProfileNewActivity : BaseActivity() {
             if (preSignedUrlData != null) {
                 userData.profilePicture = preSignedUrlData?.file?.url
             }
+            // ✅ Set newPhoneStatus if phone number changed
+            if (oldPhone != newPhone) {
+                userData.newPhoneStatus = ""
+            }
             updateUserData(userData)
             updateChecklistStatus()
             var productId = ""
@@ -1203,6 +1221,7 @@ class ProfileNewActivity : BaseActivity() {
                     setResult(RESULT_OK)
                     userDataResponse.userdata = userdata
                     sharedPreferenceManager.saveUserProfile(userDataResponse)
+                    getUserDetails()
                     showCustomToast("Profile Updated Successfully", true)
                     finish()
                 } else {
@@ -1268,5 +1287,36 @@ class ProfileNewActivity : BaseActivity() {
     private fun openGallery() {
         pickImageLauncher.launch("image/*") // Open gallery to pick image
     }
+    // get user details
+    fun getUserDetails() {
+        // Make the API call
+        val call = apiService.getUserDetais(sharedPreferenceManager.accessToken)
+        call.enqueue(object : Callback<JsonElement?> {
+            override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
 
+                    val ResponseObj = gson.fromJson(
+                            jsonResponse, UserProfileResponse::class.java
+                    )
+                    SharedPreferenceManager.getInstance(applicationContext)
+                            .saveUserId(ResponseObj.userdata.id)
+                    SharedPreferenceManager.getInstance(applicationContext)
+                            .saveUserProfile(ResponseObj)
+
+                    SharedPreferenceManager.getInstance(applicationContext)
+                            .setAIReportGeneratedView(ResponseObj.reportView)
+
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
 }

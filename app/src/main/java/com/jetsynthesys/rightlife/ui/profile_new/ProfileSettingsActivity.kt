@@ -167,10 +167,11 @@ class ProfileSettingsActivity : BaseActivity() {
             name = name.plus(" ${user.lastName}")
         binding.userName.text = name
         if (user.profilePicture.isNullOrEmpty()) {
-            if (user.firstName.isNotEmpty())
+            /*if (user.firstName.isNotEmpty())
                 binding.tvProfileLetter.text = user.firstName.first().toString()
             else
-                binding.tvProfileLetter.text = "R"
+                binding.tvProfileLetter.text = "R"*/
+            binding.ivProfileImage.visibility = VISIBLE
         } else {
             binding.ivProfileImage.visibility = VISIBLE
             binding.tvProfileLetter.visibility = GONE

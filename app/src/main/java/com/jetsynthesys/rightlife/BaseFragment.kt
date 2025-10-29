@@ -10,6 +10,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.FragmentBaseBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils.showCustomToast
+import com.jetsynthesys.rightlife.ui.utility.Utils.showNewDesignToast
 import java.io.IOException
 
 open class BaseFragment : Fragment() {
@@ -49,7 +50,7 @@ open class BaseFragment : Fragment() {
             else -> e.message?.let { showCustomToast(it) }
         }*/
         if (e is IOException)
-            e.message?.let { showCustomToast(requireContext(), it) }
+            e.message?.let { showNewDesignToast(requireContext(), it,false) }
     }
 
     // IMPORTANT: Clear the binding reference in onDestroyView to prevent memory leaks
