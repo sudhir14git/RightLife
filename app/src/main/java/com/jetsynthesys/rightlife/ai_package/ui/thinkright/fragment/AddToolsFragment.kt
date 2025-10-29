@@ -117,28 +117,28 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                     }
                     "Free Form" -> {
                         Glide.with(contexts)
-                            .load(  R.drawable.ic_freeform_journal)
+                            .load(  R.drawable.free_form_image)
                             .placeholder(R.drawable.ic_plus)
                             .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
                     }
 
                     "Bullet" -> {
                         Glide.with(contexts)
-                            .load(  R.drawable.ic_bullet_journal)
+                            .load(  R.drawable.bullet_image)
                             .placeholder(R.drawable.ic_plus)
                             .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
                     }
 
                     "Gratitude" -> {
                         Glide.with(contexts)
-                            .load(  R.drawable.ic_gratitude_journal)
+                            .load(  R.drawable.gratitude_image)
                             .placeholder(R.drawable.ic_plus)
                             .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
                     }
 
                     "Grief" -> {
                         Glide.with(contexts)
-                            .load(  R.drawable.ic_grief_journal)
+                            .load(  R.drawable.grief_image)
                             .placeholder(R.drawable.ic_plus)
                             .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
                     }
