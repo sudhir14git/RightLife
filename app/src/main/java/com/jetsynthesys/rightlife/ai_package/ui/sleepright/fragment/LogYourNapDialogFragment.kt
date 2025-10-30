@@ -374,19 +374,25 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         call.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
-                    showCustomToast(requireContext(), "Sleep Logged Successfully")
+                    context?.let {
+                        showCustomToast(it, "Sleep Logged Successfully")
+                    }
                     //Toast.makeText(mContext, "Log Saved Successfully!", Toast.LENGTH_SHORT).show()
                     listener.onLogTimeSelected("OK")
                     dismiss()
 
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(mContext, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    context?.let {
+                        Toast.makeText(it, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show()
+                context?.let {
+                    Toast.makeText(it, "Failure", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
@@ -476,7 +482,9 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                 tvDate.text = SleepRightLandingFragment.dialogSleepDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
             }
         }else{
-            Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+            context?.let {
+                Toast.makeText(it,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -490,7 +498,9 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         if (duration <= Duration.ofHours(15)) {
             tvDuration.text = "$hours hr $minutes mins"
         }else{
-            Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+            context?.let {
+                Toast.makeText(it,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
