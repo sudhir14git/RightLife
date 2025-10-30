@@ -482,7 +482,7 @@ class ContentDetailsActivity : BaseActivity() {
             logContentOpenedEventAudio()
         }
         // Play/Pause Button Listener
-        binding.playPauseButton.setOnClickListener {
+      /*  binding.playPauseButton.setOnClickListener {
             if (isPlaying) {
                 mediaPlayer.pause()
                 binding.playPauseButton.setImageResource(R.drawable.ic_sound_play)
@@ -494,9 +494,30 @@ class ContentDetailsActivity : BaseActivity() {
                 handler.post(updateProgress)
             }
             isPlaying = !isPlaying
+        }*/
+
+        binding.playPauseButton.setOnClickListener {
+            try {
+                if (!mediaPlayer.isPlaying) {
+                    mediaPlayer.start()
+                } else {
+                    mediaPlayer.pause()
+                }
+            } catch (e: IllegalStateException) {
+                // Recover if mediaPlayer was reset somehow
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(ApiClient.VIDEO_CDN_URL + moduleContentDetail?.data?.url)
+                mediaPlayer.prepareAsync()
+            }
+            binding.playPauseButton.setImageResource(
+                    if (mediaPlayer.isPlaying) R.drawable.ic_sound_pause else R.drawable.ic_sound_play
+            )
+
         }
+
+
         mediaPlayer.setOnCompletionListener { mp: MediaPlayer? ->
-            Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
             handler.removeCallbacks(updateProgress)
             watchProgessDurationAudio = "100"
             logContentWatchedEventAudio()
@@ -758,7 +779,7 @@ class ContentDetailsActivity : BaseActivity() {
         }
     }
 
-    override fun onPause() {
+/*    override fun onPause() {
         super.onPause()
 
         // Pause video
@@ -784,18 +805,87 @@ class ContentDetailsActivity : BaseActivity() {
             mediaPlayer.release()
         }
         handler.removeCallbacks(updateProgress)
-    }
+    }*/
 
+    override fun onPause() {
+        super.onPause()
+
+        try {
+            // Pause video
+            if (::player.isInitialized && player.isPlaying) {
+                player.pause()
+                player.playWhenReady = false
+            }
+
+            // Pause audio (DON’T stop, only pause)
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+            }
+
+            handler.removeCallbacks(updateProgress)
+        } catch (e: Exception) {
+            Log.e("ContentDetails", "Error during onPause", e)
+        }
+    }
 
     override fun onResume() {
         super.onResume()
 
-        if (::player.isInitialized && !player.isPlaying) {
-            player.playWhenReady = false // don’t auto-play unless user taps play
-        }
+        try {
+            // Resume video if needed
+            if (::player.isInitialized && !player.isPlaying) {
+                player.playWhenReady = false  // keep paused until user presses play
+            }
 
-        if (::mediaPlayer.isInitialized && !mediaPlayer.isPlaying) {
-            // keep paused until user presses play
+            // Resume audio player UI — don’t auto-play, just keep ready
+            if (::mediaPlayer.isInitialized) {
+                mediaPlayer.setOnCompletionListener {
+                    handler.removeCallbacks(updateProgress)
+                    watchProgessDurationAudio = "100"
+                    logContentWatchedEventAudio()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("ContentDetails", "Error during onResume", e)
+        }
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            // Release or stop both players if user left app quickly (Home/Recent Apps)
+            if (::player.isInitialized) {
+                player.pause()
+                player.playWhenReady = false
+            }
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+              //  mediaPlayer.reset()
+            }
+        } catch (e: Exception) {
+            Log.e("ContentDetails", "Error releasing players onStop", e)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            // Release video player
+            if (::player.isInitialized) {
+                callTrackAPI(player.currentPosition.toDouble() / 1000)
+                player.release()
+            }
+
+            // Release audio player
+            if (::mediaPlayer.isInitialized) {
+                callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
+                mediaPlayer.release()
+            }
+
+            handler.removeCallbacks(updateProgress)
+        } catch (e: Exception) {
+            Log.e("ContentDetails", "Error releasing players onDestroy", e)
         }
     }
 

@@ -42,7 +42,7 @@ class YouMayAlsoLikeMindAuditAdapter(
                 else if ("AUDIO".equals(item.contentType, ignoreCase = true))
                     R.drawable.audio_jump_back_in
                 else if ("TEXT".equals(item.contentType, ignoreCase = true))
-                    R.drawable.ic_text_content
+                    R.drawable.text_jump_back_in
                 else
                     R.drawable.series_jump_back_in
             )

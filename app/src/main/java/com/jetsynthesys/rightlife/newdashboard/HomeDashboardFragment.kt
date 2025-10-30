@@ -517,10 +517,20 @@ class HomeDashboardFragment : BaseFragment()
         val mealId = checklistResponse.data.snap_mealId
         sharedPreferenceManager.saveSnapMealId(mealId)
         this.snapMealId = mealId
-
+        checklistResponse.data.snap_mealId.let { snapMealId ->
+            if (!snapMealId.isNullOrEmpty())
+            {
+                sharedPreferenceManager.saveSnapMealId(snapMealId)
+                this.snapMealId = snapMealId
+            }else{
+                sharedPreferenceManager.saveSnapMealId("")
+                this.snapMealId = ""
+            }
+        }
 
         getDashboardChecklistStatus()
     }
+
 
     private fun setStatusOfChecklist(
             profile: String,

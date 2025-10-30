@@ -22,6 +22,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
@@ -92,10 +93,50 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                     //intent.putExtra("key", "value");
                     mContext.startActivity(intent);
 
-                } else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN") ||
-                        item.getCategory().equalsIgnoreCase("Health Cam") || item.getCategory().equalsIgnoreCase("FACE_SCAN")) {
-                    ActivityUtils.INSTANCE.startFaceScanActivity(mContext);
+                }else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN")
+                        || item.getCategory().equalsIgnoreCase("FACE_SCAN")
+                        || item.getCategory().equalsIgnoreCase("Health Cam")) {
+
+                    SharedPreferenceManager spm = SharedPreferenceManager.getInstance(mContext);
+
+                    if (spm.getUserProfile() != null && spm.getUserProfile().getUser_sub_status() == 0) {
+                        // Not subscribed → redirect to free trial
+                        Intent intent = new Intent(mContext, com.jetsynthesys.rightlife.newdashboard.BeginMyFreeTrialActivity.class);
+                        intent.putExtra(com.jetsynthesys.rightlife.ui.utility.FeatureFlags.EXTRA_ENTRY_DEST,
+                                com.jetsynthesys.rightlife.ui.utility.FeatureFlags.FACE_SCAN);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                    } else {
+                        boolean isFacialScanService = false;
+                        try {
+                            isFacialScanService = spm.getUserProfile().getFacialScanService();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        if (isFacialScanService) {
+                            if ( DashboardChecklistManager.INSTANCE.getFacialScanStatus()) {
+                                Intent intent = new Intent(mContext, com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mContext.startActivity(intent);
+                            } else {
+                                ActivityUtils.INSTANCE.startFaceScanActivity(mContext);
+                            }
+                        } else {
+                            if (mContext instanceof com.jetsynthesys.rightlife.newdashboard.HomeNewActivity) {
+                                ((com.jetsynthesys.rightlife.newdashboard.HomeNewActivity) mContext)
+                                        .showSwitchAccountDialog(mContext, "", "");
+                            } else {
+                                Toast.makeText(mContext, "Please switch to your original account.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
                 }
+
+                /* else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN") ||
+                        item.getCategory().equalsIgnoreCase("Health Cam") || item.getCategory().equalsIgnoreCase("FACE_SCAN")) {
+                    //ActivityUtils.INSTANCE.startFaceScanActivity(mContext);
+                }*/
 
                 ViewCountRequest viewCountRequest = new ViewCountRequest();
                 viewCountRequest.setId(item.getId());

@@ -605,9 +605,38 @@ class ImageSliderActivity : BaseActivity() {
             fetchApiData(accessTokenGoogle)
             bottomSheetDialog.dismiss()
         }
+        /*dialogBinding.btnYes.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }*/
         dialogBinding.btnYes.setOnClickListener {
             bottomSheetDialog.dismiss()
+
+            // Force a full logout and new chooser
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                    .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                    .requestProfile()
+                    .requestScopes(
+                            Scope("https://www.googleapis.com/auth/userinfo.email"),
+                            Scope("https://www.googleapis.com/auth/userinfo.profile"),
+                            Scope("openid")
+                    )
+                    .build()
+
+            val googleSignInClient = GoogleSignIn.getClient(this@ImageSliderActivity, gso)
+
+            // Step 1: Sign out
+            googleSignInClient.signOut().addOnCompleteListener {
+                // Step 2: Revoke access to forget the previous account
+                googleSignInClient.revokeAccess().addOnCompleteListener {
+                    // Step 3: Launch new sign-in chooser
+                    val signInIntent = googleSignInClient.signInIntent
+                    startActivityForResult(signInIntent, RC_SIGN_IN)
+                }
+            }
         }
+
         bottomSheetDialog.show()
     }
 
