@@ -297,7 +297,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                         firstReport = rangeList[0]
                         binding.indicator.text = firstReport.indicator
                         binding.tvIndicatorExplain.text =
-                            Html.fromHtml(firstReport.implication, Html.FROM_HTML_MODE_COMPACT)
+                            Html.fromHtml(firstReport.implication, Html.FROM_HTML_MODE_LEGACY)
                         binding.tvIndicatorValue.text = "${firstReport.value} ${firstReport.unit}"
                         binding.tvIndicatorValueBg.text =
                             "${firstReport.lowerRange}-${firstReport.upperRange} ${firstReport.unit}"
