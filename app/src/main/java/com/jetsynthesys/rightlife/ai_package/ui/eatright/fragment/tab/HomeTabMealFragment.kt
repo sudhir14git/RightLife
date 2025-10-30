@@ -21,6 +21,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -235,10 +236,10 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
         }
 
         imageScan.setOnClickListener {
-            permissionManager = PermissionManager(
-                activity = requireActivity(), // or just `this` in Activity
-                launcher = permissionLauncher,
-                onPermissionGranted = {
+//            permissionManager = PermissionManager(
+//                activity = requireActivity(), // or just `this` in Activity
+//                launcher = permissionLauncher,
+//                onPermissionGranted = {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         val mealSearchFragment = SnapMealFragment()
                         val args = Bundle()
@@ -251,13 +252,13 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
                         addToBackStack(null)
                         commit()
                     }
-                },
-                onPermissionDenied = {
-                    // ❌ Show user-facing message or disable features
-                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            )
-            permissionManager.checkAndRequestPermissions()
+//                },
+//                onPermissionDenied = {
+//                    // ❌ Show user-facing message or disable features
+//                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+//                }
+//            )
+//            permissionManager.checkAndRequestPermissions()
         }
         imageGallery.setOnClickListener {
             openGallery()
@@ -407,32 +408,11 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
     }
 
     private fun openGallery() {
-        permissionManager = PermissionManager(
-            activity = requireActivity(), // or just `this` in Activity
-            launcher = permissionLauncher,
-            onPermissionGranted = {
-                Handler(Looper.getMainLooper()).post {
-                    pickImageLauncher.launch("image/*")
-                }
-            },
-            onPermissionDenied = {
-                // ❌ Show user-facing message or disable features
-                Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-            }
+        pickImageLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
         )
-        permissionManager.checkAndRequestPermissions()
-      //  if (allPermissionsGranted()) {
-      //      Handler(Looper.getMainLooper()).post {
-       //         pickImageLauncher.launch("image/*")
-      //      }
-     //   } else {
-       //     ActivityCompat.requestPermissions(
-       //         requireActivity(),
-        //        REQUIRED_PERMISSIONS,
-        //        REQUEST_CODE_PERMISSIONS
-        //    )
-      //  }
     }
+
 
     companion object {
         private const val TAG = "CameraFragment"
@@ -443,7 +423,32 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
         ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
     }
 
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+//    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+//        uri?.let {
+//            imageSelectedListener?.onImageSelected(it)
+//            imagePathsecond = it
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                val mealSearchFragment = SnapMealFragment()
+//                val args = Bundle()
+//                args.putString("homeTab", "homeTab")
+//                args.putString("ModuleName", moduleName)
+//                args.putString("mealType", mealType)
+//                args.putString("selectedMealDate", selectedMealDate)
+//                args.putString("gallery","gallery")
+//                args.putString("ImagePathsecound", imagePathsecond.toString())
+//                mealSearchFragment.arguments = args
+//                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+//                addToBackStack(null)
+//                commit()
+//            }
+//            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+//        } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+//    }
+
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
         uri?.let {
             imageSelectedListener?.onImageSelected(it)
             imagePathsecond = it
@@ -462,8 +467,10 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
                 commit()
             }
             Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
-        } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+        }
     }
+
     private val REQUIRED_PERMISSIONS = mutableListOf(
         Manifest.permission.CAMERA
     ).apply {

@@ -184,10 +184,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         null, null,false, :: onDinnerRegularRecipeDeleteItem, :: onDinnerRegularRecipeEditItem,
         :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, true, false) }
 
-    private val permissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            permissionManager.handlePermissionResult(result)
-        }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         newBoolean = true
@@ -325,10 +322,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         snapMealBtn.setOnClickListener {
-            permissionManager = PermissionManager(
-                activity = requireActivity(), // or just `this` in Activity
-                launcher = permissionLauncher,
-                onPermissionGranted = {
+//            permissionManager = PermissionManager(
+//                activity = requireActivity(), // or just `this` in Activity
+//                launcher = permissionLauncher,
+//                onPermissionGranted = {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         val mealSearchFragment = SnapMealFragment()
                         val args = Bundle()
@@ -338,13 +335,12 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         addToBackStack(null)
                         commit()
                     }
-                },
-                onPermissionDenied = {
-                    // ❌ Show user-facing message or disable features
-                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            )
-            permissionManager.checkAndRequestPermissions()
+//                },
+//                onPermissionDenied = {
+//                    // ❌ Show user-facing message or disable features
+//                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+//                }
+
         }
 
         imageBack.setOnClickListener {
@@ -376,10 +372,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         snapMealNoData.setOnClickListener {
-            permissionManager = PermissionManager(
-                activity = requireActivity(), // or just `this` in Activity
-                launcher = permissionLauncher,
-                onPermissionGranted = {
+//            permissionManager = PermissionManager(
+//                activity = requireActivity(), // or just `this` in Activity
+//                launcher = permissionLauncher,
+//                onPermissionGranted = {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         val mealSearchFragment = SnapMealFragment()
                         val args = Bundle()
@@ -389,13 +385,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         addToBackStack(null)
                         commit()
                     }
-                },
-                onPermissionDenied = {
-                    // ❌ Show user-facing message or disable features
-                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            )
-            permissionManager.checkAndRequestPermissions()
+//                },
+//                onPermissionDenied = {
+//                    // ❌ Show user-facing message or disable features
+//                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+//                }
+//            )
+//            permissionManager.checkAndRequestPermissions()
         }
 
         macroIc.setOnClickListener {
