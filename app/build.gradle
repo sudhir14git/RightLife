@@ -119,6 +119,7 @@ android {
             buildConfigField "String", "BASE_URL", "\"https://app.rightlife.com/api/app/api/\""
             buildConfigField "String", "CDN_URL", "\"https://d1uxs9zd0apq85.cloudfront.net/\""
             buildConfigField("String", "BASE_URL_AI", "\"https://ai.rightlife.com/\"")
+            buildConfigField("String", "BASE_URL_AI_V2", "\"https://ai.rightlife.com/v2/\"")
             buildConfigField("String", "VIDEO_CDN_URL", "\"https://rightlife-prod-us-east-1.s3-accelerate.amazonaws.com/\"")
 
         }

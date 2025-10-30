@@ -1489,7 +1489,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             cardioZone = 0f,
                             peakZone = 0f
                         )
-
                         // Map syncedWorkouts to CardItem objects
                         val syncedCardItems = it.syncedWorkouts.map { workout ->
                             val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
