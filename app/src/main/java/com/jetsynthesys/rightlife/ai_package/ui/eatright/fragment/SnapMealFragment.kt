@@ -47,6 +47,7 @@ import android.widget.TextView
 import android.widget.MediaController
 import android.widget.VideoView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
@@ -568,83 +569,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         loadingOverlay?.visibility = View.GONE
     }
 
-    private fun uploadFoodImagePath(imagePath: String, description: String) {
-        if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
-        }
-        val base64Image = encodeImageToBase64(imagePath)
-        val apiKey = "HanN8X1baCEM0E49xNcN"
-        val request = AnalysisRequest(apiKey, base64Image!!, description)
-        val call = ApiClient.apiServiceFoodCaptureImageApi.analyzeFoodImage(
-            "analysis", request)
-        call.enqueue(object : Callback<ScanMealNutritionResponse> {
-            override fun onResponse(call: Call<ScanMealNutritionResponse>, response: Response<ScanMealNutritionResponse>) {
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    println("Success: ${response.body()}")
-                    if (response.body()?.data != null){
-                        if (response.body()?.data!!.isNotEmpty()){
-                            requireActivity().supportFragmentManager.beginTransaction().apply {
-                                val snapMealFragment = MealScanResultFragment()
-                                val args = Bundle()
-                                args.putString("homeTab", homeTab)
-                                args.putString("selectedMealDate", selectedMealDate)
-                                args.putString("mealType", mealType)
-                                args.putString("ModuleName", moduleName)
-                                args.putString("ImagePath", imagePath)
-                                args.putString("description", mealDescriptionET.text.toString())
-                                args.putString("ImagePathsecound", imagePathsecond.toString())
-                                args.putParcelable("foodDataResponses", response.body())
-                                snapMealFragment.arguments = args
-                                replace(R.id.flFragment, snapMealFragment, "Steps")
-                                addToBackStack(null)
-                                commit()
-                            }
-                        }else{
-                            Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
-                        }
-                    }else{
-                        Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    println("Error: ${response.errorBody()?.string()}")
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    val errorBody = response.errorBody()?.string()
-                    if (!errorBody.isNullOrEmpty()) {
-                        try {
-                            val json = JSONObject(errorBody)
-                            val message = json.optString("text", "Unknown error")
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                        } catch (e: Exception) {
-                            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
-                        }
-                    }else{
-                        Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            override fun onFailure(call: Call<ScanMealNutritionResponse>, t: Throwable) {
-                println("Failure: ${t.message}")
-                if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-                    }
-                }
-                Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
     private fun encodeImageToBase64(imagePath: String): String? {
         return try {
 
@@ -669,14 +593,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
             null
         }
     }
-
-//    private fun encodeImageToBase64(imagePath: String): String {
-//        val file = File(imagePath)
-//        val inputStream = FileInputStream(file)
-//        val bytes = inputStream.readBytes()
-//        inputStream.close()
-//        return Base64.encodeToString(bytes, Base64.DEFAULT)
-//    }
 
     private fun videoPlay(){
         val videoUri = Uri.parse("android.resource://${requireContext().packageName}/${R.raw.mealsnap_v31}")
@@ -835,87 +751,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         })
     }
 
-//    private fun getSnapMealsNutrients(imageUrl: String, description: String) {
-//        if (isAdded  && view != null){
-//            requireActivity().runOnUiThread {
-//                showLoader(requireView())
-//            }
-//        }
-//        val base64Image = encodeImageToBase64(imagePath)
-//        val request = SnapMealsNutrientsRequest(imageUrl, description)
-//        val call = ApiClient.apiServiceFastApiV2.getSnapMealsNutrients(
-//            request)
-//        call.enqueue(object : Callback<SnapMealNutrientsResponse> {
-//            override fun onResponse(call: Call<SnapMealNutrientsResponse>, response: Response<SnapMealNutrientsResponse>) {
-//                if (response.isSuccessful) {
-//                    if (isAdded  && view != null){
-//                        requireActivity().runOnUiThread {
-//                            dismissLoader(requireView())
-//                        }
-//                    }
-//                    println("Success: ${response.body()}")
-//                    if (response.body()?.data != null){
-//                        if (response.body()?.data!!.dish.isNotEmpty()){
-//                            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                                val snapMealFragment = MealScanResultFragment()
-//                                val args = Bundle()
-//                                args.putString("homeTab", homeTab)
-//                                args.putString("selectedMealDate", selectedMealDate)
-//                                args.putString("mealType", mealType)
-//                                args.putString("ModuleName", moduleName)
-//                                args.putString("ImagePath", imagePath)
-//                                args.putString("description", mealDescriptionET.text.toString())
-//                                args.putString("ImagePathsecound", imagePathsecond.toString())
-//                                args.putParcelable("foodDataResponses", response.body())
-//                                snapMealFragment.arguments = args
-//                                replace(R.id.flFragment, snapMealFragment, "Steps")
-//                                addToBackStack(null)
-//                                commit()
-//                            }
-//                        }else{
-//                            notMealDetectItem()
-//                           // Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }else{
-//                        notMealDetectItem()
-//                        //Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
-//                    }
-//                } else {
-//                    println("Error: ${response.errorBody()?.string()}")
-//                    if (isAdded  && view != null){
-//                        requireActivity().runOnUiThread {
-//                            dismissLoader(requireView())
-//                        }
-//                    }
-//                    val errorBody = response.errorBody()?.string()
-//                    if (!errorBody.isNullOrEmpty()) {
-//                        try {
-//                            val json = JSONObject(errorBody)
-//                            val message = json.optString("text", "Unknown error")
-//                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-//                        } catch (e: Exception) {
-//                          //  Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
-//                            notMealDetectItem()
-//                        }
-//                    }else{
-//                       // Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
-//                        notMealDetectItem()
-//                    }
-//                }
-//            }
-//            override fun onFailure(call: Call<SnapMealNutrientsResponse>, t: Throwable) {
-//                println("Failure: ${t.message}")
-//                if (isAdded  && view != null){
-//                    requireActivity().runOnUiThread {
-//                        dismissLoader(requireView())
-//                    }
-//                }
-//                notMealDetectItem()
-//              //  Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
-//            }
-//        })
-//    }
-
     private fun getSnapMealsNutrients(imageUrl: String, description: String) {
         if (!isAdded) return
         val act = activity ?: return
@@ -996,13 +831,17 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     var imageSelectedListener: OnImageSelectedListener? = null
 
     // Activity Result Launcher for selecting an image from gallery
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
         uri?.let {
             imageSelectedListener?.onImageSelected(it)
             dismiss()
             Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
-        } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -1169,42 +1008,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         }
     }
 
-    private fun requestGalleryPermissionIfNeeded(): Boolean {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 101)
-            false
-        } else {
-            true
-        }
-    }
-
-//    private fun startCamera() {
-//        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-//        cameraProviderFuture.addListener({
-//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-//
-//            val preview = Preview.Builder().build().also {
-//                it.setSurfaceProvider(viewFinder.surfaceProvider)
-//            }
-//            imageCapture = ImageCapture.Builder()
-//                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-//                .setFlashMode(ImageCapture.FLASH_MODE_OFF)
-//                .build()
-//            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-//            try {
-//                cameraProvider.unbindAll()
-//                camera = cameraProvider.bindToLifecycle(
-//                    viewLifecycleOwner, cameraSelector, preview, imageCapture
-//                )
-//            } catch (exc: Exception) {
-//                Log.e(TAG, "Use case binding failed", exc)
-//            }
-//        }, ContextCompat.getMainExecutor(requireContext()))
-//    }
-
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
@@ -1298,17 +1101,9 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun openGallery() {
-        if (allPermissionsGranted()) {
-            Handler(Looper.getMainLooper()).post {
-            pickImageLauncher.launch("image/*")
-        }
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
-        }
+        pickImageLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
@@ -1327,16 +1122,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             }
         }
     }
-
-    private val REQUIRED_PERMISSIONS = mutableListOf(
-        Manifest.permission.CAMERA
-    ).apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            add(Manifest.permission.READ_MEDIA_IMAGES)
-        } else {
-            add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-    }.toTypedArray()
 
     private fun navigateToFragment(fragment: Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -1365,6 +1150,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
+
 }
 interface OnImageSelectedListener {
     fun onImageSelected(imageUri: Uri)
