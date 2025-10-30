@@ -1108,7 +1108,7 @@ class HomeExploreFragment : BaseFragment() {
             }
 
             "TEXT".equals(contentType, ignoreCase = true) -> {
-                imgContenttypeRledit.setImageResource(R.drawable.ic_text_content)
+                imgContenttypeRledit.setImageResource(R.drawable.text_jump_back_in)
                 contentTypeRledit1.text = "Text"
             }
 
