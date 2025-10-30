@@ -2914,6 +2914,7 @@ class HomeNewActivity : BaseActivity() {
                     sharedPreferenceManager.saveSnapMealId(snapMealId)
                     this.snapMealId = snapMealId
                 }else{
+                    sharedPreferenceManager.saveSnapMealId("")
                     this.snapMealId = ""
                 }
             }
@@ -2990,7 +2991,12 @@ class HomeNewActivity : BaseActivity() {
 
             userStatus == 1 && freeDate.isNotEmpty() -> {
                 // Free trial active with date
-                logAndOpenMeal(snapMealId)
+                if (!DashboardChecklistManager.checklistStatus)
+                {
+                    logAndOpenMeal(snapMealId)
+                }else{
+                    logAndOpenMeal("")
+                }
             }
 
             userStatus == 1 && freeDate.isEmpty() -> {
@@ -2998,9 +3004,10 @@ class HomeNewActivity : BaseActivity() {
                 logAndOpenMeal("")
             }
 
-            userStatus == 2 && snapMealId.isNotEmpty() -> {
+            userStatus == 2  -> {
                 // Free trial expired but has snap meal id
-                logAndOpenMeal(snapMealId)
+                //logAndOpenMeal(snapMealId)
+                checkTrailEndedAndShowDialog()
             }
 
             userStatus == 3 -> {

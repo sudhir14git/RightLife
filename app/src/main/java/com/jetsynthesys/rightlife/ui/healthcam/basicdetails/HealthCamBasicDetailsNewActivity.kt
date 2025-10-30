@@ -282,6 +282,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun showAgeSelectionBottomSheet() {
+        var selectedAge =  "27 years"
+        binding.edtAge.setText(selectedAge)
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
 
@@ -390,7 +392,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             wheelItemCount = 7
         }
 
-        var selectedAge = if (selectedAgeFromUi.isNotEmpty())
+         selectedAge = if (selectedAgeFromUi.isNotEmpty())
             years[years.indexOf(selectedAgeFromUi)]
         else years[14]
 
@@ -494,7 +496,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
         dialogBinding.rulerView.adapter = adapterWeight
 
-        if (selectedLabel == " kg") {
+        if (selectedLabel == " kg" || selectedLabel == " kgs" || selectedLabel == " KGS") {
             dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.kgOption.setTextColor(Color.WHITE)
 
