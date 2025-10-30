@@ -62,7 +62,7 @@ class NewSleepSoundActivity : BaseActivity()
         onBackPressedDispatcher.addCallback { handleBackPressed() }
         setupCategoryRecyclerView()
         fetchCategories()
-        getUserCreatedPlaylist()
+        //getUserCreatedPlaylist()
         getNewReleases()
 
         // Register for result
@@ -77,7 +77,7 @@ class NewSleepSoundActivity : BaseActivity()
                         {
                             binding.linearLayoutContainer.removeAllViews()
                             fetchCategories()
-                            getUserCreatedPlaylist()
+
                             getNewReleases()
                         }
                     }
@@ -210,6 +210,7 @@ class NewSleepSoundActivity : BaseActivity()
                                          }
                                      }
                                  }
+                                 getUserCreatedPlaylist()
                              } else
                              {
                                  showToast("Server Error: " + response.code())
@@ -607,6 +608,7 @@ class NewSleepSoundActivity : BaseActivity()
                                      setupNewReleaseRecyclerView(response.body()?.data?.services?.let {
                                          ArrayList(it)
                                      })
+                                     binding.layoutNewRelease.visibility = View.GONE
                                  } else
                                  {
                                      showToast("No Releases data available")

@@ -32,7 +32,7 @@ class FaceScanRangesAdapter(private val rangeList: List<FacialScanRange>?) :
         with(holder.binding) {
             indicatorRange.text = secondReport?.indicator
             tvIndicatorExplainRange.text =
-                Html.fromHtml(secondReport?.implication, Html.FROM_HTML_MODE_COMPACT)
+                Html.fromHtml(secondReport?.implication, Html.FROM_HTML_MODE_LEGACY)
 
             tvIndicatorValueBgRange.text =
                 "${secondReport?.lowerRange}-${secondReport?.upperRange} ${secondReport?.unit}"

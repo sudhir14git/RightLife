@@ -42,6 +42,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:gravity="center"
                         android:layout_centerInParent="true">
 
                         <ImageView
@@ -49,14 +50,16 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/active_heartrate_icon"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="5dp" />
 
                         <TextView
                             android:id="@+id/tvWitale"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Pulse Rate"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
+                            android:layout_gravity="center"
+                            android:gravity="center_vertical"
                             android:textColor="@color/txt_color_header"
                             android:fontFamily="@font/merriweather_bold" />
                     </LinearLayout>
@@ -529,7 +532,7 @@
                     android:text="60-100 bpm"
                     android:textSize="12sp"
                     android:padding="8dp"
-                    android:textColor="@color/text_color_app"
+                    android:textColor="@color/white"
                     android:fontFamily="@font/dmsans_bold"
                     android:background="@drawable/bg_rounded_green"
                     android:layout_marginTop="8dp" />
@@ -540,6 +543,7 @@
                     android:layout_height="wrap_content"
                     android:text="Your vital are in the normal range in between 60-100 Bpm."
                     android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
                     android:layout_marginTop="16dp" />
 
                 <TextView
@@ -548,6 +552,7 @@
                     android:text="Optimal RHR (around 60-70 BPM): Your heart's in the sweet spot! It's working smoothly with minimal stress."
                     android:textSize="16sp"
                     android:visibility="gone"
+                    android:fontFamily="@font/dmsans_regular"
                     android:layout_marginTop="16dp" />
 
                 <TextView
@@ -556,6 +561,7 @@
                     android:text="Higher normal RHR (&gt;80 BPM): A little heads-up—if this persists, it could mean future heart concerns. Keep an eye on it!"
                     android:textSize="16sp"
                     android:visibility="gone"
+                    android:fontFamily="@font/dmsans_regular"
                     android:layout_marginTop="16dp" />
 
 

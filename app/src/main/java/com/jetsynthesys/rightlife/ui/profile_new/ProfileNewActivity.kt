@@ -239,7 +239,15 @@ class ProfileNewActivity : BaseActivity() {
 
             binding.etMobile.setText(lastTenDigits)
         }
-
+        if ("VERIFIED".equals(userData.newPhoneStatus, ignoreCase = false)) {
+            binding.btnVerify.isEnabled = false
+            binding.btnVerify.text = "Verified"
+            binding.etMobile.isEnabled = false
+        } else {
+            binding.btnVerify.isEnabled = true
+            binding.btnVerify.text = "Verify"
+            binding.etMobile.isEnabled = true
+        }
 
         if (userData.age != null)
             binding.tvAge.text = userData.age.toString() + " years"
@@ -1310,6 +1318,9 @@ class ProfileNewActivity : BaseActivity() {
                     SharedPreferenceManager.getInstance(applicationContext)
                             .setAIReportGeneratedView(ResponseObj.reportView)
 
+                    userDataResponse = sharedPreferenceManager.userProfile
+                    userData = userDataResponse.userdata
+                    setUserData(userData)
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
