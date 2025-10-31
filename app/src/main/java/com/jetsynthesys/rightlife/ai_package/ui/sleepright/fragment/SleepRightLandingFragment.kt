@@ -1269,13 +1269,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
                     val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+                    SharedPreferenceManager.getInstance(context?.let { it }).saveMoveRightSyncTime(syncTime)
                     isRepeat = true
                     fetchSleepLandingData()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context?.let { it }, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     isRepeat = true
                     if (isAdded && view != null) dismissLoader(requireView())
                 }
@@ -1298,7 +1298,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireContext()).deviceName
+                                source_name = SharedPreferenceManager.getInstance(context?.let { it }).deviceName
                             )
                         } else null
                     } ?: emptyList()
@@ -1311,7 +1311,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireContext()).deviceName
+                                source_name = SharedPreferenceManager.getInstance(context?.let { it }).deviceName
                             )
                         } else null
                     } ?: emptyList()
@@ -1609,13 +1609,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
                     val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+                    SharedPreferenceManager.getInstance(context?.let { it }).saveMoveRightSyncTime(syncTime)
                     isRepeat = true
                     fetchSleepLandingData()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context?.let { it }, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     isRepeat = true
                     if (isAdded && view != null) dismissLoader(requireView())
                 }
@@ -1653,6 +1653,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 if (response.isSuccessful) {
                     sleepSoundResponse = response.body()!!
                     if (sleepSoundResponse.sleepSoundData != null){
+                        val ctx = context ?: return@onResponse
                         if (sleepSoundResponse.sleepSoundData?.services!!.size > 0){
                             btnSleepSound.visibility = View.GONE
                             sleepSoundCardView.visibility = View.VISIBLE
@@ -1662,7 +1663,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 soundPlay1.visibility = View.VISIBLE
                                 soundPlay2.visibility = View.GONE
                                 soundPlay3.visibility = View.GONE
-                                Glide.with(requireContext())
+                                Glide.with(ctx)
                                     .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
@@ -1670,11 +1671,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 soundPlay1.visibility = View.VISIBLE
                                 soundPlay2.visibility = View.VISIBLE
                                 soundPlay3.visibility = View.GONE
-                                Glide.with(requireContext())
+                                Glide.with(ctx)
                                     .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
-                                Glide.with(requireContext())
+                                Glide.with(ctx)
                                     .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay2)
@@ -1682,15 +1683,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 soundPlay1.visibility = View.VISIBLE
                                 soundPlay2.visibility = View.VISIBLE
                                 soundPlay3.visibility = View.VISIBLE
-                                Glide.with(requireContext())
+                                Glide.with(ctx)
                                     .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
-                                Glide.with(requireContext())
+                                Glide.with(ctx)
                                     .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay2)
-                                Glide.with(requireContext())
+                                Glide.with(ctx)
                                     .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay3)
@@ -1969,7 +1970,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             requestPermissionsAndReadAllData()
                         }
                     } else {
-                        Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(ctx, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -1993,9 +1994,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 consistencySleep.visibility = View.GONE
                 sleepConsistencyChart.visibility = View.GONE
                 if (!isRepeat){
-                    val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                    val ctx = context ?: return
+                    val availabilityStatus = HealthConnectClient.getSdkStatus(ctx)
                     if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-                        healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                        healthConnectClient = HealthConnectClient.getOrCreate(ctx)
                         lifecycleScope.launch {
                             requestPermissionsAndReadAllData()
                         }
@@ -2472,8 +2474,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     // progressDialog.dismiss()
                     thinkRecomendedResponse = response.body()!!
                     if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        recomendationAdapter = RecommendedAdapterSleep(requireContext(), thinkRecomendedResponse.data?.contentList!!)
-                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        val ctx = context ?: return@onResponse
+                        recomendationAdapter = RecommendedAdapterSleep(ctx, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationRecyclerView.layoutManager = LinearLayoutManager(ctx)
                         recomendationRecyclerView.adapter = recomendationAdapter
                     }
                 } else {
