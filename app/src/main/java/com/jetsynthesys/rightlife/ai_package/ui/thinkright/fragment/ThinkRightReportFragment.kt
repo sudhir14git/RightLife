@@ -313,7 +313,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     showLoader(requireView())
                 }
             }
-            Toast.makeText(requireContext(), "start Report downloading...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context?.let { it }, "start Report downloading...", Toast.LENGTH_SHORT).show()
             saveViewAsPdf(requireContext(), mainView, "Journal")
         }
 
@@ -322,7 +322,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         }
 
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
-            startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
+            startActivity(Intent(context?.let { it }, PractiseAffirmationPlaylistActivity::class.java))
         }
         view.findViewById<LinearLayout>(R.id.play_now_mind_audit).setOnClickListener {
             ActivityUtils.startMindAuditActivity(requireContext(), true)
@@ -1037,8 +1037,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     // progressDialog.dismiss()
                     thinkRecomendedResponse = response.body()!!
                     if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
+                        val ctx = context ?: return@onResponse
                         recomendationAdapter = RecommendationAdapter(
-                            context!!,
+                            ctx,
                             thinkRecomendedResponse.data?.contentList!!
                         )
                         recomendationRecyclerView.layoutManager =
@@ -1160,7 +1161,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                             dotSize = 14
                             dotMargin = 6
                             for (i in 0 until itemCount) {
-                                val dot = View(requireContext()).apply {
+                                val ctx = context ?: return@onResponse
+                                val dot = View(ctx).apply {
                                     layoutParams = LinearLayout.LayoutParams(
                                         if (i == 0) 32 else dotSize.dpToPx(),  // Active is pill
                                         dotSize.dpToPx()
@@ -1274,7 +1276,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             outputStream?.use {
                 document.writeTo(it)
                 success = true
-                Toast.makeText(requireContext(), "Report downloaded successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context?.let { it }, "Report downloaded successfully", Toast.LENGTH_SHORT).show()
             }
 
         } catch (e: IOException) {
