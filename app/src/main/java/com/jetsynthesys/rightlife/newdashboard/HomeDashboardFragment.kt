@@ -239,18 +239,20 @@ class HomeDashboardFragment : BaseFragment()
                 freeTrialDialogActivity(FeatureFlags.MEAL_SCAN)
             } else
             {
-                permissionManager = PermissionManager(activity = requireActivity(), launcher = permissionLauncher, onPermissionGranted = {
+                /*permissionManager = PermissionManager(activity = requireActivity(), launcher = permissionLauncher, onPermissionGranted = {
                     // If local value empty, try from shared prefs
                     val safeSnapMealId = if (snapMealId.isNotBlank()) snapMealId
                     else sharedPreferenceManager.snapMealId ?: ""
 
-                    // Always send empty string safely
-                    //ActivityUtils.startMealScanActivity(requireContext(), safeSnapMealId)
                     logAndOpenMeal(safeSnapMealId)
                 }, onPermissionDenied = {
                     Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
                 })
-                permissionManager.checkAndRequestPermissions()
+                permissionManager.checkAndRequestPermissions()*/
+                // If local value empty, try from shared prefs
+                val safeSnapMealId = if (snapMealId.isNotBlank()) snapMealId
+                else sharedPreferenceManager.snapMealId ?: ""
+                logAndOpenMeal(safeSnapMealId)
             }
         }
 
