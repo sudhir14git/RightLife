@@ -5,6 +5,7 @@ import android.app.ComponentCaller
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Paint
@@ -93,12 +94,14 @@ import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
+import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -805,6 +808,9 @@ class HomeNewActivity : BaseActivity() {
 
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    if (response.code() == 401){
+                        clearUserDataAndFinish()
+                    }
                 }
 
                 /*  if (!DashboardChecklistManager.paymentStatus) {
@@ -3038,5 +3044,53 @@ class HomeNewActivity : BaseActivity() {
             "SnapMealTypeEat",
             snapId
         )
+    }
+
+    private fun clearUserDataAndFinish() {
+        val keysToKeep = setOf(
+            SharedPreferenceConstants.ALL_IN_ONE_PLACE,
+            SharedPreferenceConstants.AFFIRMATION_CONTEXT_SCREEN,
+            SharedPreferenceConstants.BREATH_WORK_CONTEXT_SCREEN,
+            SharedPreferenceConstants.FACE_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.JOURNAL_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MEAL_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MIND_AUDIT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MRER_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_SOUND_CONTEXT_SCREEN,
+            SharedPreferenceConstants.TRSR_CONTEXT_SCREEN,
+            SharedPreferenceConstants.EAT_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MOVE_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.THINK_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN
+        )
+
+        // FIXED: Use the correct SharedPreferences file name
+        val sharedPreferences = getSharedPreferences("app_shared_prefs", MODE_PRIVATE)
+        removeKeysNotInKeepList(sharedPreferences, keysToKeep)
+
+        val intent = Intent(this, DataControlActivity::class.java)
+        startActivity(intent)
+
+        finishAffinity()
+    }
+
+    private fun removeKeysNotInKeepList(sharedPreferences: SharedPreferences, keysToKeep: Set<String>) {
+        val editor = sharedPreferences.edit()
+
+        // Get all current preference keys
+        val allKeys = sharedPreferences.all.keys
+
+        // Remove keys that are not in the keysToKeep list
+        allKeys.forEach { key ->
+            if (key !in keysToKeep) {
+                editor.remove(key)
+            }
+        }
+
+        // Explicitly remove access token to ensure it's cleared
+        editor.remove(SharedPreferenceConstants.ACCESS_TOKEN)
+
+        editor.apply()
     }
 }
