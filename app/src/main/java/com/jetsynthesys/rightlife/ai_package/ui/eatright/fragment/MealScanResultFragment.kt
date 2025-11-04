@@ -458,6 +458,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
 //                    commit()
 //                }
             } else {
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RESULTPAGE_ADDTOLOG)
                 if (snapMealLog.equals("snapMealLog")) {
                     updateSnapMealLog(mealId, snapRecipesList)
                 } else {
