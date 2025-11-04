@@ -58,6 +58,8 @@ import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -395,6 +397,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         macroIc.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_REPORT_PAGE_OPEN)
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MacrosTabFragment()
                 val args = Bundle()
@@ -1073,6 +1076,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                     response: Response<LogWeightResponse>
                 ) {
                     if (response.isSuccessful) {
+                        AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_LOGWEIGHT_CONTINUE_TAP)
                         val responseBody = response.body()
                         bottomSheetDialog.dismiss()
                         dialogBinding.rulerView.adapter = null
@@ -1166,6 +1170,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         glassWithWaterView.setImageResource(R.drawable.glass_image_0)
                     }
                 }
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_HYDRATION_LOG_CONFIRM_TAP)
             }
         }
         val args = Bundle()

@@ -96,6 +96,7 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
         layoutSubmit.setOnClickListener {
             ratingLayout.visibility = View.GONE
             afterRatingLayout.visibility = View.VISIBLE
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RATING_SUBMIT)
           //  successLayout.visibility = View.VISIBLE
             //dismiss()
          //   listener?.onSnapMealRating(1.0, isSave)

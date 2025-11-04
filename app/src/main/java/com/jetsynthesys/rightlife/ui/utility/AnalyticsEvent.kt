@@ -176,4 +176,11 @@ object AnalyticsEvent {
 
     const val ALL_HEALTH_DATA_CLICK = "all_health_data_click"
     const val DISCOVER_CLICK = "discover_click"
+    const val ER_REPORT_PAGE_OPEN = "er_report_pageopen"
+    const val ER_HYDRATION_LOG_CONFIRM_TAP = "er_hydration_log_confirm_tap"
+    const val ER_LOGWEIGHT_CONTINUE_TAP = "er_logweight_continue_tap"
+    const val MEALSNAP_RESULTPAGE_FIRSTLOG = "mealsnap_resultpage_firstlog"
+    const val MEALSNAP_RESULTPAGE_ADDTOLOG = "mealsnap_resultpage_addtolog"
+    const val MEALSNAP_RATING_SUBMIT = "mealsnap_rating_submit"
+    const val ER_MEALLOG_LOGYOURMEAL = "er_meallog_logyourmeal"
 }
