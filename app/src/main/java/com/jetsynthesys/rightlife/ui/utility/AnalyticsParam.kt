@@ -3,6 +3,8 @@ package com.jetsynthesys.rightlife.ui.utility
 object AnalyticsParam {
     const val USER_ID = "user_id"
     const val USER_TYPE = "user_type"
+    const val PLATFORM_TYPE = "platform_type"
+    const val LOGIN_TYPE = "login_type"
     const val GENDER = "gender"
     const val AGE = "age"
     const val WEIGHT = "weight"

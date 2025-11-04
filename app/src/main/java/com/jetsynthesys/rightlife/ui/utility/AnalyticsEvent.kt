@@ -3,7 +3,8 @@ package com.jetsynthesys.rightlife.ui.utility
 object AnalyticsEvent {
 
     // Splash and Onboarding
-    const val SPLASH_SCREEN_OPEN = "splash_screen_open"
+    const val SPLASH_SCREEN_OPEN = "SplashScreen_Open"
+    const val SPLASH_SCREEN_FIRST_OPEN = "SplashScreen_First_Open"
     const val USER_LOGIN = "user_login"
     const val ACTIVE_USER = "active_user"
     const val USER_RETENTION = "user_retention"

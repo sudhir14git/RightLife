@@ -48,7 +48,7 @@ class SplashScreenActivity : BaseActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             if (authToken.isEmpty()) {
                 AnalyticsLogger.logEvent(
-                    AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
+                    AnalyticsEvent.SPLASH_SCREEN_FIRST_OPEN, mapOf(
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
                     )
                 )
@@ -70,7 +70,12 @@ class SplashScreenActivity : BaseActivity() {
                     }
                 }
 
-                AnalyticsLogger.logEvent(this, AnalyticsEvent.SPLASH_SCREEN_OPEN)
+                AnalyticsLogger.logEvent(this,
+                        AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                )
+                )
 
                 if (loggedInUser?.isOnboardingComplete == true) {
                     val intent = Intent(this, HomeNewActivity::class.java)

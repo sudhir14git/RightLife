@@ -860,7 +860,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             "MSI" -> R.drawable.ic_db_report_stresslevel
             "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
             "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
-            "HEALTH_SCORE" -> R.drawable.ic_wellness_man
+            "HEALTH_SCORE" -> R.drawable.ic_wellness_man_small
             else -> R.drawable.ic_db_report_heart_rate
         }
     }
