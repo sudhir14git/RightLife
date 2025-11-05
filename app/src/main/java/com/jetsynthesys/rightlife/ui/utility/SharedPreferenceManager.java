@@ -466,6 +466,16 @@ public class SharedPreferenceManager {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, true);
     }
 
+    public void setFirstTimeForHomeDashboard(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_HOMEDASHBOARD, isUnlock);
+        editor.apply();
+    }
+
+    public Boolean getFirstTimeForHomeDashboard() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_HOMEDASHBOARD, true);
+    }
+
     public void setFirstTimeUserAffirmationInfoShown(boolean isUnlock) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, isUnlock);

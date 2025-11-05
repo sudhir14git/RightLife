@@ -22,6 +22,7 @@ object AnalyticsParam {
     const val MEAL_SCAN_COMPLETE = "meal_scan_complete"
     const val MEAL_SCAN_RATING = "meal_scan_rating"
     const val RATING = "rating"
+    const val STAR_RATING = "rating"
     const val START_TIME = "start_time"
     const val END_TIME = "end_time"
     const val TOTAL_DURATION = "total_duration"
@@ -46,4 +47,15 @@ object AnalyticsParam {
     const val PROFILE_STATUS = "profile_status"
     const val HEALTH_DATA_TYPE = "health_data_type"
     const val DISCOVER_TYPE = "discover_type"
+
+    //
+    const val USERNAME = " UserName"
+
+    //content params
+    const val CONTENT_ID = "content_id"
+    const val CONTENT_TYPE = "content_type"
+    const val CONTENT_MODULE = "content_module"
+    const val CONTENT_TITLE = "content_title"
+    const val CONTENT_CATEGORY = "content_category"
+
 }

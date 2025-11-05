@@ -116,6 +116,14 @@ class CreateUsernameActivity : BaseActivity() {
                 sharedPreferenceManager.createUserName = true
                 val intent = Intent(this, HappyToHaveYouActivity::class.java)
                 startActivity(intent)
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.NAMEPAGE_CONTINUE_TAP,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.USERNAME to edtUsername.text.toString(),
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
             }else{
                 showCustomToast("Username should not be empty!")
             }

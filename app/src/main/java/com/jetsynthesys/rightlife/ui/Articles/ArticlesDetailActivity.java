@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.Articles;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -38,6 +39,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityArticledetailBinding;
 import com.jetsynthesys.rightlife.ui.Articles.models.Article;
 import com.jetsynthesys.rightlife.ui.Articles.models.ArticleDetailsResponse;
 import com.jetsynthesys.rightlife.ui.Articles.models.Artist;
+import com.jetsynthesys.rightlife.ui.Articles.models.Data;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
@@ -210,6 +212,7 @@ public class ArticlesDetailActivity extends BaseActivity {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
                 Utils.dismissLoader(ArticlesDetailActivity.this);
+                logVideoOpenEvent(ArticlesDetailActivity.this, articleDetailsResponse, contentId);
             }
 
             @Override
@@ -630,6 +633,34 @@ public class ArticlesDetailActivity extends BaseActivity {
         params.put(AnalyticsParam.ARTICLE_ID, contentId != null ? contentId : "");
 
         AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.ARTICLE_FINISHED, params);
+    }
+
+    private void logVideoOpenEvent(Context context,
+                                   ArticleDetailsResponse contentResponseObj,
+                                   String contentId) {
+        try {
+            Map<String, Object> params = new HashMap<>();
+
+            // Safely extract nested data once
+            Data data =
+                    contentResponseObj != null ? contentResponseObj.getData() : null;
+
+            String id = contentId != null ? contentId.trim() : "";
+            String type = (data != null && data.getContentType() != null)
+                    ? data.getContentType().trim() : "";
+            String module = (data != null && data.getModuleId() != null)
+                    ? data.getModuleId().trim() : "";
+
+            params.put(AnalyticsParam.CONTENT_ID, id);
+            params.put(AnalyticsParam.CONTENT_TYPE, type);
+            params.put(AnalyticsParam.CONTENT_MODULE, module);
+
+            if (!params.isEmpty()) {
+                AnalyticsLogger.INSTANCE.logEvent(context, AnalyticsEvent.Video_Open, params);
+            }
+        } catch (Exception e) {
+            Log.e("AnalyticsLogger", "Video_Open event failed: " + e.getLocalizedMessage(), e);
+        }
     }
 
 

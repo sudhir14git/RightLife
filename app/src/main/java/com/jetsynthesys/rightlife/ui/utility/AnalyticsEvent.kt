@@ -184,4 +184,28 @@ object AnalyticsEvent {
     const val MEALSNAP_RESULTPAGE_ADDTOLOG = "mealsnap_resultpage_addtolog"
     const val MEALSNAP_RATING_SUBMIT = "mealsnap_rating_submit"
     const val ER_MEALLOG_LOGYOURMEAL = "er_meallog_logyourmeal"
+
+    // New Phase 1 Events
+    const val NAMEPAGE_CONTINUE_TAP = "NamePage_Continue_Tap"
+    const val FREETRIALUNlOCKED_POPUP_OPEN = "FreeTrialUnlocked_PopUp_Open"
+    const val MyHealth_Dashboard_FirstOpen = "MyHealth_Dashboard_FirstOpen"
+    const val RL_AI_Report_PageOpen = "RL_AI_Report_PageOpen"
+    const val RL_AI_Report_Rating_Submit = "RL_AI_Report_Rating_Submit"
+
+    // FaceScan Events
+    const val FaceScan_ProceedtoScan_Tap = "FaceScan_ProceedtoScan_Tap"
+    const val FaceScan_Cam_PageOpen = "FaceScan_Cam_PageOpen"
+
+    // Content Events
+    const val Video_Open = "Video_Open"
+    const val Article_Open = "Article_Open"
+
+
+
+
+
+
+
+
+
 }

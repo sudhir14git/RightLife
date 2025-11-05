@@ -44,6 +44,9 @@ import com.jetsynthesys.rightlife.ui.healthcam.HealthCamSubmitResponse
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
 import com.jetsynthesys.rightlife.ui.sdkpackage.HealthCamRecorderActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
@@ -274,6 +277,13 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     heightInCms,
                     weightInKg,
                     age.split(" ")[0]
+                )
+                AnalyticsLogger.logEvent(
+                        this,
+                        AnalyticsEvent.FaceScan_ProceedtoScan_Tap,
+                        mapOf(
+                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        )
                 )
             }
         }

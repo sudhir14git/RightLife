@@ -13,6 +13,9 @@ import com.jetsynthesys.rightlife.databinding.ActivityBeginMyFreeTrialBinding
 import com.jetsynthesys.rightlife.subscriptions.adapter.PlanSliderAdapter
 import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeRightLifeContextScreenActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -160,6 +163,13 @@ class BeginMyFreeTrialActivity : BaseActivity()
                                                                          )
                                                                          finish()
                                                                      }, 1000)
+                                     AnalyticsLogger.logEvent(
+                                             AnalyticsEvent.FREETRIALUNlOCKED_POPUP_OPEN,
+                                             mapOf(
+                                                     AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                                                     AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                                             )
+                                     )
                                  } else
                                  {
                                      showToast(response.code().toString())

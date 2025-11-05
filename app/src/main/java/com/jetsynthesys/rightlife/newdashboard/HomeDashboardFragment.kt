@@ -328,6 +328,7 @@ class HomeDashboardFragment : BaseFragment()
         /*binding.trialExpiredLayout.trialExpiredLayout.visibility =
             if ((requireActivity() as? HomeNewActivity)?.isTrialExpired == true) View.VISIBLE else View.GONE*/
 
+
     }
 
     /*  @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -508,6 +509,12 @@ class HomeDashboardFragment : BaseFragment()
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.CHECKLIST_COMPLETE, mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true))/*
                         val activity = requireActivity() as HomeNewActivity
                         activity.getUserDetails()*/
+            if (sharedPreferenceManager.getFirstTimeForHomeDashboard())
+            {
+                sharedPreferenceManager.firstTimeForHomeDashboard = false
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MyHealth_Dashboard_FirstOpen)
+            }
+
         } else
         {
             binding.llDashboardMainData.visibility = View.GONE

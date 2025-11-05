@@ -739,6 +739,8 @@ class ContentDetailsActivity : BaseActivity() {
                 AnalyticsParam.VIDEO_ID to contentId
             )
         )
+
+        logVideoOpenEvent(this, contentResponseObj, contentId)
     }
 
     private fun logContentWatchedEvent() {
@@ -750,6 +752,38 @@ class ContentDetailsActivity : BaseActivity() {
             )
         )
     }
+
+    fun logVideoOpenEvent(context: ContentDetailsActivity, contentResponseObj: ModuleContentDetail?, contentId: String?) {
+        runCatching {
+            val data = contentResponseObj?.data
+
+            val params = mutableMapOf<String, Any>()
+
+            // helper for non-null values trimmed & limited to 100 chars
+            fun putSafe(key: String, value: Any?) {
+                when (value) {
+                    is String -> if (value.isNotBlank()) params[key] = value.trim().take(100)
+                    is Number, is Boolean -> params[key] = value
+                }
+            }
+
+            putSafe(AnalyticsParam.VIDEO_ID, contentId)
+            putSafe(AnalyticsParam.CONTENT_MODULE, data?.moduleId ?: "unknown_module")
+            putSafe(AnalyticsParam.CONTENT_TYPE, data?.title ?: "unknown_type")
+            putSafe(AnalyticsParam.CONTENT_CATEGORY, data?.categoryName ?: "unknown_category")
+
+            if (params.isEmpty()) return // nothing to log
+
+            AnalyticsLogger.logEvent(
+                    context,
+                    AnalyticsEvent.Video_Open,
+                    params
+            )
+        }.onFailure { e ->
+            Log.e("AnalyticsLogger", "Video_Open event failed: ${e.localizedMessage}", e)
+        }
+    }
+
 
     private fun logContentWatchedEventAudio() {
         AnalyticsLogger.logEvent(

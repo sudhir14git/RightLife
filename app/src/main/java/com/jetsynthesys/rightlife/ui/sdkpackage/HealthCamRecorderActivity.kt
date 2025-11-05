@@ -26,6 +26,8 @@ import com.jetsynthesys.rightlife.ui.healthcam.HealthCamFacialScanRequest
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamReportIdResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.healthcam.ReportData
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -93,7 +95,10 @@ class HealthCamRecorderActivity : BaseActivity() {
         if (requestPermission()) {
             registerScan()
         }
-
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.FaceScan_Cam_PageOpen,
+            mapOf("timestamp" to System.currentTimeMillis())
+        )
     }
 
 

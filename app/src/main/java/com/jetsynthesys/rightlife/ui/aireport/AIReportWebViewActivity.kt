@@ -107,6 +107,15 @@ class AIReportWebViewActivity : BaseActivity(), RatingReportFeedbackBottomSheet.
 
         webView.loadUrl(fullUrl)
         SharedPreferenceManager.getInstance(applicationContext).setAIReportGeneratedView(true)
+
+
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.RL_AI_Report_PageOpen,
+            mapOf(
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+            )
+        )
     }
 
     override fun onBackPressed() {
@@ -148,5 +157,13 @@ class AIReportWebViewActivity : BaseActivity(), RatingReportFeedbackBottomSheet.
 
     override fun onReportFeedbackRating(rating: Double, isSave: Boolean) {
         onBackPressed()
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.RL_AI_Report_Rating_Submit,
+            mapOf(
+                AnalyticsParam.RATING to rating,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+            )
+        )
     }
 }
