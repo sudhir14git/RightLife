@@ -47,6 +47,8 @@ object AnalyticsParam {
     const val PROFILE_STATUS = "profile_status"
     const val HEALTH_DATA_TYPE = "health_data_type"
     const val DISCOVER_TYPE = "discover_type"
+    const val LIST_OF_DISHES = "list_of_dishes"
+    const val WORKOUT_NAME = "workout_name"
 
     //
     const val USERNAME = "UserName"

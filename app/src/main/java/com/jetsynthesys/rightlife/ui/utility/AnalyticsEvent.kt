@@ -184,6 +184,12 @@ object AnalyticsEvent {
     const val MEALSNAP_RESULTPAGE_ADDTOLOG = "mealsnap_resultpage_addtolog"
     const val MEALSNAP_RATING_SUBMIT = "mealsnap_rating_submit"
     const val ER_MEALLOG_LOGYOURMEAL = "er_meallog_logyourmeal"
+    const val MR_Workout_AddToLog = "mr_workout_addtolog"
+    const val MR_Routine_AddToLog = "mr_routine_addtolog"
+    const val MR_Report_PageOpen = "mr_report_pageopen"
+    const val SR_LogYourSleep_Yesterday_Save = "sr_logyoursleep_yesterday_save"
+    const val SR_Report_PageOpen = "sr_report_pageopen"
+    const val SR_ReportPage_LogYourSleep_Save = "sr_reportpage_logyoursleep_save"
 
     // New Phase 1 Events
     const val NAMEPAGE_CONTINUE_TAP = "NamePage_Continue_Tap"

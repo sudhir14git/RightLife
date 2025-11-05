@@ -1170,22 +1170,18 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     }
 
     private fun getMealsLogList(formattedDate: String) {
-        if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
+        if (isAdded && view != null) {
+            context?.let { showLoader(requireView()) }
         }
         lifecycleScope.launch(Dispatchers.IO) {
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val call = ApiClient.apiServiceFastApiV2.getMealsLogByDate(userId, formattedDate)
             call.enqueue(object : Callback<MealLogDataResponse> {
                 override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
-                    if (response.isSuccessful) {
-                        if (isAdded  && view != null){
-                            requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
-                            }
-                        }
+                    if (!isAdded || view == null) return
+                    val ctx = context ?: return
+                    dismissLoader(requireView())
+                    if (response.isSuccessful && response.body()?.data != null) {
                         if (response.body()?.data != null){
                             selectedDate = response.body()?.data!!.date
                             val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
@@ -1349,32 +1345,27 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                         }
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                        activity?.runOnUiThread {
-                            Toast.makeText(activity, "No meal logs found for this user", Toast.LENGTH_SHORT).show()
-                            dailyCalorieGraphLayout.visibility = View.GONE
-                            breakfastListLayout.visibility = View.GONE
-                            morningSnackListLayout.visibility = View.GONE
-                            lunchListLayout.visibility = View.GONE
-                            eveningSnacksListLayout.visibility = View.GONE
-                            dinnerListLayout.visibility = View.GONE
-                            noMealLogsLayout.visibility = View.VISIBLE
-                            logMealTv.text = "Log Your Meal"
+                          //  val ctx = context ?: return
+                            Toast.makeText(ctx, "No meal logs found for this user", Toast.LENGTH_SHORT).show()
                             if (isAdded  && view != null){
-                                requireActivity().runOnUiThread {
-                                    dismissLoader(requireView())
-                                }
+                                dismissLoader(requireView())
+                                dailyCalorieGraphLayout.visibility = View.GONE
+                                breakfastListLayout.visibility = View.GONE
+                                morningSnackListLayout.visibility = View.GONE
+                                lunchListLayout.visibility = View.GONE
+                                eveningSnacksListLayout.visibility = View.GONE
+                                dinnerListLayout.visibility = View.GONE
+                                noMealLogsLayout.visibility = View.VISIBLE
+                                logMealTv.text = "Log Your Meal"
                             }
-                        }
                     }
                 }
                 override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
-                    Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
+                    if (!isAdded || view == null) return
+                    val ctx = context ?: return
+                    Toast.makeText(ctx, "Failure", Toast.LENGTH_SHORT).show()
+                    dismissLoader(requireView())
                 }
             })
         }

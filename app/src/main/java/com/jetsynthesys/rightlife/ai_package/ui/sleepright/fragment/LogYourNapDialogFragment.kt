@@ -24,6 +24,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.LogNapRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -151,6 +153,11 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_ReportPage_LogYourSleep_Save
+                )
+            }
             val duration = tvDuration.text.toString()
             var hasNegative = false
             var totalDuration = 0
@@ -197,7 +204,6 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                 val endSleepTime  = istOdt1.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
                 logNap(startSleepTime,endSleepTime)
             }
-
         }
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
             if (bottomSeatName.contentEquals("LogLastNightSleep")){

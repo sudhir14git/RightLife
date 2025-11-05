@@ -570,72 +570,58 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     }
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
-        if (isAdded  && view != null){
-          //  requireActivity().runOnUiThread {
-                showLoader(requireView())
-         //   }
-        }
+        if (!isAdded || view == null) return
+        showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedDate = currentDateTime.format(formatter)
-        val call = ApiClient.apiServiceFastApiV2.getMealLandingSummary(userId, formattedDate)
-        call.enqueue(object : Callback<EatRightLandingPageDataResponse> {
-            override fun onResponse(call: Call<EatRightLandingPageDataResponse>, response: Response<EatRightLandingPageDataResponse>) {
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                     //   requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                     //   }
-                    }
-                    landingPageResponse = response.body()!!
-                    setMealSummaryData(landingPageResponse, halfCurveProgressBar)
-                    getMealsLogList()
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
-                     //   requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                  //      }
+        val formattedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        ApiClient.apiServiceFastApiV2.getMealLandingSummary(userId, formattedDate)
+            .enqueue(object : Callback<EatRightLandingPageDataResponse> {
+                override fun onResponse(
+                    call: Call<EatRightLandingPageDataResponse>,
+                    response: Response<EatRightLandingPageDataResponse>
+                ) {
+                    if (!isAdded || view == null) return  // ✅ THE FIX
+                    dismissLoader(requireView())
+                    if (response.isSuccessful) {
+                        val body = response.body() ?: return
+                        landingPageResponse = body
+                        setMealSummaryData(body, halfCurveProgressBar)
+                        getMealsLogList()
+                    } else {
+                        Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
-            override fun onFailure(call: Call<EatRightLandingPageDataResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
-                  //  requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-//}
+                override fun onFailure(call: Call<EatRightLandingPageDataResponse>, t: Throwable) {
+                    if (!isAdded || view == null) return  // ✅ THE FIX
+                    dismissLoader(requireView())
+                    Toast.makeText(requireContext(), "Failure", Toast.LENGTH_SHORT).show()
                 }
-            }
-        })
+            })
     }
 
     private fun fetchEatRecommendedData() {
+        if (!isAdded) return   // Fragment not attached
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","EAT_RIGHT")
+        val call = ApiClient.apiService.fetchThinkRecomended(token, "HOME", "EAT_RIGHT")
         call.enqueue(object : Callback<ThinkRecomendedResponse> {
-            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
-                if (response.isSuccessful) {
-                    // progressDialog.dismiss()
-                    thinkRecomendedResponse = response.body()!!
-                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
-                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-                        recomendationRecyclerView.adapter = recomendationAdapter
-                    }
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    // progressDialog.dismiss()F
+            override fun onResponse(
+                call: Call<ThinkRecomendedResponse>,
+                response: Response<ThinkRecomendedResponse>
+            ) {
+                if (!isAdded) return  // Safety again
+                val body = response.body()
+                if (!response.isSuccessful || body?.data?.contentList.isNullOrEmpty()) {
+                    // Show empty state UI if needed
+                    return
                 }
+                val list = body?.data!!.contentList
+                recomendationAdapter = RecommendedAdapterSleep(requireContext(), list)
+                recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                recomendationRecyclerView.adapter = recomendationAdapter
             }
             override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
+                if (!isAdded) return
                 Log.e("Error", "API call failed: ${t.message}")
-                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                //progressDialog.dismiss()
             }
         })
     }

@@ -61,6 +61,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -311,6 +313,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val logMealNoDataBtn = view.findViewById<ConstraintLayout>(R.id.logMealNoDataBtn)
 
         calorieBalanceIcon.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MR_Report_PageOpen
+                )
+            }
             val fragment = CalorieBalance()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.flFragment, fragment, "CalorieBalance")
@@ -672,10 +679,18 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             rangeEnd = it.data.calorieBalance.calorieRange.getOrNull(1) ?: 0.0
                                         }
                                         val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() + rangeEnd.toInt()
-                                        val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
+                                        //val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
                                       //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
+                                        val denominator = (rangeEnd - rangeStart)
+                                        val percentage = if (denominator != 0.0) {
+                                            ((burnedTarget - rangeStart) / denominator).toFloat()
+                                        } else 0f
+
                                         val value = (percentage / 10)
-                                        val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                                       // val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                                        val cleanValue = if (value.isFinite() && !value.isNaN()) value else 0f
+                                        val overlayPositionPercentage = cleanValue
+
                                         progressBarCalorieBalance.max = totalCalorie
                                         val max = progressBarCalorieBalance.max
                                         progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()

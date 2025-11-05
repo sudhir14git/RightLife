@@ -19,6 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class RatingMealBottomSheet : BottomSheetDialogFragment() {
@@ -26,6 +27,7 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
     private var listener: RatingSnapMealListener? = null
     private var isRating: Boolean = false
     private var context: Context? = null
+    private var ratingValue : Float = 0f
 
     interface RatingSnapMealListener {
         fun onSnapMealRating(rating: Double, isSave: Boolean)
@@ -87,6 +89,7 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
             layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
             layoutSubmit.isEnabled = true
            // Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
+            ratingValue = rating
         }
 
         closeIcon.setOnClickListener {
@@ -96,7 +99,15 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
         layoutSubmit.setOnClickListener {
             ratingLayout.visibility = View.GONE
             afterRatingLayout.visibility = View.VISIBLE
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RATING_SUBMIT)
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MEALSNAP_RATING_SUBMIT,
+                    mapOf(
+                        AnalyticsParam.RATING to ratingValue,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
+            }
           //  successLayout.visibility = View.VISIBLE
             //dismiss()
          //   listener?.onSnapMealRating(1.0, isSave)
