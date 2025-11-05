@@ -155,6 +155,12 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
                    .placeholder(R.drawable.book_mini_icon)
                    .into(holder.overlay)
            }
+           "TEXT" ->{
+               Glide.with(context)
+                   .load( R.drawable.book_mini_icon)
+                   .placeholder(R.drawable.book_mini_icon)
+                   .into(holder.overlay)
+           }
            "VIDEO"  ->{
                Glide.with(context)
                    .load( R.drawable.play_mini_icon)

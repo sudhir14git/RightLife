@@ -63,6 +63,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLoca
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -376,7 +377,15 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
         }
 
         btnLogMeal.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_MEALLOG_LOGYOURMEAL)
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.ER_MEALLOG_LOGYOURMEAL,
+                    mapOf(
+                        AnalyticsParam.LIST_OF_DISHES to ingredientsList,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
+            }
             if (recipeDetailsLocalListModel != null){
                 if (mealType.isNotEmpty() && !mealType.equals("null")){
                     if (dishLists.size > 0){

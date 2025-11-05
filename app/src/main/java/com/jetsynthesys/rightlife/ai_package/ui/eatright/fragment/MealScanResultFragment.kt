@@ -906,11 +906,9 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     }
 
     private fun createSnapMealLog(snapRecipeList: ArrayList<IngredientRecipeDetails>, isSave: Boolean) {
-        if (isAdded && view != null) {
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
-        }
+        if (!isAdded || view == null) return
+        activity?.runOnUiThread { showLoader(requireView()) }
+
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         val currentDateTime = LocalDateTime.now()
@@ -937,14 +935,13 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     call: Call<SnapMealLogResponse>,
                     response: Response<SnapMealLogResponse>
                 ) {
+                    val ctx = context ?: return
+                    val act = activity ?: return
+                    if (!isAdded) return
+                    act.runOnUiThread { dismissLoader(requireView()) }
                     if (response.isSuccessful) {
-                        if (isAdded && view != null) {
-                            requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
-                            }
-                        }
                         val mealData = response.body()?.message
-                        showCustomToast(requireContext(), mealData)
+                        showCustomToast(ctx, mealData)
                        // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                         val moduleName = arguments?.getString("ModuleName").toString()
                         if (moduleName.contentEquals("EatRight")) {
@@ -971,12 +968,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                         } else {
                             val mealId = response.body()?.inserted_ids?.meal_log_id ?: ""
                             CommonAPICall.updateChecklistStatus(
-                                requireContext(),
+                                ctx,
                                 "meal_snap",
                                 AppConstants.CHECKLIST_COMPLETED
                             )
                             CommonAPICall.updateChecklistStatus(
-                                requireContext(),
+                                ctx,
                                 "snap_mealId",
                                 mealId
                             )
@@ -986,33 +983,29 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                                     productId = subscription.productId
                                 }
                             }
-
                             AnalyticsLogger.logEvent(
-                                requireContext(),
+                                ctx,
                                 AnalyticsEvent.MEAL_SCAN_COMPLETE,
                                 mapOf(AnalyticsParam.MEAL_SCAN_COMPLETE to true)
                             )
                            // startActivity(Intent(context, HomeNewActivity::class.java))
-                            requireActivity().finish()
+                            act.finish()
                         }
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                        if (isAdded && view != null) {
-                            requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
-                            }
-                        }
+                        if (!isAdded) return
+                        Toast.makeText(ctx, "Something went wrong", Toast.LENGTH_SHORT).show()
+                        act.runOnUiThread { dismissLoader(requireView()) }
                     }
                 }
                 override fun onFailure(call: Call<SnapMealLogResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
-                    Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
+                    val ctx = context ?: return
+                    val act = activity ?: return
+                    if (!isAdded) return
+                    Log.e("Error", "Fail: ${t.message}")
+                    Toast.makeText(ctx, "Failure", Toast.LENGTH_SHORT).show()
+                    act.runOnUiThread { dismissLoader(requireView()) }
                 }
             })
         }

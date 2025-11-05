@@ -33,6 +33,9 @@ import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CustomProgressBar
 import com.jetsynthesys.rightlife.databinding.FragmentAddWorkoutSearchBinding
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
@@ -137,6 +140,15 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
         }
 
         addLog.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MR_Workout_AddToLog,
+                    mapOf(
+                        AnalyticsParam.WORKOUT_NAME to workout?.title.toString(),
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
+            }
             val hours = hourPicker.value
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes

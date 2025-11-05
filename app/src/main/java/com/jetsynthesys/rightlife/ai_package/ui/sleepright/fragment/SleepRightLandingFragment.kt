@@ -113,6 +113,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.SleepInfoDia
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil.Companion.dismissLoader
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -471,6 +473,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         sleepPerformBtn.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_Report_PageOpen
+                )
+            }
             navigateToFragment(SleepPerformanceFragment(), "SleepPerformanceFragment")
         }
 
@@ -1284,10 +1291,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun storeSamsungHealthData() {
+        // Capture context safely
+        val ctx = context ?: return
+        val activity = activity ?: return
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val deviceName = SharedPreferenceManager.getInstance(ctx).deviceName ?: "samsung"
                 var activeEnergyBurned : List<EnergyBurnedRequest>? = null
                 if (activeCalorieBurnedRecord!!.isNotEmpty()){
                     activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
@@ -1298,7 +1309,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(context?.let { it }).deviceName
+                                source_name = deviceName
                             )
                         } else null
                     } ?: emptyList()
@@ -1311,7 +1322,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(context?.let { it }).deviceName
+                                source_name = deviceName
                             )
                         } else null
                     } ?: emptyList()
@@ -1323,7 +1334,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "BasalMetabolic",
                         unit = "power",
                         value = record.basalMetabolicRate.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
@@ -1334,7 +1345,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
                             value = String.format("%.2f", record.distance.inKilometers),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
@@ -1346,7 +1357,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
@@ -1359,7 +1370,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "HeartRate",
                                 unit = "bpm",
                                 value = sample.beatsPerMinute.toInt().toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = deviceName
                             )
                         } else null
                     }
@@ -1371,7 +1382,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "HeartRateVariability",
                         unit = "double",
                         value = record.heartRateVariabilityMillis.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val restingHeartRate = restingHeartRecord?.map { record ->
@@ -1381,7 +1392,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "RestingHeartRate",
                         unit = "bpm",
                         value = record.beatsPerMinute.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
@@ -1392,7 +1403,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
                             value = String.format("%.1f", record.rate),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
@@ -1404,7 +1415,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             record_type = "OxygenSaturation",
                             unit = "%",
                             value = String.format("%.1f", record.percentage.value),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
@@ -1415,7 +1426,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "BloodPressureSystolic",
                         unit = "millimeterOfMercury",
                         value = record.systolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val bloodPressureDiastolic = bloodPressureRecord?.mapNotNull { record ->
@@ -1425,7 +1436,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "BloodPressureDiastolic",
                         unit = "millimeterOfMercury",
                         value = record.diastolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
@@ -1436,7 +1447,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             record_type = "BodyMass",
                             unit = "kg",
                             value = String.format("%.1f", record.weight.inKilograms),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
@@ -1447,7 +1458,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "BodyFat",
                         unit = "percentage",
                         value = String.format("%.1f", record.percentage),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
@@ -1460,7 +1471,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "Asleep",
                                 unit = "stage",
                                 value = "Asleep",
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = deviceName
                             )
                         )
                     } else {
@@ -1608,16 +1619,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(context?.let { it }).saveMoveRightSyncTime(syncTime)
+                    SharedPreferenceManager.getInstance(ctx).saveMoveRightSyncTime(ZonedDateTime.now().toString())
                     isRepeat = true
                     fetchSleepLandingData()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context?.let { it }, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (!isAdded) return@withContext
+                    Toast.makeText(ctx, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (view != null) dismissLoader(requireView())
                     isRepeat = true
-                    if (isAdded && view != null) dismissLoader(requireView())
                 }
             }
         }
@@ -1871,11 +1882,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchSleepLandingData() {
-        if (isAdded  && view != null){
-        //    requireActivity().runOnUiThread {
-                showLoader(requireView())
-         //   }
-        }
+        if (!isAdded || view == null) return
+        view?.let { showLoader(it) }
+
+        val ctx = context ?: return
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         //val userId = "68db9e49be43133bb0ff8463"
         val date = getCurrentDate()
@@ -1885,21 +1895,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
         call.enqueue(object : Callback<SleepLandingResponse> {
             override fun onResponse(call: Call<SleepLandingResponse>, response: Response<SleepLandingResponse>) {
+                if (!isAdded || view == null) return
+                view?.let { dismissLoader(it) }
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                    //    requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                    //    }
-                    }
-                    landingPageResponse = response.body()!!
-                    setSleepRightLandingData(landingPageResponse)
+                    val body = response.body() ?: return
+                    landingPageResponse = body
+                    setSleepRightLandingData(body)
                 }else if(response.code() == 400){
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
-                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, "Record Not Found", Toast.LENGTH_SHORT).show()
                     stageNoDataCardView.visibility = View.VISIBLE
                     sleepStagesView.visibility = View.GONE
                     performNoDataCardView.visibility = View.VISIBLE
@@ -2564,6 +2572,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val args = Bundle()
                     args.putString("BottomSeatName", bottomSeatName)
                     dialog.arguments = args
+                   // dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+                    if (!isAdded || parentFragmentManager.isStateSaved) return
                     dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
                 }
             }else{
@@ -2641,6 +2651,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         }
                     }
                 )
+               // dialog.show(parentFragmentManager, "LogYourNapDialog")
+                if (!isAdded || parentFragmentManager.isStateSaved) return
                 dialog.show(parentFragmentManager, "LogYourNapDialog")
             }
         }

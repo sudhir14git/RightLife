@@ -1026,6 +1026,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchThinkRecomendedData() {
+        val act = activity ?: return   // ✅ safe
+        val ctx = context ?: return    // ✅ safe
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.fetchThinkRecomended(token, "HOME", "THINK_RIGHT")
         call.enqueue(object : Callback<ThinkRecomendedResponse> {
@@ -1033,17 +1035,20 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 call: Call<ThinkRecomendedResponse>,
                 response: Response<ThinkRecomendedResponse>
             ) {
+                val ctx = context ?: return  // ✅ recheck inside callback
+                val rootView = view ?: return
+                if (!isAdded) return         // ✅ fragment detached
                 if (response.isSuccessful) {
                     // progressDialog.dismiss()
-                    thinkRecomendedResponse = response.body()!!
-                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        val ctx = context ?: return@onResponse
+                    val body = response.body() ?: return
+                    thinkRecomendedResponse = body
+                    if (body.data?.contentList?.isNotEmpty() == true) {
                         recomendationAdapter = RecommendationAdapter(
                             ctx,
                             thinkRecomendedResponse.data?.contentList!!
                         )
                         recomendationRecyclerView.layoutManager =
-                            LinearLayoutManager(requireContext())
+                            LinearLayoutManager(ctx)
                         recomendationRecyclerView.adapter = recomendationAdapter
                     }
                 } else {
@@ -1052,7 +1057,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     // progressDialog.dismiss()
                 }
             }
-
             override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -1063,9 +1067,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun fetchAffirmationsList() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
         val call = ApiClient.apiService.getAffirmationPlaylist(token)
-
         call.enqueue(object : Callback<AffirmationPlaylistResponse> {
             override fun onResponse(
                 call: Call<AffirmationPlaylistResponse>,
