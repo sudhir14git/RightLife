@@ -49,7 +49,7 @@ object AnalyticsParam {
     const val DISCOVER_TYPE = "discover_type"
 
     //
-    const val USERNAME = " UserName"
+    const val USERNAME = "UserName"
 
     //content params
     const val CONTENT_ID = "content_id"
@@ -57,5 +57,7 @@ object AnalyticsParam {
     const val CONTENT_MODULE = "content_module"
     const val CONTENT_TITLE = "content_title"
     const val CONTENT_CATEGORY = "content_category"
+    const val SERIES_TYPE = "series_type"
+
 
 }

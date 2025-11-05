@@ -212,7 +212,7 @@ public class ArticlesDetailActivity extends BaseActivity {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
                 Utils.dismissLoader(ArticlesDetailActivity.this);
-                logVideoOpenEvent(ArticlesDetailActivity.this, articleDetailsResponse, contentId);
+                logArticleOpenEvent(ArticlesDetailActivity.this, articleDetailsResponse, contentId);
             }
 
             @Override
@@ -635,7 +635,7 @@ public class ArticlesDetailActivity extends BaseActivity {
         AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.ARTICLE_FINISHED, params);
     }
 
-    private void logVideoOpenEvent(Context context,
+    private void logArticleOpenEvent(Context context,
                                    ArticleDetailsResponse contentResponseObj,
                                    String contentId) {
         try {
@@ -656,7 +656,7 @@ public class ArticlesDetailActivity extends BaseActivity {
             params.put(AnalyticsParam.CONTENT_MODULE, module);
 
             if (!params.isEmpty()) {
-                AnalyticsLogger.INSTANCE.logEvent(context, AnalyticsEvent.Video_Open, params);
+                AnalyticsLogger.INSTANCE.logEvent(context, AnalyticsEvent.Article_Open, params);
             }
         } catch (Exception e) {
             Log.e("AnalyticsLogger", "Video_Open event failed: " + e.getLocalizedMessage(), e);
