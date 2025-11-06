@@ -108,18 +108,18 @@
                                 android:paddingStart="8dp" />
 
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:visibility="gone"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:visibility="visible"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
-                                android:src="@drawable/apple_icon" />
+                                android:src="@drawable/wearablee" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginTop="10dp"
-                            android:background="@color/light_grey" />
+                            android:background="@color/border_line" />
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -190,7 +190,7 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/light_grey" />
+                            android:background="@color/border_line" />
                         <!-- Legend -->
                         <LinearLayout
                             android:layout_width="match_parent"

@@ -146,10 +146,18 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         myActivityRecyclerView.layoutManager = LinearLayoutManager(context)
         myActivityRecyclerView.adapter = myActivityAdapter
 
+//        activitySync.setOnClickListener {
+//            val bottomSheet = ActivitySyncBottomSheet()
+//            bottomSheet.show(parentFragmentManager, "ActivitySyncBottomSheet")
+//        }
+
         activitySync.setOnClickListener {
-            val bottomSheet = ActivitySyncBottomSheet()
-            bottomSheet.show(parentFragmentManager, "ActivitySyncBottomSheet")
+            val existingSheet = parentFragmentManager.findFragmentByTag("ActivitySyncBottomSheet")
+            if (existingSheet == null) {
+                ActivitySyncBottomSheet().show(parentFragmentManager, "ActivitySyncBottomSheet")
+            }
         }
+
 
         healthConnectSyncButton.setOnClickListener {
             // AddWorkoutSearchFragment navigation (commented as per original)

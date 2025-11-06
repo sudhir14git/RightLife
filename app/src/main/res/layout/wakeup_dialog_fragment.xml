@@ -16,9 +16,9 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/red_close"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/close_breathwork"
             android:id="@+id/img_close"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -58,7 +58,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/caret_left_icon"
+                android:src="@drawable/caret_right_icon"
                 app:layout_constraintBottom_toBottomOf="@+id/wake_time_picker_layout"
                 app:layout_constraintTop_toTopOf="@+id/wake_time_picker_layout"
                 app:layout_constraintEnd_toStartOf="@+id/wake_time_picker_layout" />
@@ -66,7 +66,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/caret_right_icon"
+                android:src="@drawable/caret_left_icon"
                 app:layout_constraintBottom_toBottomOf="@+id/wake_time_picker_layout"
                 app:layout_constraintTop_toTopOf="@+id/wake_time_picker_layout"
                 app:layout_constraintStart_toEndOf="@+id/wake_time_picker_layout" />

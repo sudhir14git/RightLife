@@ -1884,12 +1884,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchSleepLandingData() {
         if (!isAdded || view == null) return
         view?.let { showLoader(it) }
-
         val ctx = context ?: return
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
-        //val userId = "68db9e49be43133bb0ff8463"
         val date = getCurrentDate()
-        //val date = "2025-09-29"
         val source = "android"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
