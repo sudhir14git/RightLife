@@ -741,6 +741,7 @@ class Journal4QuestionsActivity : BaseActivity() {
                              AnalyticsParam.JOURNAL_ID to journalItem?.id!!
                          )
                      )*/
+
                     val journalType = journalItem?.title
                     val journalId = journalEntry?.id
 
@@ -761,7 +762,7 @@ class Journal4QuestionsActivity : BaseActivity() {
                             )
                         )
                     }
-
+                    logCreateJournalEvent(journalItem?.title, journalEntry?.id)
                     closeActivity()
                 } else {
                     Toast.makeText(
@@ -776,6 +777,23 @@ class Journal4QuestionsActivity : BaseActivity() {
                 handleNoInternetView(t)
             }
         })
+    }
+
+    private fun logCreateJournalEvent(title: String?, id: String?)
+    {
+        val eventName = when (journalItem?.title) {
+            "Gratitude" -> AnalyticsEvent.TR_Gratitude_Journal_Save_Tap
+            "Grief" -> AnalyticsEvent.TR_Grief_Journal_Save_Tap
+            "Bullet" -> AnalyticsEvent.TR_Bullet_Journal_Save_Tap
+            else -> AnalyticsEvent.TR_Freeform_Journal_Save_Tap
+        }
+        AnalyticsLogger.logEvent(
+                this,
+                eventName,
+                mapOf(
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                )
+        )
     }
 
     private fun updateJournal() {

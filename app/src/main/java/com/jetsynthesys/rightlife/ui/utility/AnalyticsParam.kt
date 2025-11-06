@@ -62,4 +62,10 @@ object AnalyticsParam {
     const val SERIES_TYPE = "series_type"
 
 
+    // new defaults
+    // AnalyticsParam
+    const val DEVICE_NAME = "device_name"
+    const val USER_LIFECYCLE = "user_lifecycle"   // "new" | "old"
+    const val SUBSCRIPTION_PLAN = "subscription_plan" // e.g., "monthly", "annual"
+
 }

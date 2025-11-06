@@ -25,6 +25,7 @@ import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -157,6 +158,13 @@ class SettingsNewActivity : BaseActivity() {
         dialogBinding.btnYes.setOnClickListener {
             logoutUser()
             bottomSheetDialog.dismiss()
+            AnalyticsLogger.logEvent(
+                    this,
+                    AnalyticsEvent.Settings_Logout_Confirm,
+                    mapOf(
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+            )
         }
         bottomSheetDialog.show()
     }

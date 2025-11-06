@@ -740,7 +740,7 @@ class ContentDetailsActivity : BaseActivity() {
             )
         )
 
-        logVideoOpenEvent(this, contentResponseObj, contentId)
+        logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.VIDEO_OPENED)
     }
 
     private fun logContentWatchedEvent() {
@@ -753,7 +753,7 @@ class ContentDetailsActivity : BaseActivity() {
         )
     }
 
-    fun logVideoOpenEvent(context: ContentDetailsActivity, contentResponseObj: ModuleContentDetail?, contentId: String?) {
+    fun logVideoOpenEvent(context: ContentDetailsActivity, contentResponseObj: ModuleContentDetail?, contentId: String?,eventName: String = AnalyticsEvent.Video_Open) {
         runCatching {
             val data = contentResponseObj?.data
 
@@ -802,6 +802,7 @@ class ContentDetailsActivity : BaseActivity() {
                 AnalyticsParam.VIDEO_ID to contentId
             )
         )
+        logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.Audio_Open)
     }
 
     override fun onBackPressed() {

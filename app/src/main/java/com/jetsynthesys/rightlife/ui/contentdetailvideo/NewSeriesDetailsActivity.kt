@@ -37,6 +37,9 @@ import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Episode
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.SeriesResponse
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState
@@ -51,6 +54,7 @@ import java.net.URI
 import java.util.concurrent.TimeUnit
 
 class NewSeriesDetailsActivity : BaseActivity() {
+    private var episodeId: String? = null
     private var isPlaying = false
     private val handler = Handler()
     private lateinit var mediaPlayer: MediaPlayer
@@ -69,14 +73,10 @@ class NewSeriesDetailsActivity : BaseActivity() {
         setContentView(binding.root)
         var contentId = intent.getStringExtra("contentId")
         seriesId = intent.getStringExtra("seriesId").toString()
-        var episodeId = intent.getStringExtra("episodeId")
+         episodeId = intent.getStringExtra("episodeId")
         //API Call
-        if (seriesId != null) {
-            if (episodeId != null) {
-                getSeriesDetails(seriesId, episodeId)
-            }
-            getSeriesWithEpisodes(seriesId)
-        }
+        episodeId?.let { getSeriesDetails(seriesId, it) }
+        getSeriesWithEpisodes(seriesId)
 
         val viewCountRequest = ViewCountRequest()
         viewCountRequest.id = seriesId
@@ -278,6 +278,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
         }
+
+        logVideoOpenEvent(this, contentResponseObj, episodeId, AnalyticsEvent.VIDEO_OPENED)
     }
 
     private fun setReadMoreView(desc: String?) {
@@ -762,5 +764,36 @@ class NewSeriesDetailsActivity : BaseActivity() {
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvAllEpisodes.setLayoutManager(horizontalLayoutManager)
         binding.rvAllEpisodes.setAdapter(adapter)
+    }
+
+    fun logVideoOpenEvent(context: NewSeriesDetailsActivity, contentResponseObj: EpisodeDetailContentResponse, contentId: String?, eventName: String = AnalyticsEvent.Video_Open) {
+        runCatching {
+            val data = contentResponseObj?.data
+
+            val params = mutableMapOf<String, Any>()
+
+            // helper for non-null values trimmed & limited to 100 chars
+            fun putSafe(key: String, value: Any?) {
+                when (value) {
+                    is String -> if (value.isNotBlank()) params[key] = value.trim().take(100)
+                    is Number, is Boolean -> params[key] = value
+                }
+            }
+
+            putSafe(AnalyticsParam.VIDEO_ID, contentId)
+            putSafe(AnalyticsParam.CONTENT_MODULE, data?.moduleId ?: "unknown_module")
+            putSafe(AnalyticsParam.CONTENT_TYPE, data?.title ?: "unknown_type")
+            putSafe(AnalyticsParam.SERIES_TYPE, data?.type ?: "unknown_type")
+
+            if (params.isEmpty()) return // nothing to log
+
+            AnalyticsLogger.logEvent(
+                    context,
+                    AnalyticsEvent.SeriesEpisode_Open,
+                    params
+            )
+        }.onFailure { e ->
+            Log.e("AnalyticsLogger", "Video_Open event failed: ${e.localizedMessage}", e)
+        }
     }
 }

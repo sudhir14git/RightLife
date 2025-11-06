@@ -74,6 +74,8 @@ object AnalyticsEvent {
     const val AFFIRMATION_PLAYLIST_CREATED = "affirmation_playlist_created"
     const val AFFIRMATION_PLAYLIST_PRACTISE = "affirmation_practise"
 
+
+
     // Breathing & Mind
     const val BREATHING_SESSION_STARTED = "breathing_session_started"
     const val BREATHING_SESSION_COMPLETED = "breathing_session_completed"
@@ -204,7 +206,52 @@ object AnalyticsEvent {
 
     // Content Events
     const val Video_Open = "Video_Open"
+    const val Audio_Open = "Audio_Open"
     const val Article_Open = "Article_Open"
+    const val SeriesEpisode_Open = "SeriesEpisode_Open"
+
+    // purchase events
+    const val Subscription_plan_Tap = "Subscription_plan_Tap"
+    const val Booster_plan_Tap = "Booster_plan_Tap"
+    const val Subscription_Monthly_Tap = "Subscription_Monthly_Tap"
+    const val Subscription_Annual_Tap = "Subscription_Annual_Tap"
+    const val Subscription_CancelSubscription_Tap = "Subscription_CancelSubscription_Tap"
+    const val Booster_FaceScan12_Tap = "Booster_FaceScan12_Tap"
+    const val Booster_FaceScan1_Tap = "Booster_FaceScan1_Tap"
+
+
+    //logoutEvent
+    const val Settings_Logout_Confirm = "Settings_Logout_Confirm"
+    const val Settings_DataExport_Success = "Settings_DataExport_Success"
+    const val DeleteAccount_ExportData_Continue = "DeleteAccount_ExportData_Continue"
+
+
+
+    // Affirmation new
+    const val TR_AffirmationPlaylist_PageOpen = "TR_AffirmationPlaylist_PageOpen"
+    const val TR_AffirmationPlaylist_Completion_PageOpen = "TR_AffirmationPlaylist_Completion_PageOpen"
+
+    // journal Events new
+    const val TR_Freeform_Journal_Save_Tap = "TR_Freeform_Journal_Save_Tap"
+    const val TR_Grief_Journal_Save_Tap = "TR_Grief_Journal_Save_Tap"
+    const val TR_Gratitude_Journal_Save_Tap = "TR_Gratitude_Journal_Save_Tap"
+    const val TR_Bullet_Journal_Save_Tap = "TR_Bullet_Journal_Save_Tap"
+
+    // Breathing Events new
+    const val TR_CustomBreathing_Completed = "TR_CustomBreathing_Completed"
+    const val TR_BoxBreathing_Completed = "TR_BoxBreathing_Completed"
+    const val TR_478Breathing_Completed = "TR_478Breathing_Completed"
+    const val TR_AlternateNostril_Completed = "TR_AlternateNostril_Completed"
+
+    // Mind Audit Events new
+    const val TR_MindAudit_OHQ_Submit_Tap = "TR_MindAudit_OHQ_Submit_Tap"
+    const val TR_MindAudit_DASS21_Submit = "TR_MindAudit_DASS21_Submit"
+    const val TR_MindAudit_CAS_Submit = "TR_MindAudit_CAS_Submit"
+    const val TR_MindAudit_PHQ9_Submit = "TR_MindAudit_PHQ9_Submit"
+    const val TR_MindAudit_GAD7_Submit = "TR_MindAudit_GAD7_Submit"
+
+
+
 
 
 
