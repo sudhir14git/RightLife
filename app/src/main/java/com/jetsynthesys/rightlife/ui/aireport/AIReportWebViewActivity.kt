@@ -112,9 +112,7 @@ class AIReportWebViewActivity : BaseActivity(), RatingReportFeedbackBottomSheet.
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.RL_AI_Report_PageOpen,
-            mapOf(
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-            )
+            mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis(), )
         )
     }
 

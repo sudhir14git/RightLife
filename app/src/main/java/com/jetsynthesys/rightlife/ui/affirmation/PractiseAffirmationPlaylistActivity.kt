@@ -135,6 +135,14 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
             override fun onPageScrollStateChanged(state: Int) {}
         })
+
+        AnalyticsLogger.logEvent(
+                this,
+                AnalyticsEvent.TR_AffirmationPlaylist_PageOpen,
+                mapOf(
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                )
+        )
     }
 
     private fun setCardPlaylistAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
@@ -288,6 +296,14 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         if (!(this.isFinishing || this.isDestroyed)) {
             dialog.show()
         }
+
+        AnalyticsLogger.logEvent(
+                this,
+                AnalyticsEvent.TR_AffirmationPlaylist_Completion_PageOpen,
+                mapOf(
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                )
+        )
     }
 
     private fun setupReminderBottomSheet() {

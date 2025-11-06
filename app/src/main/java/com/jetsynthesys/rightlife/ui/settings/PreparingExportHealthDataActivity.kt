@@ -53,6 +53,14 @@ class PreparingExportHealthDataActivity : BaseActivity() {
                         Handler(Looper.getMainLooper()).postDelayed({
                             finish()
                         }, 3000)
+
+                        AnalyticsLogger.logEvent(
+                                this@PreparingExportHealthDataActivity,
+                                AnalyticsEvent.Settings_DataExport_Success,
+                                mapOf(
+                                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                                )
+                        )
                     } else {
                         showToast(response.message())
                     }

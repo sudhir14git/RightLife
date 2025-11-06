@@ -343,7 +343,33 @@ class BreathworkPracticeActivity : BaseActivity() {
                     AnalyticsParam.BREATHING_SESSION_DURATION to System.currentTimeMillis() - startTime
                 )
             )
+            logBreathingCompletEvent(breathingData)
         }
+    }
+
+    private fun logBreathingCompletEvent(breathingData: BreathingData?)
+    {
+        val breathingType = breathingData?.title?.trim() ?: ""
+
+// 🎯 Map breathing type → event name
+        val eventName = when (breathingType) {
+            "Box Breathing" -> AnalyticsEvent.TR_BoxBreathing_Completed
+            "Alternate Nostril Breathing" -> AnalyticsEvent.TR_AlternateNostril_Completed
+            "4-7-8 Breathing" -> AnalyticsEvent.TR_478Breathing_Completed
+            "Custom" -> AnalyticsEvent.TR_CustomBreathing_Completed
+            else -> AnalyticsEvent.TR_CustomBreathing_Completed // fallback
+        }
+
+// ✅ Example: log the breathing completion event
+        AnalyticsLogger.logEvent(
+                this,
+                eventName,
+                mapOf(
+                        AnalyticsParam.BREATHING_TYPE_NAME to breathingType,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                )
+        )
+
     }
 
     private fun showCompletedBottomSheetNew() {

@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.mindaudit;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ import com.jetsynthesys.rightlife.ui.mindaudit.questions.Question;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.ScoringPattern;
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent;
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger;
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 
@@ -291,6 +293,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(intent);
                         logCompleteEvent();
+                        logCompleteEventNew();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -305,6 +308,8 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
             }
         });
     }
+
+
 
     private void getAssessmentScore(Map<String, Object> requestData) {
 
@@ -346,6 +351,35 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
     private void logCompleteEvent() {
         Map<String, Object> params = new HashMap<>();
         AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.MIND_AUDIT_COMPLETED, params);
+    }
+    private void logCompleteEventNew() {
+        String eventName;
+
+        if (header.equalsIgnoreCase(AppConstants.dass_21)) {
+            eventName = AnalyticsEvent.TR_MindAudit_DASS21_Submit;
+        } else if (header.equalsIgnoreCase(AppConstants.phq_9)) {
+            eventName = AnalyticsEvent.TR_MindAudit_PHQ9_Submit;
+        } else if (header.equalsIgnoreCase(AppConstants.cas)) {
+            eventName = AnalyticsEvent.TR_MindAudit_CAS_Submit;
+        } else if (header.equalsIgnoreCase(AppConstants.gad_7)) {
+            eventName = AnalyticsEvent.TR_MindAudit_GAD7_Submit;
+        } else if (header.equalsIgnoreCase(AppConstants.ohq)) {
+            eventName = AnalyticsEvent.TR_MindAudit_OHQ_Submit_Tap;
+        } else {
+            eventName = AnalyticsEvent.TR_MindAudit_OHQ_Submit_Tap; // fallback
+        }
+
+// ✅ Log event safely
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put(AnalyticsParam.HEALTH_DATA_TYPE, header);
+            params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
+
+            AnalyticsLogger.INSTANCE.logEvent(this, eventName, params);
+        } catch (Exception e) {
+            Log.e("AnalyticsLogger", "MindAudit event failed: " + e.getLocalizedMessage(), e);
+        }
+
     }
 
     public void openSecondActivity() {
