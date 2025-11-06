@@ -126,8 +126,6 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         stageDataCard = view.findViewById(R.id.lyt_stage_card)
         stageNoDataCard = view.findViewById(R.id.lyt_stage_nocard)
 
-        // Setup progress bars
-
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
@@ -184,7 +182,7 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
 
     private fun fetchSleepData() {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userid =SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
         val source = "android"
         val call = ApiClient.apiServiceFastApi.fetchSleepStage(userid, source, date)
@@ -220,7 +218,6 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
                     progressDialog.dismiss()
                 }
             }
-
             override fun onFailure(call: Call<SleepStageResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -334,12 +331,10 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     }
 }
 
-
 class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val sleepSegments = mutableListOf<Segment>()
-
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
     private data class Segment(
@@ -350,9 +345,7 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
 
     fun setSleepData(data: List<SleepStageData>) {
         sleepSegments.clear()
-
         if (data.isEmpty()) return
-
         // Parse timestamps and calculate total duration
         val parsedData = data.mapNotNull {
             try {
@@ -366,22 +359,18 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
         }
 
         val totalMinutes = parsedData.sumOf { it.second }
-
         parsedData.forEach { (recordType, duration, position) ->
             val fraction = duration.toFloat() / max(totalMinutes, 1)
             val color = getColorForRecordType(recordType!!)
             sleepSegments.add(Segment(position, fraction, color))
         }
-
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         val w = width.toFloat()
         val h = height.toFloat()
-
         canvas.drawColor(Color.parseColor("#F5F9FF"))
         val barHeight = h * 0.19f
         val cornerRadius = barHeight / 4
@@ -389,7 +378,6 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
 
         sleepSegments.forEach { segment ->
             paint.color = segment.color
-
             val top = when (segment.position) {
                 Position.UPPER -> h * 0.05f
                 Position.MIDDLE1 -> h * 0.28f
@@ -398,7 +386,6 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
             }
             val bottom = top + barHeight
             val right = currentX + (segment.widthFraction * w)
-
             canvas.drawRoundRect(RectF(currentX, top, right, bottom), cornerRadius, cornerRadius, paint)
             currentX = right
         }
@@ -413,7 +400,6 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
             else -> error("Unknown record type: $type")
         }
     }
-
     private fun getColorForRecordType(type: String): Int {
         return when (type) {
             "Awake" -> resources.getColor(R.color.red_orange_bar)

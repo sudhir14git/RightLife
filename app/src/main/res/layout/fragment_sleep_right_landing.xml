@@ -908,13 +908,13 @@
                         app:layout_constraintStart_toEndOf="@+id/tv_stage_total_time_min" />
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:visibility="gone"
-                        android:src="@drawable/apple_icon"
-                        android:id="@+id/img_apple_icon"
+                        android:id="@+id/img_wearablee_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:visibility="visible"
+                        android:src="@drawable/wearablee"
                         android:layout_marginTop="10dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginEnd="18dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/img_sleep_right" />
 
@@ -1611,7 +1611,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp" />
 
-                    <LinearLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="visible"
@@ -1626,7 +1626,11 @@
                             android:layout_height="45dp"
                             android:layout_weight="1"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            >
 
                             <ImageView
                                 android:layout_width="11dp"
@@ -1655,13 +1659,28 @@
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>
 
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="30dp"
+                            android:background="@color/grey_bg"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent">
+                        </View>
+
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="45dp"
                             android:gravity="center_vertical"
                             android:layout_weight="1"
                             android:layout_marginStart="5dp"
-                            android:orientation="horizontal">
+                            android:layout_marginEnd="10dp"
+                            android:orientation="horizontal"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                          >
 
                             <ImageView
                                 android:layout_width="11dp"
@@ -1695,7 +1714,7 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
                         </LinearLayout>
-                    </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
                     <!-- Line Chart -->
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/sleepIdealActualChart"

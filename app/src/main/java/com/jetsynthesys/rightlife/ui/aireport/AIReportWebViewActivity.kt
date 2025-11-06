@@ -8,7 +8,6 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingMealBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingReportFeedbackBottomSheet
 import com.jetsynthesys.rightlife.databinding.ActivityAireportWebViewBinding
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent

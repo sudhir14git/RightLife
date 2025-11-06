@@ -194,7 +194,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                     addToBackStack(null)
                     commit()
                 }
-
             }
         })
 
@@ -212,9 +211,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 commit()
             }
         }
-
-    //    setupChart()
-
     }
 
     fun getTodayDate(): LocalDate {
@@ -232,9 +228,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 
     private fun setupListeners() {
-
-
-
         btnPrevious.setOnClickListener {
             when (currentTab) {
                 0 -> {
@@ -277,14 +270,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private fun loadWeekData() {
         val endOfWeek = currentDateWeek
         val startOfWeek = endOfWeek.minusDays(6)
-
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endOfWeek.format(formatter1), "weekly")
-
     }
 
     private fun loadMonthData() {
@@ -292,32 +281,24 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         val startOfMonth = endOfMonth.minusMonths(1)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endOfMonth.format(formatter1), "monthly")
-
       //  val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
-
      //   updateChart(entries, weekRanges)
     }
 
     private fun loadSixMonthsData() {
         val startDate = getSixMonthsEarlierDate()
         val endDate = getTodayDate()
-
         val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
         dateRangeText.text = "${startDate.format(formatter)} - ${endDate.format(formatter)}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endDate.format(formatter1), "monthly")
     }
 
     private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
         val dataSet = BarDataSet(entries, "Performance")
         dataSet.color = Color.parseColor("#87CEFA")
-
         barChart.data = BarData(dataSet)
         barChart.xAxis.valueFormatter = object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
@@ -434,43 +415,34 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
     fun setupMonthlyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, startTime:String, endDateStr:String) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-
         var startDate =convertToLocalDate(startTime)
         val mEndDate1 =convertToLocalDate(endDateStr)
-
         var selectedEntry: SleepEntry? = null
         val labels = mutableListOf<String>()
         val monthLabel = getDateLabels(startDate,32)
-
         val defaultColor   = Color.parseColor("#C5DEF9")
         val highlightColor = Color.parseColor("#0B84FF")
-
         val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate1).toInt() + 1
         val entries = ArrayList<BarEntry>()
         // val labels = ArrayList<String>()
-
         val monthFormatter = DateTimeFormatter.ofPattern("MMM") // For 'Jun', 'Feb', etc.
 
         for (i in 0 until daysBetween) {
             val currentDate = startDate.plusDays(i.toLong())
-
             // Calculate group index (each group is 7 days long)
             val groupIndex = i / 7
             val groupStartDate = startDate.plusDays(groupIndex * 7L)
             val groupEndDate = groupStartDate.plusDays(6).coerceAtMost(mEndDate1)
-
             // Label for the group (shown only once per 7-day group)
             val label = if (i % 7 == 0) {
                 val dayRange = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
                 val month = groupEndDate.format(monthFormatter)
-
                 // Center month by adding padding spaces (rough estimation)
                 val spaces = " ".repeat((dayRange.length - month.length).coerceAtLeast(0) / 2)
                 "$dayRange\n$spaces$month"
             } else {
                 ""
             }
-
             labels.add(label)
         }
         data?.forEachIndexed { index, item ->
@@ -486,12 +458,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
-
         chart.data = barData
         val customRenderer = MindfullChartRenderer(chart, chart.animator, chart.viewPortHandler)
         customRenderer.initBuffers()
         chart.renderer = customRenderer
-
         chart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             granularity = 1f
@@ -509,7 +479,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         chart.isHighlightPerTapEnabled = true
         chart.isHighlightPerDragEnabled = false
         chart.legend.isEnabled = false
-
         chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
         chart.setFitBars(true)
         chart.setDrawValueAboveBar(false)
@@ -671,7 +640,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                     val newColors = MutableList(entries.size) { defaultColor }
                     newColors[index] = highlightColor
                     dataSet.colors = newColors
-
                     chart.invalidate()
                     tvBarDate.text = selectedDate.getOrNull(x)?.replace("\n", " ") ?: ""
                     tvBarPercent.text = y.toInt().toString()
@@ -684,6 +652,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 chart.invalidate()
             }
         })
+        chart.invalidate()
     }
 
     private fun lineChartForSixMonths(){
@@ -797,7 +766,6 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 }
 
-
 class RoundedBarChartRenderer(
     chart: BarChart,
     animator: ChartAnimator,
@@ -809,27 +777,19 @@ class RoundedBarChartRenderer(
 
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
         val trans = mChart.getTransformer(dataSet.axisDependency)
-
         mBarBorderPaint.color = dataSet.barBorderColor
         mBarBorderPaint.strokeWidth = dataSet.barBorderWidth
-
         val drawBorder = dataSet.barBorderWidth > 0f
-
         val phaseX = mAnimator.phaseX
         val phaseY = mAnimator.phaseY
-
         // initialize the buffer
         mBarBuffers[index].setPhases(phaseX, phaseY)
         mBarBuffers[index].setDataSet(index)
         mBarBuffers[index].setInverted(mChart.isInverted(dataSet.axisDependency))
         mBarBuffers[index].setBarWidth(0.55f)
-
         mBarBuffers[index].feed(dataSet)
-
         trans.pointValuesToPixel(mBarBuffers[index].buffer)
-
         val isSingleColor = dataSet.colors.size == 1
-
         if (isSingleColor) {
             mRenderPaint.color = dataSet.color
         }
@@ -838,15 +798,12 @@ class RoundedBarChartRenderer(
 
         for (j in buffer.indices step 4) {
             if (!mViewPortHandler.isInBoundsLeft(buffer[j + 2])) continue
-
             if (!mViewPortHandler.isInBoundsRight(buffer[j])) break
 
             if (!isSingleColor) {
                 mRenderPaint.color = dataSet.getColor(j / 4)
             }
-
             mBarRect.set(buffer[j], buffer[j + 1], buffer[j + 2], buffer[j + 3])
-
             val path = Path()
             path.addRoundRect(
                 mBarRect,
@@ -854,7 +811,6 @@ class RoundedBarChartRenderer(
                 Path.Direction.CW
             )
             c.drawPath(path, mRenderPaint)
-
             if (drawBorder) {
                 c.drawPath(path, mBarBorderPaint)
             }
@@ -866,18 +822,12 @@ class RoundedBarChartRenderer(
         for (high in indices) {
             val set = barData.getDataSetByIndex(high.dataSetIndex) as? IBarDataSet ?: continue
             if (!set.isHighlightEnabled) continue
-
             val e = set.getEntryForXValue(high.x, high.y) ?: continue
-
             val trans = mChart.getTransformer(set.axisDependency)
-
             mHighlightPaint.color = Color.TRANSPARENT // or any color you want
             mHighlightPaint.alpha = 0 // fully transparent
-
             mBarRect.set(e.x - 0.5f + high.stackIndex, 0f, e.x + 0.5f + high.stackIndex, e.y)
-
             trans.rectValueToPixel(mBarRect)
-
             // Draw a rounded rect with transparent paint, effectively removing highlight
             val path = Path()
             path.addRoundRect(

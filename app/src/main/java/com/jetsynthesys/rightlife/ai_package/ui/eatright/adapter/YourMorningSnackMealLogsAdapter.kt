@@ -108,7 +108,11 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
 
             val mealNames =  data.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?:  data.recipe.food_name
             mealName.text = mealNames
-            servesCount.text = data.recipe.servings.toString()
+            servesCount.text = if(data.recipe.servings == 0.0){
+                "1"
+            }else{
+                data.recipe.servings.toString()
+            }
             val mealTime = data.recipe.active_cooking_time_min
             mealTimeTv.text = mealTime.toInt().toString()
             calValue.text = round(data.recipe.calories_kcal!!).toInt().toString()

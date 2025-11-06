@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -65,6 +66,8 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
         val disabledLayoutCancel = view.findViewById<LinearLayoutCompat>(R.id.disabled_layoutCancel)
         val layoutNotNow = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNow)
         val ratingBar = view.findViewById<RatingBar>(R.id.ratingBar)
+        val tvTitles = view.findViewById<TextView>(R.id.tvTitles)
+        val tvRateDescriptions = view.findViewById<TextView>(R.id.tvRateDescriptions)
         val layoutSubmitAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutSubmitAfter)
         val layoutNotNowAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNowAfter)
         val editText = view.findViewById<EditText>(R.id.editText)
@@ -90,6 +93,13 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
             layoutSubmit.isEnabled = true
            // Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
             ratingValue = rating
+            if (rating > 3){
+                tvTitles.text = "What did we get right ?"
+                tvRateDescriptions.text = "Your insights help us understand what’s working so we can keep doing more of it."
+            }else{
+                tvTitles.text = "What Can We Do Better ?"
+                tvRateDescriptions.text = "Help us improve by sharing what felt off or missing."
+            }
         }
 
         closeIcon.setOnClickListener {

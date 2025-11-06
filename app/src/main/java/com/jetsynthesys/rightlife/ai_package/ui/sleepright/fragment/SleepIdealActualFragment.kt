@@ -190,7 +190,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                     addToBackStack(null)
                     commit()
                 }
-
             }
         })
     }
@@ -211,7 +210,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
     private fun setupListeners() {
       /*  radioGroup.setOnCheckedChangeListener { _, checkedId ->
-
         }*/
 
         btnPrevious.setOnClickListener {
@@ -256,46 +254,31 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private fun loadSixMonthsData() {
         val startDate = getSixMonthsEarlierDate()
         val endDate = getTodayDate()
-
         val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
         dateRangeText.text = "${startDate.format(formatter)} - ${endDate.format(formatter)}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endDate.format(formatter1), "monthly")
     }
-
-
 
     private fun loadMonthData() {
         val endOfMonth = currentDateMonth
         val startOfMonth = endOfMonth.minusMonths(1)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endOfMonth.format(formatter1), "monthly")
-
      //   val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
-
    //     setGraphDataFromSleepList(monthList,weekRanges)
     }
 
     private fun loadWeekData() {
-
         val endOfWeek = currentDateWeek
         val startOfWeek = endOfWeek.minusDays(6)
-
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endOfWeek.format(formatter1), "weekly")
-
       //  val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-
       //  setGraphDataFromSleepList(weekList, weekRanges)
     }
 
@@ -310,16 +293,13 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dayFormat = SimpleDateFormat("d", Locale.getDefault())
         val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
-
         val startDate = dateFormat.parse(startDateStr)!!
         val calendar = Calendar.getInstance()
         calendar.time = startDate
-
         val endDate = Calendar.getInstance().apply {
             time = startDate
             add(Calendar.DAY_OF_MONTH, 29) // total 30 days
         }.time
-
         val fullList = MutableList(30) { "" } // default 30 items with empty strings
         var labelIndex = 0
         var startIndex = 0
@@ -352,7 +332,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         if (period != "weekly"){
             startDateStr = getOneMonthBack(endDate)
         }
-
         var startDate = LocalDate.parse("2025-05-30")
         val mEndDate = LocalDate.parse(endDate, formatter)
         if (startDateStr != ""){
@@ -361,42 +340,33 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         val idealEntries = ArrayList<Entry>()
         val actualEntries = ArrayList<Entry>()
         val labels = mutableListOf<String>()
-
-
         sleepData?.forEachIndexed { index, data ->
             idealEntries.add(Entry(index.toFloat(), data.idealSleep))
             actualEntries.add(Entry(index.toFloat(), data.actualSleep))
         }
-
 
         if (sleepData?.size!! > 8 ) {
             labels.addAll(generateLabeled30DayListWithEmpty(startDateStr))
             /*val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate).toInt() + 1
             val entries = ArrayList<BarEntry>()
            // val labels = ArrayList<String>()
-
             val monthFormatter = DateTimeFormatter.ofPattern("MMM") // For 'Jun', 'Feb', etc.
-
             for (i in 0 until daysBetween) {
                 val currentDate = startDate.plusDays(i.toLong())
-
                 // Calculate group index (each group is 7 days long)
                 val groupIndex = i / 7
                 val groupStartDate = startDate.plusDays(groupIndex * 7L)
                 val groupEndDate = groupStartDate.plusDays(6).coerceAtMost(mEndDate)
-
                 // Label for the group (shown only once per 7-day group)
                 val label = if (i % 7 == 0) {
                     val dayRange = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
                     val month = groupEndDate.format(monthFormatter)
-
                     // Center month by adding padding spaces (rough estimation)
                     val spaces = " ".repeat((dayRange.length - month.length).coerceAtLeast(0) / 2)
                     "$dayRange\n$spaces$month"
                 } else {
                     ""
                 }
-
                 labels.add(label)*/
             val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
                 color = Color.parseColor("#00C853") // green
@@ -418,7 +388,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 lineWidth = 0f
                 isHighlightEnabled = true
             }
-
             // Line without circles - Actual
             val actualLineSet = LineDataSet(actualEntries, "Actual").apply {
                 color = Color.parseColor("#2979FF") // blue
@@ -581,7 +550,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 Log.d("TouchEvent", "Nothing selected, cleared TextViews")
             }
         })
-
+        lineChart.legend.isEnabled = false
         lineChart.invalidate()
     }
 

@@ -113,7 +113,12 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
                 if (breakfastRecipes.isNotEmpty()){
                     mealCombinedList.addAll(breakfastRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                     mealNames = breakfastRecipes.map { (it.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?:  it.recipe.food_name).toString() }
-                    val imageUrl = breakfastRecipes.get(0).recipe.photo_url
+                    var imageUrl : String? = ""
+                    imageUrl = if (breakfastRecipes.get(0).recipe.photo_url.contains("drive.google.com")) {
+                        getDriveImageUrl(breakfastRecipes.get(0).recipe.photo_url)
+                    }else{
+                        breakfastRecipes.get(0).recipe.photo_url
+                    }
                     setDishData(imageUrl)
                 }
             }
@@ -122,7 +127,13 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
                 if (breakfastSnapMeals.isNotEmpty()){
                     mealCombinedList.addAll(breakfastSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
                     mealSnapNames = breakfastSnapMeals.map { it.meal_name!! }
-                    setSnapDishData(breakfastSnapMeals?.getOrNull(0)?.image_url)
+                    var imageUrl : String? = ""
+                    imageUrl = if (breakfastSnapMeals?.getOrNull(0)?.image_url!!.contains("drive.google.com")) {
+                        getDriveImageUrl(breakfastSnapMeals?.getOrNull(0)?.image_url!!)
+                    }else{
+                        breakfastSnapMeals?.getOrNull(0)?.image_url
+                    }
+                    setSnapDishData(imageUrl)
                 }
             }
             setMealLogsList()
