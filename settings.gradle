@@ -20,7 +20,15 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' } // Add JitPack repository
-
+        maven {
+            url = uri("https://git.deepaffex.ai/api/packages/External/maven")
+            credentials {
+                username = "jetsynthesys_girraj.tomar"
+//set environment variable DFX_GIT_USERNAME from nuralogix git
+                password = System.env.DFX_GIT_TOKEN
+//set environment variable DFX_GIT_TOKEN from nuralogix git
+            }
+        }
     }
 }
 

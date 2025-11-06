@@ -354,14 +354,14 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
     }
 
     private fun updateAddButtonUI(service: Service) {
-        binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
+        binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.playlist_plus_icon)
         binding.imageAddToPlayList.setOnClickListener {
             if (service.isActive)
                 removeFromPlaylist(service._id)
             else
                 addToPlaylist(service._id)
             service.isActive = !service.isActive
-            binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
+            binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.playlist_plus_icon)
         }
     }
 

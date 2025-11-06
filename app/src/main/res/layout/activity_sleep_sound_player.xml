@@ -88,7 +88,7 @@
             android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_add_playlist" />
+            android:src="@drawable/playlist_plus_icon" />
     </RelativeLayout>
 
     <TextView
