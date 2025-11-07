@@ -224,6 +224,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     val fragment = HomeBottomTabFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
                     args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -235,6 +236,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     val fragment = SearchDishToLogFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
                     args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -251,6 +253,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
                 args.putString("selectedMealDate", selectedMealDate)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -262,6 +265,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = SearchDishToLogFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
                 args.putString("selectedMealDate", selectedMealDate)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {

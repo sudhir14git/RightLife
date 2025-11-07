@@ -68,6 +68,8 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
         val layoutSubmitAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutSubmitAfter)
         val layoutNotNowAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNowAfter)
         val editText = view.findViewById<EditText>(R.id.editText)
+        val tvRateDescriptions = view.findViewById<TextView>(R.id.tvRateDescriptions)
+        val tvCount = view.findViewById<TextView>(R.id.tvCount)
 
         val isSave = arguments?.getBoolean("isSave") ?: false
         /*  if (isRating){
@@ -90,8 +92,10 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
             layoutSubmit.isEnabled = true
             if (rating > 3){
                 tvTitles.text = "What did we get right ?"
+                tvRateDescriptions.text = "Your insights help us understand what’s working so we can keep doing more of it."
             }else{
                 tvTitles.text = "What Can We Do Better ?"
+                tvRateDescriptions.text = "Help us improve by sharing what felt off or missing."
             }
            // Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
         }
@@ -112,6 +116,15 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
             //   Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
             listener?.onReportFeedbackRating(1.0, isSave)
         }
+
+        editText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                val count = s?.length ?: 0
+                tvCount.text = "$count /300 Characters"
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
         layoutSubmitAfter.setOnClickListener {
             if (editText.text.length > 1 && editText.text.isNotEmpty()){
