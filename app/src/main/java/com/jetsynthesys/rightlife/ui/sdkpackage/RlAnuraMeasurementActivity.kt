@@ -269,7 +269,6 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
         val status = measurementPipeline.startMeasurement(
             HealthCamRecorderActivity.measurementQuestionnaire,
             HealthCamRecorderActivity.STUDY_ID,
-            "",
             HealthCamRecorderActivity.PARTNER_ID
         )
 
@@ -1181,7 +1180,7 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
         Log.d(TAG, "Measurement screen destroyed")
         measurementStartCountdown.stop()
         DeepFXClient.getInstance().disconnect()
-        DeepFXClient.getInstance().setListener(null)
+        //DeepFXClient.getInstance().setListener(null)
         if (this::core.isInitialized) {
             try {
                 measurementPipeline.close()

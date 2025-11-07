@@ -132,6 +132,19 @@ android {
 
 dependencies {
 
+    // ✅ Anura Core SDK dependencies from Maven
+    def anuraSdkVersion   = "2.4.10.103"
+    def dfxVersion        = "4.14.11"
+    def dfxExtrasVersion  = "0.1.9"
+    def mediaPipeVersion  = "0.10.26-29"
+    def opencvVersion     = "4.12.0"
+
+    implementation "ai.nuralogix:anurasdk:${anuraSdkVersion}@aar"
+    implementation "ai.nuralogix.dfx:dfxsdk:${dfxVersion}"
+    implementation "ai.nuralogix.dfx.extras:dfxextras:${dfxExtrasVersion}"
+    implementation "ai.nuralogix:mediapipe-facemesh-android:${mediaPipeVersion}"
+    implementation "ai.nuralogix:anura-opencv:${opencvVersion}"
+
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
@@ -192,15 +205,15 @@ dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar','sonde_edge_sdk_v1.1.0_prod.aar'])
     //implementation(name: 'anura-core-sdk-2.4.6.90', ext: 'aar')
     //implementation(name: 'anura-opencv-4.5.1', ext: 'aar')
-    implementation files('libs/anura-core-sdk-2.4.6.90.aar')
-    implementation files('libs/anura-opencv-4.5.1.aar')
+    /*implementation files('libs/anura-core-sdk-2.4.6.90.aar')
+    implementation files('libs/anura-opencv-4.5.1.aar')*/
     implementation files('libs/sonde_edge_sdk_v1.1.0_prod.aar')
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
 
-    implementation ("com.google.mediapipe:solution-core:0.10.9")
-    implementation("com.google.mediapipe:facemesh:0.10.9")
+    /*implementation ("com.google.mediapipe:solution-core:0.10.9")
+    implementation("com.google.mediapipe:facemesh:0.10.9")*/
     implementation "org.java-websocket:Java-WebSocket:1.4.1"
 
 
@@ -289,4 +302,11 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:2.19.1' // Or your latest stable version
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.19.1'
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.19.1'
+
+
+
+
+
+
+
 }
