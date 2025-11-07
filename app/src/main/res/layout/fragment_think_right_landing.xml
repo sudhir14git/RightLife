@@ -210,7 +210,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/eatright_text_color"
-                        android:text="Mindfulness Metric"
+                        android:text="Mindfulness"
                         android:fontFamily="@font/dmsans_semibold"
                         android:textSize="16sp"
                         android:layout_marginStart="6dp"

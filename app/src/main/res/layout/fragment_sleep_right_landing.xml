@@ -408,10 +408,10 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/tv_sleep_perform_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
-                        android:id="@+id/tv_sleep_perform_title"
                         android:text="Sleep Performance"
                         android:fontFamily="@font/dmsans_bold"
                         android:textSize="16sp"
@@ -435,7 +435,7 @@
                         android:id="@+id/tv_sleep_analysis"
                         android:fontFamily="@font/dmsans_bold"
                         android:visibility="gone"
-                        android:text="Sleep Analysis"
+                        android:text=""
                         android:textSize="14sp"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="15dp"
@@ -1480,8 +1480,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/sleep_text_color"
-                        android:text="Still in the Dark on Your Sleep"
+                        android:textColor="@color/black_no_meals"
+                        android:text="Your Sleep’s Got Depth. Show Us."
                         android:id="@+id/tv_sleep_got_depth"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="15dp"
@@ -1490,6 +1490,7 @@
                         android:textSize="20sp"
                         app:layout_constraintTop_toBottomOf="@+id/tv_sleep_stages"
                         app:layout_constraintStart_toStartOf="parent" />
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
@@ -1500,19 +1501,21 @@
                         android:layout_marginEnd="15dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
+                        android:id="@+id/tv_sync_wearable"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/sleep_text_color"
+                        android:textColor="@color/black_no_meals"
                         android:layout_marginTop="10dp"
-                        android:id="@+id/tv_sync_wearable"
-                        android:text="Your device is synced, but it doesn’t share sleep stages with us or Health Connect. Check your device settings for more."
+                        android:text="Deep, light, REM—it’s all in the details. Sync your wearable to unlock your sleep stages."
                         android:fontFamily="@font/dmsans_regular"
                         android:layout_marginEnd="15dp"
                         android:textSize="16sp"
                         android:layout_marginStart="15dp"
                         app:layout_constraintTop_toBottomOf="@+id/tv_sleep_got_depth"
                         app:layout_constraintStart_toStartOf="parent" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
@@ -2721,7 +2724,7 @@
                     android:layout_width="0dp"
                     android:layout_height="55dp"
                     android:layout_weight="3"
-                    android:src="@drawable/sleep_sound_vibration" />
+                    android:src="@drawable/ic_sleep_sound" />
             </LinearLayout>
 
             <androidx.cardview.widget.CardView

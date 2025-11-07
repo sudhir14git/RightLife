@@ -92,6 +92,10 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
     private var isSpinnerInitialized = false
     private var defaultServing: Serving? = null
     private var userSelectedServing: Serving? = null
+    private var isDataChanged = false
+    private var initialServingType: String = ""
+    private var initialServingValue: Double = 0.0
+
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -129,6 +133,9 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         backButton = view.findViewById(R.id.backButton)
         spinner = view.findViewById(R.id.spinner)
         ivMealDropdown = view.findViewById(R.id.ivMealDropdown)
+        addToTheMealLayout.isEnabled = false
+        addToTheMealLayout.alpha = 0.5f
+
 
         moduleName = arguments?.getString("ModuleName").toString()
         mealId = arguments?.getString("mealId").toString()
@@ -225,6 +232,8 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
                 if (update!!.isNotEmpty() && update.toString() != "."){
                     if (quantityEdit.text.toString().toDouble() > 0.0){
                         val targetValue : Double = quantityEdit.text.toString().toDouble()
+                        addToTheMealLayout.isEnabled = true
+                        addToTheMealLayout.alpha = 1.0f
                         if (recipeDetailsLocalListModel != null){
                             for (item in recipeDetailsLocalListModel!!.data) {
                                 if (item.recipe.contentEquals(snapRecipeName)) {
@@ -432,6 +441,8 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
                     measureType = selectedServing.type.toString()
                     selectedDefaultValue = selectedServing.value
                     quantityEdit.setText(newQuantity)
+                    addToTheMealLayout.isEnabled = true
+                    addToTheMealLayout.alpha = 1.0f
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}

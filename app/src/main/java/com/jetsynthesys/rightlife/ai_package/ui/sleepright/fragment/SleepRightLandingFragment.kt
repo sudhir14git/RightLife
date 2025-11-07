@@ -2557,8 +2557,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 sleepPerformBtn.visibility = View.VISIBLE
                 tvPerformStartTime.visibility = View.GONE
                 tvPerformWakeTime.visibility = View.GONE
-                tvSleepPerformTitle.text = "SleepRight"
-                imgSleepTimeIcon.setImageResource(R.drawable.ic_db_sleepright)
+                tvSleepPerformTitle.text = "Sleep Performance"
+                imgSleepTimeIcon.setImageResource(R.drawable.sleep_timer_icon)
                 if (sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours == null) {
                     tvPerformSleepDuration.text = "0 hr"
                 }
@@ -2629,8 +2629,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 imgSleepPerformIcon.visibility = View.GONE
                 imgWakeTimeIcon.visibility = View.GONE
                 sleepPerformBtn.visibility = View.VISIBLE
-                tvSleepPerformTitle.text = "SleepRight"
-                imgSleepTimeIcon.setImageResource(R.drawable.ic_db_sleepright)
+                tvSleepPerformTitle.text = "Sleep Performance"
+                imgSleepTimeIcon.setImageResource(R.drawable.sleep_timer_icon)
                 if (sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours == null) {
                     tvPerformSleepDuration.text = "0 hr"
                 }

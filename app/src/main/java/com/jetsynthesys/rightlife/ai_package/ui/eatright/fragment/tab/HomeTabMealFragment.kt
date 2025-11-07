@@ -425,7 +425,6 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
         )
     }
 
-
     companion object {
         private const val TAG = "CameraFragment"
         private const val REQUEST_CODE_PERMISSIONS = 10
@@ -456,7 +455,6 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
 //            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
 //        } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
 //    }
-
 
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
