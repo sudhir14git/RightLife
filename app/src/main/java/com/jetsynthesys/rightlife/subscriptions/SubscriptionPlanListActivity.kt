@@ -64,7 +64,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
         type = intent.getStringExtra("SUBSCRIPTION_TYPE").toString()
         //val type = "FACIAL_SCAN"
         if (type == "FACIAL_SCAN") {
-            binding.tvHeader.text = "Face Scan Booster"
+            binding.tvHeader.text = "Booster Plan"
         }
         getSubscriptionList(type)
 

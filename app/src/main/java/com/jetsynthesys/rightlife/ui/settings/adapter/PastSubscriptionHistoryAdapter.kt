@@ -43,6 +43,12 @@ class PastSubscriptionHistoryAdapter(
                     Toast.makeText(binding.root.context, "No invoice available", Toast.LENGTH_SHORT).show()
                 }
             }
+            // "planInfo": "FREE TRIAL",
+            if (plan.planInfo == "FREE TRIAL" || plan.planInfo?.contains("free", ignoreCase = true) == true) {
+                binding.imgDownload.visibility = View.INVISIBLE
+            } else {
+                binding.imgDownload.visibility = View.VISIBLE
+            }
         }
     }
 

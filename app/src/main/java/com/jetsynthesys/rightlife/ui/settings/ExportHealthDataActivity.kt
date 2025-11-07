@@ -21,7 +21,7 @@ class ExportHealthDataActivity : BaseActivity() {
 
         binding.btnExport.setOnClickListener {
             startActivity(Intent(this, PreparingExportHealthDataActivity::class.java))
-            finish()
+            //finish()
         }
     }
 }

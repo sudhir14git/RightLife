@@ -227,8 +227,9 @@
                     android:id="@+id/arrowAge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/right_arrow_journal"
-                    android:layout_gravity="end" />
+
+                    android:src="@drawable/next_arrow_settings"
+                    android:layout_gravity="center_vertical" />
             </LinearLayout>
 
             <!-- Gender -->
@@ -267,7 +268,8 @@
                     android:id="@+id/arrowGender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/right_arrow_journal" />
+                    android:src="@drawable/next_arrow_settings"
+                    android:layout_gravity="center_vertical" />
             </LinearLayout>
 
             <!-- Height -->
@@ -304,7 +306,8 @@
                     android:id="@+id/arrowHeight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/right_arrow_journal" />
+                    android:src="@drawable/next_arrow_settings"
+                    android:layout_gravity="center_vertical" />
             </LinearLayout>
 
             <!-- Weight -->
@@ -341,7 +344,8 @@
                     android:id="@+id/arrowWeight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/right_arrow_journal" />
+                    android:src="@drawable/next_arrow_settings"
+                    android:layout_gravity="center_vertical" />
             </LinearLayout>
 
             <!-- Delete Account -->
@@ -370,7 +374,8 @@
                     android:id="@+id/arrowDeleteAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/right_arrow_journal" />
+                    android:src="@drawable/next_arrow_settings"
+                    android:layout_gravity="center_vertical" />
             </LinearLayout>
 
         </LinearLayout>

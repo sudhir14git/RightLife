@@ -25,7 +25,7 @@ class SubscriptionHistoryAdapter(
         fun bind(plan: Subscription, position: Int) {
             binding.planName.text = plan.planInfo
             binding.planDescription.text = plan.name
-            binding.trialEnds.text = "Valid Till "+DateTimeUtils.convertAPIDate(plan.endDateTime)
+            binding.trialEnds.text = "Valid Till "+DateTimeUtils.convertAPIDateMonthFormat(plan.endDateTime)
             binding.tvPlanAmmount.text = "\u20B9" + plan.orderInfo?.amountPaid.toString()
 
             if (type == 1) {
@@ -33,12 +33,35 @@ class SubscriptionHistoryAdapter(
             }else
             {
                 binding.tvCurrentPlan.text = plan.status
+                if (plan.status == "ACTIVE") {
+                    binding.tvCurrentPlan.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.green_minimal
+                        )
+                    )
+                    binding.tvCurrentPlan.text = "Current Plan"
+                } else if (plan.status == "Cancelled") {
+                    binding.tvCurrentPlan.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.menuselected
+                        )
+                    )
+                } else {
+                    binding.tvCurrentPlan.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.white
+                        )
+                    )
+                }
                 binding.tvCurrentPlan.apply {
-                    text = plan.status
+                    //text = plan.status
                     setTextColor(when(plan.status) {
                         "Current Plan" -> ContextCompat.getColor(context, R.color.green_minimal)
                         "Cancelled" -> ContextCompat.getColor(context, R.color.menuselected)
-                        else -> ContextCompat.getColor(context, R.color.gray)
+                        else -> ContextCompat.getColor(context, R.color.white)
                     })
                 }
             }
