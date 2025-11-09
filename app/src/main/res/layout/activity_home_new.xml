@@ -432,7 +432,9 @@
         android:src="@drawable/icon_quicklink_plus"
         app:backgroundTint="@color/rightlife"
         app:layout_anchor="@id/bottom_menu"
-        app:layout_anchorGravity="top|center" />
+        app:layout_anchorGravity="top|center"
+        app:fabCustomSize="54dp"
+        app:maxImageSize="22dp"/>
 
     <LinearLayout
         android:id="@+id/bottom_menu"

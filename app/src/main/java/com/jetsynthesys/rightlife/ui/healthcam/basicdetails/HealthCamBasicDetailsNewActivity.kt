@@ -808,7 +808,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 selectedHeight = "5 Ft 10 In"
             } else {
                 val h = selectedHeight.split(" ")
-                selectedLabel = if (h[1].equals("cms", ignoreCase = true))
+                selectedLabel = if (h[1].equals("cm", ignoreCase = true))
                     " cm"
                 else
                     " feet"

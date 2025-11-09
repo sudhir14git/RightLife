@@ -27,7 +27,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Here’s What You’ll Get"
+                    android:text="Here’s What You’ll Get."
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:gravity="center"
@@ -40,7 +40,7 @@
                     android:id="@+id/closeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/close_journal"
+                    android:src="@drawable/close_breathwork"
                     android:layout_alignParentEnd="true" />
 
             </RelativeLayout>

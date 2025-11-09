@@ -9,6 +9,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
@@ -63,6 +64,7 @@ class BulletJournalActivity : BaseActivity() {
         }
 
         binding.btnInfo.setOnClickListener {
+            it.disableViewForSeconds()
             DialogUtils.showJournalCommonDialog(this, "Bullet", htmlText)
         }
 
@@ -126,6 +128,7 @@ class BulletJournalActivity : BaseActivity() {
 
 
         binding.btnSave.setOnClickListener {
+            it.disableViewForSeconds()
             val intent =
                 Intent(this@BulletJournalActivity, Journal4QuestionsActivity::class.java).apply {
                     putExtra("Section", journalItem)

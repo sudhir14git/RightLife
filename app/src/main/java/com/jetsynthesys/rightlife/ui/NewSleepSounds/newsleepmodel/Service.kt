@@ -5,6 +5,7 @@ import java.io.Serializable
 data class Service(
     val _id: String,
     val catagoryId: String,
+    var catagoryName: String,
     val title: String,
     val url: String,
     val desc: String,
