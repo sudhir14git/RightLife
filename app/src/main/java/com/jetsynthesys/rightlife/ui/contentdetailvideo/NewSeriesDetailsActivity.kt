@@ -745,7 +745,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
                         gson.fromJson(jsonResponse, SeriesResponse::class.java)
                     setupEpisodeListData(
                         seriesResponseModel.data.episodes,
-                        seriesResponseModel.data.categoryName
+                        seriesResponseModel.data.categoryName,
+                        seriesResponseModel.data.moduleId
                     )
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -759,8 +760,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
         })
     }
 
-    private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String) {
-        val adapter = SeriesListAdapter(this, contentList, categoryName)
+    private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String, moduleId: String) {
+        val adapter = SeriesListAdapter(this, contentList, categoryName,moduleId)
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvAllEpisodes.setLayoutManager(horizontalLayoutManager)
         binding.rvAllEpisodes.setAdapter(adapter)
