@@ -8,18 +8,23 @@
         android:id="@+id/scollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_card_16dp"
         android:fillViewport="true">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_view_consistency"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:elevation="16dp"
-            app:cardCornerRadius="25dp">
+
+            android:elevation="0dp"
+            app:cardBackgroundColor="@color/gray_light_bg"
+            app:cardCornerRadius="0dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:background="@drawable/toproundedcornershape"
+                android:backgroundTint="@color/white"
+                android:layout_marginTop="10dp"
                 android:layout_height="wrap_content">
 
                 <ImageView

@@ -37,17 +37,18 @@
     </LinearLayout>
 
     <!-- Title -->
+
+    <!-- Subtitle -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Choose a prompt"
-        android:textSize="26sp"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:paddingHorizontal="@dimen/margin_card_16dp"
-        android:textColor="@color/txt_color_mind" />
+        android:text="Choose a prompt"
+        android:textColor="@color/txt_color_mind"
+        android:textSize="26sp" />
 
-    <!-- Subtitle -->
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="match_parent"

@@ -45,7 +45,7 @@ class PlanInfoActivity : BaseActivity() {
 
     private val descriptions = listOf(
         "Everyone deserves best-in-class health guidance.\nLog your stats, and we’ll handle the insights for you.",
-        "Scan your face for BP, stress and heart health insights and get expert guidance",
+        "Use our face scan to check BP,Stess,and heart health\nGet expert-backed guidance to optimize  your vitals",
         "Log meals effortlessly and track macros in real.\nStay hydrated and monitor weight trends with ease.",
         "Monitor daily activity(heart rates, steps,calories) and analyze workout/vital data for enhanced recovery.",
         "Track moods, journal, and practice guided breathing.\nUse affirmations and audits to build mental resilience.",

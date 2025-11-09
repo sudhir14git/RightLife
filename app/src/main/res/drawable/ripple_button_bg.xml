@@ -1,0 +1,15 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/menuselected">
+
+    <!-- Base background (your button color/shape) -->
+    <item android:drawable="@drawable/rounded_corner_article_gray"/>
+
+    <!-- Mask controls where the ripple is drawn and keeps it from replacing the base color -->
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <!-- Mask should be OPAQUE (usually white); radius must match the base -->
+            <solid android:color="#FFFFFFFF"/>
+            <corners android:radius="27dp" />
+        </shape>
+    </item>
+</ripple>

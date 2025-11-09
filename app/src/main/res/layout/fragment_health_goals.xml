@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:text="How much time are you willing to commit daily to achieve your health goals?"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
@@ -55,6 +55,7 @@
             android:text="@string/str_continue"
             android:textColor="@color/white"
             android:textSize="@dimen/textsize_large"
+            android:visibility="visible"
             android:layout_alignParentBottom="true"/>
     </RelativeLayout>
 

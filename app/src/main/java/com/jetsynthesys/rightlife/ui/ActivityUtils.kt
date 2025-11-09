@@ -22,6 +22,7 @@ import com.jetsynthesys.rightlife.ui.context_screens.WelcomeMoveRightContextScre
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeSleepRightContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeThinkRightContextScreenActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
+import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
@@ -191,7 +192,7 @@ object ActivityUtils {
             sharedPreferenceManager.setFirstTimeView(SharedPreferenceConstants.FACE_SCAN_CONTEXT_SCREEN)
             context.startActivity(Intent(context, FaceScanContextScreenActivity::class.java))
         } else
-            context.startActivity(Intent(context, HealthCamActivity::class.java))
+            context.startActivity(Intent(context, HealthCamBasicDetailsNewActivity::class.java))
     }
 
     fun startMealScanActivity(context: Context, snapMealId: String = "") {

@@ -102,8 +102,15 @@
                 android:textSize="@dimen/textsize_medium"
                 android:layout_centerVertical="true"
                 android:rotation="270"
+                android:visibility="gone"
                 android:fontFamily="@font/dmsans_medium"
                 />
+            <ImageView
+                android:layout_width="20dp"
+                android:src="@drawable/img_overthinking"
+                android:layout_centerInParent="true"
+                android:layout_alignParentStart="true"
+                android:layout_height="100dp"/>
         </RelativeLayout>
 
     </LinearLayout>

@@ -117,9 +117,11 @@ class NewSleepSoundActivity : BaseActivity()
         binding.recyclerViewHorizontalList.visibility = View.VISIBLE
         binding.recyclerViewVerticalList.visibility = View.GONE
         categoryAdapter.updateSelectedPosition(1)
+        //getUserCreatedPlaylist()
         setupCategoryRecyclerView()
+
         fetchCategories()
-        getUserCreatedPlaylist()
+
         getNewReleases()
     }
 
@@ -210,7 +212,7 @@ class NewSleepSoundActivity : BaseActivity()
                                          }
                                      }
                                  }
-                                 getUserCreatedPlaylist()
+                              //   getUserCreatedPlaylist()
                              } else
                              {
                                  showToast("Server Error: " + response.code())
