@@ -27,12 +27,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your Health, Your Plan"
+                    android:text="Here’s What You’ll Get"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:gravity="center"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/merriweather_bold"
                     android:paddingBottom="4dp" />
 
                 <ImageView
@@ -49,7 +50,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Retain your full access to expert insights &amp; tools."
+                android:text="A quick look at the tools, insights, and features unlocked with your plan."
                 android:textSize="@dimen/textsize_medium"
                 android:textColor="@color/txt_color_header"
                 android:padding="@dimen/margin_card_16dp"
@@ -100,7 +101,7 @@
                     android:layout_gravity="center_horizontal"
                     android:textColor="#000000"
                     android:gravity="center"
-                    android:fontFamily="@font/merriweather_regular"
+                        android:fontFamily="@font/merriweather_regular"
                     android:paddingBottom="12dp" />
 
                 <LinearLayout

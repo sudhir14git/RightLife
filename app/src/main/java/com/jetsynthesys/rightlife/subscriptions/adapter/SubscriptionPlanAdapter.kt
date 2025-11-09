@@ -22,6 +22,16 @@ class SubscriptionPlanAdapter(
         fun bind(plan: PlanList, position: Int) {
             binding.planTitle.text = plan.title?: ""
             binding.planName.text = plan.desc?: ""
+            /*if (plan.desc?.contains("$", ignoreCase = true) == true) {
+                binding.tvPlanAmmount.text = "$" + plan.price?.usd.toString()
+                binding.planOffer.text = "$" + plan.discountPrice?.usd.toString()
+                binding.planOffer.paintFlags = binding.planOffer.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                binding.tvPlanAmmount.text = "₹" + plan.price?.inr.toString()
+                binding.planOffer.text = "₹" + plan.discountPrice?.inr.toString()
+                binding.planOffer.paintFlags = binding.planOffer.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            }*/
+
             binding.tvPlanAmmount.text = "₹" + plan.price?.inr.toString()
             binding.planOffer.text = "₹" + plan.discountPrice?.inr.toString()
             binding.planOffer.paintFlags = binding.planOffer.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG

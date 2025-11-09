@@ -374,7 +374,7 @@
                         android:layout_weight="1"
                         android:maxLines="3"
                         android:textSize="@dimen/textsize_medium"
-                        android:gravity="center"
+                        android:gravity="start"
                         android:layout_marginHorizontal="5dp"
                         android:layout_gravity="center_vertical"
                         android:layout_height="wrap_content"
@@ -439,7 +439,7 @@
                 android:text="Vitals"
                 android:layout_marginStart="@dimen/margin_card_16dp"
                 android:paddingStart="10dp"
-                android:fontFamily="@font/dmsans_bold"
+                android:fontFamily="@font/merriweather_bold"
                 android:textSize="@dimen/textsize_large"
                 android:layout_height="wrap_content" />
 

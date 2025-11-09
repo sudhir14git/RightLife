@@ -39,6 +39,7 @@ import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -88,6 +89,7 @@ class NewHealthCamReportActivity : BaseActivity() {
 
 
         binding!!.icCloseDialog.setOnClickListener {
+            binding!!.icCloseDialog.disableViewForSeconds()
             val desc =
                 "This Face scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
             DialogUtils.showCommonBottomSheetDialog(this, description = desc)

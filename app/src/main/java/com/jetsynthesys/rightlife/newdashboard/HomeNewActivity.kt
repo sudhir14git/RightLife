@@ -92,6 +92,7 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.context_screens.WelcomeRightLifeContextScreenActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
@@ -103,6 +104,7 @@ import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -413,6 +415,8 @@ class HomeNewActivity : BaseActivity() {
         }
 
         binding.profileImage.setOnClickListener {
+            binding.profileImage.disableViewForSeconds()  // 👈 prevent double click
+
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
         }
 
@@ -542,20 +546,8 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
-                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
-                if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
-                    freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
-                } else {
-                    if (DashboardChecklistManager.facialScanStatus) {
-                        startActivity(
-                            Intent(
-                                this@HomeNewActivity, NewHealthCamReportActivity::class.java
-                            )
-                        )
-                    } else {
-                        ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
-                    }
-                }
+
+                callFaceScanClick()
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
                 callSnapMealClick()
@@ -656,6 +648,8 @@ class HomeNewActivity : BaseActivity() {
         )
     }
 
+
+
     override fun onResume() {
         super.onResume()
         checkForUpdate()
@@ -705,6 +699,9 @@ class HomeNewActivity : BaseActivity() {
 
     private fun handleIncomingIntent(intent: Intent) {
         when {
+            intent.getBooleanExtra("OPEN_MY_HEALTH", false) -> {
+                myHealthFragmentSelected()
+            }
             intent.getBooleanExtra("start_journal", false) -> {
                 startActivity(Intent(this, JournalListActivity::class.java))
             }
@@ -3032,6 +3029,35 @@ class HomeNewActivity : BaseActivity() {
             }
         }
 
+    }
+
+
+    fun callFaceScanClick()
+    {
+        AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
+        } else
+        {
+            val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService
+                    ?: false
+            if (isFacialScanService)
+            {
+                if (DashboardChecklistManager.facialScanStatus)
+                {
+                    startActivity(
+                            Intent(
+                                    this@HomeNewActivity, NewHealthCamReportActivity::class.java
+                            )
+                    )
+                } else
+                {
+                    ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
+                }
+            }else{
+                showSwitchAccountDialog(this@HomeNewActivity, "", "")
+            }
+        }
     }
 
     private fun logAndOpenMeal(snapId: String) {
