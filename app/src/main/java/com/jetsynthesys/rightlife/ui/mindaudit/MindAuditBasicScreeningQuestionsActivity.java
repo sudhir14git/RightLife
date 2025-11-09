@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.mindaudit;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -49,6 +50,7 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> {
+            disableViewForSeconds(nextButton, 1000);
             int currentItem = viewPager.getCurrentItem();
             Fragment fragment = adapter.getRegisteredFragment(currentItem);
 
@@ -163,4 +165,9 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
     public interface OnNextButtonClickListener {
         void onNextClicked();
     }
+    public static void disableViewForSeconds(final View view, long millis) {
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), millis);
+    }
+
 }
