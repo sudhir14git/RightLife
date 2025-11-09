@@ -657,7 +657,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         } else {
             dialogBinding.selectedNumberText.text = selectedHeight
             val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1].equals("cm", ignoreCase = true))
+            selectedLabel = if (h[1].equals("cm", ignoreCase = true) || h[1].equals("cms", ignoreCase = true) ||h[1].equals(" CM", ignoreCase = true))
                 " cm"
             else
                 " feet"
@@ -808,7 +808,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 selectedHeight = "5 Ft 10 In"
             } else {
                 val h = selectedHeight.split(" ")
-                selectedLabel = if (h[1].equals("cms", ignoreCase = true))
+                selectedLabel = if (h[1].equals("cm", ignoreCase = true) || h[1].equals("cms", ignoreCase = true) ||h[1].equals(" CM", ignoreCase = true))
                     " cm"
                 else
                     " feet"
