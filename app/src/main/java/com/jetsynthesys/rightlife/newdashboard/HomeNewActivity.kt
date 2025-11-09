@@ -947,7 +947,7 @@ class HomeNewActivity : BaseActivity() {
         binding.labelHome.setTextColor(ContextCompat.getColor(this, R.color.gray))
         binding.labelHome.setTypeface(null, Typeface.NORMAL)
 
-        binding.iconExplore.setImageResource(R.drawable.my_health_menu)
+        binding.iconExplore.setImageResource(R.drawable.my_health_menu_unselected_new)
         binding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.gray))
         binding.labelExplore.setTypeface(null, Typeface.NORMAL)
 
