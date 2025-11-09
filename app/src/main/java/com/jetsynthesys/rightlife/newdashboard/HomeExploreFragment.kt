@@ -922,7 +922,21 @@ class HomeExploreFragment : BaseFragment() {
                 }
 
                 "Mind Audit" -> {
-                    ActivityUtils.startMindAuditActivity(requireContext())
+                    if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                        if (NetworkUtils.isInternetAvailable(requireContext())) {
+                            freeTrialDialogActivity()
+                        } else {
+                            showInternetError()
+                        }
+                    } else {
+                        /*  ActivityUtils.startEatRightReportsActivity(
+                              requireContext(),
+                              "SnapMealTypeEat",
+                              ""
+                          )*/
+                        ActivityUtils.startMindAuditActivity(requireContext())
+                    }
+
                 }
 
                 "Meal Snap" -> {
