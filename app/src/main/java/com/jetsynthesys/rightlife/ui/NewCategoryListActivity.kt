@@ -380,7 +380,8 @@ class NewCategoryListActivity : BaseActivity() {
         }
 
         bindingDialog.tvArticles.setOnClickListener {
-            popupOptionClicked(bindingDialog.tvArticles.text.toString())
+            //popupOptionClicked(bindingDialog.tvArticles.text.toString())
+            popupOptionClicked("TEXT")
             popupWindow.dismiss()
         }
 
