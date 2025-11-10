@@ -65,11 +65,14 @@ class Journal4QuestionsActivity : BaseActivity() {
     private var journalEntry: JournalEntry? = JournalEntry()
     private var startDate = ""
     var isFromThinkRight: Boolean = false
+    private var startTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalAnswerBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
+
+        startTime = System.currentTimeMillis()
 
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
 
@@ -782,20 +785,21 @@ class Journal4QuestionsActivity : BaseActivity() {
         })
     }
 
-    private fun logCreateJournalEvent(title: String?, id: String?)
-    {
+    private fun logCreateJournalEvent(title: String?, id: String?) {
         val eventName = when (journalItem?.title) {
             "Gratitude" -> AnalyticsEvent.TR_Gratitude_Journal_Save_Tap
             "Grief" -> AnalyticsEvent.TR_Grief_Journal_Save_Tap
             "Bullet" -> AnalyticsEvent.TR_Bullet_Journal_Save_Tap
             else -> AnalyticsEvent.TR_Freeform_Journal_Save_Tap
         }
+        val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
-                this,
-                eventName,
-                mapOf(
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                )
+            this,
+            eventName,
+            mapOf(
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.TOTAL_DURATION to duration
+            )
         )
     }
 

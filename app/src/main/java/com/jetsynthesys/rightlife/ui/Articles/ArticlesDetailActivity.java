@@ -78,6 +78,7 @@ public class ArticlesDetailActivity extends BaseActivity {
     private ImageView fullscreenButton;
     private String contentId;
     private ArticleDetailsResponse articleDetailsResponse;
+    private long startTime = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class ArticlesDetailActivity extends BaseActivity {
 
         binding = ActivityArticledetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        startTime = System.currentTimeMillis();
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         ic_save_article = findViewById(R.id.ic_save_article);
@@ -212,7 +214,6 @@ public class ArticlesDetailActivity extends BaseActivity {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
                 Utils.dismissLoader(ArticlesDetailActivity.this);
-                logArticleOpenEvent(ArticlesDetailActivity.this, articleDetailsResponse, contentId);
             }
 
             @Override
@@ -224,6 +225,11 @@ public class ArticlesDetailActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        logArticleOpenEvent(ArticlesDetailActivity.this, articleDetailsResponse, contentId);
+    }
 
     private void handleArticleResponseData(ArticleDetailsResponse articleDetailsResponse) {
 
@@ -636,8 +642,8 @@ public class ArticlesDetailActivity extends BaseActivity {
     }
 
     private void logArticleOpenEvent(Context context,
-                                   ArticleDetailsResponse contentResponseObj,
-                                   String contentId) {
+                                     ArticleDetailsResponse contentResponseObj,
+                                     String contentId) {
         try {
             Map<String, Object> params = new HashMap<>();
 
@@ -654,6 +660,8 @@ public class ArticlesDetailActivity extends BaseActivity {
             params.put(AnalyticsParam.CONTENT_ID, id);
             params.put(AnalyticsParam.CONTENT_TYPE, type);
             params.put(AnalyticsParam.CONTENT_MODULE, module);
+            long duration = System.currentTimeMillis() - startTime;
+            params.put(AnalyticsParam.TOTAL_DURATION, duration);
 
             if (!params.isEmpty()) {
                 AnalyticsLogger.INSTANCE.logEvent(context, AnalyticsEvent.Article_Open, params);

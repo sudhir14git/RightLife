@@ -163,7 +163,7 @@ class BeginMyFreeTrialActivity : BaseActivity()
                                                                          )
                                                                          finish()
                                                                      }, 1000)
-                                     AnalyticsLogger.logEvent(
+                                     AnalyticsLogger.logEvent(this@BeginMyFreeTrialActivity,
                                              AnalyticsEvent.FREETRIALUNlOCKED_POPUP_OPEN,
                                              mapOf(
                                                      AnalyticsParam.USER_ID to sharedPreferenceManager.userId,

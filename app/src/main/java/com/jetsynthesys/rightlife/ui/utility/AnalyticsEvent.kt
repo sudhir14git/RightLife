@@ -179,19 +179,19 @@ object AnalyticsEvent {
 
     const val ALL_HEALTH_DATA_CLICK = "all_health_data_click"
     const val DISCOVER_CLICK = "discover_click"
-    const val ER_REPORT_PAGE_OPEN = "er_report_pageopen"
-    const val ER_HYDRATION_LOG_CONFIRM_TAP = "er_hydration_log_confirm_tap"
-    const val ER_LOGWEIGHT_CONTINUE_TAP = "er_logweight_continue_tap"
-    const val MEALSNAP_RESULTPAGE_FIRSTLOG = "mealsnap_resultpage_firstlog"
-    const val MEALSNAP_RESULTPAGE_ADDTOLOG = "mealsnap_resultpage_addtolog"
-    const val MEALSNAP_RATING_SUBMIT = "mealsnap_rating_submit"
-    const val ER_MEALLOG_LOGYOURMEAL = "er_meallog_logyourmeal"
-    const val MR_Workout_AddToLog = "mr_workout_addtolog"
-    const val MR_Routine_AddToLog = "mr_routine_addtolog"
-    const val MR_Report_PageOpen = "mr_report_pageopen"
-    const val SR_LogYourSleep_Yesterday_Save = "sr_logyoursleep_yesterday_save"
-    const val SR_Report_PageOpen = "sr_report_pageopen"
-    const val SR_ReportPage_LogYourSleep_Save = "sr_reportpage_logyoursleep_save"
+    const val ER_REPORT_PAGE_OPEN = "ER_Report_PageOpen"
+    const val ER_HYDRATION_LOG_CONFIRM_TAP = "ER_Hydration_Log_Confirm_Tap"
+    const val ER_LOGWEIGHT_CONTINUE_TAP = "ER_LogWeight_Continue_Tap"
+    const val MEALSNAP_RESULTPAGE_FIRSTLOG = "MealSnap_ResultPage_FirstLog"
+    const val MEALSNAP_RESULTPAGE_ADDTOLOG = "MealSnap_ResultPage_AddToLog"
+    const val MEALSNAP_RATING_SUBMIT = "MealSnap_Rating_Submit"
+    const val ER_MEALLOG_LOGYOURMEAL = "ER_MealLog_LogYourMeal"
+    const val MR_Workout_AddToLog = "MR_Workout_AddToLog"
+    const val MR_Routine_AddToLog = "MR_Routine_AddToLog"
+    const val MR_Report_PageOpen = "MR_Report_PageOpen"
+    const val SR_LogYourSleep_Yesterday_Save = "SR_LogYourSleep_Yesterday_Save"
+    const val SR_Report_PageOpen = "SR_Report_PageOpen"
+    const val SR_ReportPage_LogYourSleep_Save = "SR_ReportPage_LogYourSleep_Save"
 
     // New Phase 1 Events
     const val NAMEPAGE_CONTINUE_TAP = "NamePage_Continue_Tap"
@@ -211,8 +211,6 @@ object AnalyticsEvent {
     const val SeriesEpisode_Open = "SeriesEpisode_Open"
 
     // purchase events
-    const val Subscription_plan_Tap = "Subscription_plan_Tap"
-    const val Booster_plan_Tap = "Booster_plan_Tap"
     const val Subscription_Monthly_Tap = "Subscription_Monthly_Tap"
     const val Subscription_Annual_Tap = "Subscription_Annual_Tap"
     const val Subscription_CancelSubscription_Tap = "Subscription_CancelSubscription_Tap"
@@ -230,6 +228,10 @@ object AnalyticsEvent {
     // Affirmation new
     const val TR_AffirmationPlaylist_PageOpen = "TR_AffirmationPlaylist_PageOpen"
     const val TR_AffirmationPlaylist_Completion_PageOpen = "TR_AffirmationPlaylist_Completion_PageOpen"
+
+    const val TR_Report_PageOpen = "TR_Report_PageOpen"
+    const val TR_AffirmationPageGen_Open = "TR_AffirmationPageGen_Open"
+
 
     // journal Events new
     const val TR_Freeform_Journal_Save_Tap = "TR_Freeform_Journal_Save_Tap"
@@ -249,6 +251,8 @@ object AnalyticsEvent {
     const val TR_MindAudit_CAS_Submit = "TR_MindAudit_CAS_Submit"
     const val TR_MindAudit_PHQ9_Submit = "TR_MindAudit_PHQ9_Submit"
     const val TR_MindAudit_GAD7_Submit = "TR_MindAudit_GAD7_Submit"
+
+    const val SR_SleepSound_Player_Opened ="SR_SleepSound_Player_Opened"
 
 
 
