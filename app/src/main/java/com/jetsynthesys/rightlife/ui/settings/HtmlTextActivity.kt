@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ui.settings
 
 import android.os.Bundle
 import android.text.Html
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityHtmlTextBinding
 
@@ -16,6 +15,10 @@ class HtmlTextActivity : BaseActivity() {
         setChildContentView(binding.root)
 
         val string = intent.getStringExtra("GeneralInformation")
+        val title = intent.getStringExtra("title")
+
+        if (!title.isNullOrEmpty())
+            binding.tvHeader.text = title
 
         if (!string.isNullOrEmpty())
             binding.tvAnswer.text =

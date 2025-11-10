@@ -522,10 +522,12 @@ class HomeNewActivity : BaseActivity() {
 
         with(binding) {
             includedhomebottomsheet.llJournal.setOnClickListener {
-                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
+                /*AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startJournalListActivity(this@HomeNewActivity)
-                }
+                }*/
+
+                ActivityUtils.startJournalListActivity(this@HomeNewActivity)
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
