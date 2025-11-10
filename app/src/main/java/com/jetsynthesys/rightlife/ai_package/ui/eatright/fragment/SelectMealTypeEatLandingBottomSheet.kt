@@ -92,57 +92,56 @@ class SelectMealTypeEatLandingBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun getRecipesDetails(mealType: String, recipeId : String) {
-        if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
+    private fun getRecipesDetails(mealType: String, recipeId: String) {
+        // ✅ show loader safely
+        if (isAdded && view != null) {
+            activity?.runOnUiThread {
+                view?.let { showLoader(it) }
             }
         }
         val call = ApiClient.apiServiceFastApiV2.getRecipeDetailsById(recipeId = recipeId)
         call.enqueue(object : Callback<RecipeDetailsResponse> {
-            override fun onResponse(call: Call<RecipeDetailsResponse>, response: Response<RecipeDetailsResponse>) {
+            override fun onResponse(
+                call: Call<RecipeDetailsResponse>,
+                response: Response<RecipeDetailsResponse>
+            ) {
+                // fragment gone? stop
+                if (!isAdded || activity == null) return
+                activity?.runOnUiThread {
+                    view?.let { dismissLoader(it) }
+                }
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
+                    dismiss()
+                    val ingredientRecipesDetails = response.body()?.data ?: return
+                    // fragment gone? stop (double safety)
+                    val act = activity ?: return
+                    val fm = act.supportFragmentManager
+                    val snapMealFragment = OtherRecipeLogFragment()
+                    val args = Bundle().apply {
+                        putString("ModuleName", "EatRightLanding")
+                        putString("searchType", "SearchDish")
+                        putString("mealId", ingredientRecipesDetails.id)
+                        putString("mealName", ingredientRecipesDetails.recipe)
+                        putString("snapImageUrl", ingredientRecipesDetails.photo_url)
+                        putString("mealType", mealType)
+                        putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
                     }
-                    if (response.body()?.data != null){
-                        val ingredientRecipesDetails = response.body()?.data
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            val snapMealFragment = OtherRecipeLogFragment()
-                            val args = Bundle()
-                            args.putString("ModuleName", "EatRightLanding")
-                           // args.putString("selectedMealDate", selectedMealDate)
-                            args.putString("searchType", "SearchDish")
-                            args.putString("mealId", ingredientRecipesDetails?.id)
-                            args.putString("mealName", ingredientRecipesDetails?.recipe)
-                            args.putString("snapImageUrl", ingredientRecipesDetails?.photo_url)
-                            args.putString("mealType", mealType)
-                            args.putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
-                            snapMealFragment.arguments = args
-                            replace(R.id.flFragment, snapMealFragment, "Steps")
-                            addToBackStack(null)
-                            commit()
-                        }
-                    }
+                    snapMealFragment.arguments = args
+                    fm.beginTransaction()
+                        .replace(R.id.flFragment, snapMealFragment, "Steps")
+                        .addToBackStack(null)
+                        .commitAllowingStateLoss() // ✅ prevents crash
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
                 }
             }
             override fun onFailure(call: Call<RecipeDetailsResponse>, t: Throwable) {
+                if (!isAdded || activity == null) return
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-                    }
+                activity?.runOnUiThread {
+                    view?.let { dismissLoader(it) }
                 }
             }
         })

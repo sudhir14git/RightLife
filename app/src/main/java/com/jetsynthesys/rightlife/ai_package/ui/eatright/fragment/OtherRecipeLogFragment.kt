@@ -502,97 +502,97 @@ class OtherRecipeLogFragment : BaseFragment<FragmentDishBinding>() {
 //        }
 
         val vitamin_A = if (mealDetails.vit_a_mcg != null){
-            calculateValue( mealDetails.vit_a_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_a_mcg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val vitamin_C = if (mealDetails.vit_c_mg != null){
-            calculateValue( mealDetails.vit_c_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_c_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val vitamin_k = if (mealDetails.vit_k_mcg != null){
-            calculateValue( mealDetails.vit_k_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_k_mcg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val vitaminD = if (mealDetails.vit_d_mcg != null){
-            calculateValue( mealDetails.vit_d_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_d_mcg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val folate = if (mealDetails.folate_b9_mcg != null){
-            calculateValue( mealDetails.folate_b9_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.folate_b9_mcg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val iron_mg = if (mealDetails.iron_mg != null){
-            calculateValue( mealDetails.iron_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.iron_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val calcium = if (mealDetails.calcium_mg != null){
-            calculateValue( mealDetails.calcium_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.calcium_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val magnesium = if (mealDetails.magnesium_mg != null){
-            calculateValue( mealDetails.magnesium_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.magnesium_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val potassium_mg = if (mealDetails.potassium_mg != null){
-            calculateValue( mealDetails.potassium_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.potassium_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
 //        val fiber_mg = if (mealDetails.fiber != null){
-//            calculateValue( mealDetails.fiber, defaultValue, targetValue).toInt().toString()
+//            calculateValue( mealDetails.fiber, defaultValue, targetValue).toDouble().toString()
 //        }else{
 //            "0"
 //        }
 
         val zinc = if (mealDetails.zinc_mg != null){
-            calculateValue( mealDetails.zinc_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.zinc_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val sodium = if (mealDetails.sodium_mg != null){
-            calculateValue( mealDetails.sodium_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.sodium_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
 //        val sugar_mg = if (mealDetails.sugar != null){
-//            calculateValue( mealDetails.sugar, defaultValue, targetValue).toInt().toString()
+//            calculateValue( mealDetails.sugar, defaultValue, targetValue).toDouble().toString()
 //        }else{
 //            "0.0"
 //        }
 
         val vitB6 = if (mealDetails.vit_b6_mg != null){
-            calculateValue( mealDetails.vit_b6_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_b6_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val vitB12 = if (mealDetails.vit_b12_mcg != null){
-            calculateValue( mealDetails.vit_b12_mcg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.vit_b12_mcg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }
 
         val phosphorus = if (mealDetails.phosphorus_mg != null){
-            calculateValue( mealDetails.phosphorus_mg, defaultValue, targetValue).toInt().toString()
+            calculateValue( mealDetails.phosphorus_mg, defaultValue, targetValue).toDouble().toString()
         }else{
             "0.0"
         }

@@ -144,6 +144,11 @@
         <item name="colorControlNormal">#D3D3D3</item> <!-- Light gray -->
     </style>
 
+<!--    <style name="CustomRatingBar" parent="@android:style/Widget.RatingBar">-->
+<!--        <item name="android:progressDrawable">@drawable/custom_rating_stars</item>-->
+<!--        <item name="android:minHeight">48dp</item>-->
+<!--    </style>-->
+
     <style name="TabItemStyle">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
