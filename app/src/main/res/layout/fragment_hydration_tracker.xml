@@ -556,7 +556,7 @@
                                 app:layout_constraintEnd_toEndOf="@id/tv_quantity_ml"
                                 android:gravity="center_vertical"
                                 android:textStyle="bold"
-                                android:text="/5000ml"
+                                android:text="/3000ml"
                                 android:textSize="13sp"
                                 android:textColor="@color/black"
                                 />
