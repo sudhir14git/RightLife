@@ -827,7 +827,7 @@ class HomeNewActivity : BaseActivity() {
         })
     }
 
-    private fun checkTrailEndedAndShowDialog(): Boolean {
+    fun checkTrailEndedAndShowDialog(): Boolean {
         binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
         binding.includedhomebottomsheet.bottomSheetParent.apply {
             isClickable = false
