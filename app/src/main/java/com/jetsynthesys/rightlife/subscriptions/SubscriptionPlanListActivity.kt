@@ -105,7 +105,10 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                 intent.putExtra("PRODUCT_TYPE", "BOOSTER") // Replace "your_specific_product_id"
                 receivedProductType = "BOOSTER"
                 setupBillingClient()
-                logPurchaseTapEvent(AnalyticsEvent.Booster_plan_Tap)
+                if (plan.title.equals("Pack of 12", true))
+                    logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan12_Tap)
+                else
+                    logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan1_Tap)
             } else {
                 if (plan.status.equals("ACTIVE", ignoreCase = true)) {
                     showToast("This plan is currently active.")
@@ -130,7 +133,10 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                         setupBillingClient()
                     }
                 }
-                logPurchaseTapEvent(AnalyticsEvent.Subscription_plan_Tap)
+                if (plan.title.equals("MONTHLY", true))
+                    logPurchaseTapEvent(AnalyticsEvent.Subscription_Monthly_Tap)
+                else
+                    logPurchaseTapEvent(AnalyticsEvent.Subscription_Annual_Tap)
             }
             //startActivity(intent)
         }
@@ -142,11 +148,11 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             openPlayStoreSubscriptionPage()
 
             AnalyticsLogger.logEvent(
-                    this,
-                    AnalyticsEvent.Subscription_CancelSubscription_Tap,
-                    mapOf(
-                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    )
+                this,
+                AnalyticsEvent.Subscription_CancelSubscription_Tap,
+                mapOf(
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                )
             )
         }
         binding.continueButton.setOnClickListener {
@@ -533,14 +539,14 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
         }
     }
 
-    private fun logPurchaseTapEvent(EventName: String = AnalyticsEvent.Subscription_plan_Tap) {
+    private fun logPurchaseTapEvent(EventName: String = AnalyticsEvent.Subscription_Monthly_Tap) {
         AnalyticsLogger.logEvent(
-                this,
-                EventName,
-                mapOf(
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                        AnalyticsParam.PRODUCT_ID to "${selectedPlan?.googlePlay}"
-                )
+            this,
+            EventName,
+            mapOf(
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.PRODUCT_ID to "${selectedPlan?.googlePlay}"
+            )
         )
     }
 }
