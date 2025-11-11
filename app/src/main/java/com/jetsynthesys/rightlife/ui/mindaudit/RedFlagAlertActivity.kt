@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityRedFlagAlertBinding
+import java.util.Locale
 
 
 class RedFlagAlertActivity : BaseActivity() {
@@ -67,6 +68,42 @@ class RedFlagAlertActivity : BaseActivity() {
         binding.rvCountryHelpLine.adapter = adapterCountry
         binding.rvStateHelpLine.layoutManager = LinearLayoutManager(this)
         binding.rvStateHelpLine.adapter = adapterState
+
+        val locale = Locale.getDefault()
+        val countryName = locale.getDisplayCountry(Locale.ENGLISH)
+        val countries = helplinesResponse.countries.map { it.name }
+
+        val position = countries.indexOf(countryName)
+
+        if (position != -1) {
+            countryList.clear()
+            selectedCountryPosition = position
+            binding.tvCountry.text = countryName
+            helplinesResponse.countries[position].organizations?.let { it1 ->
+                countryList.addAll(
+                    it1
+                )
+            }
+            adapterCountry.notifyDataSetChanged()
+
+            stateList.clear()
+            selectedStatePosition = 0
+            val states = helplinesResponse.countries[selectedCountryPosition].states
+
+            if (states.isNullOrEmpty()) {
+                binding.rlStateHelpLine.isVisible = false
+                binding.rvStateHelpLine.isVisible = false
+            } else {
+                binding.rlStateHelpLine.isVisible = true
+                binding.rvStateHelpLine.isVisible = true
+
+                val selectedState = states.getOrNull(selectedStatePosition)
+                binding.tvState.text = selectedState?.name
+                selectedState?.organizations?.let { stateList.addAll(it) }
+            }
+            adapterState.notifyDataSetChanged()
+        }
+
 
         binding.tvState.setOnClickListener {
             val states =

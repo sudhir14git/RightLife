@@ -92,7 +92,6 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
-import com.jetsynthesys.rightlife.ui.context_screens.WelcomeRightLifeContextScreenActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
@@ -468,12 +467,12 @@ class HomeNewActivity : BaseActivity() {
             }
         }
 
-     /*   binding.menuExplore.setOnClickListener {
-            val currentFragment =
-                supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-            if (currentFragment is HomeDashboardFragment) return@setOnClickListener
-            myHealthFragmentSelected()
-        }*/
+        /*   binding.menuExplore.setOnClickListener {
+               val currentFragment =
+                   supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+               if (currentFragment is HomeDashboardFragment) return@setOnClickListener
+               myHealthFragmentSelected()
+           }*/
         binding.menuExplore.setOnClickListener {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
             if (currentFragment is HomeDashboardFragment) return@setOnClickListener
@@ -560,7 +559,12 @@ class HomeNewActivity : BaseActivity() {
         binding.includedhomebottomsheet.llFoodLog.setOnClickListener {
             AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "MealLogTypeEat")
+                //ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "MealLogTypeEat")
+                startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("BottomSeatName", "MealLogTypeEat")
+                    putExtra("snapMealId", snapMealId)
+                })
             }
         }
         binding.includedhomebottomsheet.llActivityLog.setOnClickListener {
@@ -651,7 +655,6 @@ class HomeNewActivity : BaseActivity() {
     }
 
 
-
     override fun onResume() {
         super.onResume()
         checkForUpdate()
@@ -704,12 +707,15 @@ class HomeNewActivity : BaseActivity() {
             intent.getBooleanExtra("OPEN_MY_HEALTH", false) -> {
                 myHealthFragmentSelected()
             }
+
             intent.getBooleanExtra("start_journal", false) -> {
                 startActivity(Intent(this, JournalListActivity::class.java))
             }
+
             intent.getBooleanExtra("start_profile", false) -> {
                 startActivity(Intent(this, ProfileSettingsActivity::class.java))
             }
+
             intent.getBooleanExtra("finish_MindAudit", false) &&
                     intent.getBooleanExtra("FROM_THINK_RIGHT", false) -> {
                 startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -717,6 +723,7 @@ class HomeNewActivity : BaseActivity() {
                     putExtra("BottomSeatName", "Not")
                 })
             }
+
             intent.getBooleanExtra("finish_Journal", false) &&
                     intent.getBooleanExtra("FROM_THINK_RIGHT", false) -> {
                 startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -726,7 +733,6 @@ class HomeNewActivity : BaseActivity() {
             }
         }
     }
-
 
 
     // get user details
@@ -756,7 +762,12 @@ class HomeNewActivity : BaseActivity() {
                             .placeholder(R.drawable.rl_profile).error(R.drawable.rl_profile)
                             .into(binding.profileImage)
                     }
-                    binding.userName.text = ResponseObj.userdata.firstName
+
+                    var name = ResponseObj.userdata.firstName
+                    if (!ResponseObj.userdata.lastName.isNullOrEmpty())
+                        name = name.plus(" ${ResponseObj.userdata.lastName}")
+                    binding.userName.text = name
+
                     val tvGreetingText = findViewById<TextView>(R.id.greetingText)
                     tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + ","
 
@@ -807,7 +818,7 @@ class HomeNewActivity : BaseActivity() {
 
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    if (response.code() == 401){
+                    if (response.code() == 401) {
                         clearUserDataAndFinish()
                     }
                 }
@@ -851,7 +862,7 @@ class HomeNewActivity : BaseActivity() {
             false // Return false if condition is true and dialog is shown
         } else {
             if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this){
+                DialogUtils.showCheckListQuestionCommonDialog(this) {
                     myHealthFragmentSelected()
                 }
                 false
@@ -2936,11 +2947,10 @@ class HomeNewActivity : BaseActivity() {
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
         if (checklistResponse != null) {
             checklistResponse.data.snap_mealId.let { snapMealId ->
-                if (!snapMealId.isNullOrEmpty())
-                {
+                if (!snapMealId.isNullOrEmpty()) {
                     sharedPreferenceManager.saveSnapMealId(snapMealId)
                     this.snapMealId = snapMealId
-                }else{
+                } else {
                     sharedPreferenceManager.saveSnapMealId("")
                     this.snapMealId = ""
                 }
@@ -3018,10 +3028,9 @@ class HomeNewActivity : BaseActivity() {
 
             userStatus == 1 && freeDate.isNotEmpty() -> {
                 // Free trial active with date
-                if (!DashboardChecklistManager.checklistStatus)
-                {
+                if (!DashboardChecklistManager.checklistStatus) {
                     logAndOpenMeal(snapMealId)
-                }else{
+                } else {
                     logAndOpenMeal("")
                 }
             }
@@ -3031,7 +3040,7 @@ class HomeNewActivity : BaseActivity() {
                 logAndOpenMeal("")
             }
 
-            userStatus == 2  -> {
+            userStatus == 2 -> {
                 // Free trial expired but has snap meal id
                 //logAndOpenMeal(snapMealId)
                 checkTrailEndedAndShowDialog()
@@ -3056,29 +3065,24 @@ class HomeNewActivity : BaseActivity() {
     }
 
 
-    fun callFaceScanClick()
-    {
+    fun callFaceScanClick() {
         AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
         if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
-        } else
-        {
+        } else {
             val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService
-                    ?: false
-            if (isFacialScanService)
-            {
-                if (DashboardChecklistManager.facialScanStatus)
-                {
+                ?: false
+            if (isFacialScanService) {
+                if (DashboardChecklistManager.facialScanStatus) {
                     startActivity(
-                            Intent(
-                                    this@HomeNewActivity, NewHealthCamReportActivity::class.java
-                            )
+                        Intent(
+                            this@HomeNewActivity, NewHealthCamReportActivity::class.java
+                        )
                     )
-                } else
-                {
+                } else {
                     ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
                 }
-            }else{
+            } else {
                 showSwitchAccountDialog(this@HomeNewActivity, "", "")
             }
         }
@@ -3125,7 +3129,10 @@ class HomeNewActivity : BaseActivity() {
         finishAffinity()
     }
 
-    private fun removeKeysNotInKeepList(sharedPreferences: SharedPreferences, keysToKeep: Set<String>) {
+    private fun removeKeysNotInKeepList(
+        sharedPreferences: SharedPreferences,
+        keysToKeep: Set<String>
+    ) {
         val editor = sharedPreferences.edit()
 
         // Get all current preference keys

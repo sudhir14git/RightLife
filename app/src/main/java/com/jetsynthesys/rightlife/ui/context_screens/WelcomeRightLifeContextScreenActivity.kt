@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.context_screens
 import android.content.Intent
 import android.os.Bundle
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.databinding.ActivityWelcomeRightLifeContextScreenBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.ActivityUtils
@@ -32,7 +33,12 @@ class WelcomeRightLifeContextScreenActivity : BaseActivity()
             {
                 // Never pass null snapMealId (use empty)
                 //val snapId = SharedPreferenceManager.getInstance(this).snapMealId ?: ""
-                ActivityUtils.startEatRightReportsActivity(this, "SnapMealTypeEat", "")
+                //ActivityUtils.startEatRightReportsActivity(this, "SnapMealTypeEat", "")
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("BottomSeatName", "SnapMealTypeEat")
+                    putExtra("snapMealId", "")
+                })
             }
 
             FeatureFlags.FACE_SCAN ->

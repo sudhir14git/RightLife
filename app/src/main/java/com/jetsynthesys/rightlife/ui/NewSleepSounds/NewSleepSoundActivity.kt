@@ -10,9 +10,11 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityNewSleepSoundBinding
@@ -25,6 +27,7 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.SleepCategoryS
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.userplaylistmodel.NewReleaseResponse
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.userplaylistmodel.SleepSoundPlaylistResponse
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,6 +42,8 @@ class NewSleepSoundActivity : BaseActivity() {
     private var sleepSoundPlaylistResponse: SleepSoundPlaylistResponse? = null
     private var useplaylistdata: ArrayList<Service> = ArrayList()
     private var servicesList: ArrayList<Service> = ArrayList()
+    private var servicesListSearch: ArrayList<Service> = ArrayList()
+    private lateinit var searchAdapter: SleepSoundGridAdapter
     private val mLimit = 10
     private var mSkip = 0
     private var isLoading = false
@@ -57,6 +62,44 @@ class NewSleepSoundActivity : BaseActivity() {
         binding.iconBack.setOnClickListener {
             handleBackPressed()
         }
+
+        searchAdapter =
+            SleepSoundGridAdapter(servicesListSearch, onItemClick = { selectedList, position ->
+                // Handle item click (open player screen)
+                isStartFromVerticalList = true
+                resultLauncher.launch(Intent(this, SleepSoundPlayerActivity::class.java).apply {
+                    putExtra("SOUND_LIST", selectedList)
+                    putExtra("SELECTED_POSITION", position)
+                    putExtra("ISUSERPLAYLIST", false)
+                })
+            }, onAddToPlaylistClick = { service, position ->
+                // Handle add to playlist click here
+                if (service.isActive) addToPlaylist(service._id, position)
+                else removeFromPlaylist(service._id, position)
+            }, false)
+
+        binding.recyclerViewSearch.apply {
+            layoutManager = GridLayoutManager(this@NewSleepSoundActivity, 2)
+            adapter = searchAdapter
+        }
+
+        binding.etSearch.addTextChangedListener {
+            val text = it?.toString()?.trim() ?: ""
+            if (text.isEmpty()) {
+                binding.ivSearchIcon.visibility = View.VISIBLE
+                binding.mainSleepSoundLayout.visibility = View.VISIBLE
+                binding.recyclerViewSearch.visibility = View.GONE
+                servicesListSearch.clear()
+                searchAdapter.notifyDataSetChanged()
+            } else {
+                binding.ivSearchIcon.visibility = View.GONE
+                binding.mainSleepSoundLayout.visibility = View.GONE
+                binding.recyclerViewSearch.visibility = View.VISIBLE
+                searchSounds(text)
+            }
+        }
+
+
         onBackPressedDispatcher.addCallback { handleBackPressed() }
         setupCategoryRecyclerView()
         fetchCategories()
@@ -192,7 +235,13 @@ class NewSleepSoundActivity : BaseActivity() {
                             if (category.title == "All") {
                                 selectedCategoryForTitle = category
                             } else {
-                                fetchSleepSoundsByCategoryId(category.title,category._id, true, category.title, 0)
+                                fetchSleepSoundsByCategoryId(
+                                    category.title,
+                                    category._id,
+                                    true,
+                                    category.title,
+                                    0
+                                )
                                 Log.d(
                                     "category Names",
                                     "onResponse: " + category.title + " " + category._id
@@ -492,7 +541,10 @@ class NewSleepSoundActivity : BaseActivity() {
     }
 
     // get user play list from api
-    private fun getUserCreatedPlaylist(isShowList: Boolean = true, isFromRemovePlayList: Boolean = false) {
+    private fun getUserCreatedPlaylist(
+        isShowList: Boolean = true,
+        isFromRemovePlayList: Boolean = false
+    ) {
         Utils.showLoader(this)
         val call = apiService.getUserCreatedPlaylist(sharedPreferenceManager.accessToken)
 
@@ -637,4 +689,36 @@ class NewSleepSoundActivity : BaseActivity() {
         container.addView(sectionView)
     }
 
+    private fun searchSounds(text: String) {
+        val call = apiService.searchSleepSounds(
+            sharedPreferenceManager.accessToken,
+            text
+        )
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    servicesListSearch.clear()
+                    val gson = Gson()
+                    val jsonString = response.body()?.string()
+                    val responseObj: SleepSoundSearchResponse =
+                        gson.fromJson(jsonString, SleepSoundSearchResponse::class.java)
+                    servicesListSearch.addAll(responseObj.data)
+                    searchAdapter.notifyDataSetChanged()
+                } else {
+                    showToast("Server Error: " + response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+
+        })
+    }
+
+    data class SleepSoundSearchResponse(
+        val statusCode: Int,
+        val data: List<Service>
+    )
 }
