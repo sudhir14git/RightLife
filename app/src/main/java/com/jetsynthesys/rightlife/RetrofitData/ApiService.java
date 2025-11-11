@@ -1309,6 +1309,12 @@ public interface ApiService {
     Call<ResponseBody> getPhysicalActivities(
             @Header("Authorization") String authToken
     );
+
+    @GET("sleepSound/search")
+    Call<ResponseBody> searchSleepSounds(
+            @Header("Authorization") String authToken,
+            @Query("title") String searchText
+    );
 }
 
 

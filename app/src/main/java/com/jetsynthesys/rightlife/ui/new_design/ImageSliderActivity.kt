@@ -590,7 +590,7 @@ class ImageSliderActivity : BaseActivity() {
         }
 
         dialogBinding.tvTitle.text = "You're Logged In with a Different Account"
-        dialogBinding.tvDescription.text = "This device is already logged in with a different account. As a result, free services are not available.\\n\\nPlease log out and sign in with your original account to access free features."
+        dialogBinding.tvDescription.text = "This device is already logged in with a different account. As a result, free services are not available. Please log out and sign in with your original account to access free features."
 
         dialogBinding.ivDialogClose.setImageResource(R.drawable.close_breathwork)
 

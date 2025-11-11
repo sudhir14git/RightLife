@@ -132,7 +132,7 @@ class CreateUsernameActivity : BaseActivity() {
 
     fun validateUsername(username: String): Boolean {
         if (username.isEmpty()) {
-            return true
+            return false
         }
         // Check if the username only contains alphabetic characters
         val regex = "^[A-Za-z]+$".toRegex()

@@ -969,7 +969,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
     private fun setData() {
-        val userdata = sharedPreferenceManager.userProfile.userdata
+        val userdata = sharedPreferenceManager.userProfile.userdata ?: return
         for (question in responseObj!!.questionData.questionList) {
             when (question.question) {
                 "first_name" -> {

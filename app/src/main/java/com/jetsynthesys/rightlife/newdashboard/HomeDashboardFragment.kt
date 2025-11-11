@@ -46,6 +46,7 @@ import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
+import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.FragmentHomeDashboardBinding
@@ -979,7 +980,12 @@ class HomeDashboardFragment : BaseFragment()
     private fun logAndOpenMeal(snapId: String)
     {
         AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EOS_SNAP_MEAL_CLICK)
-        ActivityUtils.startEatRightReportsActivity(requireContext(), "SnapMealTypeEat", snapId)
+        //ActivityUtils.startEatRightReportsActivity(requireContext(), "SnapMealTypeEat", snapId)
+        startActivity(Intent(context, MainAIActivity::class.java).apply {
+            putExtra("ModuleName", "EatRight")
+            putExtra("BottomSeatName", "SnapMealTypeEat")
+            putExtra("snapMealId", snapId)
+        })
     }
 
 }
