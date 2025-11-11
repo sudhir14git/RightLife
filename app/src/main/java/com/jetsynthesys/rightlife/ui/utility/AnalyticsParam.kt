@@ -68,4 +68,6 @@ object AnalyticsParam {
     const val USER_LIFECYCLE = "user_lifecycle"   // "new" | "old"
     const val SUBSCRIPTION_PLAN = "subscription_plan" // e.g., "monthly", "annual"
 
+    const val MR_Crash_Msg = "mr_crash_msh"
+
 }

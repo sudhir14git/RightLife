@@ -63,6 +63,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -80,6 +81,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Locale
 import kotlin.math.abs
 
 class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
@@ -590,7 +592,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
                                         //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
                                         val value = (percentage / 10)
-                                        val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                                        //val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                                        val overlayPositionPercentage = if (value.isFinite() && !value.isNaN()) value else 0f
                                         progressBarCalorieBalance.max = totalCalorie
                                         val max = progressBarCalorieBalance.max
                                         progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
@@ -688,7 +691,20 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
                                         val value = (percentage / 10)
                                        // val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
-                                        val cleanValue = if (value.isFinite() && !value.isNaN()) value else 0f
+                                        val cleanValue = if (value.isFinite() && !value.isNaN()) {
+                                            value
+                                        } else {
+                                            context?.let { it1 ->
+                                                AnalyticsLogger.logEvent(
+                                                    it1, AnalyticsEvent.MR_Number_Format_Exception,
+                                                    mapOf(
+                                                        AnalyticsParam.MR_Crash_Msg to 0f,
+                                                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                                                    )
+                                                )
+                                            }
+                                            0f
+                                        }
                                         val overlayPositionPercentage = cleanValue
 
                                         progressBarCalorieBalance.max = totalCalorie
@@ -1711,12 +1727,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US, "%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
                         )
                     } else null
@@ -1769,24 +1787,28 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val rate = record.rate
+                        val safeRate = if (rate.isFinite()) rate else 0.0
                         RespiratoryRate(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US,"%.1f", safeRate),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
                         )
                     } else null
                 } ?: emptyList()
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
                         )
                     } else null
@@ -1813,23 +1835,27 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
                         )
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage
+                    val safeKm = if (km.value.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToTargetFormat(record.time.toString()),
                         end_datetime = convertToTargetFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage),
+                        value =String.format(Locale.US,"%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
                     )
                 } ?: emptyList()
@@ -1888,6 +1914,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
                     WorkoutRequest(
                         start_datetime = convertToTargetFormat(record.startTime.toString()),
                         end_datetime = convertToTargetFormat(record.endTime.toString()),
@@ -1896,7 +1923,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         workout_type = workoutType,
                         duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
                         calories_burned = "",
-                        distance = String.format("%.1f", distance),
+                        distance = String.format(Locale.US, "%.1f", safeDistance),
                         duration_unit = "minutes",
                         calories_unit = "kcal",
                         distance_unit = "km"
@@ -2056,12 +2083,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US,"%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
@@ -2114,24 +2143,28 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeKm = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
@@ -2158,23 +2191,27 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km =  record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToSamsungFormat(record.time.toString()),
                         end_datetime = convertToSamsungFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage),
+                        value = String.format(Locale.US,"%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                     )
                 } ?: emptyList()
@@ -2233,6 +2270,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
                         WorkoutRequest(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
@@ -2241,7 +2279,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
                             calories_burned = "",
-                            distance = String.format("%.1f", distance),
+                            distance = String.format(Locale.US, "%.1f", safeDistance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
                             distance_unit = "km"

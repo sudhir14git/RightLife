@@ -88,6 +88,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                         putString("routineName", routineName)
                         putString("routineId",routineid)
                         putString("selected_date", mSelectedDate)
+                       putString("ModuleName", moduleName)
                         putParcelableArrayList("workoutList", workoutList)
                     }
                 }
@@ -107,6 +108,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                                 putString("routineName", routineName)
                                 putString("selected_date", mSelectedDate)
                                 putParcelableArrayList("workoutList", workoutList)
+                                putString("ModuleName", moduleName)
                             }
                         }
                         replaceFragment(allWorkoutFragment)
@@ -170,6 +172,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         }else{
             val fragment = YourActivityFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.flFragment, fragment, "YourActivityFragment")

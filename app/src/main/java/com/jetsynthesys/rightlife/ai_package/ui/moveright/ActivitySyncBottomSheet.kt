@@ -61,6 +61,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Locale
 
 class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
     private lateinit var healthConnectClient: HealthConnectClient
@@ -655,12 +656,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US, "%.2f", safeKm),
                             source_name = deviceName
                         )
                     } else null
@@ -723,12 +726,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeKm = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = deviceName
                         )
                     } else null
@@ -737,12 +742,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = deviceName
                         )
                     } else null
@@ -775,12 +782,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = deviceName
                         )
                     } else null
@@ -788,12 +797,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 Log.d("ActivitySyncBottomSheet", "Prepared ${bodyMass.size} body mass records")
 
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToTargetFormat(record.time.toString()),
                         end_datetime = convertToTargetFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage.value * 100),
+                        value = String.format(Locale.US,"%.1f", safeKm * 100),
                         source_name = deviceName
                     )
                 } ?: emptyList()
@@ -855,6 +866,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
                         WorkoutRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
@@ -863,7 +875,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
                             calories_burned = "",
-                            distance = String.format("%.1f", distance),
+                            distance = String.format(Locale.US, "%.1f", safeDistance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
                             distance_unit = "km"
@@ -1023,12 +1035,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US,"%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
@@ -1081,24 +1095,28 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeKm = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
@@ -1125,23 +1143,27 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US,"%.1f",safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToSamsungFormat(record.time.toString()),
                         end_datetime = convertToSamsungFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage),
+                        value = String.format(Locale.US,"%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                     )
                 } ?: emptyList()
@@ -1200,6 +1222,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
                         WorkoutRequest(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
@@ -1208,7 +1231,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
                             calories_burned = "",
-                            distance = String.format("%.1f", distance),
+                            distance = String.format(Locale.US, "%.1f", safeDistance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
                             distance_unit = "km"

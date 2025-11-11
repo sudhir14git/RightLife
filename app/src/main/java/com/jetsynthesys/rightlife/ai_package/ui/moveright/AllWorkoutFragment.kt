@@ -46,6 +46,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     private var routineName: String = ""
     private var mSelectedDate: String = ""
     private var routineId: String = ""
+    private var moduleName : String = ""
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentAllWorkoutBinding
@@ -70,6 +71,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         routineId = arguments?.getString("routineId").toString()
         routineName = arguments?.getString("routineName").toString()
         mSelectedDate = arguments?.getString("selected_date").toString()
+        moduleName = arguments?.getString("ModuleName").toString()
         workoutListRoutine = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         appPreference = AppPreference(requireContext())
         progressDialog = ProgressDialog(activity)
@@ -120,6 +122,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             putString("allworkout", "allworkout")
             putString("selected_date",mSelectedDate)
             putString("routineId",routineId)
+           putString("ModuleName", moduleName)
             putParcelable("workout", workout)
         }
         fragment.arguments = args
@@ -138,7 +141,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
 
         // Create a new WorkoutSessionRecord with default values
         val newWorkoutRecord = WorkoutSessionRecord(
-            userId = appPreference.getUserId() ?: "64763fe2fa0e40d9c0bc8264",
+            userId = appPreference.getUserId() ?: "",
             activityId = workout._id,
             durationMin = 60, // Default to 60 minutes (1 hour)
             intensity = "Low", // Default intensity
@@ -163,6 +166,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             putString("routineId", routineId)
             putString("routineName", routineName)
             putString("selected_date", mSelectedDate)
+         putString("ModuleName", moduleName)
             putParcelableArrayList("workoutList", workoutListRoutine)
         }
         fragment.arguments = args

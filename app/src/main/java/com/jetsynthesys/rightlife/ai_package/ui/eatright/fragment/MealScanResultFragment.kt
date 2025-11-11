@@ -531,100 +531,86 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             totalPotassium += (item.potassium_mg ?: 0.0)
         }
 
-        val vitaminD = if (totalVitaminD != null) {
-            String.format("%.1f", totalVitaminD)
-        } else {
-            "0.0"
-        }
+        val vitaminD = totalVitaminD
+            ?.takeIf { it.isFinite() }
+            ?.let { String.format(Locale.US, "%.1f", it) }
+            ?: "0.0"
 
-        val b12_mcg = if (totalB12 != null) {
-            String.format("%.1f", totalB12)
-        } else {
-            "0.0"
-        }
 
-        val folate = if (totalFolate != null) {
-            String.format("%.1f", totalFolate)
-        } else {
-            "0.0"
-        }
+        val b12_mcg = totalB12
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val vitaminC = if (totalVitaminC != null) {
-            String.format("%.1f", totalVitaminC)
-        } else {
-            "0.0"
-        }
+        val folate = totalFolate
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val vitaminA = if (totalVitaminA != null) {
-            String.format("%.1f", totalVitaminA)
-        } else {
-            "0.0"
-        }
+        val vitaminC = totalVitaminC
+            ?.takeIf { it.isFinite() }
+            ?.let { String.format(Locale.US, "%.1f", it) }
+            ?: "0.0"
 
-        val vitaminK = if (totalVitaminK != null) {
-            String.format("%.1f", totalVitaminK)
-        } else {
-            "0.0"
-        }
+        val vitaminA = totalVitaminA
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val iron_mg = if (totalIron != null) {
-            String.format("%.1f", totalIron)
-        } else {
-            "0.0"
-        }
+        val vitaminK = totalVitaminK
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val calcium = if (totalCalcium != null) {
-            String.format("%.1f", totalCalcium)
-        } else {
-            "0.0"
-        }
+        val iron_mg = totalIron
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val magnesium_mg = if (totalMagnesium != null) {
-            String.format("%.1f", totalMagnesium)
-        } else {
-            "0.0"
-        }
+        val calcium = totalCalcium
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val zinc_mg = if (totalZinc != null) {
-            String.format("%.1f", totalZinc)
-        } else {
-            "0.0"
-        }
+        val magnesium_mg = totalMagnesium
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val omega3 = if (totalOmega3 != null) {
-            String.format("%.1f", totalOmega3)
-        } else {
-            "0.0"
-        }
+        val zinc_mg = totalZinc
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val sodium = if (totalSodium != null) {
-            String.format("%.1f", totalSodium)
-        } else {
-            "0.0"
-        }
+        val omega3 = totalOmega3
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val cholesterol = if (totalCholesterol != null) {
-            String.format("%.1f", totalCholesterol)
-        } else {
-            "0.0"
-        }
+        val sodium = totalSodium
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val sugar = if (totalSugar != null) {
-            String.format("%.1f", totalSugar)
-        } else {
-            "0.0"
-        }
+        val cholesterol = totalCholesterol
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
-        val phosphorus_mg = if (totalPhosphorus != null) {
-            String.format("%.1f", totalPhosphorus)
-        } else {
-            "0.0"
-        }
-        val potassium_mg = if (totalPotassium != null) {
-            String.format("%.1f", totalPotassium)
-        } else {
-            "0.0"
-        }
+        val sugar = totalSugar
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
+
+        val phosphorus_mg = totalPhosphorus
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
+
+        val potassium_mg = totalPotassium
+            ?.takeIf { it.isFinite() }
+                ?.let { String.format(Locale.US, "%.1f", it) }
+                ?: "0.0"
 
         val mealLogs = listOf(
 //            MicroNutrientsModel(phosphorus_mg, "mg", "Phasphorus", R.drawable.ic_fats),
@@ -671,15 +657,18 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
 
     private fun onMacroNutrientsList(nutritionList: ArrayList<IngredientRecipeDetails>) {
 
-        val totalCalories = nutritionList.sumOf { it.calories_kcal ?: 0.0 }
-        val totalProtein = nutritionList.sumOf { it.protein_g ?: 0.0 }
-        val totalCarbs = nutritionList.sumOf { it.carbs_g ?: 0.0 }
-        val totalFat = nutritionList.sumOf { it.fat_g ?: 0.0 }
+        fun safe(value: Double): Double =
+            if (value.isFinite()) value else 0.0
 
-        val calories_kcal: String = String.format("%.1f", totalCalories)
-        val protein_g: String = String.format("%.1f", totalProtein)
-        val carb_g: String = String.format("%.1f", totalCarbs)
-        val fat_g: String = String.format("%.1f", totalFat)
+        val totalCalories = safe(nutritionList.sumOf { it.calories_kcal ?: 0.0 })
+        val totalProtein = safe(nutritionList.sumOf { it.protein_g ?: 0.0 })
+        val totalCarbs   = safe(nutritionList.sumOf { it.carbs_g ?: 0.0 })
+        val totalFat     = safe(nutritionList.sumOf { it.fat_g ?: 0.0 })
+
+        val calories_kcal = String.format(Locale.US,"%.1f", totalCalories)
+        val protein_g     = String.format(Locale.US,"%.1f", totalProtein)
+        val carb_g        = String.format(Locale.US,"%.1f", totalCarbs)
+        val fat_g         = String.format(Locale.US,"%.1f", totalFat)
 
         val mealLogs = listOf(
             MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),

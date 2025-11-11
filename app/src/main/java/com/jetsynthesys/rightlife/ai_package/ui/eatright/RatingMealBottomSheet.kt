@@ -22,6 +22,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import androidx.core.view.isVisible
 
 class RatingMealBottomSheet : BottomSheetDialogFragment() {
 
@@ -105,6 +106,9 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
 
         closeIcon.setOnClickListener {
             dismiss()
+            if(afterRatingLayout.isVisible){
+                listener?.onSnapMealRating(1.0, isSave)
+            }
         }
 
         layoutSubmit.setOnClickListener {

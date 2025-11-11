@@ -186,7 +186,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             commit()
                         }
                     }
-
                 }
             })
 
@@ -248,6 +247,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             val fragment = SearchWorkoutFragment()
             val args = Bundle()
             args.putString("selected_date", selectedDate)
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "searchWorkoutFragment")
@@ -265,6 +265,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 val fragment = SearchWorkoutFragment()
                 val args = Bundle()
                 args.putString("selected_date", selectedDate) // Put the string in the bundle
+                args.putString("ModuleName", moduleName)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "searchWorkoutFragment")
@@ -309,6 +310,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             val args = Bundle().apply {
                 putParcelableArrayList("ACTIVITY_LIST", newActivityList)
             }
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             Log.d("YourActivityFragment", "Sending ${activityList.size} activities to CreateRoutineFragment")
             requireActivity().supportFragmentManager.beginTransaction().apply {

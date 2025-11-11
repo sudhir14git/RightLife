@@ -57,42 +57,32 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         tvEat = view.findViewById(R.id.tvEat)
         tvSleep = view.findViewById(R.id.tvSleep)
 
-
         homeBottomArgument = arguments?.getString("HomeBottomTabFragment").toString()
         val moduleName = arguments?.getString("ModuleName").toString()
         val bottomSeatName = arguments?.getString("BottomSeatName").toString()
 
         tabThink.setOnClickListener {
-            switchFragment(
-                ThinkRightReportFragment(),
-                tabThink,
-                "Think",
-                bottomSeatName
-            )
+            it.safeClick {
+                switchFragment(ThinkRightReportFragment(), tabThink, "Think", bottomSeatName)
+            }
         }
+
         tabMove.setOnClickListener {
-            switchFragment(
-                MoveRightLandingFragment(),
-                tabMove,
-                "Move",
-                bottomSeatName
-            )
+            it.safeClick {
+                switchFragment(MoveRightLandingFragment(), tabMove, "Move", bottomSeatName)
+            }
         }
+
         tabEat.setOnClickListener {
-            switchFragment(
-                EatRightLandingFragment(),
-                tabEat,
-                "Eat",
-                bottomSeatName
-            )
+            it.safeClick {
+                switchFragment(EatRightLandingFragment(), tabEat, "Eat", bottomSeatName)
+            }
         }
+
         tabSleep.setOnClickListener {
-            switchFragment(
-                SleepRightLandingFragment(),
-                tabSleep,
-                "Sleep",
-                bottomSeatName
-            )
+            it.safeClick {
+                switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep", bottomSeatName)
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -103,7 +93,6 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
                 }
             })
 
-
         if (moduleName.contentEquals("MoveRight")) {
             switchFragment(MoveRightLandingFragment(), tabMove, "Move", bottomSeatName)
         } else if (moduleName.contentEquals("EatRight")) {
@@ -113,6 +102,12 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         } else if (moduleName.contentEquals("ThinkRight")) {
             switchFragment(ThinkRightReportFragment(), tabThink, "Think", bottomSeatName)
         }
+    }
+
+    private fun View.safeClick(delay: Long = 500L, action: () -> Unit) {
+        isEnabled = false
+        action()
+        postDelayed({ isEnabled = true }, delay)
     }
 
     private fun switchFragment(
