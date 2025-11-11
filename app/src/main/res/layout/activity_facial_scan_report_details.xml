@@ -137,6 +137,7 @@
                                 android:textColor="@color/black"
                                 android:background="@drawable/tab_background_report_detail"
                                 android:gravity="center"
+                                android:checked="false"
                                 android:button="@null" />
 
                             <!--<RadioButton

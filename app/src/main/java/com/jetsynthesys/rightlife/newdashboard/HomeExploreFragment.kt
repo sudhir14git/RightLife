@@ -922,7 +922,24 @@ class HomeExploreFragment : BaseFragment() {
                 }
 
                 "Mind Audit" -> {
-                    ActivityUtils.startMindAuditActivity(requireContext())
+                    if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                        if (NetworkUtils.isInternetAvailable(requireContext())) {
+                            freeTrialDialogActivity()
+                        } else {
+                            showInternetError()
+                        }
+                    } else {
+                        /*  ActivityUtils.startEatRightReportsActivity(
+                              requireContext(),
+                              "SnapMealTypeEat",
+                              ""
+                          )*/
+                        if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true)
+                        {
+                            ActivityUtils.startMindAuditActivity(requireContext())
+                        }
+                    }
+
                 }
 
                 "Meal Snap" -> {
@@ -951,25 +968,21 @@ class HomeExploreFragment : BaseFragment() {
                             showInternetError()
                         }
                     } else {
-                        ActivityUtils.startFaceScanActivity(requireContext())
+                        //ActivityUtils.startFaceScanActivity(requireContext())
+                        (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
                     }
                 }
 
                 "Face Scan" -> {
                     if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                         if (NetworkUtils.isInternetAvailable(requireContext())) {
-                            startActivity(
-                                Intent(
-                                    requireContext(),
-                                    SubscriptionPlanListActivity::class.java
-                                ).apply {
-                                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
-                                })
+                            freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
                         } else {
                             showInternetError()
                         }
                     } else {
-                        ActivityUtils.startFaceScanActivity(requireContext())
+                        //ActivityUtils.startFaceScanActivity(requireContext())
+                        (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
                     }
                 }
 

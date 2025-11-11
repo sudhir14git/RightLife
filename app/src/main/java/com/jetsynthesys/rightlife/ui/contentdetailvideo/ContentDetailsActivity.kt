@@ -66,6 +66,7 @@ class ContentDetailsActivity : BaseActivity() {
     private var contentTypeForTrack: String = ""
     private lateinit var contentId: String
     private lateinit var contentResponseObj: ModuleContentDetail
+    private var startTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +74,7 @@ class ContentDetailsActivity : BaseActivity() {
         binding = ActivityContentDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         contentId = intent.getStringExtra("contentId").toString()
+        startTime = System.currentTimeMillis()
         //API Call
         if (contentId != null) {
             getContendetails(contentId)
@@ -482,19 +484,19 @@ class ContentDetailsActivity : BaseActivity() {
             logContentOpenedEventAudio()
         }
         // Play/Pause Button Listener
-      /*  binding.playPauseButton.setOnClickListener {
-            if (isPlaying) {
-                mediaPlayer.pause()
-                binding.playPauseButton.setImageResource(R.drawable.ic_sound_play)
-                handler.removeCallbacks(updateProgress)
-            } else {
-                mediaPlayer.start()
-                binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
-                //updateProgress();
-                handler.post(updateProgress)
-            }
-            isPlaying = !isPlaying
-        }*/
+        /*  binding.playPauseButton.setOnClickListener {
+              if (isPlaying) {
+                  mediaPlayer.pause()
+                  binding.playPauseButton.setImageResource(R.drawable.ic_sound_play)
+                  handler.removeCallbacks(updateProgress)
+              } else {
+                  mediaPlayer.start()
+                  binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
+                  //updateProgress();
+                  handler.post(updateProgress)
+              }
+              isPlaying = !isPlaying
+          }*/
 
         binding.playPauseButton.setOnClickListener {
             try {
@@ -510,7 +512,7 @@ class ContentDetailsActivity : BaseActivity() {
                 mediaPlayer.prepareAsync()
             }
             binding.playPauseButton.setImageResource(
-                    if (mediaPlayer.isPlaying) R.drawable.ic_sound_pause else R.drawable.ic_sound_play
+                if (mediaPlayer.isPlaying) R.drawable.ic_sound_pause else R.drawable.ic_sound_play
             )
 
         }
@@ -744,16 +746,23 @@ class ContentDetailsActivity : BaseActivity() {
     }
 
     private fun logContentWatchedEvent() {
+        val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.VIDEO_WATCHED_PERCENT, mapOf(
                 AnalyticsParam.VIDEO_ID to contentId,
-                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration // % watched
+                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration, // % watched
+                AnalyticsParam.TOTAL_DURATION to duration
             )
         )
     }
 
-    fun logVideoOpenEvent(context: ContentDetailsActivity, contentResponseObj: ModuleContentDetail?, contentId: String?,eventName: String = AnalyticsEvent.Video_Open) {
+    fun logVideoOpenEvent(
+        context: ContentDetailsActivity,
+        contentResponseObj: ModuleContentDetail?,
+        contentId: String?,
+        eventName: String = AnalyticsEvent.Video_Open
+    ) {
         runCatching {
             val data = contentResponseObj?.data
 
@@ -775,9 +784,9 @@ class ContentDetailsActivity : BaseActivity() {
             if (params.isEmpty()) return // nothing to log
 
             AnalyticsLogger.logEvent(
-                    context,
-                    AnalyticsEvent.Video_Open,
-                    params
+                context,
+                AnalyticsEvent.Video_Open,
+                params
             )
         }.onFailure { e ->
             Log.e("AnalyticsLogger", "Video_Open event failed: ${e.localizedMessage}", e)
@@ -786,11 +795,13 @@ class ContentDetailsActivity : BaseActivity() {
 
 
     private fun logContentWatchedEventAudio() {
+        val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.AUDIO_LISTENED_PERCENT, mapOf(
                 AnalyticsParam.VIDEO_ID to contentId,
-                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDurationAudio // % watched
+                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDurationAudio, // % watched
+                AnalyticsParam.TOTAL_DURATION to duration
             )
         )
     }
@@ -814,33 +825,33 @@ class ContentDetailsActivity : BaseActivity() {
         }
     }
 
-/*    override fun onPause() {
-        super.onPause()
+    /*    override fun onPause() {
+            super.onPause()
 
-        // Pause video
-        if (::player.isInitialized && player.isPlaying) {
-            player.pause()
+            // Pause video
+            if (::player.isInitialized && player.isPlaying) {
+                player.pause()
+            }
+
+            // Pause audio
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+            }
         }
 
-        // Pause audio
-        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
-            mediaPlayer.pause()
-        }
-    }
+        override fun onDestroy() {
+            super.onDestroy()
+            if (::player.isInitialized) {
+                callTrackAPI(player.currentPosition.toDouble() / 1000)
+                player.release()
+            }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (::player.isInitialized) {
-            callTrackAPI(player.currentPosition.toDouble() / 1000)
-            player.release()
-        }
-
-        if (::mediaPlayer.isInitialized) {
-            callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
-            mediaPlayer.release()
-        }
-        handler.removeCallbacks(updateProgress)
-    }*/
+            if (::mediaPlayer.isInitialized) {
+                callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
+                mediaPlayer.release()
+            }
+            handler.removeCallbacks(updateProgress)
+        }*/
 
     override fun onPause() {
         super.onPause()
@@ -896,7 +907,7 @@ class ContentDetailsActivity : BaseActivity() {
             }
             if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
                 mediaPlayer.stop()
-              //  mediaPlayer.reset()
+                //  mediaPlayer.reset()
             }
         } catch (e: Exception) {
             Log.e("ContentDetails", "Error releasing players onStop", e)

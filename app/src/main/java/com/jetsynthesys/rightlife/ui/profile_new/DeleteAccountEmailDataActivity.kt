@@ -43,6 +43,9 @@ class DeleteAccountEmailDataActivity : BaseActivity() {
         binding.btnContinue.setOnClickListener {
             deleteAccountAPI(reasonsList!!, option!!)
         }
+        binding.backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     private fun deleteAccountAPI(reason: String, message: String) {

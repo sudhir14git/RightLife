@@ -28,6 +28,7 @@ import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -61,6 +62,7 @@ class JournalListActivity : BaseActivity() {
         isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
 
         binding.addEntryButton.setOnClickListener {
+            it.disableViewForSeconds()
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val formattedDate = sdf.format(Date())
             if (selectedDate == null || formattedDate == selectedDate?.dateString) {
@@ -83,6 +85,7 @@ class JournalListActivity : BaseActivity() {
         }
 
         binding.btnInfo.setOnClickListener {
+            it.disableViewForSeconds()
             val htmlText = """
     <p>This page gives you a bird’s-eye view of your journaling habit.</p>
     <p>Tap on a day to see your entries, moods, and themes.</p>

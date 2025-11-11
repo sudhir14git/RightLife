@@ -9,7 +9,9 @@ import android.widget.Toast
 import androidx.core.graphics.ColorUtils
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityGriefBinding
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
@@ -51,7 +53,8 @@ class GriefJournalActivity : BaseActivity() {
             binding.etJournalEntry.setText(it.answer)
         }
         val activeColor = Color.parseColor("#984C01")
-        val disabledColor = ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
+        val disabledColor =
+            ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
         binding.btnSave.setTextColor(
             if (binding.etJournalEntry.text.isNotEmpty()) activeColor else disabledColor
         )
@@ -73,7 +76,46 @@ class GriefJournalActivity : BaseActivity() {
         }
 
         binding.btnInfo.setOnClickListener {
-            // Show tooltip or info dialog
+            it.disableViewForSeconds()
+            val htmlText = when (journalItem?.title) {
+                "Gratitude" -> {
+                    """
+    <p>This practice centers on noticing what’s going well—no matter how big or small.</p>
+    <p>Gratitude Journaling has been shown to boost mood, shift perspective, and build emotional resilience.</p>
+    <p>Even a few simple entries can help rewire your focus toward the positive.</p>
+""".trimIndent()
+                }
+
+                "Grief" -> {
+                    """
+    <p>Grief Journaling is a safe place to hold pain, memories, questions, or anger.</p>
+    <p>It’s for anyone navigating loss, change, or heartache.</p>
+    <p>There’s no right way to grieve—this space is here to let your feelings breathe, however they show up.</p>
+""".trimIndent()
+                }
+
+                "Bullet" -> {
+                    """
+    <p>Bullet Journaling helps organize your inner world in small, manageable pieces.</p>
+    <p>Use it to list your moods, wins, worries, intentions—or anything else on your mind.</p>
+    <p>It’s a great option when you don’t feel like writing full paragraphs but still want to check in with yourself.</p>
+""".trimIndent()
+                }
+
+                else -> {
+                    """
+        <p>Free Form Journaling is all about flow. There are no rules, no structure—just your thoughts, as they come.</p>
+        <p>You can write a few lines or fill a page. It’s your space to vent, dream, reflect, or ramble.</p>
+        <p>Let go of how it should sound and focus on what you feel.</p>
+    """.trimIndent()
+                }
+            }
+            journalItem?.title?.let { it1 ->
+                DialogUtils.showJournalCommonDialog(
+                    this,
+                    it1, htmlText
+                )
+            }
         }
 
         binding.ivRefresh.setOnClickListener {
@@ -92,7 +134,8 @@ class GriefJournalActivity : BaseActivity() {
                     val hasText = (s?.trim()?.length ?: 0) > 0
                     binding.btnSave.isEnabled = hasText
                     val activeColor = Color.parseColor("#984C01")
-                    val disabledColor = ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
+                    val disabledColor =
+                        ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
 
                     binding.btnSave.setTextColor(
                         if (hasText) activeColor else disabledColor
@@ -155,7 +198,8 @@ class GriefJournalActivity : BaseActivity() {
                     val hasText = (s?.trim()?.length ?: 0) > 0
                     binding.btnSave.isEnabled = hasText
                     val activeColor = Color.parseColor("#984C01")
-                    val disabledColor = ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
+                    val disabledColor =
+                        ColorUtils.blendARGB(activeColor, Color.WHITE, 0.5f) // 50% blend to white
 
                     binding.btnSave.setTextColor(
                         if (hasText) activeColor else disabledColor
@@ -182,6 +226,7 @@ class GriefJournalActivity : BaseActivity() {
         }
 
         binding.btnSave.setOnClickListener {
+            it.disableViewForSeconds()
             // Save logic here
             val intent =
                 Intent(this@GriefJournalActivity, Journal4QuestionsActivity::class.java).apply {

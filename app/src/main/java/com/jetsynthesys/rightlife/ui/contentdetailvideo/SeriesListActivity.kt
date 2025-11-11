@@ -367,9 +367,7 @@ class SeriesListActivity : BaseActivity() {
                     //Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
                     setupEpisodeListData(
-                        seriesResponseModel.data.episodes,
-                        seriesResponseModel.data.categoryName
-                    )
+                        seriesResponseModel.data.episodes, seriesResponseModel.data.categoryName, seriesResponseModel.data.moduleId)
                     setupArtistList(seriesResponseModel)
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -396,8 +394,8 @@ class SeriesListActivity : BaseActivity() {
         binding.recyclerArtists.adapter = adapter
     }
 
-    private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String) {
-        val adapter = SeriesListAdapter(this, contentList, categoryName)
+    private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String, moduleId: String) {
+        val adapter = SeriesListAdapter(this, contentList, categoryName, moduleId)
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerViewSerieslist.setLayoutManager(horizontalLayoutManager)
         binding.recyclerViewSerieslist.setAdapter(adapter)

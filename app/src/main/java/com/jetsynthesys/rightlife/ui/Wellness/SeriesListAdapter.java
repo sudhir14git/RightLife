@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -34,12 +35,14 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
     private Context ctx;
     private String categoryName;
     ArrayList<Episode> contentList;
-    public SeriesListAdapter(Context context,ArrayList<Episode> contentList,String categoryName) {
+    private String moduleId;
+
+    public SeriesListAdapter(Context context,ArrayList<Episode> contentList,String categoryName,String moduleId) {
         this.ctx = context;
         this.contentList = contentList;
         this.categoryName = categoryName;
         this.inflater = LayoutInflater.from(context);
-
+        this.moduleId = moduleId;
     }
 
     @NonNull
@@ -100,6 +103,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
             holder.favorite_image.setImageResource(R.drawable.unfavorite);
         }
 
+        setModuleColor(moduleId, holder.img_module_tag, ctx);
         holder.favorite_image.setOnClickListener(view -> {
             FavouriteRequest favouriteRequest = new FavouriteRequest();
             favouriteRequest.setFavourite(!contentList.get(position).isFavourited());
@@ -130,7 +134,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView,favorite_image,img_iconview;
+        ImageView imageView,favorite_image,img_iconview,img_module_tag;
         TextView textView,tv_author_name,tv_time,category;
         View view_time_separator;
 
@@ -143,6 +147,8 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
             view_time_separator = itemView.findViewById(R.id.view_time_separator);
             category = itemView.findViewById(R.id.category);
             img_iconview = itemView.findViewById(R.id.img_iconview);
+            img_module_tag = itemView.findViewById(R.id.img_module_tag);
+
             favorite_image = itemView.findViewById(R.id.favorite_image);
             favorite_image.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -168,5 +174,27 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
         }
     }
 
+
+  private void setModuleColor(String moduleId, ImageView imgModuleTag, Context context) {
+      if (moduleId == null || imgModuleTag == null || context == null) return;
+
+      int colorRes;
+      if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
+          colorRes = R.color.eatright;
+      } else if (moduleId.equalsIgnoreCase("THINK_RIGHT")) {
+          colorRes = R.color.thinkright;
+      } else if (moduleId.equalsIgnoreCase("SLEEP_RIGHT")) {
+          colorRes = R.color.sleepright;
+      } else if (moduleId.equalsIgnoreCase("MOVE_RIGHT")) {
+          colorRes = R.color.moveright;
+      } else {
+          return;
+      }
+
+      android.content.res.ColorStateList colorStateList = ContextCompat.getColorStateList(context, colorRes);
+      if (colorStateList != null) {
+          imgModuleTag.setImageTintList(colorStateList);
+      }
+  }
 }
 

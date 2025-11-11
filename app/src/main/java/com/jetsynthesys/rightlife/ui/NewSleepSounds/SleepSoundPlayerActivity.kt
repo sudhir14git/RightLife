@@ -21,6 +21,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivitySleepSoundPlayerBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.bottomplaylist.PlaylistBottomSheetDialogFragment
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
@@ -266,6 +267,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         val currentMediaItem = player.currentMediaItem ?: return
         val service = currentMediaItem.localConfiguration?.tag as? Service ?: return
         binding.songTitle.text = service.title
+        binding.songCategory.text = service.catagoryName
         binding.songDuration.text = formatDuration(player.duration)
         Glide.with(this)
             .load(ApiClient.CDN_URL_QA + service.image)
@@ -376,7 +378,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     isListUpdated = true
-                    showToast(response.body()?.successMessage ?: "Added to Playlist!")
+                    showCustomToast("Added To Playlist", true)
                 } else {
                     showToast("Failed to add to playlist: ${response.code()}")
                 }
@@ -398,7 +400,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     isListUpdated = true
-                    showToast(response.body()?.successMessage ?: "Song removed from Playlist!")
+                    showCustomToast("Removed From Playlist", false)
                 } else {
                     showToast("try again!: ${response.code()}")
                 }

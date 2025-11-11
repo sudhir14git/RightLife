@@ -61,6 +61,7 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
+import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
 import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
 import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -786,7 +787,7 @@ class HomeDashboardFragment : BaseFragment()
                         Intent(requireContext(), NewHealthCamReportActivity::class.java)
                     } else
                     {
-                        Intent(requireContext(), HealthCamActivity::class.java)
+                        Intent(requireContext(), HealthCamBasicDetailsNewActivity::class.java)
                     }
                     startActivity(intent)
                 }

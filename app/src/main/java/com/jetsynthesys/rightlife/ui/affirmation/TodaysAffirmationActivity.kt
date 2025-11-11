@@ -49,6 +49,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -104,10 +105,12 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.infoAffirmation.setOnClickListener {
+            it.disableViewForSeconds()
             showInfoDialog()
         }
 
         binding.shareAffirmation.setOnClickListener {
+            it.disableViewForSeconds()
             val bitmap =
                 getBitmapFromView(affirmationCardPagerAdapter.getViewAt(binding.cardViewPager.currentItem)!!)
             val imageUri = saveBitmapToCache(bitmap)
@@ -117,6 +120,7 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.ivClose.setOnClickListener {
+            it.disableViewForSeconds()
             if (sharedPreferenceManager.firstTimeUserForAffirmation)
                 closeBottomSheetDialog.show()
             else if (affirmationPlaylistRequest.isNotEmpty())
@@ -128,6 +132,7 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.addAffirmation.setOnClickListener {
+            it.disableViewForSeconds()
             val position = binding.cardViewPager.currentItem
             if (checkAffirmationIsAlreadyAdded(position)) {
                 if (affirmationPlaylist.size == 3)
@@ -157,6 +162,7 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.btnCreateAffirmation.setOnClickListener {
+            it.disableViewForSeconds()
             if (affirmationPlaylistRequest.isNotEmpty()) {
                 createAffirmationPlaylist()
             }
@@ -396,6 +402,12 @@ class TodaysAffirmationActivity : BaseActivity() {
     private fun setupCategoryBottomSheet() {
         // Create and configure BottomSheetDialog
         categoryBottomSheetDialog = BottomSheetDialog(this)
+
+        categoryBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        // Optional: prevent it from collapsing when user scrolls
+        categoryBottomSheetDialog.behavior.skipCollapsed = true
+        categoryBottomSheetDialog.behavior.isDraggable = false
 
         // Inflate the BottomSheet layout
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_layout, null)

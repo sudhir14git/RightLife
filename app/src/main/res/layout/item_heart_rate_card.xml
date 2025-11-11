@@ -52,15 +52,14 @@
                 android:id="@+id/tvDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:drawableEnd="@drawable/next_arrow_settings"
-                android:drawablePadding="5dp"
-                android:drawableTint="#707070"
                 android:fontFamily="@font/dmsans_regular"
                 android:gravity="center"
                 android:text="20 Fev"
                 android:textColor="#707070"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/rightarrowsmall"
+                app:drawableTint="#707070" />
 
             <ImageView
                 android:id="@+id/rightarrowsmall"
@@ -70,7 +69,8 @@
                 android:gravity="center"
                 android:padding="3dp"
                 android:src="@drawable/next_arrow_settings"
-                android:visibility="gone"
+                android:visibility="visible"
+                android:layout_centerVertical="true"
                 app:tint="#707070" />
         </RelativeLayout>
         <!-- Heart Rate Value -->

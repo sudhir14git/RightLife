@@ -33,15 +33,14 @@
 
     <ScrollView
         android:layout_below="@id/llTopBar"
-        android:layout_above="@id/bottomButtonsLayout"
+        android:layout_above="@id/btnProceed"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:padding="@dimen/margin_card_16dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="@dimen/margin_card_16dp"
             android:orientation="vertical">
 
             <TextView
@@ -318,14 +317,7 @@
     <include layout="@layout/loader_layout" />
 
     <!-- Bottom Buttons -->
-    <LinearLayout
-        android:id="@+id/bottomButtonsLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:background="@drawable/toproundedcornershape">
+
 
         <Button
             android:id="@+id/btnProceed"
@@ -333,11 +325,12 @@
             android:layout_height="wrap_content"
             android:text="Proceed To Scan"
             android:textSize="14sp"
-            android:layout_marginTop="16dp"
+            android:layout_margin="@dimen/margin_card_16dp"
+            android:layout_alignParentBottom="true"
             android:fontFamily="@font/dmsans_bold"
             android:textColor="@color/white"
             android:backgroundTint="@color/menuselected" />
 
-    </LinearLayout>
+
 
 </RelativeLayout>
