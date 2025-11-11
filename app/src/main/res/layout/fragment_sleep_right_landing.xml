@@ -208,10 +208,10 @@
                             android:paddingStart="8dp" />
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:id="@+id/img_ideal_info_top"
-                            android:src="@drawable/sleep_info_icon" />
+                            android:src="@drawable/info_sleep_icon" />
                     </LinearLayout>
 
                     <!-- Subtitle -->
@@ -383,7 +383,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:elevation="4dp"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
@@ -428,6 +428,7 @@
                         android:layout_marginEnd="15dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -448,7 +449,7 @@
                         android:textColor="@color/sleep_text_color"
                         android:id="@+id/last_night_title"
                         android:fontFamily="@font/dmsans_regular"
-                        android:text="Sleep Time:"
+                        android:text="Last Night:"
                         android:textSize="14sp"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="10dp"
@@ -682,7 +683,7 @@
                 android:id="@+id/perform_nodata_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:elevation="4dp"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
@@ -802,7 +803,7 @@
                 android:id="@+id/sleep_stage_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:elevation="4dp"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
@@ -1441,7 +1442,7 @@
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
                 android:background="@color/white"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
                 android:layout_marginStart="15dp"
@@ -1558,6 +1559,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
+                android:visibility="gone"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
@@ -1814,6 +1816,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
+                android:visibility="gone"
                 android:id="@+id/lyt_restorative_card"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
@@ -2125,7 +2128,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:id="@+id/card_sleep_time_requirement"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
@@ -2535,7 +2538,7 @@
                 android:elevation="4dp"
                 android:id="@+id/lyt_sleep_sound_card"
                 android:background="@color/white"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
                 android:layout_marginBottom="30dp"

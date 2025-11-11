@@ -1023,6 +1023,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         getBreathingData()
         fetchJournalAnswerData()
         fetchToolList()
+        fetchAssessmentResult()
     }
 
     private fun fetchThinkRecomendedData() {

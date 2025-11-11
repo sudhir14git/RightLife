@@ -815,10 +815,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     }
 
     fun formatValue(value: Double): String {
-        return if (value >= 1000) {
-            String.format("%.1fk", value / 1000) // 1 decimal ke saath
+        val safeValue = if (value.isFinite()) value else 0.0
+        return if (safeValue >= 1000) {
+            String.format(Locale.US, "%.1fk", safeValue / 1000)
         } else {
-            value.toInt().toString() // normal integer
+            safeValue.toInt().toString()
         }
     }
 

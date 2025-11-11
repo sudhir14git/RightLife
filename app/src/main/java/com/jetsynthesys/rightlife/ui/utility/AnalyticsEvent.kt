@@ -74,8 +74,6 @@ object AnalyticsEvent {
     const val AFFIRMATION_PLAYLIST_CREATED = "affirmation_playlist_created"
     const val AFFIRMATION_PLAYLIST_PRACTISE = "affirmation_practise"
 
-
-
     // Breathing & Mind
     const val BREATHING_SESSION_STARTED = "breathing_session_started"
     const val BREATHING_SESSION_COMPLETED = "breathing_session_completed"
@@ -219,13 +217,10 @@ object AnalyticsEvent {
     const val Booster_FaceScan12_Tap = "Booster_FaceScan12_Tap"
     const val Booster_FaceScan1_Tap = "Booster_FaceScan1_Tap"
 
-
     //logoutEvent
     const val Settings_Logout_Confirm = "Settings_Logout_Confirm"
     const val Settings_DataExport_Success = "Settings_DataExport_Success"
     const val DeleteAccount_ExportData_Continue = "DeleteAccount_ExportData_Continue"
-
-
 
     // Affirmation new
     const val TR_AffirmationPlaylist_PageOpen = "TR_AffirmationPlaylist_PageOpen"
@@ -250,15 +245,6 @@ object AnalyticsEvent {
     const val TR_MindAudit_PHQ9_Submit = "TR_MindAudit_PHQ9_Submit"
     const val TR_MindAudit_GAD7_Submit = "TR_MindAudit_GAD7_Submit"
 
-
-
-
-
-
-
-
-
-
-
+    const val MR_Number_Format_Exception = "mr_number_format_crash"
 
 }

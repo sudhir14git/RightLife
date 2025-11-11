@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
@@ -7,10 +8,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -74,7 +77,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private var editWorkoutRoutine: String = ""
     private var routineName: String = ""
     private var mSelectedDate: String = ""
+    private var moduleName : String = ""
     var moduleIcon: String? = null
+    private var currentToast: Toast? = null
     private lateinit var workoutName: TextView
     private lateinit var workoutIcon: ImageView
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
@@ -107,6 +112,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         edit = arguments?.getString("edit") ?: ""
         edit_routine = arguments?.getString("edit_routine") ?: ""
         val allworkout = arguments?.getString("allworkout") ?: ""
+        moduleName = arguments?.getString("ModuleName").toString()
         workout = arguments?.getParcelable("workout")
 
         // Views
@@ -165,20 +171,21 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     if (durationMinutes != 0) {
                         updateCalories(calorieId, durationMinutes, normalizedIntensity)
                     } else {
-                        Toast.makeText(requireContext(), "Duration cannot be 0", Toast.LENGTH_SHORT).show()
+                      //  Toast.makeText(requireContext(), "Duration cannot be 0", Toast.LENGTH_SHORT).show()
+                        showCustomToast(requireContext(), "Duration cannot be 0")
                     }
-                } ?: Toast.makeText(requireContext(), "Calorie ID is missing", Toast.LENGTH_SHORT).show()
+                } ?: showCustomToast(requireContext(), "Calorie ID is missing")
             } else if (editWorkoutRoutine == "editworkoutRoutine") {
                 if (durationMinutes > 0) {
                     editWorkoutRoutineItem?.id?.let { updateWorkoutEntryById(it, durationMinutes, normalizeIntensity(selectedIntensity)) }
                 } else {
-                    Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
+                    showCustomToast(requireContext(), "Please select a duration")
                 }
             } else if (routine == "routine" || routine == "edit_routine") {
                 if (durationMinutes > 0) {
                     updateLastEntryCalories(durationMinutes, normalizeIntensity(selectedIntensity))
                 } else {
-                    Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
+                    showCustomToast(requireContext(), "Please select a duration")
                 }
             } else {
                 workout?.let { w ->
@@ -199,9 +206,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     if (durationMinutes > 0 && caloriesText.text != "0") {
                         createWorkout(lastWorkoutRecord)
                     } else {
-                        Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
+                        showCustomToast(requireContext(), "Please select a duration")
                     }
-                } ?: Toast.makeText(requireContext(), "Please select a workout", Toast.LENGTH_SHORT).show()
+                } ?: showCustomToast(requireContext(), "Please select a workout")
             }
         }
 
@@ -340,6 +347,60 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             caloriesText.text = "0"
             addLog.isEnabled = true
         }
+        when (workoutName.text.toString()) {
+            "American Football" -> workoutIcon.setImageResource(R.drawable.american_football)
+            "Archery" -> workoutIcon.setImageResource(R.drawable.archery)
+            "Athletics" -> workoutIcon.setImageResource(R.drawable.athelete_search)
+            "Australian Football" -> workoutIcon.setImageResource(R.drawable.australian_football)
+            "Badminton" -> workoutIcon.setImageResource(R.drawable.badminton)
+            "Barre" -> workoutIcon.setImageResource(R.drawable.barre)
+            "Baseball" -> workoutIcon.setImageResource(R.drawable.baseball)
+            "Basketball" -> workoutIcon.setImageResource(R.drawable.basketball)
+            "Boxing" -> workoutIcon.setImageResource(R.drawable.boxing)
+            "Climbing" -> workoutIcon.setImageResource(R.drawable.climbing)
+            "Core Training" -> workoutIcon.setImageResource(R.drawable.core_training)
+            "Cycling" -> workoutIcon.setImageResource(R.drawable.cycling)
+            "Cricket" -> workoutIcon.setImageResource(R.drawable.cricket)
+            "Cross Training" -> workoutIcon.setImageResource(R.drawable.cross_training)
+            "Dance" -> workoutIcon.setImageResource(R.drawable.dance)
+            "Disc Sports" -> workoutIcon.setImageResource(R.drawable.disc_sports)
+            "Elliptical" -> workoutIcon.setImageResource(R.drawable.elliptical)
+            "Football" -> workoutIcon.setImageResource(R.drawable.football)
+            "Functional Strength Training" -> workoutIcon.setImageResource(R.drawable.functional_strength_training)
+            "Golf" -> workoutIcon.setImageResource(R.drawable.golf)
+            "Gymnastics" -> workoutIcon.setImageResource(R.drawable.gymnastics)
+            "Handball" -> workoutIcon.setImageResource(R.drawable.handball)
+            "Hiking" -> workoutIcon.setImageResource(R.drawable.hockey)
+            "Hockey" -> workoutIcon.setImageResource(R.drawable.hiit)
+            "HIIT", "High Intensity Interval Training" -> workoutIcon.setImageResource(R.drawable.hiking)
+            "Kickboxing" -> workoutIcon.setImageResource(R.drawable.kickboxing)
+            "Martial Arts" -> workoutIcon.setImageResource(R.drawable.martial_arts)
+            "Other" -> workoutIcon.setImageResource(R.drawable.other)
+            "Pickleball" -> workoutIcon.setImageResource(R.drawable.pickleball)
+            "Pilates" -> workoutIcon.setImageResource(R.drawable.pilates)
+            "Power Yoga" -> workoutIcon.setImageResource(R.drawable.power_yoga)
+            "Powerlifting" -> workoutIcon.setImageResource(R.drawable.powerlifting)
+            "Pranayama" -> workoutIcon.setImageResource(R.drawable.pranayama)
+            "Running" -> workoutIcon.setImageResource(R.drawable.running)
+            "Rowing Machine" -> workoutIcon.setImageResource(R.drawable.rowing_machine)
+            "Rugby" -> workoutIcon.setImageResource(R.drawable.rugby)
+            "Skating" -> workoutIcon.setImageResource(R.drawable.skating)
+            "Skipping" -> workoutIcon.setImageResource(R.drawable.skipping)
+            "Stairs" -> workoutIcon.setImageResource(R.drawable.stairs)
+            "Squash" -> workoutIcon.setImageResource(R.drawable.squash)
+            "Traditional Strength Training", "Strength Training" -> workoutIcon.setImageResource(R.drawable.traditional_strength_training)
+            "Stretching" -> workoutIcon.setImageResource(R.drawable.stretching)
+            "Swimming" -> workoutIcon.setImageResource(R.drawable.swimming)
+            "Table Tennis" -> workoutIcon.setImageResource(R.drawable.table_tennis)
+            "Tennis" -> workoutIcon.setImageResource(R.drawable.tennis)
+            "Track and Field Events" -> workoutIcon.setImageResource(R.drawable.track_field_events)
+            "Volleyball" -> workoutIcon.setImageResource(R.drawable.volleyball)
+            "Walking" -> workoutIcon.setImageResource(R.drawable.walking)
+            "Watersports" -> workoutIcon.setImageResource(R.drawable.watersports)
+            "Wrestling" -> workoutIcon.setImageResource(R.drawable.wrestling)
+            "Yoga" -> workoutIcon.setImageResource(R.drawable.yoga)
+            else -> workoutIcon.setImageResource(R.drawable.other)
+        }
 
         // Initial refresh
         refreshPickers()
@@ -456,7 +517,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         val lastEntry = workoutListRoutine[lastIndex]
 
         if (lastEntry.activityId == null) {
-            Toast.makeText(requireContext(), "Activity ID missing for last workout", Toast.LENGTH_SHORT).show()
+            showCustomToast(requireContext(), "Activity ID missing for last workout")
             navigateToCreateRoutineFragment()
             return
         }
@@ -485,27 +546,27 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                             moduleIcon = moduleIcon!!
                         )
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(requireContext(), "Updated calories for ${lastEntry.moduleName}: ${caloriesResponse.caloriesBurned} kcal", Toast.LENGTH_SHORT).show()
+                            showCustomToast(requireContext(), "Updated calories for ${lastEntry.moduleName}: ${caloriesResponse.caloriesBurned} kcal")
                             navigateToCreateRoutineFragment()
                         }
                     } else {
                         workoutListRoutine[lastIndex] = lastEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(requireContext(), "No calories data received for ${lastEntry.moduleName}", Toast.LENGTH_SHORT).show()
+                            showCustomToast(requireContext(), "No calories data received for ${lastEntry.moduleName}")
                             navigateToCreateRoutineFragment()
                         }
                     }
                 } else {
                     workoutListRoutine[lastIndex] = lastEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Error for ${lastEntry.moduleName}: ${response.code()}", Toast.LENGTH_LONG).show()
+                        showCustomToast(requireContext(), "Error for ${lastEntry.moduleName}: ${response.code()}")
                         navigateToCreateRoutineFragment()
                     }
                 }
             } catch (e: Exception) {
                 workoutListRoutine[lastIndex] = lastEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    showCustomToast(requireContext(), "Exception: ${e.message}")
                     navigateToCreateRoutineFragment()
                 }
             }
@@ -515,7 +576,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private fun navigateToCreateRoutineFragment() {
         Log.d("AddWorkoutSearchFragment", "Sending workoutList to CreateRoutineFragment: $workoutListRoutine")
         if (workoutListRoutine.isNullOrEmpty()) {
-            Toast.makeText(requireContext(), "No workouts selected", Toast.LENGTH_SHORT).show()
+            showCustomToast(requireContext(), "No workouts selected")
             return
         }
         setFragmentResult("workoutListUpdate", Bundle().apply {
@@ -527,6 +588,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             putString("routineName", routineName)
             putString("routineId", routineId)
             putString("selected_date", mSelectedDate)
+           putString("ModuleName", moduleName)
         }
         val createRoutineFragment = CreateRoutineFragment().apply { arguments = args }
         navigateToFragment(createRoutineFragment, "CreateRoutineFragment", args)
@@ -539,21 +601,21 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
     private fun updateWorkoutEntryById(editWorkoutRoutineItemId: String, durationMinutes: Int, normalizedIntensity: String) {
         if (workoutListRoutine.isEmpty()) {
-            Toast.makeText(requireContext(), "Workout list is empty", Toast.LENGTH_SHORT).show()
+            showCustomToast(requireContext(), "Workout list is empty")
             navigateToCreateRoutineFragment()
             return
         }
 
         val targetIndex = workoutListRoutine.indexOfFirst { it.activityId == editWorkoutRoutineItemId }
         if (targetIndex == -1) {
-            Toast.makeText(requireContext(), "Workout not found", Toast.LENGTH_SHORT).show()
+            showCustomToast(requireContext(), "Workout not found")
             navigateToCreateRoutineFragment()
             return
         }
 
         val targetEntry = workoutListRoutine[targetIndex]
         if (targetEntry.activityId == null) {
-            Toast.makeText(requireContext(), "Activity ID missing", Toast.LENGTH_SHORT).show()
+            showCustomToast(requireContext(), "Activity ID missing")
             navigateToCreateRoutineFragment()
             return
         }
@@ -583,14 +645,14 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         )
                         withContext(Dispatchers.Main) {
                             setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
-                            Toast.makeText(requireContext(), "Updated calories: ${caloriesResponse.caloriesBurned} kcal", Toast.LENGTH_SHORT).show()
+                            showCustomToast(requireContext(), "Updated calories: ${caloriesResponse.caloriesBurned} kcal")
                             navigateToCreateRoutineFragment()
                         }
                     } else {
                         workoutListRoutine[targetIndex] = targetEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
                         withContext(Dispatchers.Main) {
                             setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
-                            Toast.makeText(requireContext(), "No calories data", Toast.LENGTH_SHORT).show()
+                            showCustomToast(requireContext(), "No calories data")
                             navigateToCreateRoutineFragment()
                         }
                     }
@@ -598,7 +660,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     workoutListRoutine[targetIndex] = targetEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
                     withContext(Dispatchers.Main) {
                         setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
-                        Toast.makeText(requireContext(), "Error: ${response.code()}", Toast.LENGTH_LONG).show()
+                        showCustomToast(requireContext(), "Error: ${response.code()}")
                         navigateToCreateRoutineFragment()
                     }
                 }
@@ -606,7 +668,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 workoutListRoutine[targetIndex] = targetEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
                 withContext(Dispatchers.Main) {
                     setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    showCustomToast(requireContext(), "Exception: ${e.message}")
                     navigateToCreateRoutineFragment()
                 }
             }
@@ -628,29 +690,29 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         date = mSelectedDate
                     )
                 } ?: run {
-                    withContext(Dispatchers.Main) { Toast.makeText(requireContext(), "Workout data missing", Toast.LENGTH_SHORT).show() }
+                    withContext(Dispatchers.Main) { showCustomToast(requireContext(), "Workout data missing") }
                     return@launch
                 }
-
                 val response = ApiClient.apiServiceFastApi.createWorkout(request)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let {
                             val fragment = YourActivityFragment()
                             val args = Bundle().apply { putString("selected_date", mSelectedDate) }
+                            args.putString("ModuleName", moduleName)
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction()
                                 .replace(R.id.flFragment, fragment, "YourActivityFragment")
                                 .addToBackStack("YourActivityFragment")
                                 .commit()
-                            Toast.makeText(requireContext(), "Workout Created", Toast.LENGTH_SHORT).show()
-                        } ?: Toast.makeText(requireContext(), "Empty response", Toast.LENGTH_SHORT).show()
+                            showCustomToast(requireContext(), "Workout Created")
+                        } ?: showCustomToast(requireContext(), "Empty response")
                     } else {
-                        Toast.makeText(requireContext(), "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        showCustomToast(requireContext(), "Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) { Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show() }
+                withContext(Dispatchers.Main) { showCustomToast(requireContext(), "Exception: ${e.message}") }
             }
         }
     }
@@ -668,7 +730,6 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     date = getCurrentDate()
                 )
                 val response: Response<CalculateCaloriesResponse> = ApiClient.apiServiceFastApi.calculateCalories(request)
-
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val caloriesResponse = response.body()
@@ -740,26 +801,26 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     sessions = 1,
                     date = currentDate
                 )
-
                 val response = ApiClient.apiServiceFastApi.updateCalories(calorieId, request)
-
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let {
                             val fragment = YourActivityFragment()
+                            val args = Bundle().apply { putString("ModuleName", moduleName)}
+                            fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction()
                                 .replace(R.id.flFragment, fragment, "YourActivityFragment")
                                 .addToBackStack("YourActivityFragment")
                                 .commit()
-                            Toast.makeText(requireContext(), "Calories Updated", Toast.LENGTH_SHORT).show()
-                        } ?: Toast.makeText(requireContext(), "Empty response", Toast.LENGTH_SHORT).show()
+                            showCustomToast(requireContext(), "Calories Updated",)
+                        } ?: showCustomToast(requireContext(), "Empty response")
                     } else {
-                        Toast.makeText(requireContext(), "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        showCustomToast(requireContext(), "Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    showCustomToast(requireContext(), "Exception: ${e.message}")
                 }
             }
         }
@@ -767,6 +828,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String, existingArgs: Bundle? = null) {
         val args = existingArgs ?: Bundle().apply { putString("selected_date", mSelectedDate) }
+        args.putString("ModuleName", moduleName)
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.flFragment, fragment, tag)
@@ -785,10 +847,36 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
     private fun navigateToFragmentData(fragment: androidx.fragment.app.Fragment, tag: String) {
         val args = Bundle().apply { putString("routineBack", "routineBack") }
+        args.putString("ModuleName", moduleName)
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.flFragment, fragment, tag)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun showCustomToast(context: Context, message: String?) {
+        // Cancel any old toast
+        currentToast?.cancel()
+        val inflater = LayoutInflater.from(context)
+        val toastLayout = inflater.inflate(R.layout.custom_toast_ai_eat, null)
+        val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+        // ✅ Wrap layout inside FrameLayout to apply margins
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val marginInPx = (20 * context.resources.displayMetrics.density).toInt()
+        params.setMargins(marginInPx, 0, marginInPx, 0)
+        toastLayout.layoutParams = params
+        container.addView(toastLayout)
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = container
+        toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 100)
+        currentToast = toast
+        toast.show()
     }
 }

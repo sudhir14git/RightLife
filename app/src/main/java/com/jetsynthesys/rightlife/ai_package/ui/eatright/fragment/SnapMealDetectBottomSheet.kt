@@ -80,6 +80,7 @@ class SnapMealDetectBottomSheet : BottomSheetDialogFragment() {
 //        }
 
         layoutDelete.setOnClickListener {
+            dismiss()
             listener?.onSnapMealDetect(true)
         }
 
