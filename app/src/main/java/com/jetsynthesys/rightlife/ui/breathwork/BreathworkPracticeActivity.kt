@@ -69,10 +69,10 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         // Retrieve the selected breathing practice from the intent
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
-        startDate = intent.getStringExtra("StartDate").toString()
+        /*startDate = intent.getStringExtra("StartDate").toString()
         if (startDate.isEmpty())
-            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())*/
+        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         val sessionCount = intent.getIntExtra("sessionCount", 3)
         totalSets = sessionCount
         isHapticFeedBack = intent.getBooleanExtra("HAPTIC_FEEDBACK", false)
