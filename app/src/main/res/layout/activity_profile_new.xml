@@ -35,7 +35,7 @@
                     android:textSize="18sp"
                     android:fontFamily="@font/merriweather_bold"
                     android:textColor="@color/txt_color_mind"
-                    android:layout_marginStart="4dp" />
+                    android:layout_marginStart="1dp" />
             </LinearLayout>
 
             <!-- Profile Picture -->

@@ -977,18 +977,26 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 }
 
                 "height" -> {
-                    if (userdata.height != null)
-                        if (userdata.heightUnit == "FT_AND_INCHES") {
-                            val height = userdata.height.toString().split(".")
-                            binding.edtHeight.setText("${height[0]} ft ${height[1]} in")
-                        } else {
-                            binding.edtHeight.setText("${userdata.height} cm")
+                    userdata.height?.let { heightValue ->
+                        when (userdata.heightUnit) {
+                            "FT_AND_INCHES" -> {
+                                val heightParts = heightValue.toString().split(".")
+                                val feet = heightParts.getOrNull(0) ?: "0"
+                                val inches = heightParts.getOrNull(1) ?: "0"
+                                binding.edtHeight.setText("$feet ft $inches in")
+                            }
+                            "CM" -> binding.edtHeight.setText("$heightValue cm")
                         }
+                    }
                 }
 
                 "weight" -> {
-                    if (userdata.weight != null) {
-                        binding.edtWeight.setText("${userdata.weight} ${userdata.weightUnit}")
+                    userdata.weight?.let { weightValue ->
+                        when (userdata.weightUnit) {
+                            "LBS" -> binding.edtWeight.setText("$weightValue lbs")
+                            "KG" -> binding.edtWeight.setText("$weightValue kg")
+                            else -> binding.edtWeight.setText("$weightValue")
+                        }
                     }
                 }
 

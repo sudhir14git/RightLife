@@ -37,8 +37,7 @@
         android:layout_marginHorizontal="2dp"
         android:ellipsize="marquee"
         android:fontFamily="@font/dmsans_bold"
-        android:minLines="2"
-        android:text="dkjfhskj"
+        android:text=""
         android:textColor="@color/text_color_app"
         android:textSize="@dimen/textsize_medium" />
 

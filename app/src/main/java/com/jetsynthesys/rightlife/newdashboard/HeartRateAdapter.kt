@@ -8,6 +8,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
@@ -91,7 +92,7 @@ class HeartRateAdapter(
         //if (holder.bindingAdapterPosition != 2) {}
 
             binding.heartRateChart.visibility = android.view.View.VISIBLE
-            setupChart(binding.heartRateChart, item?.data,item?.key.toString())
+            setupChart(binding.heartRateChart, item?.data,item?.key.toString(),item?.avgParameter.toString())
             binding.barChart.visibility = android.view.View.GONE
          /*else {
             binding.barChart.visibility = android.view.View.VISIBLE
@@ -157,20 +158,67 @@ class HeartRateAdapter(
            else -> R.drawable.ic_db_report_heart_rate
        }
    }
-    private fun getChartColorByType(type: String): Int {
+    private fun getChartColorByTypeOLD(type: String): Int {
         return when (type) {
-            "BMI_CALC" -> Color.parseColor("#E91E63")
-            "BP_RPP" -> Color.parseColor("#E91E63")       // Purple
-            "BP_SYSTOLIC", "BP_DIASTOLIC" -> Color.parseColor("#E91E63") // Red
-            "BP_CVD" -> Color.parseColor("#E91E63")       // Brown
-            "MSI" -> Color.parseColor("#E91E63")          // Light Blue
-            "BR_BPM" -> Color.parseColor("#E91E63")       // Green
-            "HRV_SDNN" -> Color.parseColor("#E91E63")     // Blue
-            "HEALTH_SCORE" -> Color.parseColor("#E91E63") // Light Green
-            else -> Color.parseColor("#E91E63")           // Pink (default)
+            "HR_BPM" -> Color.parseColor("#FB2611")
+            "BR_BPM" -> Color.parseColor("#0096FF")
+            "HRV_SDNN" -> Color.parseColor("#645F83")
+            "BP_RPP" -> Color.parseColor("#994C01")
+            "MSI" -> Color.parseColor("#707070")
+            "BP_CVD" -> Color.parseColor("#8B7207")
+            "BP_CVD" -> Color.parseColor("#8B7207")
+            "BMI_CALC" -> Color.parseColor("#634848")
+            "HEALTH_SCORE" -> Color.parseColor("#634848")
+
+
+
+            "HEALTH_SCORE" -> Color.parseColor("#E91E63")
+            "BP_DIASTOLIC", "BP_SYSTOLIC" -> Color.parseColor("#1292E5") // Red
+
+
+
+
+
+            else -> Color.parseColor("#E91E63")
         }
     }
 
+
+    private fun getChartColorByType(title: String): Int {
+        val colorMap = mapOf(
+                "Heart Rate" to Color.parseColor("#D42A1B"),
+                "HR_BPM" to Color.parseColor("#D42A1B"),
+                "Blood Pressure" to Color.parseColor("#5C91E2"),
+                "BP_DIASTOLIC" to Color.parseColor("#5C91E2"),
+                "BP_SYSTOLIC" to Color.parseColor("#5C91E2"),
+                "Respiratory Rate" to Color.parseColor("#1292E5"),
+                "BR_BPM" to Color.parseColor("#1292E5"),
+                "Heart Rate Variability" to Color.parseColor("#645F83"),
+                "HRV_SDNN" to Color.parseColor("#645F83"),
+                "Cardiac Workload" to Color.parseColor("#994C01"),
+                "BP_RPP" to Color.parseColor("#994C01"),
+                "Stress Levels" to Color.parseColor("#707070"),
+                "MSI" to Color.parseColor("#707070"),
+                "Cardio Vascular Risk" to Color.parseColor("#8B7207"),
+                "BP_CVD" to Color.parseColor("#8B7207"),
+                "Resting Hear Rate" to Color.parseColor("#06B27C"),
+                "SpO2" to Color.parseColor("#707070"),
+                "Body Fat" to Color.parseColor("#F5C560"),
+                "Basal Metabolic Rate" to ContextCompat.getColor(context, R.color.thinkright),
+                "Height" to Color.parseColor("#D42A1B"),
+                "Weight" to Color.parseColor("#005436"),
+                "BMI_CALC" to Color.parseColor("#634848"),
+                "Body Mass Index" to Color.parseColor("#634848"),
+                "Pulse Rate" to Color.parseColor("#D42A1B")
+        )
+
+        return colorMap[title] ?: Color.GRAY
+    }
+
+    // Helper function to convert RGB to Android Color int
+    private fun colorFromRGB(red: Int, green: Int, blue: Int): Int {
+        return Color.rgb(red, green, blue)
+    }
 
     private fun setupStackedBarChart(
         barChart: BarChart,
@@ -203,7 +251,7 @@ class HeartRateAdapter(
         }
     }
 
-    private fun setupChart(chart: LineChart, trendData: ArrayList<ScanData>?, type: String) {
+    private fun setupChart(chart: LineChart, trendData: ArrayList<ScanData>?, type: String, colorNameSelector: String) {
         val entries = mutableListOf<Entry>()
         trendData?.forEachIndexed { index, data ->
             entries.add(Entry(index.toFloat(), data.value?.toFloat() ?: 1f))
