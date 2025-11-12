@@ -44,12 +44,12 @@ class DeleteAccountSelectionActivity : BaseActivity() {
                     .show()
             } else {
                 if (selectedReasons.equals("Other Reasons")) {
-                    startActivity(Intent(this, DeleteAccountEmailDataActivity::class.java).apply {
+                    startActivity(Intent(this, DeleteAccountReasonActivity::class.java).apply {
                         putExtra("SelectedReasons", selectedReasons)
                     })
                 }else{
                     //Toast.makeText(this, "Selected: $selectedReasons", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, DeleteAccountReasonActivity::class.java).apply {
+                    startActivity(Intent(this, DeleteAccountEmailDataActivity::class.java).apply {
                         putExtra("SelectedReasons", selectedReasons)
                     })
                 }
