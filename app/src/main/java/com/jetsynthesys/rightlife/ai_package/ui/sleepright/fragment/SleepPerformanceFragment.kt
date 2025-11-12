@@ -583,7 +583,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             avgStepsLine.lineWidth = 1f
             avgStepsLine.enableDashedLine(10f, 10f, 0f)
             avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
-            avgStepsLine.textSize = 10f
+            avgStepsLine.textSize = 9f
             avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
             leftYAxis.removeAllLimitLines()
             leftYAxis.addLimitLine(avgStepsLine)
@@ -611,6 +611,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = true
         chart.isHighlightPerDragEnabled = false
+
         chart.setExtraBottomOffset(24f)
         chart.legend.isEnabled = false
         chart.setScaleEnabled(false)

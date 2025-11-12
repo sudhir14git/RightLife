@@ -190,7 +190,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:paddingBottom="10dp"
@@ -896,6 +895,7 @@
                         app:layout_constraintTop_toBottomOf="@id/lyt_smiley_text" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/emotionCard"
                 android:layout_width="match_parent"
@@ -1585,9 +1585,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
                                     android:id="@+id/tv_breathing_title1"
-                                    android:minLines="2"
-                                    android:maxLines="2"
+                                    android:maxLines="1"
                                     android:ellipsize="end"
                                     app:layout_constraintTop_toBottomOf="@id/img_box_breathing"
                                     app:layout_constraintStart_toStartOf="parent"
@@ -1606,6 +1606,7 @@
                                     android:layout_marginStart="10dp"
                                     android:layout_marginEnd="10dp"
                                     android:orientation="horizontal">
+
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -1689,15 +1690,15 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
                                     android:id="@+id/tv_breathing_title2"
-                                    android:minLines="2"
-                                    android:maxLines="2"
+                                    android:maxLines="1"
                                     android:ellipsize="end"
                                     app:layout_constraintTop_toBottomOf="@id/img_numbers"
                                     app:layout_constraintStart_toStartOf="parent"
                                     android:text="4 - 7 - 8"
                                     android:fontFamily="@font/dmsans_medium"
-                                    android:textSize="16sp"
+                                    android:textSize="13sp"
                                     android:textColor="@color/eatright_text_color" />
 
                                 <LinearLayout
@@ -2307,6 +2308,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="15dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
