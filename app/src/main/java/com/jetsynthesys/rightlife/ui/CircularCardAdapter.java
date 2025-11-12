@@ -28,6 +28,7 @@ import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
+import com.jetsynthesys.rightlife.ui.utility.ButtonUtilsKt;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity;
@@ -66,6 +67,10 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ButtonUtilsKt.disableViewForSeconds(view);
+
+
+
                 // Toast.makeText(view.getContext(), "Clicked on: " + item.getTitle()+ holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
                 // Start new activity here
 

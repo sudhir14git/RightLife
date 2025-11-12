@@ -23,6 +23,7 @@ import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeMindAuditAdapter
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -64,6 +65,7 @@ class MindAuditResultActivity : BaseActivity() {
         getMindAuditCountDays()
 
         binding.btnTakeAssessment.setOnClickListener {
+            binding.btnTakeAssessment.disableViewForSeconds()
             //startActivity(Intent(this, MindAuditFromActivity::class.java))
             val intent = Intent(
                 this,
@@ -74,6 +76,7 @@ class MindAuditResultActivity : BaseActivity() {
         }
 
         binding.tvCheckprogressDays.setOnClickListener {
+            binding.tvCheckprogressDays.disableViewForSeconds()
             if (selectedAssessment == "Others") {
                 startActivity(Intent(this, MindAuditFromActivity::class.java).apply {
                     putExtra("IS_FROM_MIND_AUDIT_RESULT", true)

@@ -86,7 +86,7 @@ class HomeExploreFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (requireActivity() as? HomeNewActivity)?.showHeader(false)
+        //(requireActivity() as? HomeNewActivity)?.showHeader(true)
 
         // Initialize Handler and Runnable for Auto-Sliding
         sliderHandler = Handler(Looper.getMainLooper())
@@ -1012,7 +1012,7 @@ class HomeExploreFragment : BaseFragment() {
 
         if (topList.size > 0) {
             val item0 = topList[0]
-            binding.tvRledtContTitle1.text = item0.desc
+            binding.tvRledtContTitle1.text = item0.title
 
             if (item0.artist != null && !item0.artist.isEmpty()) {
                 val artist = item0.artist[0]

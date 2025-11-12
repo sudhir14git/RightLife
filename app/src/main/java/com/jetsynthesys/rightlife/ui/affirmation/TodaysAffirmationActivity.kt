@@ -171,30 +171,41 @@ class TodaysAffirmationActivity : BaseActivity() {
         setSelectedCategoryAdapter(affirmationList)
 
         val gestureDetector =
-            GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onFling(
-                    e1: MotionEvent?,
-                    e2: MotionEvent,
-                    velocityX: Float,
-                    velocityY: Float
-                ): Boolean {
-                    if (e1 == null || e2 == null) return false
-                    val deltaY = e2.y - e1.y
+                GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onFling(
+                            e1: MotionEvent?,
+                            e2: MotionEvent,
+                            velocityX: Float,
+                            velocityY: Float
+                    ): Boolean {
+                        if (e1 == null || e2 == null) return false
 
-                    if (abs(deltaY) > 150) {
-                        if (deltaY < 0) {
-                            onSwipeUp()
-                        } else {
-                            onSwipeDown()
+                        val deltaX = e2.x - e1.x
+                        val deltaY = e2.y - e1.y
+
+                        // Determine if it's a vertical or horizontal swipe
+                        // If horizontal movement is greater than vertical, let ViewPager handle it
+                        if (abs(deltaX) > abs(deltaY)) {
+                            // Horizontal swipe - let ViewPager handle it
+                            return false
                         }
-                        return true
+
+                        // Vertical swipe - handle category change
+                        if (abs(deltaY) > 150) {
+                            if (deltaY < 0) {
+                                onSwipeUp()
+                            } else {
+                                onSwipeDown()
+                            }
+                            return true
+                        }
+                        return false
                     }
-                    return false
-                }
-            })
+                })
 
         binding.cardViewPager.setOnTouchListener { _, event ->
             gestureDetector.onTouchEvent(event)
+            // Return false to allow ViewPager to also handle the touch for horizontal scrolling
             false
         }
 
@@ -236,6 +247,67 @@ class TodaysAffirmationActivity : BaseActivity() {
     }
 
     private fun onSwipeUp() {
+        if (selectedCategoryPosition < categoryList.size - 1) {
+            // Animate the entire ViewPager, not just one child
+            binding.cardViewPager.animate()
+                    ?.translationYBy(-(binding.cardViewPager.height.toFloat() + 100))
+                    ?.setDuration(300)
+                    ?.withEndAction {
+                        selectedCategoryPosition += 1
+
+                        // Bounds check to prevent crash
+                        if (selectedCategoryPosition >= categoryList.size) {
+                            selectedCategoryPosition = categoryList.size - 1
+                            return@withEndAction
+                        }
+
+                        getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
+                        binding.tvCategory.text = categoryList[selectedCategoryPosition].title
+
+                        // Reset ViewPager position below screen
+                        binding.cardViewPager.translationY = binding.cardViewPager.height.toFloat() + 100
+
+                        // Animate back to original position
+                        binding.cardViewPager.animate()
+                                .translationY(0f)
+                                .setDuration(300)
+                                .start()
+                    }
+                    ?.start()
+        }
+    }
+
+    private fun onSwipeDown() {
+        if (selectedCategoryPosition > 0) {
+            // Animate the entire ViewPager, not just one child
+            binding.cardViewPager.animate()
+                    ?.translationYBy(binding.cardViewPager.height.toFloat() + 100)
+                    ?.setDuration(300)
+                    ?.withEndAction {
+                        selectedCategoryPosition -= 1
+
+                        // Bounds check to prevent crash
+                        if (selectedCategoryPosition < 0) {
+                            selectedCategoryPosition = 0
+                            return@withEndAction
+                        }
+
+                        getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
+                        binding.tvCategory.text = categoryList[selectedCategoryPosition].title
+
+                        // Reset ViewPager position above screen
+                        binding.cardViewPager.translationY = -(binding.cardViewPager.height.toFloat() + 100)
+
+                        // Animate back to original position
+                        binding.cardViewPager.animate()
+                                .translationY(0f)
+                                .setDuration(300)
+                                .start()
+                    }
+                    ?.start()
+        }
+    }
+/*    private fun onSwipeUp() {
         if (selectedCategoryPosition < categoryList.size - 1) {
             val currentPage = binding.cardViewPager.getChildAt(0) // current visible page view
 
@@ -281,7 +353,7 @@ class TodaysAffirmationActivity : BaseActivity() {
                 }
                 ?.start()
         }
-    }
+    }*/
 
 
 

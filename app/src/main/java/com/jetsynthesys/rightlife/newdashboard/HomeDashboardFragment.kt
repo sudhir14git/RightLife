@@ -59,7 +59,6 @@ import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
-import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
 import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
@@ -146,7 +145,7 @@ class HomeDashboardFragment : BaseFragment()
     {
         super.onViewCreated(view, savedInstanceState)
 
-        (requireActivity() as? HomeNewActivity)?.showHeader(true)
+    //    (requireActivity() as? HomeNewActivity)?.showHeader(true)
         fetchDashboardData()
         getAiDashboard()
 
@@ -272,19 +271,22 @@ class HomeDashboardFragment : BaseFragment()
                 val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService
                         ?: false
 
-                if (isFacialScanService)
+
+                if (DashboardChecklistManager.facialScanStatus)
                 {
-                    if (DashboardChecklistManager.facialScanStatus)
-                    {
-                        startActivity(Intent(requireContext(), NewHealthCamReportActivity::class.java))
-                    } else
-                    {
-                        ActivityUtils.startFaceScanActivity(requireContext())
-                    }
+                    startActivity(Intent(requireContext(), NewHealthCamReportActivity::class.java))
                 } else
                 {
-                    activity.showSwitchAccountDialog(requireContext(), "", "")
+                    if (isFacialScanService)
+                    {
+
+                        ActivityUtils.startFaceScanActivity(requireContext())
+                    } else
+                    {
+                        activity.showSwitchAccountDialog(requireContext(), "", "")
+                    }
                 }
+
             }
         }
 
@@ -532,7 +534,8 @@ class HomeDashboardFragment : BaseFragment()
             {
                 sharedPreferenceManager.saveSnapMealId(snapMealId)
                 this.snapMealId = snapMealId
-            }else{
+            } else
+            {
                 sharedPreferenceManager.saveSnapMealId("")
                 this.snapMealId = ""
             }

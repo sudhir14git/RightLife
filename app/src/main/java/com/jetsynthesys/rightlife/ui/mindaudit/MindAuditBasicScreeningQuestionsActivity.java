@@ -50,7 +50,7 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> {
-            disableViewForSeconds(nextButton, 1000);
+            disableViewForSeconds(nextButton, 1400);
             int currentItem = viewPager.getCurrentItem();
             Fragment fragment = adapter.getRegisteredFragment(currentItem);
 
