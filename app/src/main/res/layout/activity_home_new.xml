@@ -1,8 +1,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="#F7F7F7"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F7F7F7">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
@@ -19,10 +19,9 @@
                 android:id="@+id/rl_header"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:paddingTop="20dp"
                 android:background="@drawable/bg_home_gradient_new"
                 android:paddingHorizontal="@dimen/margin_card_16dp"
-                >
+                android:paddingTop="20dp">
 
                 <RelativeLayout
                     android:id="@+id/relative_profileImage"
@@ -49,8 +48,8 @@
                         android:background="@drawable/circle_shape"
                         android:backgroundTint="@color/white"
                         android:padding="2dp"
-                        android:visibility="gone"
                         android:src="@drawable/rounded_image"
+                        android:visibility="gone"
                         app:tint="@color/dark_green" />
 
                 </RelativeLayout>
@@ -60,8 +59,8 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/relative_profileImage"
                     android:layout_toStartOf="@+id/llCountDown"
+                    android:layout_toEndOf="@id/relative_profileImage"
                     android:orientation="vertical">
 
                     <TextView
@@ -78,11 +77,12 @@
                         android:id="@+id/userName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
                         android:fontFamily="@font/dmsans_bold"
                         android:gravity="center"
-                        android:ellipsize="end"
-                        android:text=""
+                        android:maxLength="15"
                         android:singleLine="true"
+                        android:text=""
                         android:textColor="@color/txt_color_header"
                         android:textSize="@dimen/textsize_medium" />
                 </LinearLayout>
@@ -90,95 +90,95 @@
                 <LinearLayout
                     android:id="@+id/llCountDown"
                     android:layout_width="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="20dp"
+                    android:background="@drawable/roundedcornerborderred"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingHorizontal="5dp"
                     android:paddingVertical="2dp"
-                    android:gravity="center_vertical"
-                    android:visibility="visible"
-                    android:background="@drawable/roundedcornerborderred"
-                    android:layout_height="wrap_content">
+                    android:visibility="visible">
 
                     <LinearLayout
                         android:id="@+id/countdownLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="8dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp">
 
                         <!-- Days -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
+                            android:layout_marginEnd="12dp"
                             android:gravity="center"
-                            android:layout_marginEnd="12dp">
+                            android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/tvDays"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="06"
-                                android:textSize="@dimen/textsize_large"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:textColor="@android:color/black" />
+                                android:text="06"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_large" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="days"
-                                android:textSize="@dimen/textsize_smallest"
-                                android:textColor="@android:color/black" />
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_smallest" />
                         </LinearLayout>
 
                         <!-- Hours -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
+                            android:layout_marginEnd="12dp"
                             android:gravity="center"
-                            android:layout_marginEnd="12dp">
+                            android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/tvHours"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="23"
-                                android:textSize="@dimen/textsize_large"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:textColor="@android:color/black" />
+                                android:text="23"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_large" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="hours"
-                                android:textSize="@dimen/textsize_smallest"
-                                android:textColor="@android:color/black" />
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_smallest" />
                         </LinearLayout>
 
                         <!-- Minutes -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center">
+                            android:gravity="center"
+                            android:orientation="vertical">
 
                             <TextView
                                 android:id="@+id/tvMinutes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="59"
-                                android:textSize="@dimen/textsize_large"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:textColor="@android:color/black" />
+                                android:text="59"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_large" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="mins"
-                                android:textSize="@dimen/textsize_smallest"
-                                android:textColor="@android:color/black" />
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_smallest" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -189,31 +189,31 @@
                     android:id="@+id/llFreeTrailExpired"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="20dp"
-                    android:paddingVertical="6dp"
-                    android:paddingHorizontal="22dp"
-                    android:gravity="center_vertical"
                     android:background="@drawable/rounded_corner_border_red"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="22dp"
+                    android:paddingVertical="6dp"
                     android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
                         android:text="Free Trial Expired"
-                        android:textSize="10sp"
                         android:textColor="@color/menuselected"
-                        android:fontFamily="@font/dmsans_bold" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Upgrade To Continue"
+                        android:fontFamily="@font/dmsans_regular"
                         android:gravity="center_horizontal"
-                        android:textSize="8sp"
+                        android:text="Upgrade To Continue"
                         android:textColor="@color/txt_color_header"
-                        android:fontFamily="@font/dmsans_regular" />
+                        android:textSize="8sp" />
 
                 </LinearLayout>
 
@@ -234,11 +234,11 @@
                         android:id="@+id/rightLifeReportCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
                         android:layout_marginStart="16dp"
-                        android:visibility="visible"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
                         android:layout_marginBottom="@dimen/margin_card_16dp"
-                        android:layout_marginEnd="16dp">
+                        android:visibility="visible">
 
                         <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
                             android:id="@+id/gradientBorder"
@@ -249,12 +249,12 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="80dp"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="10dp"
+                            android:layout_gravity="center"
                             android:background="@android:color/transparent"
-                            android:gravity="center_vertical"
                             android:clipToPadding="false"
-                            android:layout_gravity="center">
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="10dp">
 
                             <ImageView
                                 android:id="@+id/iconImageView"
@@ -264,8 +264,8 @@
 
                             <LinearLayout
                                 android:layout_width="0dp"
-                                android:layout_weight="1"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -285,8 +285,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
-                                    android:layout_marginEnd="16dp"
                                     android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="16dp"
                                     android:ellipsize="end"
                                     android:maxLines="2"
                                     android:text="See how your habits are shaping your health."
@@ -307,8 +307,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="16dp"
-                        android:visibility="gone"
-                        android:layout_marginVertical="16dp">
+                        android:layout_marginVertical="16dp"
+                        android:visibility="gone">
 
                         <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
                             android:layout_width="match_parent"
@@ -319,13 +319,13 @@
                             android:id="@+id/llFreeTrial"
                             android:layout_width="match_parent"
                             android:layout_height="136dp"
-                            android:orientation="vertical"
-                            android:paddingHorizontal="16dp"
+                            android:layout_gravity="center"
                             android:layout_marginHorizontal="4dp"
                             android:background="@drawable/roundedcornerbutton_medium"
                             android:backgroundTint="@color/white"
                             android:clipToPadding="false"
-                            android:layout_gravity="center">
+                            android:orientation="vertical"
+                            android:paddingHorizontal="16dp">
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -335,8 +335,8 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/img_rightlife_pro"
-                                    android:layout_alignParentStart="true" />
+                                    android:layout_alignParentStart="true"
+                                    android:src="@drawable/img_rightlife_pro" />
 
                                 <ImageView
                                     android:id="@+id/nextArrowFreeTrial"
@@ -350,17 +350,17 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Experience how RightLife can truly improve your health with a 7 day free trial."
                                 android:fontFamily="@font/dmsans_medium"
+                                android:text="Experience how RightLife can truly improve your health with a 7 day free trial."
                                 android:textColor="@color/txt_color_header"
                                 android:textSize="@dimen/textsize_small" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal"
                                 android:layout_marginVertical="1dp"
-                                android:gravity="center_vertical">
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -376,18 +376,18 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginHorizontal="8dp"
                                     android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/dmsans_medium"
                                     android:text="₹3,499"
                                     android:textColor="#767676"
-                                    android:fontFamily="@font/dmsans_medium"
                                     android:textSize="@dimen/textsize_small" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/dmsans_bold"
                                     android:text="No Payment Details Needed"
                                     android:textColor="#0B9C6B"
-                                    android:fontFamily="@font/dmsans_bold"
                                     android:textSize="@dimen/textsize_small" />
                             </LinearLayout>
                         </LinearLayout>
@@ -412,14 +412,14 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include
-        layout="@layout/home_bottomsheet"
         android:id="@+id/includedhomebottomsheet"
-        android:layout_height="match_parent"
+        layout="@layout/home_bottomsheet"
         android:layout_width="match_parent"
-        android:layout_marginBottom="77dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true" />
+        android:layout_marginBottom="77dp"
+        android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -431,10 +431,10 @@
         android:elevation="10dp"
         android:src="@drawable/icon_quicklink_plus"
         app:backgroundTint="@color/rightlife"
+        app:fabCustomSize="54dp"
         app:layout_anchor="@id/bottom_menu"
         app:layout_anchorGravity="top|center"
-        app:fabCustomSize="54dp"
-        app:maxImageSize="22dp"/>
+        app:maxImageSize="22dp" />
 
     <LinearLayout
         android:id="@+id/bottom_menu"

@@ -804,12 +804,14 @@ class HomeNewActivity : BaseActivity() {
                             supportFragmentManager.findFragmentById(R.id.fragmentContainer)
 
                         // Check if it's HomeDashboardFragment
-                        if (currentFragment is HomeDashboardFragment) {
+                        /*if (currentFragment is HomeDashboardFragment) {
                             if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status != 3)
                                 binding.llCountDown.visibility = View.VISIBLE
                         } else {
                             binding.llCountDown.visibility = View.GONE
-                        }
+                        }*/
+                        if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status != 3)
+                            binding.llCountDown.visibility = View.VISIBLE
                         showSevenDayCountdown(ResponseObj.freeServiceDate, binding.tvDays)
                     } else {
                         binding.tvDays.text = ""

@@ -109,10 +109,11 @@ class CreateUsernameActivity : BaseActivity() {
             if (edtUsername.text.isNotEmpty()) {
                 Utils.hideSoftKeyboard(this@CreateUsernameActivity)
                 sharedPreferenceManager.userName = edtUsername.text.toString()
+                username = edtUsername.text?.toString()
                 val userdata = Userdata()
                 userdata.firstName = username
                 userdata.email = email
-                //updateUserData(userdata)
+                updateUserData(userdata)
                 sharedPreferenceManager.createUserName = true
                 val intent = Intent(this, HappyToHaveYouActivity::class.java)
                 startActivity(intent)
