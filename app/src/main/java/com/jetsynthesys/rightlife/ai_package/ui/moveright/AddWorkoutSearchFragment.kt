@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.setFragmentResult
 import com.bumptech.glide.Glide
@@ -132,6 +133,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         minutePicker.maxValue = 59
         hourPicker.selectedTextColor = Color.parseColor("#FD6967")
         minutePicker.selectedTextColor = Color.parseColor("#FD6967")
+        val boldFont = context?.let { ResourcesCompat.getFont(it, R.font.dmsans_bold) }
+        hourPicker.setTypeface(boldFont)
+        hourPicker.setSelectedTypeface(boldFont)
+        minutePicker.setTypeface(boldFont)
+        minutePicker.setSelectedTypeface(boldFont)
 
         if (mSelectedDate.isNullOrEmpty()) {
             mSelectedDate = getCurrentDate()

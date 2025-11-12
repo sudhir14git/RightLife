@@ -206,7 +206,8 @@
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/hourPicker"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:textSize="25sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -214,6 +215,7 @@
                             android:text="hr"
                             android:textColor="@color/dotted_red"
                             android:textSize="16sp"
+                            android:fontFamily="@font/dmsans_regular"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="8dp"
                             android:paddingEnd="16dp" />
@@ -221,7 +223,8 @@
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/minutePicker"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:textSize="25sp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -229,6 +232,7 @@
                             android:text="mins"
                             android:textColor="@color/dotted_red"
                             android:textSize="16sp"
+                            android:fontFamily="@font/dmsans_regular"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="8dp" />
                     </LinearLayout>

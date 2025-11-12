@@ -252,11 +252,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         viewPager = view.findViewById<ViewPager2>(R.id.assessmentViewPager)
         //    tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
         dotsLayout = view.findViewById(R.id.customDotsContainer)
-        fetchToolList()
-        fetchQuoteData()
-        fetchAssessmentResult()
-        fetchMindfulData()
-        fetchThinkRecomendedData()
         //getBreathingData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
         tvWellnessDays.text = data.wellnessStreak.toString() + " day"
@@ -1019,11 +1014,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         } else {
             rightLifeReportCard.visibility = View.GONE
         }
+        fetchToolList()
+        fetchQuoteData()
+        fetchAssessmentResult()
+        fetchMindfulData()
         fetchAffirmationsList()
         getBreathingData()
         fetchJournalAnswerData()
-        fetchToolList()
-        fetchAssessmentResult()
+        fetchThinkRecomendedData()
     }
 
     private fun fetchThinkRecomendedData() {
@@ -1398,7 +1396,7 @@ class AssessmentPagerAdapter(
         val result = item.score.substringBefore(".")
         holder.scoreText.text = result
         holder.mind_audit_scale.text = item.level
-        holder.mind_audit_scale_new.text = "Depression"
+        holder.mind_audit_scale_new.text = item.interpretation
         when (item?.assessment) {
             "DASS-21" -> {
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)
@@ -1436,6 +1434,7 @@ class AssessmentPagerAdapter(
         val backgroundColor = when {
             score <= 4 -> "#06B27B"
             score <= 9 -> "#54C8DB"
+            score <= 12 -> "#06B27B"
             score <= 14 -> "#57A3FC"
             score <= 19 -> "#FFBD44"
             else -> "#FC6656"
