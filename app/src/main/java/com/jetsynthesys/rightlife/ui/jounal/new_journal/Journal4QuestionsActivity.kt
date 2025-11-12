@@ -39,6 +39,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -64,11 +65,14 @@ class Journal4QuestionsActivity : BaseActivity() {
     private var journalEntry: JournalEntry? = JournalEntry()
     private var startDate = ""
     var isFromThinkRight: Boolean = false
+    private var startTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalAnswerBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
+
+        startTime = System.currentTimeMillis()
 
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
 
@@ -92,7 +96,7 @@ class Journal4QuestionsActivity : BaseActivity() {
         }
 
         binding.btnInfo.setOnClickListener {
-
+            it.disableViewForSeconds()
             val htmlText = when (journalItem?.title) {
                 "Gratitude" -> {
                     """
@@ -200,6 +204,7 @@ class Journal4QuestionsActivity : BaseActivity() {
         }
 
         binding.btnSave.setOnClickListener {
+            it.disableViewForSeconds()
             if (journalEntry == null) {
                 journalQuestionCreateRequest.tags?.addAll(selectedTags)
                 createJournal()
@@ -268,6 +273,7 @@ class Journal4QuestionsActivity : BaseActivity() {
         })
 
         dialogBinding.btnAdd.setOnClickListener {
+            it.disableViewForSeconds()
             if (dialogBinding.edtTag.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Tag should not be empty", Toast.LENGTH_SHORT).show()
             } else {
@@ -779,20 +785,21 @@ class Journal4QuestionsActivity : BaseActivity() {
         })
     }
 
-    private fun logCreateJournalEvent(title: String?, id: String?)
-    {
+    private fun logCreateJournalEvent(title: String?, id: String?) {
         val eventName = when (journalItem?.title) {
             "Gratitude" -> AnalyticsEvent.TR_Gratitude_Journal_Save_Tap
             "Grief" -> AnalyticsEvent.TR_Grief_Journal_Save_Tap
             "Bullet" -> AnalyticsEvent.TR_Bullet_Journal_Save_Tap
             else -> AnalyticsEvent.TR_Freeform_Journal_Save_Tap
         }
+        val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
-                this,
-                eventName,
-                mapOf(
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                )
+            this,
+            eventName,
+            mapOf(
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.TOTAL_DURATION to duration
+            )
         )
     }
 

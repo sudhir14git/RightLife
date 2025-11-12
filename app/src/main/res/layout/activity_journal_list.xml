@@ -21,9 +21,14 @@
             android:layout_height="wrap_content"
             android:src="@drawable/icon_back" />
 
-        <View
+        <TextView
             android:layout_width="0dp"
-            android:layout_height="1dp"
+            android:text="Journal"
+            android:textSize="@dimen/textsize_large24sp"
+            android:fontFamily="@font/merriweather_bold"
+            android:textColor="@color/txt_color_mind"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:layout_weight="1" />
 
         <ImageView
@@ -83,7 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Your Entries"
-        android:textStyle="bold"
+        android:fontFamily="@font/merriweather_bold"
         android:textSize="16sp"
         android:layout_marginBottom="8dp" />
 

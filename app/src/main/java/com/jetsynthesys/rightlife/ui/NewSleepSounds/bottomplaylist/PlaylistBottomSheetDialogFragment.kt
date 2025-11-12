@@ -187,7 +187,6 @@ class PlaylistBottomSheetDialogFragment(
             ) {
               //  Utils.dismissLoader(this@NewSleepSoundActivity)
                 if (response.isSuccessful && response.body() != null) {
-                    showToast(response.body()?.successMessage ?: "Song removed from Playlist!")
                     Utils.showNewDesignToast(context, "Removed From Playlist", false)
                 } else {
                     showToast("try again!: ${response.code()}")

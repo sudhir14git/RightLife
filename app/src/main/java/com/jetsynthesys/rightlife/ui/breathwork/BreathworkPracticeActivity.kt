@@ -347,8 +347,7 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
     }
 
-    private fun logBreathingCompletEvent(breathingData: BreathingData?)
-    {
+    private fun logBreathingCompletEvent(breathingData: BreathingData?) {
         val breathingType = breathingData?.title?.trim() ?: ""
 
 // 🎯 Map breathing type → event name
@@ -361,13 +360,15 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
 
 // ✅ Example: log the breathing completion event
+        val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
-                this,
-                eventName,
-                mapOf(
-                        AnalyticsParam.BREATHING_TYPE_NAME to breathingType,
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
-                )
+            this,
+            eventName,
+            mapOf(
+                AnalyticsParam.BREATHING_TYPE_NAME to breathingType,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.TOTAL_DURATION to duration
+            )
         )
 
     }
@@ -410,9 +411,9 @@ class BreathworkPracticeActivity : BaseActivity() {
                 if (holdTime > 0) startHold() else startBreathOut()
             }
         }
-      /*  startCountdown(inhaleTime) {
-            if (holdTime > 0) startHold() else startBreathOut()
-        }*/
+        /*  startCountdown(inhaleTime) {
+              if (holdTime > 0) startHold() else startBreathOut()
+          }*/
     }
 
     private fun startHold() {

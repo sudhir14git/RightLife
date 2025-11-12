@@ -10,6 +10,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
@@ -62,6 +63,7 @@ class FreeFormJournalActivity : BaseActivity() {
         }
 
         binding.btnInfo.setOnClickListener {
+            it.disableViewForSeconds()
             DialogUtils.showJournalCommonDialog(this, "Free Form", htmlText)
         }
 
@@ -88,6 +90,7 @@ class FreeFormJournalActivity : BaseActivity() {
 
 
         binding.btnSave.setOnClickListener {
+            it.disableViewForSeconds()
             // Save logic here
             val intent =
                 Intent(this@FreeFormJournalActivity, Journal4QuestionsActivity::class.java).apply {

@@ -25,6 +25,11 @@ class SubscriptionHistoryAdapter(
         fun bind(plan: Subscription, position: Int) {
             binding.planName.text = plan.planInfo
             binding.planDescription.text = plan.name
+            if (plan.planInfo?.contains("pack", ignoreCase = true) == true) {
+                binding.trialEnds.visibility = View.INVISIBLE
+            } else {
+                binding.trialEnds.visibility = View.VISIBLE
+            }
             binding.trialEnds.text = "Valid Till "+DateTimeUtils.convertAPIDateMonthFormat(plan.endDateTime)
             binding.tvPlanAmmount.text = "\u20B9" + plan.orderInfo?.amountPaid.toString()
 

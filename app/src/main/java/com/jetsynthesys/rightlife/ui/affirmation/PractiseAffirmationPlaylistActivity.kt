@@ -84,6 +84,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
     private var watchedResponse: GetWatchedAffirmationPlaylistResponse? = null
     private var position = 0
     private var startDate = ""
+    private var startTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +94,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         getAffirmationPlaylist()
         getWatchedAffirmationPlaylist(0)
         setupReminderBottomSheet()
+        startTime = System.currentTimeMillis()
 
         setCardPlaylistAdapter(affirmationList)
 
@@ -137,11 +139,11 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         })
 
         AnalyticsLogger.logEvent(
-                this,
-                AnalyticsEvent.TR_AffirmationPlaylist_PageOpen,
-                mapOf(
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                )
+            this,
+            AnalyticsEvent.TR_AffirmationPlaylist_PageOpen,
+            mapOf(
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+            )
         )
     }
 
@@ -297,12 +299,14 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
             dialog.show()
         }
 
+        val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
-                this,
-                AnalyticsEvent.TR_AffirmationPlaylist_Completion_PageOpen,
-                mapOf(
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                )
+            this,
+            AnalyticsEvent.TR_AffirmationPlaylist_Completion_PageOpen,
+            mapOf(
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.TOTAL_DURATION to duration
+            )
         )
     }
 
