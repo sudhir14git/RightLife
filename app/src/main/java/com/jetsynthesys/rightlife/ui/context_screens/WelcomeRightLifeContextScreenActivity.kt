@@ -58,6 +58,6 @@ class WelcomeRightLifeContextScreenActivity : BaseActivity()
             }
         }
         // Optionally finish this screen so back doesn’t return here
-        // finish()
+         finish()
     }
 }

@@ -764,8 +764,8 @@ class HomeNewActivity : BaseActivity() {
                     }
 
                     var name = ResponseObj.userdata.firstName
-                    if (!ResponseObj.userdata.lastName.isNullOrEmpty())
-                        name = name.plus(" ${ResponseObj.userdata.lastName}")
+                    /*if (!ResponseObj.userdata.lastName.isNullOrEmpty())
+                        name = name.plus(" ${ResponseObj.userdata.lastName}")*/
                     binding.userName.text = name
 
                     val tvGreetingText = findViewById<TextView>(R.id.greetingText)

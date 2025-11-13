@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityFacescanContextScreenBinding
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
@@ -36,7 +37,8 @@ class FaceScanContextScreenActivity : BaseActivity() {
             /*startActivity(Intent(this, HealthCamActivity::class.java))
             finish()*/
             binding.btnNext.disableViewForSeconds()
-            showDisclaimerDialog()
+            //showDisclaimerDialog()
+            showNewDiclaimerDialog()
         }
     }
     private fun showDisclaimerDialog()
@@ -78,5 +80,23 @@ class FaceScanContextScreenActivity : BaseActivity() {
 
         // Show the dialog
         dialog.show()
+    }
+
+    private fun showNewDiclaimerDialog() {
+        // Implementation of the new disclaimer dialog
+        val desc =
+                "This Face scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
+        DialogUtils.showCommonBottomSheetDialog(this, description = desc,
+                                                onOkayClick = {
+                                                    startActivity(
+                                                            Intent(
+                                                                    this@FaceScanContextScreenActivity,
+                                                                    HealthCamBasicDetailsNewActivity::class.java
+                                                            )
+                                                    )
+                                                },
+                                                onCloseClick = {
+                                                    finish()
+                                                })
     }
 }

@@ -55,7 +55,10 @@ class NewCategoryListAdapter(
             )
 
             // Calculate progress
-            if ("SERIES".equals(item.contentType, ignoreCase = true)) {
+            if ("TEXT".equals(item.contentType, ignoreCase = true)) {
+                binding.imgCompleteTick.visibility =
+                        if (item.isWatched) View.VISIBLE else View.GONE
+            } else if ("SERIES".equals(item.contentType, ignoreCase = true)) {
                 val progress = item.leftDuration?.let { calculateProgress(it) } ?: 0
                 binding.progressBar.progress = progress
                 binding.imgCompleteTick.visibility =
