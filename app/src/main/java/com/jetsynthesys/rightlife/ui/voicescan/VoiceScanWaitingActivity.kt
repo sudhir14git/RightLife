@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ui.sdkpackage.VoiceRecorderActivity
+
 
 
 class VoiceScanWaitingActivity : BaseActivity() {
@@ -46,14 +46,14 @@ class VoiceScanWaitingActivity : BaseActivity() {
                     handler.postDelayed(this, 1000)
                 } else {
                     // When the countdown finishes, stop the timer
-                    val intent = Intent(
+                  /*  val intent = Intent(
                         this@VoiceScanWaitingActivity,
                         VoiceRecorderActivity::class.java
                     )
                     intent.putExtra("answerId", answerId)
                     intent.putExtra("description", description)
                     startActivity(intent)
-                    finish()
+                    finish()*/
 
                 }
             }
