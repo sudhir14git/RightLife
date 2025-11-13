@@ -194,6 +194,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
 
+
         if (selectedDate == null || selectedDate.equals("")){
             selectedDate = formattedDate
         }
