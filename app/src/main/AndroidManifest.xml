@@ -314,11 +314,11 @@
             android:name=".ui.sdkpackage.HealthCamRecorderActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-        <activity
+        <!--<activity
             android:name=".ui.sdkpackage.VoiceRecorderActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
+        <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />-->
         <activity
             android:name=".ui.jounal.JournalingActivity"
             android:exported="false"
@@ -617,6 +617,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity android:name="com.jetsynthesys.rightlife.ui.mindaudit.MindAuditDass21DetailResultActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.sdkpackage.RlAnuraMeasurementActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

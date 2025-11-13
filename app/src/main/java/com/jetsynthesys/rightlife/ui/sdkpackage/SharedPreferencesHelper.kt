@@ -1,8 +1,9 @@
 package com.jetsynthesys.rightlife.ui.sdkpackage
-import ai.onnxruntime.BuildConfig
+
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import com.jetsynthesys.rightlife.BuildConfig
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 class SharedPreferencesHelper<T>(
