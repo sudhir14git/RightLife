@@ -261,6 +261,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
     private var isRepeat : Boolean = false
+    private var isBottomSheetOpening = false
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -506,10 +507,26 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         fetchWakeupData()
 
         editWakeup.setOnClickListener {
+            if (isBottomSheetOpening) return@setOnClickListener  // Ignore agar pehle se chal raha ho
+
+            isBottomSheetOpening = true
             openBottomSheet()
+
+            // Thodi der baad flag reset kar do (jaise 500ms)
+            editWakeup.postDelayed({
+                isBottomSheetOpening = false
+            }, 500)
         }
         img_edit_wakeup_time_top.setOnClickListener {
+            if (isBottomSheetOpening) return@setOnClickListener  // Ignore agar pehle se chal raha ho
+
+            isBottomSheetOpening = true
             openBottomSheet()
+
+            // Thodi der baad flag reset kar do (jaise 500ms)
+            editWakeup.postDelayed({
+                isBottomSheetOpening = false
+            }, 500)
         }
 
         restorativeChart = view.findViewById(R.id.restorativeChart)
@@ -2294,6 +2311,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lineChart.isDragEnabled = true // Enable drag for better interaction
         lineChart.isHighlightPerTapEnabled = true // Enable touch highlighting
         lineChart.setTouchEnabled(true) // Explicitly enable touch
+        lineChart.legend.isEnabled = false
 
         // Multi-line X axis labels
         lineChart.setXAxisRenderer(

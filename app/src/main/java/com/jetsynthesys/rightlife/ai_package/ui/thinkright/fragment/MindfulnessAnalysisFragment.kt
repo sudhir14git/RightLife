@@ -5,8 +5,13 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -62,6 +67,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>() {
 
@@ -410,6 +416,9 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     private fun fetchMindfullnessData(startDate: String, endDate: String) {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+       /* val StartTime = "2025-11-08"
+        val EndTime = "2025-11-14"*/
+       // val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjhlMzU0MDMyZTcyMDE0MjljODNmYzM3Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJUdXNoYXIiLCJsYXN0TmFtZSI6IkdveWFsIiwiZGV2aWNlSWQiOiI5MjU5MDlBMS1EQzQ3LTQwRkQtQURFMC0yMzU2RjYzMEUzOTQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NjIxNDk3MTAsImV4cCI6MTc3Nzg3NDUxMH0.1lt-jn1Fyx4ABv3kOEK_8Rs3hlg6DfsqTuyhNurMWfM"
         val call = ApiClient.apiService.fetchMindFull(token,startDate, endDate)
         call.enqueue(object : Callback<MindfullResponse> {
             override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
@@ -472,7 +481,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     }
 
 
-    fun setupMonthlyBarChart(chart: BarChart, data: List<FormattedData>?, startDateStr:String, endDateStr:String) {
+    fun setupMonthlyBarChart(chart: BarChart, data: List<FormattedData>?, startDateStr: String, endDateStr: String) {
         selectMindLayout.visibility = View.INVISIBLE
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val startDate = LocalDate.parse(startDateStr, formatter)
@@ -482,22 +491,18 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         val entries = ArrayList<BarEntry>()
         val labels = ArrayList<String>()
 
-        val monthFormatter = DateTimeFormatter.ofPattern("MMM") // For 'Jun', 'Feb', etc.
+        val monthFormatter = DateTimeFormatter.ofPattern("MMM")
 
         for (i in 0 until daysBetween) {
             val currentDate = startDate.plusDays(i.toLong())
 
-            // Calculate group index (each group is 7 days long)
             val groupIndex = i / 7
             val groupStartDate = startDate.plusDays(groupIndex * 7L)
             val groupEndDate = groupStartDate.plusDays(6).coerceAtMost(endDate)
 
-            // Label for the group (shown only once per 7-day group)
             val label = if (i % 7 == 0) {
                 val dayRange = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
                 val month = groupEndDate.format(monthFormatter)
-
-                // Center month by adding padding spaces (rough estimation)
                 val spaces = " ".repeat((dayRange.length - month.length).coerceAtLeast(0) / 2)
                 "$dayRange\n$spaces$month"
             } else {
@@ -505,8 +510,11 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             }
             labels.add(label)
         }
+
+        // CHANGE 1: Minutes → Hours
         data?.forEachIndexed { index, item ->
-            entries.add(BarEntry(index.toFloat(), item.duration?.toFloat() ?: 0f))
+            val durationInHours = (item.duration ?: 0) / 60f
+            entries.add(BarEntry(index.toFloat(), durationInHours))
         }
 
         val dataSet = BarDataSet(entries, "Monthly Mindfulness")
@@ -516,8 +524,8 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barData.setDrawValues(false)
-
         chart.data = barData
+
         val customRenderer = MindfullChartRenderer(chart, chart.animator, chart.viewPortHandler)
         customRenderer.initBuffers()
         chart.renderer = customRenderer
@@ -532,37 +540,71 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             legend.isEnabled = false
         }
 
+        // X-AXIS: BILKUL SAME JAISA PEHLE THA
         chart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             granularity = 1f
             labelCount = labels.size
             position = XAxis.XAxisPosition.BOTTOM
             setDrawGridLines(false)
-            labelRotationAngle = -30f
+            labelRotationAngle = -30f   // ← PEHLE JAISA HI
             textSize = 8f
         }
-        chart.axisLeft.axisMinimum = 0f
+
+        // CHANGE 2: Y-axis fixed 0 to 24, step 4
+        chart.axisLeft.apply {
+            axisMinimum = 0f
+            axisMaximum = 24f
+            granularity = 4f
+            setLabelCount(7, true) // 0,4,8,12,16,20,24
+        }
         chart.axisRight.isEnabled = false
-        chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
-        // Chart selection listener
+
+        chart.setVisibleXRangeMaximum(labels.size.toFloat())
+
+        // CHANGE 3: Touch text formatting
         chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectMindLayout.visibility = View.VISIBLE
                 e?.let {
                     val index = e.x.toInt()
-                    val value = e.y
+                    val valueInHours = e.y
                     val selectedDate = data?.getOrNull(index)
-                    Log.d("ChartClick", "Clicked bar index=$index date=$selectedDate value=$value")
-                    // Example: Update your UI
-                    selectedItemDate.text = selectedDate?.date ?: ""
-                    selectedCalorieTv.text = value.toInt().toString()
+
+                    selectedItemDate.text = convertDate(selectedDate?.date ?: "")
+
+                    val totalMinutes = (valueInHours * 60).roundToInt()
+                    val hours = totalMinutes / 60
+                    val minutes = totalMinutes % 60
+
+                    val text = String.format("%02d hr %02d min", hours, minutes)
+                    val spannable = SpannableString(text)
+
+                    // "01" → 32dp, bold
+                    spannable.setSpan(AbsoluteSizeSpan(32, true), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    // "hr" → 10sp, normal
+                    spannable.setSpan(AbsoluteSizeSpan(10, true), 3, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.NORMAL), 3, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    // "49" → 32dp, bold
+                    spannable.setSpan(AbsoluteSizeSpan(32, true), 6, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.BOLD), 6, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    // "min" → 10sp, normal
+                    spannable.setSpan(AbsoluteSizeSpan(10, true), 9, 12, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.NORMAL), 9, 12, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    selectedCalorieTv.text = spannable
                 }
             }
+
             override fun onNothingSelected() {
-                Log.d("ChartClick", "Nothing selected")
                 selectMindLayout.visibility = View.INVISIBLE
             }
         })
+
         chart.invalidate()
     }
 
@@ -579,7 +621,6 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         val entries = ArrayList<BarEntry>()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val localDate = LocalDate.parse(endDate, formatter)
-       // val labels = getWeekDayNames(localDate)
         val labels = mutableListOf<String>()
 
         data?.forEachIndexed { index, (label, durations) ->
@@ -589,8 +630,11 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             labels.add("$top\n$bottom")
         }
 
+        // Convert minutes → decimal hours
         data?.forEachIndexed { index, item ->
-            entries.add(BarEntry(index.toFloat(), item.duration?.toFloat() ?: 0f))
+            val durationInMinutes = item.duration ?: 0
+            val durationInHours = durationInMinutes / 60f  // 120 min → 2.0 hr
+            entries.add(BarEntry(index.toFloat(), durationInHours))
         }
 
         val dataSet = BarDataSet(entries, "Mindfulness")
@@ -613,14 +657,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             description.isEnabled = false
             legend.isEnabled = false
         }
-        /*chart.xAxis.apply {
-            valueFormatter = IndexAxisValueFormatter(labels)
-            granularity = 1f
-            position = XAxis.XAxisPosition.BOTTOM
-            setDrawGridLines(false)
-            labelRotationAngle = -30f
-            textSize = 10f
-        }*/
+
         chart.xAxis.apply {
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
@@ -634,13 +671,15 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             labelRotationAngle = 0f
             textSize = 10f
         }
+
+        // FIXED Y-AXIS: 0 to 24, step 4 → Labels: 0,4,8,12,16,20,24
         chart.axisLeft.apply {
-            axisMinimum = 0f      // bottom
-            axisMaximum = 25f     // top
-            granularity = 5f      // distance between ticks
-            setLabelCount(6, true)
+            axisMinimum = 0f
+            axisMaximum = 24f
+            granularity = 4f
+            setLabelCount(7, true)  // 0,4,8,12,16,20,24 → 7 labels
         }
-        chart.axisLeft.axisMinimum = 0f
+
         chart.axisRight.isEnabled = false
         chart.setExtraBottomOffset(24f)
         chart.setScaleEnabled(false)
@@ -651,26 +690,58 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                 chart.getTransformer(YAxis.AxisDependency.LEFT)
             )
         )
-        // Chart selection listener
+        fun Float.toHoursAndMinutesString(): String {
+            val totalMinutes = (this * 60).toInt()
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            return String.format("%02d hr %02d min", hours, minutes)
+        }
+
+        // Chart selection listener - value in hours
         chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectMindLayout.visibility = View.VISIBLE
                 e?.let {
                     val index = e.x.toInt()
-                    val value = e.y
+                    val valueInHours = e.y
                     val selectedDate = data?.getOrNull(index)
-                    Log.d("ChartClick", "Clicked bar index=$index date=$selectedDate value=$value")
-                    // Example: Update your UI
-                    val dateLabel = "${convertDate(selectedDate?.date ?: "")}"
-                    selectedItemDate.text = dateLabel ?: ""
-                    selectedCalorieTv.text = value.toInt().toString()
+
+                    selectedItemDate.text = convertDate(selectedDate?.date ?: "")
+
+                    // Convert to hours & minutes
+                    val totalMinutes = (valueInHours * 60).roundToInt()
+                    val hours = totalMinutes / 60
+                    val minutes = totalMinutes % 60
+
+                    // Build: "01 hr 49 min"
+                    val text = String.format("%02d hr %02d min", hours, minutes)
+                    val spannable = SpannableString(text)
+
+                    // "01" → 32dp, bold
+                    spannable.setSpan(AbsoluteSizeSpan(32, true), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    // "hr" → 10sp, normal
+                    spannable.setSpan(AbsoluteSizeSpan(13, true), 3, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.NORMAL), 3, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    // "49" → 32dp, bold
+                    spannable.setSpan(AbsoluteSizeSpan(32, true), 6, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.BOLD), 6, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    // "min" → 10sp, normal
+                    spannable.setSpan(AbsoluteSizeSpan(13, true), 9, 12, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.NORMAL), 9, 12, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    selectedCalorieTv.text = spannable
                 }
             }
+
             override fun onNothingSelected() {
-                Log.d("ChartClick", "Nothing selected")
                 selectMindLayout.visibility = View.INVISIBLE
             }
         })
+
         chart.invalidate()
     }
 
