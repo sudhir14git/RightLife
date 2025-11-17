@@ -84,7 +84,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var heart_rate_description_heading: TextView
     private lateinit var step_discreption: TextView
     private lateinit var selectHeartRateLayout: CardView
-    private lateinit var layout_btn_log_meal: LinearLayoutCompat
+    private lateinit var layoutSetGoal: LinearLayoutCompat
     private lateinit var selectedCalorieTv: TextView
     private lateinit var averageBurnCalorie: TextView
     private lateinit var averageHeading: TextView
@@ -95,6 +95,8 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var valuePreviousWeek : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var iconEdit : ImageView
+    private lateinit var tvSetGoal : TextView
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
     private lateinit var customProgressPreviousWeek : BasicProgressBar
@@ -120,7 +122,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         percentageTv = view.findViewById(R.id.percentageTv)
         heart_rate_description_heading = view.findViewById(R.id.heart_rate_description_heading)
         step_discreption = view.findViewById(R.id.step_discreption)
-        layout_btn_log_meal = view.findViewById(R.id.layout_btn_log_meal)
+        layoutSetGoal = view.findViewById(R.id.layoutSetGoal)
         averageBurnCalorie = view.findViewById(R.id.averageBurnCalorie)
         averageHeading = view.findViewById(R.id.averageHeading)
         percentageIc = view.findViewById(R.id.percentageIc)
@@ -133,8 +135,10 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         customProgressPreviousWeek = view.findViewById(R.id.customProgressPreviousWeek)
         customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
         dottedLine = view.findViewById(R.id.dottedLineView1)
+        iconEdit = view.findViewById(R.id.iconEdit)
+        tvSetGoal = view.findViewById(R.id.tvSetGoal)
 
-        layout_btn_log_meal.setOnClickListener {
+        layoutSetGoal.setOnClickListener {
             val args = Bundle().apply {
                 // Add your arguments here
                 putInt("currentGoal", currentGoal) // Example: String argument
@@ -183,7 +187,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 R.id.rbSixMonths -> fetchStepDetails("last_six_months")
             }
         }
-
 
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
@@ -407,6 +410,17 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         avgStepsLine.textSize = 10f
         avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
+        if (stepData.stepsGoal > 0){
+            iconEdit.visibility = View.VISIBLE
+            tvSetGoal.text = "Edit Your Step Goal"
+            layoutSetGoal.setBackgroundResource(R.drawable.edit_step_gaol_background)
+            tvSetGoal?.setTextColor(ContextCompat.getColor(requireContext(), R.color.dotted_red))
+        }else{
+            iconEdit.visibility = View.GONE
+            tvSetGoal.text = "Set Up A Step Goal"
+            layoutSetGoal.setBackgroundResource(R.drawable.add_cart_button_background)
+            tvSetGoal?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        }
         val goalStepsLine = LimitLine(stepData.stepsGoal.toFloat(), "G")
         goalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_minimal)
         goalStepsLine.lineWidth = 1f
