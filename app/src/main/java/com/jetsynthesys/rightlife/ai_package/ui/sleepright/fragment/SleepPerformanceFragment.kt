@@ -3,7 +3,6 @@ package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 import android.app.ProgressDialog
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
@@ -47,7 +46,6 @@ import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.FormattedData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceAllData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceList
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
@@ -479,9 +477,15 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         chart.isHighlightPerTapEnabled = true
         chart.isHighlightPerDragEnabled = false
         chart.legend.isEnabled = false
+
         chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
         chart.setFitBars(true)
         chart.setDrawValueAboveBar(false)
+        barChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+            barChart.viewPortHandler,
+            barChart.axisLeft,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
         cardPercent.visibility = View.VISIBLE
         tvBarDate.text = monthLabel.getOrNull(entries.size-1) ?: ""
         tvBarPercent.text = entries.get(entries.size-1).y.toInt().toString()
@@ -561,6 +565,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
         val barData = BarData(dataSet)
         chart.data = barData
+        chart.setFitBars(true)
         val customRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
         customRenderer.initBuffers()
         chart.renderer = customRenderer
@@ -605,6 +610,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             labelRotationAngle = 0f
             textSize = 10f
         }
+
+        chart.setScaleEnabled(false)
+        chart.isDoubleTapToZoomEnabled = false
         chart.axisLeft.axisMinimum = 0f
         chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
@@ -622,11 +630,15 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 chart.getTransformer(YAxis.AxisDependency.LEFT)
             )
         )
-        barChart.rendererLeftYAxis = BadgeLimitLineRenderer(
-            barChart.viewPortHandler,
-            barChart.axisLeft,
-            barChart.getTransformer(YAxis.AxisDependency.LEFT)
-        )
+        chart.post {
+            chart.rendererLeftYAxis = BadgeLimitLineRenderer(
+                chart.viewPortHandler,
+                chart.axisLeft,
+                chart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
+            chart.invalidate()
+        }
+
         cardPercent.visibility = View.VISIBLE
         tvBarDate.text = selectedDate.getOrNull(entries.size-1) ?: ""
         tvBarPercent.text = entries.get(entries.size-1).y.toInt().toString()

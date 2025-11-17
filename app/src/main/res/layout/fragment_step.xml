@@ -458,7 +458,7 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:id="@+id/layout_btn_log_meal"
+                        android:id="@+id/layoutSetGoal"
                         android:layout_width="300dp"
                         android:layout_height="50dp"
                         android:orientation="horizontal"
@@ -473,18 +473,19 @@
                         android:layout_marginBottom="20dp">
 
                         <ImageView
-                            android:id="@+id/icon_plus"
+                            android:id="@+id/iconEdit"
                             android:layout_width="15dp"
                             android:layout_height="15dp"
                             android:layout_gravity="center"
                             android:scaleType="fitXY"
                             android:visibility="gone"
+                            android:layout_marginRight="5dp"
                             android:src="@drawable/edit_step_goal"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/tv_log_meal"
+                            android:id="@+id/tvSetGoal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             app:layout_constraintTop_toTopOf="parent"

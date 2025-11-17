@@ -151,18 +151,20 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         }
 
         skipTV.setOnClickListener {
-            if (imagePath != ""){
-              //  imagePathsecond
-                if (imageGeneratedUrl != ""){
+            if (!skipTV.isEnabled) return@setOnClickListener
+            skipTV.isEnabled = false
+            if (imagePath != "") {
+                if (imageGeneratedUrl != "") {
                     getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
-                }else{
+                } else {
                     imagePathsecond?.let { getUrlFromURI(it) }
                 }
-               // imagePathString.let { Uri.parse(it) }!!
-               // uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
-            }else{
-                Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Please capture food", Toast.LENGTH_SHORT).show()
             }
+            skipTV.postDelayed({
+                //skipTV.isEnabled = true
+            }, 1200)
         }
 
         if (gallery.equals("gallery")){
@@ -271,6 +273,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         videoPlay()
 
         proceedLayout.setOnClickListener {
+            if (!proceedLayout.isEnabled) return@setOnClickListener
+            proceedLayout.isEnabled = false
                 if (isProceedResult){
                     if (imagePath != ""){
                         if (imageGeneratedUrl != ""){
@@ -315,6 +319,10 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
                     }
                     cameraDialog.show(parentFragmentManager, "CameraDialog")
                 }
+
+            proceedLayout.postDelayed({
+                proceedLayout.isEnabled = true
+            }, 1200)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -400,17 +408,18 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
     }
 
     private fun notMealDetectItem() {
+        // 1️⃣ Check if BottomSheet already showing
+        val existingSheet = childFragmentManager.findFragmentByTag("SnapMealDetectBottomSheet")
+        if (existingSheet != null && existingSheet.isAdded) {
+            return     // <-- STOP showing again
+        }
+        // 2️⃣ Create and show if not already visible
         val snapMealDetectBottomSheet = SnapMealDetectBottomSheet()
         snapMealDetectBottomSheet.isCancelable = true
-//        val bundle = Bundle()
-//        bundle.putBoolean("isSave", isSave)
-//        snapMealDetectBottomSheet.arguments = bundle
-        parentFragment.let {
-            snapMealDetectBottomSheet.show(
-                childFragmentManager,
-                "SnapMealDetectBottomSheet"
-            )
-        }
+        snapMealDetectBottomSheet.show(
+            childFragmentManager,
+            "SnapMealDetectBottomSheet"
+        )
     }
 
      fun openGalleryForImage() {
@@ -815,6 +824,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
         if (imagePath != ""){
             //  imagePathsecond
             if (imageGeneratedUrl != ""){
+                skipTV.isEnabled = true
                 getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
             }else{
                 imagePathsecond?.let { getUrlFromURI(it) }

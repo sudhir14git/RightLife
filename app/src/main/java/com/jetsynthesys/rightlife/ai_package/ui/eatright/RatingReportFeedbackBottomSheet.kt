@@ -71,8 +71,6 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
         val star3 = view.findViewById<ImageView>(R.id.star3)
         val star4 = view.findViewById<ImageView>(R.id.star4)
         val star5 = view.findViewById<ImageView>(R.id.star5)
-        val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ratingbar_custom)
-        ratingBar.progressDrawable = drawable
         val tvTitles = view.findViewById<TextView>(R.id.tvTitles)
         val layoutSubmitAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutSubmitAfter)
         val layoutNotNowAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNowAfter)
