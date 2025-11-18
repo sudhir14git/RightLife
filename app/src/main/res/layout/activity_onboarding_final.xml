@@ -47,7 +47,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_bold"
             android:gravity="center_horizontal"
-            android:text="100 %"
             android:textColor="@color/menuselected"
             android:textSize="16sp"
             android:layout_marginTop="8dp"/>

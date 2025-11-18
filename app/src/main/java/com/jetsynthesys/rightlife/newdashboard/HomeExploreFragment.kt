@@ -34,9 +34,10 @@ import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse
 import com.jetsynthesys.rightlife.databinding.FragmentHomeExploreBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
 import com.jetsynthesys.rightlife.newdashboard.model.ContentResponse
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager.facialScanStatus
 import com.jetsynthesys.rightlife.runWhenAttached
-import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.ActivityUtils
+import com.jetsynthesys.rightlife.ui.ActivityUtils.startFaceScanActivity
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.CardItem
 import com.jetsynthesys.rightlife.ui.CircularCardAdapter
@@ -45,9 +46,12 @@ import com.jetsynthesys.rightlife.ui.ServicePaneAdapter
 import com.jetsynthesys.rightlife.ui.TestAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
+import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
 import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity
 import com.zhpan.bannerview.constants.PageStyle
 import com.zhpan.indicator.enums.IndicatorStyle
 import okhttp3.ResponseBody
@@ -861,7 +865,79 @@ class HomeExploreFragment : BaseFragment() {
 
         if (cardItems.isNotEmpty()) {
             binding.viewPager.visibility = View.VISIBLE
-            adapter = CircularCardAdapter(requireActivity(), cardItems)
+            adapter = CircularCardAdapter(requireActivity(), cardItems) { item: CardItem ->
+
+                if (item.seriesType.equals("daily", ignoreCase = true) ||
+                    item.category.equals("CONTENT", ignoreCase = true) || item.category
+                        .equals("Test Category", ignoreCase = true)
+                ) {
+                    //Call Content Activity here
+                    callRlEditDetailActivity(item)
+                } else if (item.category.equals("live", ignoreCase = true)) {
+                    Toast.makeText(requireActivity(), "Live Content", Toast.LENGTH_SHORT).show()
+                } else if (item.category.equals("MIND_AUDIT", ignoreCase = true) ||
+                    item.category.equals("Mind Audit", ignoreCase = true) ||
+                    item.category.equals("Health Audit", ignoreCase = true) ||
+                    item.category.equals("mindAudit", ignoreCase = true)
+                ) {
+                    if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true) {
+                        ActivityUtils.startMindAuditActivity(requireContext())
+                    }
+                } else if (item.category.equals("VOICE_SCAN", ignoreCase = true)) {
+                    val intent = Intent(requireActivity(), VoiceScanActivity::class.java)
+                    // Optionally pass data
+                    //intent.putExtra("key", "value");
+                    startActivity(intent)
+                } else if (item.category.equals("FACIAL_SCAN", ignoreCase = true)
+                    || item.category.equals("FACE_SCAN", ignoreCase = true)
+                    || item.category.equals("Health Cam", ignoreCase = true)
+                ) {
+                    val spm = SharedPreferenceManager.getInstance(requireActivity())
+
+                    if (spm.userProfile != null && spm.userProfile.user_sub_status == 0) {
+                        // Not subscribed → redirect to free trial
+                        val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
+                        intent.putExtra(
+                            FeatureFlags.EXTRA_ENTRY_DEST,
+                            FeatureFlags.FACE_SCAN
+                        )
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                    } else {
+                        var isFacialScanService = false
+                        try {
+                            isFacialScanService = spm.userProfile.facialScanService
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+                        if (isFacialScanService) {
+                            if (facialScanStatus) {
+                                val intent =
+                                    Intent(
+                                        requireActivity(),
+                                        NewHealthCamReportActivity::class.java
+                                    )
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                startActivity(intent)
+                            } else {
+                                startFaceScanActivity(requireActivity())
+                            }
+                        } else {
+                            if (requireActivity() is HomeNewActivity) {
+                                (requireActivity() as HomeNewActivity)
+                                    .showSwitchAccountDialog(requireActivity(), "", "")
+                            } else {
+                                Toast.makeText(
+                                    requireActivity(),
+                                    "Please switch to your original account.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                }
+            }
             binding.viewPager.adapter = adapter
             adapter?.notifyDataSetChanged()
 
@@ -934,8 +1010,7 @@ class HomeExploreFragment : BaseFragment() {
                               "SnapMealTypeEat",
                               ""
                           )*/
-                        if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true)
-                        {
+                        if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true) {
                             ActivityUtils.startMindAuditActivity(requireContext())
                         }
                     }
@@ -987,7 +1062,7 @@ class HomeExploreFragment : BaseFragment() {
                 }
 
                 else -> {
-                    ActivityUtils.startFaceScanActivity(requireContext())
+                    startFaceScanActivity(requireContext())
                 }
             }
         }
@@ -1262,6 +1337,32 @@ class HomeExploreFragment : BaseFragment() {
             startActivity(Intent(requireContext(), SeriesListActivity::class.java).apply {
                 putExtra("contentId", contentId)
             })
+        }
+    }
+
+    private fun callRlEditDetailActivity(item: CardItem) {
+        // Assuming rightLifeEditResponse is accessible in this class
+        var contentType: String? = null
+        var contentId: String? = null
+        contentType = item.selectedContentType
+        contentId = item.seriesId
+
+        if (contentType != null && contentType.equals("TEXT", ignoreCase = true)) {
+            val intent = Intent(requireActivity(), ArticlesDetailActivity::class.java)
+            intent.putExtra("contentId", contentId)
+            startActivity(intent)
+        } else if (contentType != null && (contentType.equals(
+                "VIDEO",
+                ignoreCase = true
+            ) || contentType.equals("AUDIO", ignoreCase = true))
+        ) {
+            val intent = Intent(requireActivity(), ContentDetailsActivity::class.java)
+            intent.putExtra("contentId", contentId)
+            startActivity(intent)
+        } else if (contentType != null && contentType.equals("SERIES", ignoreCase = true)) {
+            val intent = Intent(requireActivity(), SeriesListActivity::class.java)
+            intent.putExtra("contentId", contentId)
+            startActivity(intent)
         }
     }
 
