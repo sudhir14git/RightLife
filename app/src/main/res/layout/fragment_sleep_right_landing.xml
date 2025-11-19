@@ -2726,7 +2726,7 @@
                     android:layout_width="0dp"
                     android:layout_height="55dp"
                     android:layout_weight="3"
-                    android:src="@drawable/white_sleep_sound_icon" />
+                    android:src="@drawable/ic_sleep_sound" />
             </LinearLayout>
 
             <androidx.cardview.widget.CardView
