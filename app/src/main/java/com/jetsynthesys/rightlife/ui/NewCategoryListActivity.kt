@@ -287,7 +287,7 @@ class NewCategoryListActivity : BaseActivity() {
                 )
             }
 
-            "Articles" -> {
+            "Articles", "TEXT" -> {
                 bindingDialog.tvAll.setTextColor(
                     ContextCompat.getColor(this, R.color.txt_color_header)
                 )
@@ -390,7 +390,10 @@ class NewCategoryListActivity : BaseActivity() {
     }
 
     private fun popupOptionClicked(selectedString: String) {
-        binding.tvSelectedCategory.text = selectedString
+        if (selectedString.equals("TEXT", ignoreCase = true))
+            binding.tvSelectedCategory.text = "Articles"
+        else
+            binding.tvSelectedCategory.text = selectedString
         selectedText = selectedString
         skip = 0
         contentDetails.clear()

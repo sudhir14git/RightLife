@@ -24,6 +24,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -118,6 +119,7 @@ class WellnessFocusListActivity : BaseActivity() {
         rvWellnessFocusList.adapter = wellnessFocusListAdapter
 
         btnContinue.setOnClickListener {
+            it.disableViewForSeconds()
 
             if (selectedWellnessFocus.size in 2..4) {
                 val selectedOptions = ArrayList<String>()

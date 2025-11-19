@@ -521,12 +521,10 @@ class HomeNewActivity : BaseActivity() {
 
         with(binding) {
             includedhomebottomsheet.llJournal.setOnClickListener {
-                /*AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startJournalListActivity(this@HomeNewActivity)
-                }*/
-
-                ActivityUtils.startJournalListActivity(this@HomeNewActivity)
+                }
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
@@ -1888,7 +1886,7 @@ class HomeNewActivity : BaseActivity() {
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format(Locale.US,"%.2f", safeKm),
+                            value = String.format(Locale.US, "%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                         )
                     } else null
@@ -1948,7 +1946,7 @@ class HomeNewActivity : BaseActivity() {
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format(Locale.US,"%.1f", safeKm),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                         )
                     } else null
@@ -1962,7 +1960,7 @@ class HomeNewActivity : BaseActivity() {
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format(Locale.US,"%.1f", safeKm),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                         )
                     } else null
@@ -1996,7 +1994,7 @@ class HomeNewActivity : BaseActivity() {
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format(Locale.US,"%.1f", safeKm),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                         )
                     } else null
@@ -2009,7 +2007,7 @@ class HomeNewActivity : BaseActivity() {
                         end_datetime = convertToTargetFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format(Locale.US,"%.1f", safeKm),
+                        value = String.format(Locale.US, "%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                     )
                 } ?: emptyList()
@@ -2249,7 +2247,7 @@ class HomeNewActivity : BaseActivity() {
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format(Locale.US,"%.2f", safeKm),
+                            value = String.format(Locale.US, "%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 ?: "samsung"
                         )
@@ -2314,7 +2312,7 @@ class HomeNewActivity : BaseActivity() {
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format(Locale.US,"%.1f", safeKm),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 ?: "samsung"
                         )
@@ -2329,7 +2327,7 @@ class HomeNewActivity : BaseActivity() {
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format(Locale.US,"%.1f", safeKm),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 ?: "samsung"
                         )
@@ -2366,7 +2364,7 @@ class HomeNewActivity : BaseActivity() {
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format(Locale.US,"%.1f", safeKm),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 ?: "samsung"
                         )
@@ -2380,7 +2378,7 @@ class HomeNewActivity : BaseActivity() {
                         end_datetime = convertToSamsungFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format(Locale.US,"%.1f", safeKm),
+                        value = String.format(Locale.US, "%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                             ?: "samsung"
                     )

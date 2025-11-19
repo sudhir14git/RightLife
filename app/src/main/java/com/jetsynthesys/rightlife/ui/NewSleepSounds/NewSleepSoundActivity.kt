@@ -123,6 +123,20 @@ class NewSleepSoundActivity : BaseActivity() {
             }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val text = binding.etSearch.text
+        if (text.isNotEmpty()) {
+            binding.ivSearchIcon.visibility = View.GONE
+            binding.mainSleepSoundLayout.visibility = View.GONE
+            binding.recyclerViewSearch.visibility = View.VISIBLE
+            searchSounds(text.toString())
+        } else {
+            fetchCategories()
+            getNewReleases()
+        }
+    }
+
     private fun handleBackPressed() {
         if (hasAll) {
             if (binding.layoutVerticalCategoryList.visibility == View.VISIBLE) {

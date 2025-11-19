@@ -22,6 +22,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.apimodel.servicepane.HomeService;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
@@ -45,10 +46,16 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
     private final Context mContext;
     private final List<CardItem> items; // Replace CardItem with your model class
+    private final OnItemClickListener onItemClickListener;
 
-    public CircularCardAdapter(Context context, List<CardItem> items) {
+    public interface OnItemClickListener {
+        void onItemClick(CardItem cardItem);
+    }
+
+    public CircularCardAdapter(Context context, List<CardItem> items, OnItemClickListener onItemClickListener) {
         this.items = items;
         this.mContext = context;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -64,90 +71,15 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         if (items.isEmpty())
             return;
         CardItem item = items.get(position % items.size());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ButtonUtilsKt.disableViewForSeconds(view);
+        holder.itemView.setOnClickListener(view -> {
+            ButtonUtilsKt.disableViewForSeconds(view);
 
+            onItemClickListener.onItemClick(item);
 
-
-                // Toast.makeText(view.getContext(), "Clicked on: " + item.getTitle()+ holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                // Start new activity here
-
-                if (item.getSeriesType().equalsIgnoreCase("daily") ||
-                        item.getCategory().equalsIgnoreCase("CONTENT") || item.getCategory().equalsIgnoreCase("Test Category")) {
-                    /*Intent intent = new Intent(mContext, ContentDetailsActivity.class);
-                    intent.putExtra("contentId", item.getSeriesId());
-                    mContext.startActivity(intent);*/
-                    //Call Content Activity here
-                    callRlEditDetailActivity(item);
-                } else if (item.getCategory().equalsIgnoreCase("live")) {
-                    Toast.makeText(mContext, "Live Content", Toast.LENGTH_SHORT).show();
-                } else if (item.getCategory().equalsIgnoreCase("MIND_AUDIT") ||
-                        item.getCategory().equalsIgnoreCase("Mind Audit") ||
-                        item.getCategory().equalsIgnoreCase("Health Audit") ||
-                        item.getCategory().equalsIgnoreCase("mindAudit")) {
-                    Intent intent = new Intent(mContext, MindAuditFromActivity.class);
-                    // Optionally pass data
-                    //intent.putExtra("key", "value");
-                    mContext.startActivity(intent);
-
-                } else if (item.getCategory().equalsIgnoreCase("VOICE_SCAN")) {
-                    Intent intent = new Intent(mContext, VoiceScanActivity.class);
-                    // Optionally pass data
-                    //intent.putExtra("key", "value");
-                    mContext.startActivity(intent);
-
-                }else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN")
-                        || item.getCategory().equalsIgnoreCase("FACE_SCAN")
-                        || item.getCategory().equalsIgnoreCase("Health Cam")) {
-
-                    SharedPreferenceManager spm = SharedPreferenceManager.getInstance(mContext);
-
-                    if (spm.getUserProfile() != null && spm.getUserProfile().getUser_sub_status() == 0) {
-                        // Not subscribed → redirect to free trial
-                        Intent intent = new Intent(mContext, com.jetsynthesys.rightlife.newdashboard.BeginMyFreeTrialActivity.class);
-                        intent.putExtra(com.jetsynthesys.rightlife.ui.utility.FeatureFlags.EXTRA_ENTRY_DEST,
-                                com.jetsynthesys.rightlife.ui.utility.FeatureFlags.FACE_SCAN);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                    } else {
-                        boolean isFacialScanService = false;
-                        try {
-                            isFacialScanService = spm.getUserProfile().getFacialScanService();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        if (isFacialScanService) {
-                            if ( DashboardChecklistManager.INSTANCE.getFacialScanStatus()) {
-                                Intent intent = new Intent(mContext, com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivity(intent);
-                            } else {
-                                ActivityUtils.INSTANCE.startFaceScanActivity(mContext);
-                            }
-                        } else {
-                            if (mContext instanceof com.jetsynthesys.rightlife.newdashboard.HomeNewActivity) {
-                                ((com.jetsynthesys.rightlife.newdashboard.HomeNewActivity) mContext)
-                                        .showSwitchAccountDialog(mContext, "", "");
-                            } else {
-                                Toast.makeText(mContext, "Please switch to your original account.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                }
-
-                /* else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN") ||
-                        item.getCategory().equalsIgnoreCase("Health Cam") || item.getCategory().equalsIgnoreCase("FACE_SCAN")) {
-                    //ActivityUtils.INSTANCE.startFaceScanActivity(mContext);
-                }*/
-
-                ViewCountRequest viewCountRequest = new ViewCountRequest();
-                viewCountRequest.setId(item.getId());
-                viewCountRequest.setUserId(SharedPreferenceManager.getInstance(mContext).getUserId());
-                updateViewCount(viewCountRequest, holder.getBindingAdapterPosition());
-            }
+            ViewCountRequest viewCountRequest = new ViewCountRequest();
+            viewCountRequest.setId(item.getId());
+            viewCountRequest.setUserId(SharedPreferenceManager.getInstance(mContext).getUserId());
+            updateViewCount(viewCountRequest, holder.getBindingAdapterPosition());
         });
         Utils.logDebug("CircularCardAdapter", "" + holder.getBindingAdapterPosition());
         holder.bind(item);
@@ -201,28 +133,6 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                 Log.e("API_FAILURE", "Failure: " + t.getMessage());
             }
         });
-    }
-
-    private void callRlEditDetailActivity(CardItem item) {
-        // Assuming rightLifeEditResponse is accessible in this class
-        String contentType = null;
-        String contentId = null;
-        contentType = item.getSelectedContentType();
-        contentId = item.getSeriesId();
-
-        if (contentType != null && contentType.equalsIgnoreCase("TEXT")) {
-            Intent intent = new Intent(mContext, ArticlesDetailActivity.class);
-            intent.putExtra("contentId", contentId);
-            mContext.startActivity(intent);
-        } else if (contentType != null && (contentType.equalsIgnoreCase("VIDEO") || contentType.equalsIgnoreCase("AUDIO"))) {
-            Intent intent = new Intent(mContext, ContentDetailsActivity.class);
-            intent.putExtra("contentId", contentId);
-            mContext.startActivity(intent);
-        } else if (contentType != null && contentType.equalsIgnoreCase("SERIES")) {
-            Intent intent = new Intent(mContext, SeriesListActivity.class);
-            intent.putExtra("contentId", contentId);
-            mContext.startActivity(intent);
-        }
     }
 
     static class CardViewHolder extends RecyclerView.ViewHolder {
