@@ -387,7 +387,6 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.rlBreathingPracticeMain.visibility = View.GONE
         binding.btnExit.setOnClickListener {
             showCompletedBottomSheet()
-            callPostMindFullDataAPI()
             /*
             if (isHapticFeedBack)
                 showCompletedBottomSheet()
@@ -401,7 +400,6 @@ class BreathworkPracticeActivity : BaseActivity() {
             currentSet = 1
             binding.rlPracticeComplete.visibility = View.GONE
             startPreparationCountdown()
-            callPostMindFullDataAPI()
         }
     }
 
@@ -620,7 +618,6 @@ class BreathworkPracticeActivity : BaseActivity() {
         dialogBinding.btnWorse.text = "worse than before"
 
         bottomSheetDialog.setOnDismissListener {
-            //callPostMindFullDataAPI()
             startActivity(
                 Intent(this, BreathworkActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -629,7 +626,6 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
 
         bottomSheetDialog.setOnCancelListener {
-            //callPostMindFullDataAPI()
             finish()
         }
 
@@ -643,11 +639,9 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
 
         dialogBinding.btnSame.setOnClickListener {
-            //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
         }
         dialogBinding.btnWorse.setOnClickListener {
-            //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
         }
         bottomSheetDialog.show()

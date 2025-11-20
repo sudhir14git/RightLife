@@ -988,7 +988,9 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
                 "weight" -> {
                     if (userdata.weight != null) {
-                        binding.edtWeight.setText("${userdata.weight} ${userdata.weightUnit}")
+                        binding.edtWeight.setText("${userdata.weight} ${userdata.weightUnit.lowercase(
+                            Locale.getDefault()
+                        )}")
                     }
                 }
 
