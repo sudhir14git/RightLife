@@ -13,7 +13,91 @@ import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.Articles.ReceipeDetailActivity
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 
+
 class DeepLinkRouterActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        handleDeepLink()
+        finish()
+    }
+
+    private fun handleDeepLink() {
+        val data = intent?.data ?: return
+        val path = data.path ?: return   // e.g. "/meal-log"
+
+        val intent = Intent(this, HomeNewActivity::class.java)
+
+        when {
+            // Home
+            path == "/home" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_HOME
+                )
+            }
+
+            // My Health
+            path == "/my-health" || path.startsWith("/dashboard") -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_MY_HEALTH
+                )
+                // You can ALSO set OPEN_MY_HEALTH for backwards compatibility if you want:
+                intent.putExtra("OPEN_MY_HEALTH", true)
+            }
+
+            // Journal
+            path == "/journal" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_JOURNAL
+                )
+            }
+
+            // Meal Log
+            path == "/meal-log" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_MEAL_LOG
+                )
+            }
+
+            // Breathing
+            path == "/breathing" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_BREATHING
+                )
+            }
+
+            // Profile
+            path == "/profile" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_PROFILE
+                )
+            }
+
+            // TODO: map other paths similarly:
+            // "/ai-report", "/saved-items", "/sleep-performance", "/weight-tracker", etc.
+            // each gets a DEEP_LINK_TARGET, and HomeNewActivity will handle them.
+
+            else -> {
+                // fallback → open home
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_HOME
+                )
+            }
+        }
+
+        startActivity(intent)
+    }
+}
+
+
+/*class DeepLinkRouterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +115,7 @@ class DeepLinkRouterActivity : AppCompatActivity() {
             path == "/home" -> start(HomeNewActivity::class.java)
 
             // My Health
-            path == "/my-health" -> start(HealthPageMainActivity::class.java)
+            path == "/my-health" -> start(HomeNewActivity::class.java)
 
             // Dashboard
             path.startsWith("/dashboard") -> start(HomeNewActivity::class.java)
@@ -148,6 +232,11 @@ class DeepLinkRouterActivity : AppCompatActivity() {
         i.putExtra("recipeId", id)
         startActivity(i)
     }
+    private fun openHomeFromRouter(){
+        val i = Intent(this, HomeNewActivity::class.java)
+        i.putExtra("isfromDeepLink", true)
+        startActivity(i)
+    }
 
     // TODO: Add real Activity mappings for each function below:
     private fun openMealScanResults() {start(HomeNewActivity::class.java)}
@@ -177,40 +266,5 @@ class DeepLinkRouterActivity : AppCompatActivity() {
     private fun openModule() {start(HomeNewActivity::class.java)}
     private fun openSeries() {start(HomeNewActivity::class.java)}
     private fun openEpisode() {start(HomeNewActivity::class.java)}
-}
+}*/
 
-/*
-class DeepLinkRouterActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        handleDeepLink()
-        finish() // router is invisible
-    }
-
-    private fun handleDeepLink() {
-        val data = intent?.data ?: return
-        val path = data.path ?: return   // e.g. "/meal-log"
-
-        when {
-            path == "/home" -> {
-                startActivity(Intent(this, HomeNewActivity::class.java))
-            }
-            path == "/my-health" -> {
-                startActivity(Intent(this, HomeNewActivity::class.java))
-            }
-            path == "/meal-log" -> {
-                //openMealLog()
-            }
-            path.startsWith("/recipe/") -> {
-                //openRecipeDetails(path)
-            }
-            // more mapping here...
-            else -> {
-                // Unknown path → fallback
-                startActivity(Intent(this, HomeNewActivity::class.java))
-            }
-        }
-    }
-}
-*/

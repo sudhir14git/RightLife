@@ -126,6 +126,114 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class HomeNewActivity : BaseActivity() {
+    // for deep links
+    companion object {
+        const val EXTRA_DEEP_LINK_TARGET = "EXTRA_DEEP_LINK_TARGET"
+
+        const val TARGET_HOME = "home"
+        const val TARGET_MY_HEALTH = "my_health"
+        const val TARGET_JOURNAL = "journal"
+        const val TARGET_MEAL_LOG = "meal_log"
+        const val TARGET_BREATHING = "breathing"
+        const val TARGET_PROFILE = "profile"
+        // add more as needed…
+    }
+
+    // 🔹 Deeplink readiness flags
+    private var pendingDeepLinkTarget: String? = null
+    private var isUserProfileLoaded = false
+    private var isChecklistLoaded = false
+
+    private fun isInitialDataReadyFor(target: String): Boolean {
+        // For simple navigation, no need to wait
+        return when (target) {
+            TARGET_HOME,
+            TARGET_MY_HEALTH -> true
+
+            // Features that depend on user profile & checklist
+            TARGET_JOURNAL,
+            TARGET_MEAL_LOG,
+            TARGET_BREATHING,
+            TARGET_PROFILE -> {
+                isUserProfileLoaded && isChecklistLoaded
+            }
+
+            else -> {
+                // By default, be conservative
+                isUserProfileLoaded && isChecklistLoaded
+            }
+        }
+    }
+
+    private fun tryProcessPendingDeepLink() {
+        val target = pendingDeepLinkTarget ?: return
+
+        if (isInitialDataReadyFor(target)) {
+            // Clear before calling to avoid infinite loops
+            pendingDeepLinkTarget = null
+            handleDeepLinkTarget(target)
+        }
+    }
+
+    private fun handleDeepLinkTarget(target: String?) {
+        if (target == null) return
+
+        // If data not ready for this target, just store it and return
+        if (!isInitialDataReadyFor(target)) {
+            pendingDeepLinkTarget = target
+            return
+        }
+
+        // ✅ Data ready – now actually act
+        when (target) {
+
+            TARGET_HOME -> {
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, HomeExploreFragment())
+                        .commit()
+                updateMenuSelection(R.id.menu_home)
+            }
+
+            TARGET_MY_HEALTH -> {
+                myHealthFragmentSelected()
+            }
+
+            TARGET_JOURNAL -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startJournalListActivity(this)
+                }
+            }
+
+            TARGET_MEAL_LOG -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "MealLogTypeEat")
+                        putExtra("snapMealId", snapMealId)
+                    })
+                }
+            }
+
+            TARGET_BREATHING -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+
+            TARGET_PROFILE -> {
+                startActivity(Intent(this, ProfileSettingsActivity::class.java))
+            }
+
+            else -> {
+                // Unknown / not mapped → ignore
+            }
+        }
+    }
+
+
+
     private var snapMealId = ""
     private lateinit var binding: ActivityHomeNewBinding
     private var isAdd = true
@@ -652,6 +760,11 @@ class HomeNewActivity : BaseActivity() {
     homeBottomSheet visible=${binding.includedhomebottomsheet.root.visibility}
 """.trimIndent()
         )
+
+        // deeplinks
+        val deepLinkTarget = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
+        handleDeepLinkTarget(deepLinkTarget)
+
     }
 
 
@@ -732,6 +845,8 @@ class HomeNewActivity : BaseActivity() {
                 })
             }
         }
+        val target = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
+        handleDeepLinkTarget(target)
     }
 
 
@@ -817,12 +932,15 @@ class HomeNewActivity : BaseActivity() {
                         binding.tvDays.text = ""
                         binding.llCountDown.visibility = View.GONE
                     }
-
+                    isUserProfileLoaded = true
+                    tryProcessPendingDeepLink()
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                     if (response.code() == 401) {
                         clearUserDataAndFinish()
                     }
+                    isUserProfileLoaded = true
+                    tryProcessPendingDeepLink()
                 }
 
                 /*  if (!DashboardChecklistManager.paymentStatus) {
@@ -836,6 +954,8 @@ class HomeNewActivity : BaseActivity() {
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
                 handleNoInternetView(t)
+                isUserProfileLoaded = true
+                tryProcessPendingDeepLink()
             }
         })
     }
@@ -2911,10 +3031,14 @@ class HomeNewActivity : BaseActivity() {
                             DashboardChecklistManager.updateFrom(it)
                         }
                     }
+                    isChecklistLoaded = true
+                    tryProcessPendingDeepLink()
                 }
 
                 override fun onFailure(call: Call<DashboardChecklistResponse>, t: Throwable) {
                     handleNoInternetView(t)
+                    isChecklistLoaded = true
+                    tryProcessPendingDeepLink()
                 }
 
             })
@@ -3074,7 +3198,7 @@ class HomeNewActivity : BaseActivity() {
         } else {
             val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService
                 ?: false
-            if (isFacialScanService) {
+
                 if (DashboardChecklistManager.facialScanStatus) {
                     startActivity(
                         Intent(
@@ -3082,11 +3206,13 @@ class HomeNewActivity : BaseActivity() {
                         )
                     )
                 } else {
-                    ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
+                    if (isFacialScanService)
+                    {
+                        ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
+                    }else{
+                        showSwitchAccountDialog(this@HomeNewActivity, "", "")
+                    }
                 }
-            } else {
-                showSwitchAccountDialog(this@HomeNewActivity, "", "")
-            }
         }
     }
 
