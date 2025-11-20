@@ -1055,7 +1055,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         for (i in 0 until count) {
             dots[i] = ImageView(context?.let { it }).apply {
                 setImageDrawable(context?.let { it }
-                    ?.let { ContextCompat.getDrawable(it, R.drawable.dot_unselected) })
+                    ?.let { ContextCompat.getDrawable(it, R.drawable.new_unselected_dot) })
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -1069,7 +1069,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
     private fun updateDots(position: Int) {
         dots.forEachIndexed { index, imageView ->
-            imageView?.setImageResource(if (index == position) R.drawable.dot_selected else R.drawable.dot_unselected)
+            imageView?.setImageResource(if (index == position) R.drawable.dot_selected else R.drawable.new_unselected_dot)
         }
     }
 
@@ -1901,6 +1901,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
                         ExerciseSessionRecord.EXERCISE_TYPE_GYMNASTICS -> "Gym"
                         ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT -> "Other Workout"
+                        ExerciseSessionRecord.EXERCISE_TYPE_MARTIAL_ARTS -> "Martial Arts"
                         ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> "Biking"
                         ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> "Biking Stationary"
                         ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> "Cycling"
@@ -2257,6 +2258,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
                         ExerciseSessionRecord.EXERCISE_TYPE_GYMNASTICS -> "Gym"
                         ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT -> "Other Workout"
+                        ExerciseSessionRecord.EXERCISE_TYPE_MARTIAL_ARTS -> "Martial Arts"
                         ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> "Biking"
                         ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> "Biking Stationary"
                         ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> "Cycling"
