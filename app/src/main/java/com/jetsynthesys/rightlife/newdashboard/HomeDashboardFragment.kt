@@ -514,7 +514,7 @@ class HomeDashboardFragment : BaseFragment()
         setStatusOfChecklist(checklistResponse?.data?.profile!!, binding.includeChecklist.imgCheck, binding.includeChecklist.rlChecklistProfile)
         AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.PROFILE_STATUS, mapOf(AnalyticsParam.PROFILE_STATUS to checklistResponse.data.profile))
         //snap Meal
-        setStatusOfChecklist(checklistResponse.data.meal_snap, binding.includeChecklist.imgCheckSnapmeal, binding.includeChecklist.rlChecklistSnapmeal, false)
+        setStatusOfChecklist(checklistResponse.data.meal_snap, binding.includeChecklist.imgCheckSnapmeal, binding.includeChecklist.rlChecklistSnapmeal)
         AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SNAP_MEAL_STATUS, mapOf(AnalyticsEvent.SNAP_MEAL_STATUS to checklistResponse.data.meal_snap))
         //sync health
         setStatusOfChecklist(checklistResponse.data.sync_health_data, binding.includeChecklist.imgCheckSynchealth, binding.includeChecklist.rlChecklistSynchealth)

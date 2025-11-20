@@ -163,20 +163,15 @@ class CustomHeartRateGraph @JvmOverloads constructor(
         val graphWidth = width - paddingLeft - paddingRight
         val graphHeight = height - paddingTop - paddingBottom
 
-        // Draw workout title if available
-        /*workoutData?.let { workout ->
-            drawWorkoutTitle(canvas, workout.title, paddingTop)
-        }*/
-
         // Draw axes
         canvas.drawLine(paddingLeft, paddingTop, paddingLeft, height - paddingBottom, axisPaint)
         canvas.drawLine(paddingLeft, height - paddingBottom, width - paddingRight, height - paddingBottom, axisPaint)
 
         // Draw Y-axis labels and grid lines (dynamic based on data)
-        drawYAxisLabels(canvas, paddingLeft, paddingTop, paddingRight, graphHeight)
+        drawYAxisLabels(canvas, paddingLeft, paddingTop, paddingRight, graphHeight, paddingBottom)
 
         // Draw the heart rate line
-        drawHeartRateLine(canvas, paddingLeft, paddingTop, graphWidth, graphHeight)
+        drawHeartRateLine(canvas, paddingLeft, paddingTop, paddingBottom, graphWidth, graphHeight)
 
         // Draw X-axis labels (improved time labels)
         drawXAxisLabels(canvas, paddingLeft, paddingBottom, graphWidth)
@@ -192,7 +187,7 @@ class CustomHeartRateGraph @JvmOverloads constructor(
         }
     }
 
-    private fun drawYAxisLabels(canvas: Canvas, paddingLeft: Float, paddingTop: Float, paddingRight: Float, graphHeight: Float) {
+    private fun drawYAxisLabels(canvas: Canvas, paddingLeft: Float, paddingTop: Float, paddingRight: Float, graphHeight: Float, paddingBottom: Float) {
         // Generate 6-8 evenly spaced labels between min and max
         val labelCount = 7
         val step = bpmRange / (labelCount - 1)
@@ -271,26 +266,11 @@ class CustomHeartRateGraph @JvmOverloads constructor(
         }
     }
 
-    /*private fun drawWorkoutTitle(canvas: Canvas, title: String, paddingTop: Float) {
-        val titleWidth = workoutTitlePaint.measureText(title)
-        val titleX = (width - titleWidth) / 2
-        val titleY = paddingTop / 3 + workoutTitlePaint.textSize / 2
-        canvas.drawText(title, titleX, titleY, workoutTitlePaint)
-    }*/
-
     private fun drawWorkoutStatistics(canvas: Canvas, workout: CardItem, paddingBottom: Float) {
         val startY = height - paddingBottom + 20f
         val lineHeight = workoutInfoPaint.textSize + 6f
 
         val stats = mutableListOf<String>()
-        // stats.add("Duration: ${workout.duration}")
-        // stats.add("Calories: ${workout.caloriesBurned}")
-        // stats.add("Avg HR: ${workout.avgHeartRate}")
-
-        // Add zone information if available
-        if (workout.heartRateZonePercentages.peakZone > 0 || workout.heartRateZonePercentages.cardioZone > 0) {
-            // stats.add("Peak: ${workout.heartRateZonePercentages.peakZone}% | Cardio: ${workout.heartRateZonePercentages.cardioZone}%")
-        }
 
         stats.take(4).forEachIndexed { index, stat ->
             canvas.drawText(stat, 40f, startY + (index * lineHeight), workoutInfoPaint)
@@ -327,7 +307,7 @@ class CustomHeartRateGraph @JvmOverloads constructor(
         }
     }
 
-    private fun drawHeartRateLine(canvas: Canvas, paddingLeft: Float, paddingTop: Float, graphWidth: Float, graphHeight: Float) {
+    private fun drawHeartRateLine(canvas: Canvas, paddingLeft: Float, paddingTop: Float, paddingBottom: Float, graphWidth: Float, graphHeight: Float) {
         val totalPoints = dataPoints.size
         if (totalPoints < 2) return
 
@@ -346,15 +326,25 @@ class CustomHeartRateGraph @JvmOverloads constructor(
         heartRateZones.peakZone.getOrNull(1)?.toFloat()?.let { boundaries.add(it) }
         val zoneBoundaries = boundaries.toList().sorted()
 
+        // Calculate X-axis position
+        val xAxisY = height - paddingBottom
+
         for (i in 0 until totalPoints - 1) {
             val startPoint = dataPoints[i]
             val endPoint = dataPoints[i + 1]
             val startBpm = startPoint.bpm.toFloat()
             val endBpm = endPoint.bpm.toFloat()
             val startX = paddingLeft + (i.toFloat() / (totalPoints - 1)) * graphWidth
-            val startY = height - paddingBottom - (((startBpm - minBpm) / bpmRange).coerceIn(0f, 1f) * graphHeight)
+
+            // Fixed Y calculation - ensure line stays above X-axis
+            val startYRatio = ((startBpm - minBpm) / bpmRange).coerceIn(0f, 1f)
+            val startY = xAxisY - (startYRatio * graphHeight)
+
             val endX = paddingLeft + ((i + 1).toFloat() / (totalPoints - 1)) * graphWidth
-            val endY = height - paddingBottom - (((endBpm - minBpm) / bpmRange).coerceIn(0f, 1f) * graphHeight)
+
+            // Fixed Y calculation - ensure line stays above X-axis
+            val endYRatio = ((endBpm - minBpm) / bpmRange).coerceIn(0f, 1f)
+            val endY = xAxisY - (endYRatio * graphHeight)
 
             if (startBpm == endBpm) {
                 linePaint.color = getColorForBpm(startBpm)
