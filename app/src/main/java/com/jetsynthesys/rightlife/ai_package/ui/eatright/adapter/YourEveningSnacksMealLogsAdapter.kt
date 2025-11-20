@@ -1,12 +1,14 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter
 
 import android.content.Context
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
@@ -87,6 +89,8 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
             val layoutVegNonveg : LinearLayoutCompat = itemView.findViewById(R.id.layout_veg_nonveg)
             val layoutEatTime : LinearLayoutCompat = itemView.findViewById(R.id.layout_eat_time)
             val servesLayout : LinearLayoutCompat = itemView.findViewById(R.id.servesLayout)
+            val imageVeg : ImageView = itemView.findViewById(R.id.image_veg_nonveg)
+            val tvVeg : TextView = itemView.findViewById(R.id.tv_veg_nonveg)
 
             if (isLanding){
                 delete.visibility = View.GONE
@@ -102,8 +106,21 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
                 layoutEatTime.visibility = View.VISIBLE
-                layoutVegNonveg.visibility = View.VISIBLE
                 servesLayout.visibility = View.VISIBLE
+                if (data.recipe.category.isNullOrEmpty()){
+                    layoutVegNonveg.visibility = View.GONE
+                }else{
+                    layoutVegNonveg.visibility = View.VISIBLE
+                    if (getFoodType(data.recipe.category) == "Veg"){
+                        imageVeg.setImageResource(R.drawable.green_circle)
+                        tvVeg.text = data.recipe.category
+                    }else if (getFoodType(data.recipe.category) == "Non-Veg"){
+                        imageVeg.setColorFilter(ContextCompat.getColor(context!!, R.color.red), PorterDuff.Mode.SRC_IN)
+                        tvVeg.text = data.recipe.category
+                    }else{
+                        imageVeg.visibility = View.INVISIBLE
+                    }
+                }
             }
             val mealNames =  data.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?:  data.recipe.food_name
             mealName.text = mealNames
@@ -149,6 +166,21 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
                 null
             }
         }
+
+        fun getFoodType(category: String?): String {
+            if (category.isNullOrBlank()) return ""
+            val cat = category.lowercase()
+            val isVeg = cat.contains("vegetarian") || cat.contains("vegan")
+            val isNonVeg = cat.contains("non-vegetarian") || cat.contains("chicken") ||
+                    cat.contains("egg") || cat.contains("meat") ||
+                    cat.contains("fish") || cat.contains("mutton")
+            return when {
+                isVeg && !isNonVeg -> "Veg"
+                isNonVeg && !isVeg -> "Non-Veg"
+                isVeg && isNonVeg -> "Mixed"
+                else -> ""
+            }
+        }
     }
 
     inner class SnapMealViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -192,8 +224,8 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
                 layoutEatTime.visibility = View.VISIBLE
-                layoutVegNonveg.visibility = View.VISIBLE
-                servesLayout.visibility = View.VISIBLE
+                layoutEatTime.visibility = View.GONE
+                layoutVegNonveg.visibility = View.GONE
             }
 
             val snapData = data.meal_nutrition_summary

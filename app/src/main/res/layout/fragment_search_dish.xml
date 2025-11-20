@@ -121,7 +121,8 @@
                 android:layout_width="match_parent"
                 android:background="@color/view_border"
                 android:layout_marginTop="10dp"
-                android:layout_height="1dp"></View>
+                android:layout_height="1dp">
+            </View>
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -143,6 +144,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:text="All Dishes"
+                android:visibility="gone"
                 android:textColor="@color/dark_green_meal_background"
                 android:fontFamily="@font/dmsans_bold"
                 app:layout_constraintStart_toStartOf="parent"

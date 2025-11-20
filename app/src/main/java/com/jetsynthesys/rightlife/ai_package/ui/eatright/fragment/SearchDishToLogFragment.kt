@@ -236,8 +236,10 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                 }else if (s!!.length == 0){
                         requireActivity().runOnUiThread {
                             searchResultLayout.visibility = View.VISIBLE
+                            searchResultLayout.visibility = View.GONE
                             tvSearchResult.visibility = View.GONE
                             cancel.visibility = View.GONE
+                            tvAllDishes.visibility = View.GONE
                             searchMealList.clear()
                             onSnapSearchDishItemRefresh()
 
@@ -333,9 +335,10 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                 cancel.visibility = View.VISIBLE
               //  tvSearchResult.text = "Search Result: ${filteredList.size}"
             } else {
-                searchResultLayout.visibility = View.VISIBLE
+                searchResultLayout.visibility = View.GONE
                 tvSearchResult.visibility = View.GONE
                 cancel.visibility = View.GONE
+                tvAllDishes.visibility = View.GONE
             }
         }else{
             val filteredList = if (query.isEmpty()) searchMealList
@@ -347,9 +350,10 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                 cancel.visibility = View.VISIBLE
               //  tvSearchResult.text = "Search Result: ${filteredList.size}"
             } else {
-                searchResultLayout.visibility = View.VISIBLE
+                searchResultLayout.visibility = View.GONE
                 tvSearchResult.visibility = View.GONE
                 cancel.visibility = View.GONE
+                tvAllDishes.visibility = View.GONE
             }
         }
     }
@@ -384,6 +388,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                         if (searchData.size > 0){
                             //snapRecipesList.addAll(mealPlanLists)
                             requireActivity().runOnUiThread {
+                                tvAllDishes.visibility = View.VISIBLE
                                 searchMealList.clear()
                                 tvSearchResult.text = "Search Result:"
                                 searchMealList.addAll(searchData)
