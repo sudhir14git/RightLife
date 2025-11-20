@@ -234,17 +234,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- base domain -->
-                <data android:scheme="https" android:host="qa.rightlife.com" />
-
-                <!-- paths (Android equivalent of iOS components) -->
-                <data android:path="/my-health" />
-                <data android:path="/home" />
-                <data android:pathPrefix="/dashboard" />
-                <data android:path="/journal" />
-                <data android:path="/mind-audit" />
-                <data android:path="/meal-log" />
-                <data android:pathPrefix="/recipe" />
-                <!-- ... and so on -->
+                <data android:scheme="https" android:host="qa.rightlife.com"
+                    android:pathPattern="/.*" />
             </intent-filter>
         </activity>
 

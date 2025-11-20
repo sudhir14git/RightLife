@@ -91,6 +91,8 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.DialogUtils
+import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
+import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
@@ -129,6 +131,7 @@ class HomeNewActivity : BaseActivity() {
     // for deep links
     companion object {
         const val EXTRA_DEEP_LINK_TARGET = "EXTRA_DEEP_LINK_TARGET"
+        const val EXTRA_DEEP_LINK_DETAIL_ID = "EXTRA_DEEP_LINK_DETAIL_ID"
 
         const val TARGET_HOME = "home"
         const val TARGET_MY_HEALTH = "my_health"
@@ -136,12 +139,15 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_MEAL_LOG = "meal_log"
         const val TARGET_BREATHING = "breathing"
         const val TARGET_PROFILE = "profile"
+        const val TARGET_SLEEP_SOUNDS = "sleepsounds"
         // add more as needed…
+        const val TARGET_CATEGORY_LIST = "categorylist"
     }
 
     // 🔹 Deeplink readiness flags
     private var pendingDeepLinkTarget: String? = null
     private var isUserProfileLoaded = false
+     var isCategoryModuleLoaded = false
     private var isChecklistLoaded = false
 
     private fun isInitialDataReadyFor(target: String): Boolean {
@@ -154,8 +160,12 @@ class HomeNewActivity : BaseActivity() {
             TARGET_JOURNAL,
             TARGET_MEAL_LOG,
             TARGET_BREATHING,
+            TARGET_SLEEP_SOUNDS,
             TARGET_PROFILE -> {
                 isUserProfileLoaded && isChecklistLoaded
+            }
+            TARGET_CATEGORY_LIST -> {
+                isCategoryModuleLoaded
             }
 
             else -> {
@@ -221,9 +231,18 @@ class HomeNewActivity : BaseActivity() {
                     ActivityUtils.startBreathWorkActivity(this)
                 }
             }
+            TARGET_SLEEP_SOUNDS ->
+            {
+                startActivity(Intent(this, NewSleepSoundActivity::class.java))
+            }
 
             TARGET_PROFILE -> {
                 startActivity(Intent(this, ProfileSettingsActivity::class.java))
+            }
+            TARGET_CATEGORY_LIST -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "ThinkRight")
+                startActivity(intent)
             }
 
             else -> {

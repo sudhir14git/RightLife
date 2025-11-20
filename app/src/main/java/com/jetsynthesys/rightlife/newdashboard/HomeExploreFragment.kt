@@ -649,6 +649,7 @@ class HomeExploreFragment : BaseFragment() {
                             )
                             handleSleepRightResponse()
                         }
+                        (requireActivity() as? HomeNewActivity)?.isCategoryModuleLoaded  = true
                     }
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -1349,5 +1350,12 @@ class HomeExploreFragment : BaseFragment() {
             putExtra(FeatureFlags.EXTRA_ENTRY_DEST, featureFlag)
         }
         startActivity(intent)
+    }
+
+
+    // depplinking to detail pages
+     fun deeplinkExploreModuleActivity()
+    {
+        callExploreModuleActivity(SleepRSubModuleResponse!!)
     }
 }
