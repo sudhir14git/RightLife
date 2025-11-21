@@ -28,7 +28,12 @@ class OtherRecipeEatLandingAdapter(private val context: Context, private var dat
         holder.mealTitle.text = item.meal_name
         // holder.mealName.text = item.mealName
        // holder.iamgeFood.text = item.serve
-        val imageUrl = getDriveImageUrl(item.image)
+        var imageUrl : String? = ""
+        imageUrl = if (item.image.contains("drive.google.com")) {
+            getDriveImageUrl(item.image)
+        }else{
+            item.image
+        }
         Glide.with(context)
             .load(imageUrl)
             .placeholder(R.drawable.ic_view_meal_place)

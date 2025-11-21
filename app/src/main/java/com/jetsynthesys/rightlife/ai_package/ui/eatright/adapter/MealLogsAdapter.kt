@@ -24,8 +24,6 @@ class MealLogsAdapter(val context: Context, private var dataLists: ArrayList<Mer
                       val onBreakFastSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLogs : Boolean) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var selectedItem = -1
-
     companion object {
         private const val TYPE_REGULAR_RECIPE = 0
         private const val TYPE_SNAP_MEAL = 1
@@ -99,30 +97,37 @@ class MealLogsAdapter(val context: Context, private var dataLists: ArrayList<Mer
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
-                layoutEatTime.visibility = View.VISIBLE
-                layoutVegNonveg.visibility = View.VISIBLE
+                layoutEatTime.visibility = View.GONE
+                layoutVegNonveg.visibility = View.GONE
                 servesLayout.visibility = View.VISIBLE
             }
             val mealNames = data.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?: data.recipe.food_name
             mealName.text = mealNames
-            servesCount.text = data.recipe.servings.toString()
+            servesCount.text = if (data.recipe.servings != 0.0) {
+                data.recipe.servings.toString()
+            }else{
+              "1.0"
+            }
             val mealTime = data.recipe.active_cooking_time_min
             mealTimeTv.text = mealTime.toInt().toString()
             calValue.text = data.recipe.calories_kcal?.toInt().toString()
             proteinValue.text = data.recipe.protein_g?.toInt().toString()
             carbsValue.text = data.recipe.carbs_g?.toInt().toString()
             fatsValue.text = data.recipe.fat_g?.toInt().toString()
-            val imageUrl = getDriveImageUrl(data.recipe.photo_url)
+            var imageUrl : String? = ""
+            imageUrl = if (data.recipe.photo_url.contains("drive.google.com")) {
+                getDriveImageUrl(data.recipe.photo_url)
+            }else{
+                data.recipe.photo_url
+            }
             Glide.with(this.itemView)
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_view_meal_place)
                 .error(R.drawable.ic_view_meal_place)
                 .into(mealImage)
-
 //            delete.setOnClickListener {
 //                onBreakFastRegularRecipeDeleteItem(data, bindingAdapterPosition, true)
 //            }
-//
 //            edit.setOnClickListener {
 //                onBreakFastRegularRecipeEditItem(data, bindingAdapterPosition, true)
 //            }
@@ -176,8 +181,8 @@ class MealLogsAdapter(val context: Context, private var dataLists: ArrayList<Mer
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
-                layoutEatTime.visibility = View.VISIBLE
-                layoutVegNonveg.visibility = View.VISIBLE
+                layoutEatTime.visibility = View.GONE
+                layoutVegNonveg.visibility = View.GONE
                 servesLayout.visibility = View.VISIBLE
             }
             val snapData = data.meal_nutrition_summary
@@ -198,18 +203,21 @@ class MealLogsAdapter(val context: Context, private var dataLists: ArrayList<Mer
                 proteinValue.text = round(snapData.protein_g)?.toInt().toString()
                 carbsValue.text = round(snapData.carbs_g)?.toInt().toString()
                 fatsValue.text = round(snapData.fat_g)?.toInt().toString()
-                val imageUrl = data?.image_url//getDriveImageUrl(data.photo_url)
+                var imageUrl : String? = ""
+                imageUrl = if (data?.image_url.toString().contains("drive.google.com")) {
+                    getDriveImageUrl(data?.image_url.toString())
+                }else{
+                    data?.image_url
+                }
                 Glide.with(this.itemView)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_view_meal_place)
                     .error(R.drawable.ic_view_meal_place)
                     .into(mealImage)
             }
-
 //            delete.setOnClickListener {
 //                onBreakFastSnapMealDeleteItem(data, bindingAdapterPosition, true)
 //            }
-//
 //            edit.setOnClickListener {
 //                onBreakFastSnapMealEditItem(data, bindingAdapterPosition, true)
 //            }

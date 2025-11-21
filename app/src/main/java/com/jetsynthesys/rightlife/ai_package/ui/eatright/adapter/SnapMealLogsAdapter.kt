@@ -88,8 +88,8 @@ class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
-                layoutEatTime.visibility = View.VISIBLE
-                layoutVegNonveg.visibility = View.VISIBLE
+                layoutEatTime.visibility = View.GONE
+                layoutVegNonveg.visibility = View.GONE
                 servesLayout.visibility = View.VISIBLE
             }
             val snapData = data

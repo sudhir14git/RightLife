@@ -458,7 +458,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
 //                    commit()
 //                }
             } else {
-                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RESULTPAGE_ADDTOLOG)
+                val snapMealId = SharedPreferenceManager.getInstance(requireActivity()).snapMealId
+                if (snapMealId != "" &&  snapMealId != null){
+                    AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RESULTPAGE_ADDTOLOG)
+                }else{
+                    AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RESULTPAGE_FIRSTLOG)
+                }
                 if (snapMealLog.equals("snapMealLog")) {
                     updateSnapMealLog(mealId, snapRecipesList)
                 } else {

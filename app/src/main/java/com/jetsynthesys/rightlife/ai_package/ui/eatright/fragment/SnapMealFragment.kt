@@ -163,7 +163,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
                 Toast.makeText(context, "Please capture food", Toast.LENGTH_SHORT).show()
             }
             skipTV.postDelayed({
-                //skipTV.isEnabled = true
+                skipTV.isEnabled = true
             }, 1200)
         }
 
@@ -899,16 +899,23 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                     commit()
                 }
             }else{
-                val fragment = HomeBottomTabFragment()
+               // val fragment = HomeBottomTabFragment()
                 dismiss()
-                val args = Bundle()
-                args.putString("ModuleName", "EatRight")
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
+                val fragmentManager = requireActivity().supportFragmentManager
+                val snapMealFragment = fragmentManager.findFragmentByTag("SnapMealFragmentTag")
+                snapMealFragment?.let {
+                    fragmentManager.beginTransaction()
+                        .remove(it)
+                        .commitAllowingStateLoss()
                 }
+ //               val args = Bundle()
+//                args.putString("ModuleName", "EatRight")
+//                fragment.arguments = args
+//                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                    replace(R.id.flFragment, fragment, "landing")
+//                    addToBackStack("landing")
+//                    commit()
+//                }
             }
         }
 
@@ -995,7 +1002,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
 
     private fun closeSnapMealFragment() {
       //  dismiss() // Close the dialog first
-
         if (moduleName.equals("HomeDashboard")){
 //                startActivity(Intent(context, HomeDashboardActivity::class.java))
 //                requireActivity().finish()
@@ -1017,7 +1023,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             dismiss()
             val fragmentManager = requireActivity().supportFragmentManager
             val snapMealFragment = fragmentManager.findFragmentByTag("SnapMealFragmentTag")
-
             snapMealFragment?.let {
                 fragmentManager.beginTransaction()
                     .remove(it)
