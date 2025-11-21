@@ -584,7 +584,8 @@ class BreathworkPracticeActivity : BaseActivity() {
             //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
             callPostMindFullDataAPI()
-            finish()
+            //finish()
+            showCompletedBottomSheet()
         }
         bottomSheetDialog.show()
     }
