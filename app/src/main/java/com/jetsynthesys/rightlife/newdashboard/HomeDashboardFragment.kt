@@ -534,7 +534,12 @@ class HomeDashboardFragment : BaseFragment()
         {
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.CHECKLIST_COMPLETE, mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true))/*
+            if (sharedPreferenceManager.getFirstTimeForHomeDashboard())
+            {
+                sharedPreferenceManager.firstTimeCheckListEventLogged = false
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.CHECKLIST_COMPLETE, mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true))
+            }
+                /*
                         val activity = requireActivity() as HomeNewActivity
                         activity.getUserDetails()*/
             if (sharedPreferenceManager.getFirstTimeForHomeDashboard())

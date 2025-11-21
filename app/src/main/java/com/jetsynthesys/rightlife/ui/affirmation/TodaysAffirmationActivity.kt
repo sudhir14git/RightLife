@@ -209,6 +209,11 @@ class TodaysAffirmationActivity : BaseActivity() {
             false
         }
 
+        AnalyticsLogger.logEvent(
+                this,
+                AnalyticsEvent.TR_AffirmationPageGen_Open,
+                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis(), )
+        )
     }
 
     private fun checkAffirmationIsAlreadyAdded(position: Int): Boolean {
