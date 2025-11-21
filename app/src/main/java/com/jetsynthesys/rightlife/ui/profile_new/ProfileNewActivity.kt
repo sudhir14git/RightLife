@@ -212,6 +212,41 @@ class ProfileNewActivity : BaseActivity() {
         binding.ivBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+
+
+        binding.etFirstName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
+                val c = binding.etFirstName.text.length
+                //"$c/20 Characters".also { tvCharLeft.text = it }
+                if (validateUsername(p0.toString())) {
+
+                } else {
+                    Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
+    }
+
+    fun validateUsername(username: String): Boolean {
+        if (username.isEmpty()) {
+            return false
+        }
+        // Check if the username only contains alphabetic characters
+        val regex = "^[A-Za-z]+$".toRegex()
+
+        return when {
+            !username.matches(regex) -> false
+            else -> true
+        }
     }
 
     private fun setUserData(userData: Userdata) {
@@ -1138,6 +1173,7 @@ class ProfileNewActivity : BaseActivity() {
         }
         return name
     }
+
 
 
     private fun saveData() {

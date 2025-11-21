@@ -189,7 +189,7 @@ class ProfileSettingsActivity : BaseActivity() {
         }
         val locale = Locale.getDefault()
         val countryCode = locale.country
-        binding.tvUserCity.text = countryCode
+        binding.tvUserCity.text = user.country
     }
 
     private fun showToast(message: String) {

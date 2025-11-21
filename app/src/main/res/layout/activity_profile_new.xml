@@ -98,7 +98,7 @@
                 android:background="@drawable/edittext_bg"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:maxLength="30"
+                android:maxLength="20"
                 android:inputType="textPersonName"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_mind" />
