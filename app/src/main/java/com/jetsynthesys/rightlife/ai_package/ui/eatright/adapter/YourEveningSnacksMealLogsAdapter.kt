@@ -105,12 +105,12 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
-                layoutEatTime.visibility = View.VISIBLE
+                layoutEatTime.visibility = View.GONE
                 servesLayout.visibility = View.VISIBLE
                 if (data.recipe.category.isNullOrEmpty()){
                     layoutVegNonveg.visibility = View.GONE
                 }else{
-                    layoutVegNonveg.visibility = View.VISIBLE
+                    layoutVegNonveg.visibility = View.GONE
                     if (getFoodType(data.recipe.category) == "Veg"){
                         imageVeg.setImageResource(R.drawable.green_circle)
                         tvVeg.text = data.recipe.category
@@ -223,7 +223,6 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
-                layoutEatTime.visibility = View.VISIBLE
                 layoutEatTime.visibility = View.GONE
                 layoutVegNonveg.visibility = View.GONE
             }
