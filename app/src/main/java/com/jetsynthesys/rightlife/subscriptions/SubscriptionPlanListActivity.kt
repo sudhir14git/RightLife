@@ -105,7 +105,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
 
             if (type == "FACIAL_SCAN") {
                 receivedProductType = "BOOSTER"
-                if (plan.title.equals("Pack of 12", true))
+                if (plan.title?.contains("Pack of 12", true) ?: false)
                     logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan12_Tap)
                 else
                     logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan1_Tap)

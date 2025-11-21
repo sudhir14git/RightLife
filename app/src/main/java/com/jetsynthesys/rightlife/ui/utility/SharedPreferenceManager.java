@@ -476,6 +476,16 @@ public class SharedPreferenceManager {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_HOMEDASHBOARD, true);
     }
 
+    public void setFirstTimeCheckListEventLogged(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_CHECKLIST_EVENT, isUnlock);
+        editor.apply();
+    }
+
+    public Boolean getFirstTimeCheckListEventLogged() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_CHECKLIST_EVENT, true);
+    }
+
     public void setFirstTimeUserAffirmationInfoShown(boolean isUnlock) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, isUnlock);
