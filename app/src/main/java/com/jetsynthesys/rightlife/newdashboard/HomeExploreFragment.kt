@@ -935,10 +935,8 @@ class HomeExploreFragment : BaseFragment() {
                               "SnapMealTypeEat",
                               ""
                           )*/
-                        if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true)
-                        {
-                            ActivityUtils.startMindAuditActivity(requireContext())
-                        }
+
+                        (requireActivity() as? HomeNewActivity)?.callMindAuditClick()
                     }
 
                 }

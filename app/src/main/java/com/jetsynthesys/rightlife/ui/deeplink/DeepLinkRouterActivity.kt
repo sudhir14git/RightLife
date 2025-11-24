@@ -38,7 +38,7 @@ class DeepLinkRouterActivity : AppCompatActivity() {
             }
 
             // My Health
-            path == "/my_health" || path.startsWith("/dashboard") -> {
+            path == "/my-health" || path.startsWith("/dashboard") -> {
                 intent.putExtra(
                         HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
                         HomeNewActivity.TARGET_MY_HEALTH
@@ -63,6 +63,53 @@ class DeepLinkRouterActivity : AppCompatActivity() {
                 )
             }
 
+            // /ai-report
+            path == "/ai-report" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_AI_REPORT
+                )
+            }
+            // /mind-audit
+            path == "/mind-audit" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_MIND_AUDIT
+                )
+            }
+            //face-scan
+            path == "/face-scan" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_FACE_SCAN
+                )
+            }
+            //face-scan
+            path == "/snap-meal" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_SNAP_MEAL
+
+                )
+            }
+
+            //sleepsound
+            path == "/sleep-sound" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_SLEEP_SOUND
+
+                )
+            }
+            //Affirmation
+            path == "/affirmation" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_AFFIRMATION
+
+                )
+            }
+
             // Breathing
             path == "/breathing" -> {
                 intent.putExtra(
@@ -70,6 +117,52 @@ class DeepLinkRouterActivity : AppCompatActivity() {
                         HomeNewActivity.TARGET_BREATHING
                 )
             }
+
+            // activity-log
+            path == "/activity-log" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_ACTIVITY_LOG
+                )
+            }
+            // Quick link section
+
+            // weight-log
+            path == "/weight-log" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_WEIGHT_LOG
+                )
+            }
+            // water-log
+            path == "/water-log" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_WATER_LOG
+                )
+            }
+
+            // sleep-log
+            path == "/sleep-log" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_SLEEP_LOG
+                )
+            }
+
+
+            // food-log
+            path == "/food-log" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_FOOD_LOG
+                )
+            }
+
+
+
+
+
 
             // Profile
             path == "/profile" -> {

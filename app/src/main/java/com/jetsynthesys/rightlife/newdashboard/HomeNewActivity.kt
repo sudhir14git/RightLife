@@ -135,13 +135,32 @@ class HomeNewActivity : BaseActivity() {
 
         const val TARGET_HOME = "home"
         const val TARGET_MY_HEALTH = "my_health"
-        const val TARGET_JOURNAL = "journal"
+
         const val TARGET_MEAL_LOG = "meal_log"
-        const val TARGET_BREATHING = "breathing"
+
         const val TARGET_PROFILE = "profile"
         const val TARGET_SLEEP_SOUNDS = "sleepsounds"
         // add more as needed…
         const val TARGET_CATEGORY_LIST = "categorylist"
+        const val TARGET_AI_REPORT = "ai-report"
+        const val TARGET_MIND_AUDIT = "mind-audit"
+
+
+// Quick link section
+        const val TARGET_FACE_SCAN = "face-scan"
+        const val TARGET_SNAP_MEAL = "snap-meal"
+        const val TARGET_SLEEP_SOUND = "sleep-sound"
+        const val TARGET_AFFIRMATION = "affirmation"
+        const val TARGET_JOURNAL = "journal"
+        const val TARGET_BREATHING = "breathing"
+
+        const val TARGET_ACTIVITY_LOG = "activity-log"
+        const val TARGET_WEIGHT_LOG = "weight-log"
+        const val TARGET_WATER_LOG = "water-log"
+        const val TARGET_SLEEP_LOG = "sleep-log"
+        const val TARGET_FOOD_LOG = "food-log"
+
+
     }
 
     // 🔹 Deeplink readiness flags
@@ -208,11 +227,11 @@ class HomeNewActivity : BaseActivity() {
                 myHealthFragmentSelected()
             }
 
-            TARGET_JOURNAL -> {
+         /*   TARGET_JOURNAL -> {
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startJournalListActivity(this)
                 }
-            }
+            }*/
 
             TARGET_MEAL_LOG -> {
                 AnalyticsLogger.logEvent(this, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
@@ -244,6 +263,58 @@ class HomeNewActivity : BaseActivity() {
                 intent.putExtra("moduleId", "ThinkRight")
                 startActivity(intent)
             }
+            TARGET_AI_REPORT -> {
+                callAIReportCardClick()
+            }
+            TARGET_MIND_AUDIT -> {
+                callMindAuditClick()
+            }
+            TARGET_FACE_SCAN -> {
+                callFaceScanClick()
+            }
+            TARGET_SNAP_MEAL -> {
+                callSnapMealClick()
+            }
+            TARGET_JOURNAL -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startJournalListActivity(this)
+                }
+            }
+            TARGET_SLEEP_SOUND -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
+                }
+            }
+            TARGET_AFFIRMATION -> {
+                if (checkTrailEndedAndShowDialog()) {
+                        ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
+                    }
+            }
+            TARGET_BREATHING -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+
+            //quick link logs
+            TARGET_ACTIVITY_LOG -> {
+                callLogActivitylick()
+            }
+            TARGET_WEIGHT_LOG -> {
+                callLogWeightClick()
+            }
+            TARGET_WATER_LOG -> {
+                callLogWaterClick()
+            }
+            TARGET_SLEEP_LOG -> {
+                callLogSleepClick()
+            }
+            TARGET_FOOD_LOG -> {
+                callLogFoodClick()
+            }
+
+
+
 
             else -> {
                 // Unknown / not mapped → ignore
@@ -746,6 +817,7 @@ class HomeNewActivity : BaseActivity() {
                 }
                 startActivity(intent)
             }
+
         }
 
         // Handling Subscribe to RightLife
@@ -3235,6 +3307,81 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
+    fun callMindAuditClick(){
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
+        } else {
+            if (DashboardChecklistManager.mindAuditStatus) {
+                //startActivity(Intent(this@HomeNewActivity, NewHealthCamReportActivity::class.java))
+                ActivityUtils.startMindAuditActivity(this)
+            } else {
+                if (checkTrailEndedAndShowDialog())
+                {
+                    ActivityUtils.startMindAuditActivity(this)
+                }
+            }
+        }
+    }
+
+
+    fun callLogWaterClick() {
+        if (checkTrailEndedAndShowDialog()) {
+                ActivityUtils.startEatRightReportsActivity(
+                        this@HomeNewActivity,
+                        "LogWaterIntakeEat"
+                )
+            }
+    }
+    fun callLogWeightClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "LogWeightEat")
+        }
+    }
+
+    fun callLogSleepClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startMoveRightReportsActivity(
+                    this@HomeNewActivity,
+                    "SearchActivityLogMove"
+            )
+        }
+    }
+
+    fun callLogFoodClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            //ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "MealLogTypeEat")
+            startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "MealLogTypeEat")
+                putExtra("snapMealId", snapMealId)
+            })
+        }
+    }
+
+    fun callLogActivitylick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startMoveRightReportsActivity(
+                    this@HomeNewActivity,
+                    "SearchActivityLogMove"
+            )
+        }
+    }
+
+    fun callAIReportCardClick()
+    {
+        var dynamicReportId = "" // This Is User ID
+        dynamicReportId = SharedPreferenceManager.getInstance(this).userId
+        if (dynamicReportId.isEmpty()) {
+            // Some error handling if the ID is not available
+        } else {
+            val intent = Intent(this, AIReportWebViewActivity::class.java).apply {
+                // Put the dynamic ID as an extra
+                putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+            }
+            startActivity(intent)
+        }
+    }
+
     private fun logAndOpenMeal(snapId: String) {
         AnalyticsLogger.logEvent(
             this@HomeNewActivity,
@@ -3298,3 +3445,5 @@ class HomeNewActivity : BaseActivity() {
         editor.apply()
     }
 }
+
+
