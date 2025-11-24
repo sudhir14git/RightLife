@@ -171,6 +171,15 @@ class DeepLinkRouterActivity : AppCompatActivity() {
                         HomeNewActivity.TARGET_PROFILE
                 )
             }
+
+            // Profile
+            path == "/jumpback" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_JUMPBACK
+                )
+            }
+
             // Profile
             path == "/categorylist" -> {
                 intent.putExtra(HomeNewActivity.EXTRA_DEEP_LINK_TARGET, HomeNewActivity.TARGET_CATEGORY_LIST)

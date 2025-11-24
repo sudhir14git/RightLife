@@ -161,6 +161,11 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_FOOD_LOG = "food-log"
 
 
+        // Content
+        const val TARGET_JUMPBACK = "jumpback"
+
+
+
     }
 
     // 🔹 Deeplink readiness flags
@@ -312,7 +317,9 @@ class HomeNewActivity : BaseActivity() {
             TARGET_FOOD_LOG -> {
                 callLogFoodClick()
             }
-
+            TARGET_JUMPBACK -> {
+                callJumpBackIn()
+            }
 
 
 
@@ -3380,6 +3387,10 @@ class HomeNewActivity : BaseActivity() {
             }
             startActivity(intent)
         }
+    }
+
+    fun callJumpBackIn(){
+        startActivity(Intent(this, JumpInBackActivity::class.java))
     }
 
     private fun logAndOpenMeal(snapId: String) {
