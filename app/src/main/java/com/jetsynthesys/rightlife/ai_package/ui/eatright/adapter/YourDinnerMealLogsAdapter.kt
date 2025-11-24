@@ -41,12 +41,22 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_REGULAR_RECIPE -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
-                RegularRecipeViewHolder(view)
+                if (isLanding){
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dinner_meal_logs_ai, parent, false)
+                    RegularRecipeViewHolder(view)
+                }else{
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
+                    RegularRecipeViewHolder(view)
+                }
             }
             TYPE_SNAP_MEAL -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
-                SnapMealViewHolder(view)
+                if (isLanding){
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dinner_meal_logs_ai, parent, false)
+                    SnapMealViewHolder(view)
+                }else{
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
+                    SnapMealViewHolder(view)
+                }
             }
             else -> throw IllegalArgumentException("Unknown view type")
         }
@@ -124,10 +134,10 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
             }
             val mealNames =  data.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?:  data.recipe.food_name
             mealName.text = mealNames
-            servesCount.text = if(data.recipe.servings == 0.0){
+            servesCount.text = if(data.recipe.selected_serving?.value == 0.0){
                 "1"
             }else{
-                data.recipe.servings.toString()
+                data.recipe.selected_serving?.value.toString()
             }
             val mealTime = data.recipe.active_cooking_time_min
             mealTimeTv.text = mealTime.toInt().toString()
