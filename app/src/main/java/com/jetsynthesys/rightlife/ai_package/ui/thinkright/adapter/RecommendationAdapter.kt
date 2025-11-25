@@ -38,6 +38,7 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
         val author4: TextView = view.findViewById(R.id.authorText4)
         val image: ImageView = view.findViewById(R.id.thumbnailImage)
         val overlay: ImageView = view.findViewById(R.id.overlayIcon)
+        val bottomText: TextView = view.findViewById(R.id.bottomText)
         val viewLine: View = view.findViewById(R.id.view_line)
     }
 
@@ -120,10 +121,12 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
         when (item.contentType) {
             "SERIES" -> {
                 duration=  "${item.episodeCount ?: 0} ep"
+
             }
 
             "TEXT" -> {
                 duration = "${item.readingTime ?: ""} min read"
+
             }
 
             else -> {
@@ -148,30 +151,35 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
                    .load( R.drawable.music_mini_icon)
                    .placeholder(R.drawable.music_mini_icon)
                    .into(holder.overlay)
+               holder.bottomText.text = "AUDIO"
            }
            "SERIES" ->{
                Glide.with(context)
                    .load( R.drawable.book_mini_icon)
                    .placeholder(R.drawable.book_mini_icon)
                    .into(holder.overlay)
+               holder.bottomText.text = "SERIES"
            }
            "TEXT" ->{
                Glide.with(context)
                    .load( R.drawable.book_mini_icon)
                    .placeholder(R.drawable.book_mini_icon)
                    .into(holder.overlay)
+               holder.bottomText.text = "TEXT"
            }
            "VIDEO"  ->{
                Glide.with(context)
                    .load( R.drawable.play_mini_icon)
                    .placeholder(R.drawable.play_mini_icon)
                    .into(holder.overlay)
+               holder.bottomText.text = "VIDEO"
            }
            "YOUTUBE"  ->{
                Glide.with(context)
                    .load( R.drawable.video_mini_icon)
                    .placeholder(R.drawable.video_mini_icon)
                    .into(holder.overlay)
+               holder.bottomText.text = "YOUTUBE"
            }
        }
         if (position == items.size -1){

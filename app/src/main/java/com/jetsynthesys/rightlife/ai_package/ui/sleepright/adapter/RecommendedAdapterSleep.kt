@@ -44,6 +44,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         val moduleNameImage: ImageView = view.findViewById(R.id.moduleNameImage)
         val image_recommended: ImageView = view.findViewById(R.id.image_recommended)
         val overlay: ImageView = view.findViewById(R.id.overlayIcon)
+        val bottomText: TextView = view.findViewById(R.id.bottomText)
         val viewLine: View = view.findViewById(R.id.view_line)
     }
 
@@ -184,6 +185,8 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
                     .load( R.drawable.music_mini_icon)
                     .placeholder(R.drawable.music_mini_icon)
                     .into(holder.overlay)
+                holder.bottomText.text = "AUDIO"
+
             }
             "SERIES" ->{
                 //holder.overlay.visibility = View.GONE
@@ -191,24 +194,29 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
                     .load( R.drawable.book_mini_icon)
                     .placeholder(R.drawable.book_mini_icon)
                     .into(holder.overlay)
+                holder.bottomText.text = "SERIES"
             }
             "TEXT" ->{
                 Glide.with(context)
                     .load( R.drawable.book_mini_icon)
                     .placeholder(R.drawable.book_mini_icon)
                     .into(holder.overlay)
+                holder.bottomText.text = "TEXT"
             }
             "VIDEO"  ->{
                 Glide.with(context)
                     .load( R.drawable.play_mini_icon)
                     .placeholder(R.drawable.play_mini_icon)
                     .into(holder.overlay)
+                holder.bottomText.text = "VIDEO"
+
             }
             "YOUTUBE"  ->{
                 Glide.with(context)
                     .load( R.drawable.video_mini_icon)
                     .placeholder(R.drawable.video_mini_icon)
                     .into(holder.overlay)
+                holder.bottomText.text = "YOUTUBE"
             }
         }
         if (position == items.size -1){
