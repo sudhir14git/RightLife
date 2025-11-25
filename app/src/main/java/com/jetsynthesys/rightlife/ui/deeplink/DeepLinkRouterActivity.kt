@@ -208,6 +208,15 @@ class DeepLinkRouterActivity : AppCompatActivity() {
                 )
             }
 
+
+            // Profile
+            path == "/saved-content" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_SAVED_ITEMS
+                )
+            }
+
             // Profile
             path == "/categorylist" -> {
                 intent.putExtra(HomeNewActivity.EXTRA_DEEP_LINK_TARGET, HomeNewActivity.TARGET_CATEGORY_LIST)

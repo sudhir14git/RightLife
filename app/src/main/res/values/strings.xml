@@ -324,6 +324,8 @@ We also use device identifiers to improve analytics and tailor your in-app exper
         ✅ <b>Monitor Trends</b> – Use consistency scores and trend arrows.\n\n
         Better sleep = <b>better recovery, sharper focus, improved performance</b>.
     </string>
+    <string name="facebook_app_id">175146955089289</string>
+    <string name="facebook_client_token">e6b3688449411d8e23741468c7bf7a66</string>
 
 
 </resources>
