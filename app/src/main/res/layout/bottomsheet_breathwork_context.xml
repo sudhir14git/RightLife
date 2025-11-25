@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="20dp"
     android:background="@drawable/toproundedcornershape"
+    android:paddingBottom="80dp"
     android:orientation="vertical">
 
     <!--<RelativeLayout
@@ -130,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="40dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="42dp"
             android:text="Continue"
             android:textSize="16sp"
             android:fontFamily="@font/dmsans_bold"

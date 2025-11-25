@@ -83,6 +83,8 @@ import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -300,6 +302,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             )
         }
         mindfullArrowBtn.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.TR_Report_PageOpen
+                )
+            }
             navigateToFragment(MindfulnessAnalysisFragment(), "MindfulnessAnalysis")
         }
         downloadView.setOnClickListener {

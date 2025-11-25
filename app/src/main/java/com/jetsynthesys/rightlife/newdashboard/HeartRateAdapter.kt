@@ -157,7 +157,7 @@ class HeartRateAdapter(
            else -> R.drawable.ic_db_report_heart_rate
        }
    }
-    private fun getChartColorByType(type: String): Int {
+   /* private fun getChartColorByType(type: String): Int {
         return when (type) {
             "BMI_CALC" -> Color.parseColor("#E91E63")
             "BP_RPP" -> Color.parseColor("#E91E63")       // Purple
@@ -169,7 +169,20 @@ class HeartRateAdapter(
             "HEALTH_SCORE" -> Color.parseColor("#E91E63") // Light Green
             else -> Color.parseColor("#E91E63")           // Pink (default)
         }
-    }
+    }*/
+   private fun getChartColorByType(type: String): Int {
+       return when (type) {
+           "BMI_CALC" -> Color.parseColor("#FF9800")     // Orange
+           "BP_RPP" -> Color.parseColor("#9C27B0")       // Purple
+           "BP_SYSTOLIC", "BP_DIASTOLIC" -> Color.parseColor("#F44336") // Red
+           "BP_CVD" -> Color.parseColor("#795548")       // Brown
+           "MSI" -> Color.parseColor("#03A9F4")          // Light Blue
+           "BR_BPM" -> Color.parseColor("#4CAF50")       // Green
+           "HRV_SDNN" -> Color.parseColor("#2196F3")     // Blue
+           "HEALTH_SCORE" -> Color.parseColor("#8BC34A") // Light Green
+           else -> Color.parseColor("#E91E63")           // Pink (default)
+       }
+   }
 
 
     private fun setupStackedBarChart(

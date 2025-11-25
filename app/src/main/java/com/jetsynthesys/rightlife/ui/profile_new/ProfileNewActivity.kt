@@ -19,16 +19,13 @@ import android.os.Looper
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -54,7 +51,6 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetGenderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetHeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.DialogOtpVerificationBinding
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardFragment
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
@@ -67,7 +63,6 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
-import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
@@ -217,6 +212,41 @@ class ProfileNewActivity : BaseActivity() {
         binding.ivBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+
+
+        binding.etFirstName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
+                val c = binding.etFirstName.text.length
+                //"$c/20 Characters".also { tvCharLeft.text = it }
+                if (validateUsername(p0.toString())) {
+
+                } else {
+                    Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
+    }
+
+    fun validateUsername(username: String): Boolean {
+        if (username.isEmpty()) {
+            return false
+        }
+        // Check if the username only contains alphabetic characters
+        val regex = "^[A-Za-z]+$".toRegex()
+
+        return when {
+            !username.matches(regex) -> false
+            else -> true
+        }
     }
 
     private fun setUserData(userData: Userdata) {
@@ -257,17 +287,16 @@ class ProfileNewActivity : BaseActivity() {
             binding.tvGender.text = "Female"
 
         if (userData.weight != null)
-            binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
+            binding.tvWeight.text = "${userData.weight} ${userData.weightUnit.lowercase(Locale.getDefault())}"
 
-        if (userData.profilePicture.isNullOrEmpty())
-        {
+        if (userData.profilePicture.isNullOrEmpty()) {
             /*if (userData.firstName.isNotEmpty())
                 binding.tvProfileLetter.text = userData.firstName.first().toString()
             else
                 binding.tvProfileLetter.text = "R"*/
             binding.ivProfileImage.visibility = VISIBLE
             binding.tvProfileLetter.visibility = GONE
-        }else {
+        } else {
             binding.ivProfileImage.visibility = VISIBLE
             binding.tvProfileLetter.visibility = GONE
             Glide.with(this)
@@ -1093,6 +1122,13 @@ class ProfileNewActivity : BaseActivity() {
                     Handler(Looper.getMainLooper()).postDelayed({
                         dialogOtp?.dismiss()
                     }, 1000)
+
+                    userData.newPhoneStatus = "VERIFIED"
+
+                    binding.btnVerify.isEnabled = false
+                    binding.btnVerify.text = "Verified"
+                    binding.etMobile.isEnabled = false
+
                 } else {
                     bindingDialog.tvResult.text = "(Verification Failed-Incorrect OTP)"
                     bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
@@ -1137,6 +1173,7 @@ class ProfileNewActivity : BaseActivity() {
         }
         return name
     }
+
 
 
     private fun saveData() {
@@ -1297,6 +1334,7 @@ class ProfileNewActivity : BaseActivity() {
     private fun openGallery() {
         pickImageLauncher.launch("image/*") // Open gallery to pick image
     }
+
     // get user details
     fun getUserDetails() {
         // Make the API call
@@ -1308,15 +1346,15 @@ class ProfileNewActivity : BaseActivity() {
                     val jsonResponse = gson.toJson(response.body())
 
                     val ResponseObj = gson.fromJson(
-                            jsonResponse, UserProfileResponse::class.java
+                        jsonResponse, UserProfileResponse::class.java
                     )
                     SharedPreferenceManager.getInstance(applicationContext)
-                            .saveUserId(ResponseObj.userdata.id)
+                        .saveUserId(ResponseObj.userdata.id)
                     SharedPreferenceManager.getInstance(applicationContext)
-                            .saveUserProfile(ResponseObj)
+                        .saveUserProfile(ResponseObj)
 
                     SharedPreferenceManager.getInstance(applicationContext)
-                            .setAIReportGeneratedView(ResponseObj.reportView)
+                        .setAIReportGeneratedView(ResponseObj.reportView)
 
                     userDataResponse = sharedPreferenceManager.userProfile
                     userData = userDataResponse.userdata

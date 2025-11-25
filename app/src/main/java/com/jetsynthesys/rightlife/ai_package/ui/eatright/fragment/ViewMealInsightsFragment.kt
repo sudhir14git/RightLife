@@ -134,7 +134,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
                     }else{
                         breakfastSnapMeals?.getOrNull(0)?.image_url
                     }
-                    setSnapDishData(imageUrl)
+                    setDishData(imageUrl)
                 }
             }
             setMealLogsList()
@@ -194,15 +194,6 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
     }
 
     private fun setDishData(snapRecipeData: String?) {
-        val imageUrl = snapRecipeData?.let { getDriveImageUrl(it) }
-        Glide.with(this)
-            .load(imageUrl)
-            .placeholder(R.drawable.ic_view_meal_place)
-            .error(R.drawable.ic_view_meal_place)
-            .into(imgFood)
-    }
-
-    private fun setSnapDishData(snapRecipeData: String?) {
         Glide.with(this)
             .load(snapRecipeData)
             .placeholder(R.drawable.ic_view_meal_place)

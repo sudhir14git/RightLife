@@ -785,7 +785,7 @@ class ContentDetailsActivity : BaseActivity() {
 
             AnalyticsLogger.logEvent(
                 context,
-                AnalyticsEvent.Video_Open,
+                eventName,
                 params
             )
         }.onFailure { e ->

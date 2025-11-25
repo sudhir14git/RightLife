@@ -23,7 +23,7 @@ class StepIntake : View {
     private var capillaryRect: RectF? = null
     private var fillPercentage = 0f
     private var intervalColors = IntArray(10) { Color.GREEN } // Green fill
-    private var backgroundColor = Color.LTGRAY
+    private var backgroundColor = Color.WHITE
 
     private var minSteps = 0
     private var maxSteps = 20000

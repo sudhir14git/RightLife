@@ -34,6 +34,7 @@ import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Locale
 
 class ProfileSettingsActivity : BaseActivity() {
 
@@ -186,6 +187,8 @@ class ProfileSettingsActivity : BaseActivity() {
         } else {
             binding.tvUserAge.visibility = GONE
         }
+        val locale = Locale.getDefault()
+        val countryCode = locale.country
         binding.tvUserCity.text = user.country
     }
 

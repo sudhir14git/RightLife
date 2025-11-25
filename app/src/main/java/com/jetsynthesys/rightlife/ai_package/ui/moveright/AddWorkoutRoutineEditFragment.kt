@@ -169,9 +169,10 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
             } else {
                 workout?.let { workout ->
                     if (durationMinutes > 0) {
+                        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                         val normalizedIntensity = normalizeIntensity(selectedIntensity)
                         val newWorkoutRecord = WorkoutSessionRecord(
-                            userId = "64763fe2fa0e40d9c0bc8264",
+                            userId = userId,
                             activityId = workout._id,
                             durationMin = durationMinutes,
                             intensity = normalizedIntensity,

@@ -12,6 +12,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.ScaleAnimation
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -97,7 +98,11 @@ class BreathworkPracticeActivity : BaseActivity() {
         // Set click listeners
         binding.backButton.setOnClickListener {
             //onBackPressed()
-            showDeleteBottomSheet()
+            if (binding.rlPracticeComplete.isVisible) {
+                showCompletedBottomSheet()
+                callPostMindFullDataAPI()
+            } else
+                showDeleteBottomSheet()
         }
         binding.finishEarlyButton.setOnClickListener {
             val currentTime = System.currentTimeMillis()
@@ -119,7 +124,11 @@ class BreathworkPracticeActivity : BaseActivity() {
 
     override fun onBackPressed() {
         //super.onBackPressed()
-        showDeleteBottomSheet()
+        if (binding.rlPracticeComplete.isVisible) {
+            showCompletedBottomSheet()
+            callPostMindFullDataAPI()
+        } else
+            showDeleteBottomSheet()
     }
 
     /**
@@ -378,7 +387,6 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.rlBreathingPracticeMain.visibility = View.GONE
         binding.btnExit.setOnClickListener {
             showCompletedBottomSheet()
-            callPostMindFullDataAPI()
             /*
             if (isHapticFeedBack)
                 showCompletedBottomSheet()
@@ -392,7 +400,6 @@ class BreathworkPracticeActivity : BaseActivity() {
             currentSet = 1
             binding.rlPracticeComplete.visibility = View.GONE
             startPreparationCountdown()
-            callPostMindFullDataAPI()
         }
     }
 
@@ -577,7 +584,8 @@ class BreathworkPracticeActivity : BaseActivity() {
             //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
             callPostMindFullDataAPI()
-            finish()
+            //finish()
+            showCompletedBottomSheet()
         }
         bottomSheetDialog.show()
     }
@@ -611,7 +619,6 @@ class BreathworkPracticeActivity : BaseActivity() {
         dialogBinding.btnWorse.text = "worse than before"
 
         bottomSheetDialog.setOnDismissListener {
-            //callPostMindFullDataAPI()
             startActivity(
                 Intent(this, BreathworkActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -620,7 +627,6 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
 
         bottomSheetDialog.setOnCancelListener {
-            //callPostMindFullDataAPI()
             finish()
         }
 
@@ -634,11 +640,9 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
 
         dialogBinding.btnSame.setOnClickListener {
-            //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
         }
         dialogBinding.btnWorse.setOnClickListener {
-            //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
         }
         bottomSheetDialog.show()

@@ -157,6 +157,9 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                 AnalyticsLogger.logEvent(
                     it1, AnalyticsEvent.SR_ReportPage_LogYourSleep_Save
                 )
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
             }
             val duration = tvDuration.text.toString()
             var hasNegative = false

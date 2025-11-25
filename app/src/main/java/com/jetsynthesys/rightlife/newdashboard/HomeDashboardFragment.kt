@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BasalMetabolicRateRecord
@@ -71,7 +72,9 @@ import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -378,45 +381,67 @@ class HomeDashboardFragment : BaseFragment()
               }
           }*/
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private suspend fun requestPermissionsAndReadAllData()
-    {
-        try
-        {
-            // Get already granted permissions
-            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+//    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+//    private suspend fun requestPermissionsAndReadAllData()
+//    {
+//        try
+//        {
+//            // Get already granted permissions
+//            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+//
+//            if (allReadPermissions.all { it in granted })
+//            {
+//                // ✅ All permissions already granted → mark checklist completed
+//                markHealthSyncChecklistCompleted()
+//            } else
+//            {
+//                // 🚀 Ask user for permissions
+//                requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
+//            }
+//        } catch (e: Exception)
+//        {
+//            e.printStackTrace()
+//            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
-            if (allReadPermissions.all { it in granted })
-            {
-                // ✅ All permissions already granted → mark checklist completed
+    private suspend fun requestPermissionsAndReadAllData() {
+        try {
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+            if (allReadPermissions.all { it in granted }) {
                 markHealthSyncChecklistCompleted()
-            } else
-            {
-                // 🚀 Ask user for permissions
-                requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
+                /*val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
+                if (getVisit == "") {
+                    fetchSecondChunk()
+                    fetchThirdChunk()
+                    fetchForthChunk()
+                    SharedPreferenceManager.getInstance(requireContext()).saveSyncFirstVisit("1")
+                }*/
+            } else {
+                requestPermissionsLauncher.launch(allReadPermissions)
             }
-        } catch (e: Exception)
-        {
-            e.printStackTrace()
-            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE) private val requestPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+    private val requestPermissionsLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
         try
         {
-            val allGranted = permissions.values.all { it }
-
-            if (allGranted)
-            {
-                Toast.makeText(requireContext(), "Permissions Granted", Toast.LENGTH_SHORT).show()
-                // ✅ Permissions granted by user → update checklist
+        lifecycleScope.launch {
+            if (granted.containsAll(allReadPermissions)) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
+                }
                 markHealthSyncChecklistCompleted()
-            } else
-            {
-                Toast.makeText(requireContext(), "Permissions Denied", Toast.LENGTH_SHORT).show()
-                // ❌ Do NOT mark checklist complete here
+            } else {
+                withContext(Dispatchers.Main) {
+                }
+                markHealthSyncChecklistCompleted()
             }
+        }
         } catch (e: Exception)
         {
             e.printStackTrace()
@@ -451,7 +476,6 @@ class HomeDashboardFragment : BaseFragment()
             }
         }
     }
-
 
     //getDashboardChecklist
     private fun getDashboardChecklist()
@@ -490,7 +514,7 @@ class HomeDashboardFragment : BaseFragment()
         setStatusOfChecklist(checklistResponse?.data?.profile!!, binding.includeChecklist.imgCheck, binding.includeChecklist.rlChecklistProfile)
         AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.PROFILE_STATUS, mapOf(AnalyticsParam.PROFILE_STATUS to checklistResponse.data.profile))
         //snap Meal
-        setStatusOfChecklist(checklistResponse.data.meal_snap, binding.includeChecklist.imgCheckSnapmeal, binding.includeChecklist.rlChecklistSnapmeal, false)
+        setStatusOfChecklist(checklistResponse.data.meal_snap, binding.includeChecklist.imgCheckSnapmeal, binding.includeChecklist.rlChecklistSnapmeal)
         AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SNAP_MEAL_STATUS, mapOf(AnalyticsEvent.SNAP_MEAL_STATUS to checklistResponse.data.meal_snap))
         //sync health
         setStatusOfChecklist(checklistResponse.data.sync_health_data, binding.includeChecklist.imgCheckSynchealth, binding.includeChecklist.rlChecklistSynchealth)
@@ -510,7 +534,12 @@ class HomeDashboardFragment : BaseFragment()
         {
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.CHECKLIST_COMPLETE, mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true))/*
+            if (sharedPreferenceManager.getFirstTimeForHomeDashboard())
+            {
+                sharedPreferenceManager.firstTimeCheckListEventLogged = false
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.CHECKLIST_COMPLETE, mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true))
+            }
+                /*
                         val activity = requireActivity() as HomeNewActivity
                         activity.getUserDetails()*/
             if (sharedPreferenceManager.getFirstTimeForHomeDashboard())

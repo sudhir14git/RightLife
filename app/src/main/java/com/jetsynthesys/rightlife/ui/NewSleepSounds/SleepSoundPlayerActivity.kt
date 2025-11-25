@@ -25,6 +25,9 @@ import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.bottomplaylist.PlaylistBottomSheetDialogFragment
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -243,7 +246,11 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             playlistSheet.show(supportFragmentManager, "PlaylistBottomSheet")
         }
 
-
+        AnalyticsLogger.logEvent(
+                this,
+                AnalyticsEvent.SR_SleepSound_Player_Opened,
+                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis(), )
+        )
     }
 
     private fun startSeekBarUpdate() {

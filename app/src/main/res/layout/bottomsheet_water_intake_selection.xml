@@ -43,7 +43,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_close_circle_red"
+                android:src="@drawable/close_breathwork"
                 android:gravity="center"
                 card_view:layout_constraintTop_toTopOf="parent"
                 card_view:layout_constraintEnd_toEndOf="parent" />

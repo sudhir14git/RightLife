@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class PopupMenuAdapter(private val context: Context, private val menuItems: List<MenuItemData>,
 private val onItemClickListener: OnItemClickListener) : BaseAdapter() {
@@ -29,6 +30,7 @@ private val onItemClickListener: OnItemClickListener) : BaseAdapter() {
         menuIcon.setImageResource(item.iconRes)
 
         view.setOnClickListener{
+            it.disableViewForSeconds()
             onItemClickListener.onItemClick(item)
         }
 

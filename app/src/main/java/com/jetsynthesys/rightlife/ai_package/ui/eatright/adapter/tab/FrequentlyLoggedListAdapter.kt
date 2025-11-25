@@ -24,7 +24,11 @@ class FrequentlyLoggedListAdapter(private val context: Context, private var data
         val item = dataLists[position]
 
         holder.mealNameTv.text = item.recipe
-        holder.servesCount.text = item.servings.toString()
+        holder.servesCount.text = if (item.servings != 0.0) {
+            item.servings.toString()
+        }else{
+            "1.0"
+        }
         holder.calValue.text = item.calories_kcal?.toInt().toString()
         holder.subtractionValue.text = item.protein_g?.toInt().toString()
         holder.baguetteValue.text = item.carbs_g?.toInt().toString()

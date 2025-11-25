@@ -170,7 +170,6 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
                 commit()
             }
         }
-
         // Add button clicked (For demonstration, adding a dummy ingredient)
         btnAdd.setOnClickListener {
 //            val newIngredient = "New Item ${ingredientsList.size + 1}"
@@ -201,7 +200,6 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
             activity?.supportFragmentManager?.let { loggedBottomSheetFragment.show(it, "LoggedBottomSheet") }
         }
     }
-
 
     private fun onFrequentlyLoggedList (){
 

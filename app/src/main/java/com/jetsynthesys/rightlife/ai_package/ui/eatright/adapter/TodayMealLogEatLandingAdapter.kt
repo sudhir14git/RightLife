@@ -35,7 +35,12 @@ class TodayMealLogEatLandingAdapter(private val context: Context, private var da
         holder.subtractionValue.text = item.recipe.protein_g?.toInt().toString()
         holder.baguetteValue.text = item.recipe.carbs_g?.toInt().toString()
         holder.dewpointValue.text = item.recipe.fat_g?.toInt().toString()
-        val imageUrl = getDriveImageUrl(item.recipe.photo_url)
+        var imageUrl : String? = ""
+        imageUrl = if (item.recipe.photo_url.contains("drive.google.com")) {
+            getDriveImageUrl(item.recipe.photo_url)
+        }else{
+            item.recipe.photo_url
+        }
         Glide.with(context)
             .load(imageUrl)
             .placeholder(R.drawable.ic_breakfast)

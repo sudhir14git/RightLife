@@ -494,6 +494,7 @@ class Journal4QuestionsActivity : BaseActivity() {
             )
             setTextColor(getColor(R.color.color_think_right))
             setOnClickListener {
+                it.disableViewForSeconds()
                 showAddEditBottomSheet(false, chipGroup, type, this, 0)
             }
         }

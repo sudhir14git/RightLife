@@ -77,6 +77,7 @@
                     android:id="@+id/greenCircle"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:visibility="gone"
                     android:background="@drawable/green_circle"
                     app:layout_constraintBottom_toBottomOf="@id/imgFood"
                     app:layout_constraintStart_toStartOf="@id/imgFood"
