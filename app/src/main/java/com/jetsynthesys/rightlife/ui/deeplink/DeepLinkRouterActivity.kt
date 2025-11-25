@@ -179,6 +179,34 @@ class DeepLinkRouterActivity : AppCompatActivity() {
                         HomeNewActivity.TARGET_JUMPBACK
                 )
             }
+            // thinkright-explore Section
+            path == "/thinkright-explore" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_THINK_EXPLORE
+                )
+            }
+            // eatright-explore Section
+            path == "/eatright-explore" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_EAT_EXPLORE
+                )
+            }
+            // sleepright-explore  Section
+            path == "/sleepright-explore" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_SLEEP_EXPLORE
+                )
+            }
+            // thinkright-explore Section
+            path == "/moveright-explore" -> {
+                intent.putExtra(
+                        HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                        HomeNewActivity.TARGET_MOVE_EXPLORE
+                )
+            }
 
             // Profile
             path == "/categorylist" -> {
@@ -201,3 +229,5 @@ class DeepLinkRouterActivity : AppCompatActivity() {
         startActivity(intent)
     }
 }
+
+

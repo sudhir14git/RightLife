@@ -78,6 +78,7 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
@@ -144,6 +145,12 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_CATEGORY_LIST = "categorylist"
         const val TARGET_AI_REPORT = "ai-report"
         const val TARGET_MIND_AUDIT = "mind-audit"
+
+        //Explore Button
+        const val TARGET_THINK_EXPLORE = "thinkright-explore"
+        const val TARGET_EAT_EXPLORE = "eatright-explore"
+        const val TARGET_SLEEP_EXPLORE = "sleepright-explore"
+        const val TARGET_MOVE_EXPLORE = "moveright-explore"
 
 
 // Quick link section
@@ -320,7 +327,26 @@ class HomeNewActivity : BaseActivity() {
             TARGET_JUMPBACK -> {
                 callJumpBackIn()
             }
-
+            TARGET_THINK_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "THINK_RIGHT")
+                startActivity(intent)
+            }
+            TARGET_EAT_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "EAT_RIGHT")
+                startActivity(intent)
+            }
+            TARGET_SLEEP_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "SLEEP_RIGHT")
+                startActivity(intent)
+            }
+            TARGET_MOVE_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "MOVE_RIGHT")
+                startActivity(intent)
+            }
 
 
             else -> {
@@ -3392,6 +3418,11 @@ class HomeNewActivity : BaseActivity() {
     fun callJumpBackIn(){
         startActivity(Intent(this, JumpInBackActivity::class.java))
     }
+   /* fun callExploreModuleClick(){
+        val intent = Intent(this, NewCategoryListActivity::class.java)
+            intent.putExtra("moduleId",)
+            startActivity(intent)
+    }*/
 
     private fun logAndOpenMeal(snapId: String) {
         AnalyticsLogger.logEvent(
