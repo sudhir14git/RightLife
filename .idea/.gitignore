@@ -1,3 +1,37 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+gitignore
+# ===================================================================
+#  Android Studio / IntelliJ - Already discussed
+# ===================================================================
+.idea/
+
+# ===================================================================
+#  Gradle files - These are generated during the build process
+# =================================e==================================
+.gradle/
+build/
+
+# ===================================================================
+#  Local configuration - Contains local paths and properties
+# ===================================================================
+local.properties
+
+# ===================================================================
+#  Android specific files and folders - Caches, generated outputs
+# ===================================================================
+*.apk
+*.aab
+*.ap_
+*.dex
+*.iml
+
+
+
+# ===================================================================
+#  Crashlytics and other service files
+# ===================================================================
+# Fabric/Crashlytics settings
+fabric.properties
+
