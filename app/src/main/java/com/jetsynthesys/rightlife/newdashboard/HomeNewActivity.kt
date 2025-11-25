@@ -78,6 +78,7 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
@@ -91,6 +92,8 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.DialogUtils
+import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
+import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
@@ -126,6 +129,234 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class HomeNewActivity : BaseActivity() {
+    // for deep links
+    companion object {
+        const val EXTRA_DEEP_LINK_TARGET = "EXTRA_DEEP_LINK_TARGET"
+        const val EXTRA_DEEP_LINK_DETAIL_ID = "EXTRA_DEEP_LINK_DETAIL_ID"
+
+        const val TARGET_HOME = "home"
+        const val TARGET_MY_HEALTH = "my_health"
+
+        const val TARGET_MEAL_LOG = "meal_log"
+
+        const val TARGET_PROFILE = "profile"
+        const val TARGET_SLEEP_SOUNDS = "sleepsounds"
+        // add more as needed…
+        const val TARGET_CATEGORY_LIST = "categorylist"
+        const val TARGET_AI_REPORT = "ai-report"
+        const val TARGET_MIND_AUDIT = "mind-audit"
+
+        //Explore Button
+        const val TARGET_THINK_EXPLORE = "thinkright-explore"
+        const val TARGET_EAT_EXPLORE = "eatright-explore"
+        const val TARGET_SLEEP_EXPLORE = "sleepright-explore"
+        const val TARGET_MOVE_EXPLORE = "moveright-explore"
+
+
+// Quick link section
+        const val TARGET_FACE_SCAN = "face-scan"
+        const val TARGET_SNAP_MEAL = "snap-meal"
+        const val TARGET_SLEEP_SOUND = "sleep-sound"
+        const val TARGET_AFFIRMATION = "affirmation"
+        const val TARGET_JOURNAL = "journal"
+        const val TARGET_BREATHING = "breathing"
+
+        const val TARGET_ACTIVITY_LOG = "activity-log"
+        const val TARGET_WEIGHT_LOG = "weight-log"
+        const val TARGET_WATER_LOG = "water-log"
+        const val TARGET_SLEEP_LOG = "sleep-log"
+        const val TARGET_FOOD_LOG = "food-log"
+
+
+        // Content
+        const val TARGET_JUMPBACK = "jumpback"
+
+
+
+    }
+
+    // 🔹 Deeplink readiness flags
+    private var pendingDeepLinkTarget: String? = null
+    private var isUserProfileLoaded = false
+     var isCategoryModuleLoaded = false
+    private var isChecklistLoaded = false
+
+    private fun isInitialDataReadyFor(target: String): Boolean {
+        // For simple navigation, no need to wait
+        return when (target) {
+            TARGET_HOME,
+            TARGET_MY_HEALTH -> true
+
+            // Features that depend on user profile & checklist
+            TARGET_JOURNAL,
+            TARGET_MEAL_LOG,
+            TARGET_BREATHING,
+            TARGET_SLEEP_SOUNDS,
+            TARGET_PROFILE -> {
+                isUserProfileLoaded && isChecklistLoaded
+            }
+            TARGET_CATEGORY_LIST -> {
+                isCategoryModuleLoaded
+            }
+
+            else -> {
+                // By default, be conservative
+                isUserProfileLoaded && isChecklistLoaded
+            }
+        }
+    }
+
+    private fun tryProcessPendingDeepLink() {
+        val target = pendingDeepLinkTarget ?: return
+
+        if (isInitialDataReadyFor(target)) {
+            // Clear before calling to avoid infinite loops
+            pendingDeepLinkTarget = null
+            handleDeepLinkTarget(target)
+        }
+    }
+
+    private fun handleDeepLinkTarget(target: String?) {
+        if (target == null) return
+
+        // If data not ready for this target, just store it and return
+        if (!isInitialDataReadyFor(target)) {
+            pendingDeepLinkTarget = target
+            return
+        }
+
+        // ✅ Data ready – now actually act
+        when (target) {
+
+            TARGET_HOME -> {
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, HomeExploreFragment())
+                        .commit()
+                updateMenuSelection(R.id.menu_home)
+            }
+
+            TARGET_MY_HEALTH -> {
+                myHealthFragmentSelected()
+            }
+
+         /*   TARGET_JOURNAL -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startJournalListActivity(this)
+                }
+            }*/
+
+            TARGET_MEAL_LOG -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "MealLogTypeEat")
+                        putExtra("snapMealId", snapMealId)
+                    })
+                }
+            }
+
+            TARGET_BREATHING -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+            TARGET_SLEEP_SOUNDS ->
+            {
+                startActivity(Intent(this, NewSleepSoundActivity::class.java))
+            }
+
+            TARGET_PROFILE -> {
+                startActivity(Intent(this, ProfileSettingsActivity::class.java))
+            }
+            TARGET_CATEGORY_LIST -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "ThinkRight")
+                startActivity(intent)
+            }
+            TARGET_AI_REPORT -> {
+                callAIReportCardClick()
+            }
+            TARGET_MIND_AUDIT -> {
+                callMindAuditClick()
+            }
+            TARGET_FACE_SCAN -> {
+                callFaceScanClick()
+            }
+            TARGET_SNAP_MEAL -> {
+                callSnapMealClick()
+            }
+            TARGET_JOURNAL -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startJournalListActivity(this)
+                }
+            }
+            TARGET_SLEEP_SOUND -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
+                }
+            }
+            TARGET_AFFIRMATION -> {
+                if (checkTrailEndedAndShowDialog()) {
+                        ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
+                    }
+            }
+            TARGET_BREATHING -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+
+            //quick link logs
+            TARGET_ACTIVITY_LOG -> {
+                callLogActivitylick()
+            }
+            TARGET_WEIGHT_LOG -> {
+                callLogWeightClick()
+            }
+            TARGET_WATER_LOG -> {
+                callLogWaterClick()
+            }
+            TARGET_SLEEP_LOG -> {
+                callLogSleepClick()
+            }
+            TARGET_FOOD_LOG -> {
+                callLogFoodClick()
+            }
+            TARGET_JUMPBACK -> {
+                callJumpBackIn()
+            }
+            TARGET_THINK_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "THINK_RIGHT")
+                startActivity(intent)
+            }
+            TARGET_EAT_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "EAT_RIGHT")
+                startActivity(intent)
+            }
+            TARGET_SLEEP_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "SLEEP_RIGHT")
+                startActivity(intent)
+            }
+            TARGET_MOVE_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "MOVE_RIGHT")
+                startActivity(intent)
+            }
+
+
+            else -> {
+                // Unknown / not mapped → ignore
+            }
+        }
+    }
+
+
+
     private var snapMealId = ""
     private lateinit var binding: ActivityHomeNewBinding
     private var isAdd = true
@@ -617,6 +848,7 @@ class HomeNewActivity : BaseActivity() {
                 }
                 startActivity(intent)
             }
+
         }
 
         // Handling Subscribe to RightLife
@@ -650,6 +882,11 @@ class HomeNewActivity : BaseActivity() {
     homeBottomSheet visible=${binding.includedhomebottomsheet.root.visibility}
 """.trimIndent()
         )
+
+        // deeplinks
+        val deepLinkTarget = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
+        handleDeepLinkTarget(deepLinkTarget)
+
     }
 
 
@@ -730,6 +967,8 @@ class HomeNewActivity : BaseActivity() {
                 })
             }
         }
+        val target = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
+        handleDeepLinkTarget(target)
     }
 
 
@@ -815,12 +1054,15 @@ class HomeNewActivity : BaseActivity() {
                         binding.tvDays.text = ""
                         binding.llCountDown.visibility = View.GONE
                     }
-
+                    isUserProfileLoaded = true
+                    tryProcessPendingDeepLink()
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                     if (response.code() == 401) {
                         clearUserDataAndFinish()
                     }
+                    isUserProfileLoaded = true
+                    tryProcessPendingDeepLink()
                 }
 
                 /*  if (!DashboardChecklistManager.paymentStatus) {
@@ -834,6 +1076,8 @@ class HomeNewActivity : BaseActivity() {
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
                 handleNoInternetView(t)
+                isUserProfileLoaded = true
+                tryProcessPendingDeepLink()
             }
         })
     }
@@ -2909,10 +3153,14 @@ class HomeNewActivity : BaseActivity() {
                             DashboardChecklistManager.updateFrom(it)
                         }
                     }
+                    isChecklistLoaded = true
+                    tryProcessPendingDeepLink()
                 }
 
                 override fun onFailure(call: Call<DashboardChecklistResponse>, t: Throwable) {
                     handleNoInternetView(t)
+                    isChecklistLoaded = true
+                    tryProcessPendingDeepLink()
                 }
 
             })
@@ -3072,7 +3320,7 @@ class HomeNewActivity : BaseActivity() {
         } else {
             val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService
                 ?: false
-            if (isFacialScanService) {
+
                 if (DashboardChecklistManager.facialScanStatus) {
                     startActivity(
                         Intent(
@@ -3080,13 +3328,99 @@ class HomeNewActivity : BaseActivity() {
                         )
                     )
                 } else {
-                    ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
+                    if (isFacialScanService)
+                    {
+                        ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
+                    }else{
+                        showSwitchAccountDialog(this@HomeNewActivity, "", "")
+                    }
                 }
+        }
+    }
+
+    fun callMindAuditClick(){
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
+        } else {
+            if (DashboardChecklistManager.mindAuditStatus) {
+                //startActivity(Intent(this@HomeNewActivity, NewHealthCamReportActivity::class.java))
+                ActivityUtils.startMindAuditActivity(this)
             } else {
-                showSwitchAccountDialog(this@HomeNewActivity, "", "")
+                if (checkTrailEndedAndShowDialog())
+                {
+                    ActivityUtils.startMindAuditActivity(this)
+                }
             }
         }
     }
+
+
+    fun callLogWaterClick() {
+        if (checkTrailEndedAndShowDialog()) {
+                ActivityUtils.startEatRightReportsActivity(
+                        this@HomeNewActivity,
+                        "LogWaterIntakeEat"
+                )
+            }
+    }
+    fun callLogWeightClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "LogWeightEat")
+        }
+    }
+
+    fun callLogSleepClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startMoveRightReportsActivity(
+                    this@HomeNewActivity,
+                    "SearchActivityLogMove"
+            )
+        }
+    }
+
+    fun callLogFoodClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            //ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "MealLogTypeEat")
+            startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "MealLogTypeEat")
+                putExtra("snapMealId", snapMealId)
+            })
+        }
+    }
+
+    fun callLogActivitylick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startMoveRightReportsActivity(
+                    this@HomeNewActivity,
+                    "SearchActivityLogMove"
+            )
+        }
+    }
+
+    fun callAIReportCardClick()
+    {
+        var dynamicReportId = "" // This Is User ID
+        dynamicReportId = SharedPreferenceManager.getInstance(this).userId
+        if (dynamicReportId.isEmpty()) {
+            // Some error handling if the ID is not available
+        } else {
+            val intent = Intent(this, AIReportWebViewActivity::class.java).apply {
+                // Put the dynamic ID as an extra
+                putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+            }
+            startActivity(intent)
+        }
+    }
+
+    fun callJumpBackIn(){
+        startActivity(Intent(this, JumpInBackActivity::class.java))
+    }
+   /* fun callExploreModuleClick(){
+        val intent = Intent(this, NewCategoryListActivity::class.java)
+            intent.putExtra("moduleId",)
+            startActivity(intent)
+    }*/
 
     private fun logAndOpenMeal(snapId: String) {
         AnalyticsLogger.logEvent(
@@ -3151,3 +3485,5 @@ class HomeNewActivity : BaseActivity() {
         editor.apply()
     }
 }
+
+
