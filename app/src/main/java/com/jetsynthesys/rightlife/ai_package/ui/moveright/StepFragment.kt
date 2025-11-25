@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.SpannableString
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -97,6 +98,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var stripsContainer: FrameLayout
     private lateinit var iconEdit : ImageView
     private lateinit var tvSetGoal : TextView
+    private lateinit var description_progressbar_layout : TextView
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
     private lateinit var customProgressPreviousWeek : BasicProgressBar
@@ -137,6 +139,8 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         dottedLine = view.findViewById(R.id.dottedLineView1)
         iconEdit = view.findViewById(R.id.iconEdit)
         tvSetGoal = view.findViewById(R.id.tvSetGoal)
+        description_progressbar_layout = view.findViewById(R.id.description_progressbar_layout)
+
 
         layoutSetGoal.setOnClickListener {
             val args = Bundle().apply {
@@ -553,11 +557,12 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private fun fetchStepDetails(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                if (isAdded  && view != null){
+                if (isAdded && view != null) {
                     requireActivity().runOnUiThread {
                         showLoader(requireView())
                     }
                 }
+
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -574,22 +579,16 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 } else if (period.contentEquals("last_monthly")) {
                     if (selectedMonthDate.contentEquals("")) {
                         selectedDate = currentDateTime.format(formatter)
-//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-//                        selectedDate = firstDateOfMonth
                         selectedMonthDate = selectedDate
                     } else {
-                      //  val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
                         selectedDate = selectedMonthDate
                     }
                     setSelectedDateMonth(selectedMonthDate, "Month")
                 } else {
                     if (selectedHalfYearlyDate.contentEquals("")) {
                         selectedDate = currentDateTime.format(formatter)
-//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-//                        selectedDate = firstDateOfMonth
                         selectedHalfYearlyDate = selectedDate
                     } else {
-                        //val firstDateOfMonth = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
                         selectedDate = selectedHalfYearlyDate
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
@@ -600,15 +599,18 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     period = period,
                     date = selectedDate
                 )
+
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     val stepTrackerResponse = response.body()
                     if (stepTrackerResponse?.statusCode == 200 && stepTrackerResponse.data.isNotEmpty()) {
-                        val stepData = stepTrackerResponse.data[0] // Assuming single data entry
+                        val stepData = stepTrackerResponse.data[0]
+
                         withContext(Dispatchers.Main) {
                             if (period == "last_six_months") {
                                 barChart.visibility = View.GONE
@@ -620,20 +622,36 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                                 val (entries, labels, labelsDate) = when (period) {
                                     "last_weekly" -> processWeeklyData(stepData, selectedDate)
                                     "last_monthly" -> processMonthlyData(stepData, selectedDate)
-                                    else -> processWeeklyData(stepData, selectedDate) // Fallback
+                                    else -> processWeeklyData(stepData, selectedDate)
                                 }
                                 updateChart(entries, labels, labelsDate, stepData)
                             }
-                            // Update average and comparison UI
-                            setStepStats(stepData, period)
-                            heart_rate_description_heading.text = stepTrackerResponse.data.get(0).heading.toString()
-                            step_discreption.text = stepTrackerResponse.data.get(0).description.toString()
 
+                            // Update stats
+                            setStepStats(stepData, period)
+
+                            // Heading
+                            heart_rate_description_heading.text = stepData.heading
+
+                            // Description + Comparison Message (Yahi change kiya hai)
+                            val description = stepData.description
+                            val comparisonMessage = stepData.comparison.comparisonMessage
+
+                            val fullText = if (comparisonMessage.isNotBlank()) {
+                                "$comparisonMessage"
+                            } else {
+                                description
+                            }
+
+                            // Beautiful formatting: comparison message bold + green
+
+
+                            description_progressbar_layout.text = fullText
                         }
                     } else {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(requireContext(), "No step data available", Toast.LENGTH_SHORT).show()
-                            if (isAdded  && view != null){
+                            if (isAdded && view != null) {
                                 requireActivity().runOnUiThread {
                                     dismissLoader(requireView())
                                 }
@@ -642,10 +660,10 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Step data  ${response.message()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Step data ${response.message()}", Toast.LENGTH_SHORT).show()
                         barChart.visibility = View.GONE
                         averageBurnCalorie.text = "0"
-                        if (isAdded  && view != null){
+                        if (isAdded && view != null) {
                             requireActivity().runOnUiThread {
                                 dismissLoader(requireView())
                             }
@@ -655,7 +673,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }

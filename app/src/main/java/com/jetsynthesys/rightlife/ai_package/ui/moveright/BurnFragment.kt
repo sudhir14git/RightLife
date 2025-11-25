@@ -292,16 +292,6 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         // Multiline X-axis labels
         val combinedLabels: List<String> = if (entries.size == 30) {
             labels
-            /*List(30) { index ->
-                when (index) {
-                    3 -> "1-7\nJun"
-                    10 -> "8-14\nJun"
-                    17 -> "15-21\nJun"
-                    24 -> "22-28\nJun"
-                    28 -> "29-30\nJun"
-                    else -> "" // Empty label for spacing
-                }
-            }*/
         } else {
             labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
                 val cleanedDate = date.substringBefore(",")
@@ -345,57 +335,47 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
         leftYAxis.axisMinimum = 0f
-        leftYAxis.axisMaximum = max(7000f, ceil((entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f) / 1000f) * 1000f) // Ensure at least 7000
-        leftYAxis.granularity = 1000f // Labels at 0, 1000, 2000, 3000, ...
+        leftYAxis.axisMaximum = max(7000f, ceil((entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f) / 1000f) * 1000f)
+        leftYAxis.granularity = 1000f
         leftYAxis.valueFormatter = object : ValueFormatter() {
             override fun getAxisLabel(value: Float, axis: AxisBase?): String {
                 return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
             }
         }
-        // Log Y-axis max and entries for debugging
-        Log.d("ChartYAxis", "Y-axis Max: ${leftYAxis.axisMaximum}")
-        entries.forEachIndexed { i, entry -> Log.d("ChartEntry", "Index: $i, X: ${entry.x}, Y: ${entry.y}") }
 
         barChart.axisRight.isEnabled = false
-        barChart.description.isEnabled = false
+
+        // YE DO LINES PURI TARAH SE HATAYI HAIN (No box, no "Calories Burned")
+        barChart.description.isEnabled = false   // ← Description completely off
+        // barChart.description = description     ← Yeh line bhi gayab
+
         barChart.setScaleEnabled(false)
         barChart.isDoubleTapToZoomEnabled = false
         barChart.isHighlightPerTapEnabled = true
         barChart.isHighlightPerDragEnabled = false
 
-        // Description
-        val description = Description().apply {
-            text = "Calories Burned"
-            textColor = Color.BLACK
-            textSize = 14f
-            setPosition(barChart.width / 2f, barChart.height.toFloat() - 10f)
-        }
-        barChart.description = description
+        // Legend off
+        val legend = barChart.legend
+        legend.isEnabled = false
 
         // Extra offsets
         barChart.setExtraOffsets(0f, 0f, 0f, 25f)
 
-        // Legend
-        val legend = barChart.legend
-        legend.setDrawInside(false)
-
-        // Chart click listener
+        // Chart click listener (same as before)
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
                 if (e != null) {
                     val x = e.x.toInt()
                     val y = e.y
-                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
                     selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
 
             override fun onNothingSelected() {
-                Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
-            }
+                      }
         })
 
         barChart.animateY(1000)
