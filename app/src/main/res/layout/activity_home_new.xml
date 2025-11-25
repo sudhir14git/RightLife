@@ -238,7 +238,7 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="@dimen/margin_card_16dp"
-                        android:visibility="visible">
+                        android:visibility="gone">
 
                         <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
                             android:id="@+id/gradientBorder"
