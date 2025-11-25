@@ -99,6 +99,7 @@ import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
+import com.jetsynthesys.rightlife.ui.profile_new.SavedItemListActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
@@ -170,6 +171,7 @@ class HomeNewActivity : BaseActivity() {
 
         // Content
         const val TARGET_JUMPBACK = "jumpback"
+        const val TARGET_SAVED_ITEMS = "saved-content"
 
 
 
@@ -327,6 +329,10 @@ class HomeNewActivity : BaseActivity() {
             TARGET_JUMPBACK -> {
                 callJumpBackIn()
             }
+            TARGET_SAVED_ITEMS -> {
+                startActivity(Intent(this, SavedItemListActivity::class.java))
+            }
+
             TARGET_THINK_EXPLORE -> {
                 val intent = Intent(this, NewCategoryListActivity::class.java)
                 intent.putExtra("moduleId", "THINK_RIGHT")
