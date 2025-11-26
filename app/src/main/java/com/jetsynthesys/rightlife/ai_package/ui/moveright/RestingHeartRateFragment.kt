@@ -276,7 +276,7 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
         // Normal circle → filled + #FFBFBD (light pink)
         dataSet.setCircleColor(Color.parseColor("#FFBFBD"))
         dataSet.circleHoleColor = Color.parseColor("#FFBFBD")   // filled circle
-        dataSet.circleRadius = 6f
+        dataSet.circleRadius = 5f
         dataSet.setDrawCircleHole(false)                        // fully solid
 
         // Tap karne par highlight circle + line → #FD6967
