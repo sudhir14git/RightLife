@@ -38,7 +38,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class ToolsAdapterList(private val context1: Context, private val items: List<ToolDisplayItem>, private val onItemClick: (Int, ToolsData?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val contexts = context1
@@ -53,7 +52,6 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
         val name: TextView = itemView.findViewById(R.id.tool_name)
         val description: TextView = itemView.findViewById(R.id.tool_description)
         val selectButton: ImageView = itemView.findViewById(R.id.tool_select_button)
-
     }
 
     class AffirmationCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
@@ -191,6 +189,9 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                 toolHolder.createPlaylist.setVisibility(
                     if (affirmation.isPlaylist) View.GONE else View.VISIBLE
                 )
+                toolHolder.selectButton2.setVisibility(
+                    if (affirmation.isPlaylist) View.VISIBLE else View.GONE
+                )
                 toolHolder.selectButton2.setOnClickListener {
                     val toolsData = ToolsData(
                         _id = affirmation.moduleId,
@@ -204,17 +205,11 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                     onItemClick(position, toolsData)
                 }
 
-
-
-
-
                 toolHolder.createPlaylist.setOnClickListener {
                     onItemClick(position, null)
                 }
-
             }
         }
-
     }
 
     override fun getItemCount(): Int = items.size
@@ -318,12 +313,9 @@ class FilterAdapter(private val filters: List<FilterItem>, private val onFilterC
             notifyDataSetChanged()
             onFilterClick(position,filter)
         }
-
     }
-
     override fun getItemCount(): Int = filters.size
 }
-
 
 class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
 

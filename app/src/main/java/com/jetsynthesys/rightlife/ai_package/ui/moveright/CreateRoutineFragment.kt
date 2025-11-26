@@ -544,7 +544,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
+                    ?: ""
 
                 // Map workoutList to CreateRoutineRequest.Workout
                 val workoutRequests = workoutList.map { record ->
