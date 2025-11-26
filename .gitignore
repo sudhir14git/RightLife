@@ -15,3 +15,9 @@
 local.properties
     # Android Studio IDE specific files
     .idea/
+
+        /build/
+        *.apk
+        *.aab
+        *.ap_
+        *.dex
