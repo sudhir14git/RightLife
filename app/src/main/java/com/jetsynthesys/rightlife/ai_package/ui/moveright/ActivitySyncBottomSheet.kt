@@ -255,18 +255,28 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             return
         }
         Log.d("ActivitySyncBottomSheet", "Fetching health data")
-        var endTime = Instant.now()
-        var startTime = Instant.now()
-        val syncTime = if (isAdded) {
-            SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
-        } else ""
-        if (syncTime.isEmpty()) {
-            endTime = Instant.now()
-            startTime = endTime.minus(Duration.ofDays(30))
+        val now = Instant.now()
+        val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime.orEmpty()
+        val startTime: Instant = if (syncTime.isBlank()) {
+            // First-time sync: pull last 30 days
+            now.minus(Duration.ofDays(30))
         } else {
-            endTime = Instant.now()
-            startTime = convertUtcToInstant(syncTime)
+            // Next sync: only fetch new data
+            Instant.parse(syncTime)
         }
+        val endTime: Instant = now
+//        var endTime = Instant.now()
+//        var startTime = Instant.now()
+//        val syncTime = if (isAdded) {
+//            SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
+//        } else ""
+//        if (syncTime.isEmpty()) {
+//            endTime = Instant.now()
+//            startTime = endTime.minus(Duration.ofDays(30))
+//        } else {
+//            endTime = Instant.now()
+//            startTime = convertUtcToInstant(syncTime)
+//        }
         Log.d("ActivitySyncBottomSheet", "Time range: start=$startTime, end=$endTime")
         try {
             // Fetch device info
@@ -973,8 +983,9 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+                    context?.let {
+                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -1325,8 +1336,9 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+                    context?.let {
+                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
