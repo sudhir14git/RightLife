@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter
 
 import android.content.Context
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.bumptech.glide.Glide
@@ -46,11 +48,19 @@ class RecipeSearchAdapter(
             ?.trim()
             ?.lowercase()
         holder.statusDot.visibility = View.VISIBLE
-        when (type) {
-            "veg", "vegan" -> holder.statusDot.setImageResource(R.drawable.green_circle)
-            "non-veg", "nonveg", "non-vegetarian" -> holder.statusDot.setImageResource(R.drawable.red_circle)
-            "egg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
-            else -> holder.statusDot.visibility = View.INVISIBLE
+//        when (type) {
+//            "veg", "vegan" -> holder.statusDot.setImageResource(R.drawable.green_circle)
+//            "non-veg", "nonveg", "non-vegetarian" -> holder.statusDot.setImageResource(R.drawable.red_circle)
+//            "egg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
+//            else -> holder.statusDot.visibility = View.INVISIBLE
+//        }
+
+        if (getFoodType(type) == "Veg"){
+            holder.statusDot.setImageResource(R.drawable.green_circle)
+        }else if (getFoodType(type) == "Non-Veg"){
+            holder.statusDot.setImageResource(R.drawable.red_circle)
+        }else{
+            holder.statusDot.visibility = View.INVISIBLE
         }
 
         holder.itemView.setOnClickListener {
@@ -83,6 +93,25 @@ class RecipeSearchAdapter(
         dataLists.clear()
         dataLists = newList as ArrayList<IngredientRecipeList>
         notifyDataSetChanged()
+    }
+
+    fun getFoodType(category: String?): String {
+        if (category.isNullOrBlank()) return ""
+        val cat = category.lowercase()
+        // Check non-veg first (most specific)
+        val isNonVeg = cat.contains("non-vegetarian")
+                || cat.contains("chicken")
+                || cat.contains("fish")
+                || cat.contains("meat")
+                || cat.contains("egg")
+                || cat.contains("mutton")
+        // Check veg only AFTER excluding non-veg
+        val isVeg = !isNonVeg && (cat.contains("vegetarian") || cat.contains("vegan"))
+        return when {
+            isNonVeg -> "Non-Veg"
+            isVeg -> "Veg"
+            else -> ""
+        }
     }
 
     fun getDriveImageUrl(originalUrl: String): String? {
