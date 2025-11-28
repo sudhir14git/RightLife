@@ -65,7 +65,8 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private lateinit var backButton: ImageView
     private lateinit var tabSelectedTitle : TextView
     private lateinit var mealType: String
-    private val tabTitles = arrayOf("Meal Type", "Dish Type", "Cuisine")
+    private val tabTitles = arrayOf("Meal Type", "Dish Type", "Cuisines")
+    private val foodTypeLists = arrayOf("Vegetarian", "Non-Vegetarian", "Eggetarian", "Vegan", "Pescatarian")
     private var currentFragmentTag: String? = null
     private lateinit var tabContentAdapter: TabContentAdapter
     private var selectedMealType: String? = null
@@ -141,7 +142,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         Log.d("RecipesSearchFragment", "Selected Dish Type: $selectedFoodType")
                     }
                 }
-                    "Cuisine" -> {
+                    "Cuisines" -> {
                         if (isClose) {
                             tabContentAdapter.deselectedUpdateItems(cuisineList, -1)
                             selectedCuisine = null
@@ -149,14 +150,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                             recipesSearchViewModel.setSelectedCuisine(null)
                             getFilterRecipesList(selectedMealType, selectedFoodType, null)
                             updateTabColors(false) // Update colors when deselected
-                            Log.d("RecipesSearchFragment", "Deselected Cuisine")
+                            Log.d("RecipesSearchFragment", "Deselected Cuisines")
                         } else {
                             selectedCuisine = item
                             recipesSearchViewModel.setSelectedCuisine(item)
                             selectedCuisine = item
                             getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
                             updateTabColors(true) // Update colors when selected
-                            Log.d("RecipesSearchFragment", "Selected Cuisine: $selectedCuisine")
+                            Log.d("RecipesSearchFragment", "Selected Cuisines: $selectedCuisine")
                         }
                     }
                 }
@@ -194,7 +195,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     val isContentSelected = when (tag) {
                         "Meal Type" -> selectedMealType != null
                         "Dish Type" -> selectedFoodType != null
-                        "Cuisine" -> selectedCuisine != null
+                        "Cuisines" -> selectedCuisine != null
                         else -> false
                     }
 
@@ -248,7 +249,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     val isContentSelected = when (tag) {
                         "Meal Type" -> selectedMealType != null
                         "Dish Type" -> selectedFoodType != null
-                        "Cuisine" -> selectedCuisine != null
+                        "Cuisines" -> selectedCuisine != null
                         else -> false
                     }
                     updateTabColors(isContentSelected)
@@ -425,7 +426,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 tabContentAdapter.setSelectedPosition(position)
                 refreshRecipesList()
             }
-            "Cuisine" -> {
+            "Cuisines" -> {
                 tabContentRecyclerView.visibility = View.VISIBLE
                 tabContentAdapter.updateItems(cuisineList)
                 val position = cuisineList.indexOf(selectedCuisine)
@@ -461,7 +462,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val isContentSelected = when (tabTitles[i]) {
                 "Meal Type" -> selectedMealType != null
                 "Dish Type" -> selectedFoodType != null
-                "Cuisine" -> selectedCuisine != null
+                "Cuisines" -> selectedCuisine != null
                 else -> false
             }
 
@@ -518,25 +519,30 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
     private fun filterDishes(query: String) {
         val filteredList = snapRecipesList.filter { recipe ->
-            val matchesQuery = if (query.isEmpty()) true else recipe.recipe.contains(query, ignoreCase = true)
-            val matchesMealType = selectedMealType?.let { recipe.meal_type == it } ?: true
-            val matchesFoodType = selectedFoodType?.let { selected ->
-                recipe.tags?.split(",")?.map { it.trim() }?.contains(selected)
+            val matchesQuery =
+                query.isBlank() || recipe.recipe.contains(query, ignoreCase = true)
+            val matchesMealType = selectedMealType?.let { selected ->
+                recipe.meal_type
+                    ?.split(",")
+                    ?.map { it.trim().lowercase() }
+                    ?.any { it.contains(selected.lowercase()) }  // FIXED
+                    ?: false
             } ?: true
-           // val matchesFoodType = selectedFoodType?.let { recipe.tags == it } ?: true
-            val matchesCuisine = selectedCuisine?.let { recipe.cuisine == it } ?: true
+            val matchesFoodType =
+                selectedFoodType?.let { selected ->
+                    recipe.tags
+                        ?.split(",")
+                        ?.map { it.trim().lowercase() }
+                        ?.contains(selected.lowercase())
+                        ?: false
+                } ?: true
+            val matchesCuisine =
+                selectedCuisine?.let { recipe.cuisine == it } ?: true
             matchesQuery && matchesMealType && matchesFoodType && matchesCuisine
         }
-        val valueLists: ArrayList<IngredientRecipeList> = ArrayList()
-        valueLists.addAll(filteredList as Collection<IngredientRecipeList>)
         val mealLogDateData: IngredientRecipeList? = null
-        recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
-      //  recipeSearchAdapter.updateList(filteredList)
-        if (query.isNotEmpty()) {
-            cancel.visibility = View.VISIBLE
-        }else{
-            cancel.visibility = View.GONE
-        }
+        recipeSearchAdapter.addAll(ArrayList(filteredList), -1, mealLogDateData, false)
+        cancel.visibility = if (query.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun refreshRecipesList() {
@@ -617,10 +623,23 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     mealTypeList.clear()
                     foodTypeList.clear()
                     cuisineList.clear()
-                    mealTypeList.addAll(snapRecipesList.map { it.meal_type }.filterNotNull().distinct().sorted())
+                    val mealTypeLists = snapRecipesList
+                        .mapNotNull { it.meal_type }              // take meal_type string
+                        .flatMap { it.split(",", "/") }           // split by comma OR slash
+                        .map { it.trim() }                        // remove spaces
+                        .filter { it.isNotEmpty() }               // remove empty
+                        .distinct()                               // remove duplicates
+                        .sorted()                                  // sort alphabetically
+                    mealTypeList.addAll(mealTypeLists)
                     // Assuming snapRecipesList is your recipe list
-                    foodTypeList.addAll(snapRecipesList.mapNotNull { it.tags }.flatMap { it.split(",") }.map { it.trim() }
-                        .filter { it.isNotEmpty() }.distinct().sorted())
+//                    val foodTypeLists = snapRecipesList
+//                        .mapNotNull { it.tags }              // take meal_type string
+//                        .flatMap { it.split(",", "/") }           // split by comma OR slash
+//                        .map { it.trim() }                        // remove spaces
+//                        .filter { it.isNotEmpty() }               // remove empty
+//                        .distinct()                               // remove duplicates
+//                        .sorted()                                  // sort alphabetically
+                    foodTypeList.addAll(foodTypeLists)
                     // foodTypeList.addAll(snapRecipesList.map { it.tags }.filterNotNull().distinct().sorted())
                     cuisineList.addAll(snapRecipesList.map { it.cuisine }.filterNotNull().distinct().sorted())
                     Log.d("RecipesSearchFragment", "Meal Types: $mealTypeList")

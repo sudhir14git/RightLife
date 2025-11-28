@@ -93,7 +93,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var selectedDate: String? = null
     private var isTodayDate : Boolean = false
     private var currentWeekStartItem: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
-
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
     var snackbar: Snackbar? = null

@@ -325,12 +325,14 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     carbs_value.text = "${response.body()?.data?.carbs_g?.toInt()} g"
                     protein_value.text = "${response.body()?.data?.protein_g?.toInt()} g"
                     fat_value.text = "${response.body()?.data?.fat_g?.toInt()} g"
-                    vegTv.text = response.body()?.data?.tags?.substringBefore("_")
-                    if (response.body()?.data?.tags?.substringBefore("_").equals("Veg")){
+                    if (getFoodType(response.body()?.data?.category) == "Veg"){
+                        vegImage.visibility = View.VISIBLE
                         vegImage.setImageResource(R.drawable.green_circle)
-                    }else  if (response.body()?.data?.tags?.substringBefore("_").equals("Non-veg")){
+                        vegTv.text = "Veg"
+                    }else if (getFoodType(response.body()?.data?.category) == "Non-Veg"){
+                        vegImage.visibility = View.VISIBLE
                         vegImage.setColorFilter(ContextCompat.getColor(context!!, R.color.red), PorterDuff.Mode.SRC_IN)
-
+                        vegTv.text = "Non-Veg"
                     }else{
                         vegImage.visibility = View.INVISIBLE
                     }
@@ -370,6 +372,25 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                 }
             }
         })
+    }
+
+    fun getFoodType(category: String?): String {
+        if (category.isNullOrBlank()) return ""
+        val cat = category.lowercase()
+        // Check non-veg first (most specific)
+        val isNonVeg = cat.contains("non-vegetarian")
+                || cat.contains("chicken")
+                || cat.contains("fish")
+                || cat.contains("meat")
+                || cat.contains("egg")
+                || cat.contains("mutton")
+        // Check veg only AFTER excluding non-veg
+        val isVeg = !isNonVeg && (cat.contains("vegetarian") || cat.contains("vegan"))
+        return when {
+            isNonVeg -> "Non-Veg"
+            isVeg -> "Veg"
+            else -> ""
+        }
     }
 
     private fun onMacroNutrientsItemClick(macroNutrientsModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {

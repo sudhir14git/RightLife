@@ -1719,17 +1719,27 @@ class HomeNewActivity : BaseActivity() {
         try {
             val grantedPermissions =
                 healthConnectClient.permissionController.getGrantedPermissions()
-            var endTime = Instant.now()
-            var startTime = Instant.now()
-            val syncTime =
-                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime ?: ""
-            if (syncTime == "") {
-                endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(30))
+            val now = Instant.now()
+            val syncTime = SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime.orEmpty()
+            val startTime: Instant = if (syncTime.isBlank()) {
+                // First-time sync: pull last 30 days
+                now.minus(Duration.ofDays(30))
             } else {
-                endTime = Instant.now()
-                startTime = convertUtcToInstant(syncTime)
+                // Next sync: only fetch new data
+                Instant.parse(syncTime)
             }
+            val endTime: Instant = now
+//            var endTime = Instant.now()
+//            var startTime = Instant.now()
+//            val syncTime =
+//                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime ?: ""
+//            if (syncTime == "") {
+//                endTime = Instant.now()
+//                startTime = endTime.minus(Duration.ofDays(30))
+//            } else {
+//                endTime = Instant.now()
+//                startTime = convertUtcToInstant(syncTime)
+//            }
             if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
                 if (syncTime == "") {
                     val totalCaloroieResponse = mutableListOf<TotalCaloriesBurnedRecord>()
@@ -2428,9 +2438,8 @@ class HomeNewActivity : BaseActivity() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    val syncTime = ZonedDateTime.now().toString()
                     SharedPreferenceManager.getInstance(this@HomeNewActivity)
-                        .saveMoveRightSyncTime(syncTime)
+                        .saveMoveRightSyncTime(Instant.now().toString())
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -2801,9 +2810,8 @@ class HomeNewActivity : BaseActivity() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    val syncTime = ZonedDateTime.now().toString()
                     SharedPreferenceManager.getInstance(this@HomeNewActivity)
-                        .saveMoveRightSyncTime(syncTime)
+                        .saveMoveRightSyncTime(Instant.now().toString())
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {

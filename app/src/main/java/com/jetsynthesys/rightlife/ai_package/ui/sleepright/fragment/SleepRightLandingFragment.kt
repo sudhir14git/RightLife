@@ -623,17 +623,28 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private suspend fun fetchAllHealthData() {
         try {
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
-            var endTime = Instant.now()
-            var startTime = Instant.now()
-            val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
-            if (syncTime == "") {
-                endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(30))
-            }else{
-                endTime = Instant.now()
-                startTime = convertUtcToInstant(syncTime)
+            val now = Instant.now()
+            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime.orEmpty()
+            val startTime: Instant = if (syncTime.isBlank()) {
+                // First-time sync: pull last 30 days
+                now.minus(Duration.ofDays(30))
+            } else {
+                // Next sync: only fetch new data
                 btnSync.visibility = View.GONE
+                Instant.parse(syncTime)
             }
+            val endTime: Instant = now
+//            var endTime = Instant.now()
+//            var startTime = Instant.now()
+//            val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
+//            if (syncTime == "") {
+//                endTime = Instant.now()
+//                startTime = endTime.minus(Duration.ofDays(30))
+//            }else{
+//                endTime = Instant.now()
+//                startTime = convertUtcToInstant(syncTime)
+//                btnSync.visibility = View.GONE
+//            }
             if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
                 if (syncTime == "") {
                     val totalCaloroieResponse = mutableListOf<TotalCaloriesBurnedRecord>()
@@ -1303,8 +1314,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(context?.let { it }).saveMoveRightSyncTime(syncTime)
+                    context?.let {
+                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+                    }
                     isRepeat = true
                     fetchSleepLandingData()
                 }
@@ -1658,7 +1670,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    SharedPreferenceManager.getInstance(ctx).saveMoveRightSyncTime(ZonedDateTime.now().toString())
+                    context?.let {
+                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+                    }
                     isRepeat = true
                     fetchSleepLandingData()
                 }
