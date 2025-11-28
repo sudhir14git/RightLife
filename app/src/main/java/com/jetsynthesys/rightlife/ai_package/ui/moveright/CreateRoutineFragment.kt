@@ -118,6 +118,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
         edit_icon_create_routine.setOnClickListener {
             addNameLayout.visibility = View.VISIBLE
+            save_workout_routine_btn.visibility = View.GONE
             newBooleanBack = true
             createListRoutineLayout.visibility = View.GONE
             editText.setText(textViewRoutine.text.toString())
@@ -127,6 +128,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         if (routine == "routine") {
             if (workoutList.isNotEmpty()) {
                 addNameLayout.visibility = View.GONE
+                save_workout_routine_btn.visibility = View.VISIBLE
                 createListRoutineLayout.visibility = View.VISIBLE
                 newBooleanBack = true
                 textViewRoutine.text = routineName
@@ -135,7 +137,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 routineWorkoutListAdapter.setData(routineWorkoutModels)
                 createRoutineRecyclerView.visibility = View.VISIBLE
             } else {
+
                 addNameLayout.visibility = View.GONE
+                save_workout_routine_btn.visibility = View.VISIBLE
                 createListRoutineLayout.visibility = View.VISIBLE
                 newBooleanBack = true
                 textViewRoutine.text = routineName
@@ -144,6 +148,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         } else if(routine.equals("edit_routine")||editRoutine.equals("edit_routine")){
             if (workoutList.isNotEmpty()) {
                 addNameLayout.visibility = View.GONE
+                save_workout_routine_btn.visibility = View.VISIBLE
                 createListRoutineLayout.visibility = View.VISIBLE
                 newBooleanBack = true
                 //textViewRoutine.text = routineName
@@ -154,6 +159,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 createRoutineRecyclerView.visibility = View.VISIBLE
             } else {
                 addNameLayout.visibility = View.GONE
+                save_workout_routine_btn.visibility = View.VISIBLE
                 createListRoutineLayout.visibility = View.VISIBLE
                 newBooleanBack = true
                 textViewRoutine.text = routineName
@@ -161,6 +167,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             }
         } else{
             addNameLayout.visibility = View.VISIBLE
+            save_workout_routine_btn.visibility = View.GONE
             createListRoutineLayout.visibility = View.GONE
             newBooleanBack = true
             routine = "routine"
@@ -320,6 +327,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         layoutBtnLog.setOnClickListener {
             addNameLayout.visibility = View.GONE
+            save_workout_routine_btn.visibility = View.VISIBLE
             createListRoutineLayout.visibility = View.VISIBLE
             newBooleanBack = true
             textViewRoutine.text = editText.text
