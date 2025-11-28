@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
     android:paddingTop="15dp"
-    android:paddingBottom="15dp"
+    android:paddingBottom="18dp"
     android:paddingStart="9dp"
     android:paddingEnd="9dp"
     android:background="@drawable/white_meal_date_bg"
@@ -85,12 +85,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:padding="10dp"
+            android:padding="6dp"
             android:layout_marginEnd="5dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/white_meal_date_bg"
             app:cardCornerRadius="12dp"
             android:elevation="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/three_dots"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -98,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:padding="10dp"
+                android:padding="7dp"
                 android:layout_marginEnd="10dp"
                 android:orientation="vertical">
 
@@ -111,8 +112,8 @@
 
                     <ImageView
                         android:id="@+id/image_edit_my_routine"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="13dp"
+                        android:layout_height="13dp"
                         android:scaleType="fitXY"
                         android:src="@drawable/edit_icon_myroutine_recyler"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -134,7 +135,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:background="@color/view_border"
@@ -144,14 +145,14 @@
                     android:id="@+id/layout_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="5dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/image_delete_my_routine"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="13dp"
+                        android:layout_height="13dp"
                         android:scaleType="fitXY"
                         android:src="@drawable/delete_icon_myroutine_recycler"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -205,6 +206,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:gravity="left"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view">
@@ -277,6 +279,7 @@
                 android:gravity="center"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -324,6 +327,7 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:background="@drawable/add_cart_button_background"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
