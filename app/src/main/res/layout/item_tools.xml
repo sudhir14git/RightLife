@@ -22,11 +22,10 @@
             android:id="@+id/tool_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:text="Tool Name"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:fontFamily="@font/dmsans_medium"/>
+            android:textColor="@color/black_no_meals"
+            android:textSize="18sp"
+            android:fontFamily="@font/dmsans_semibold"/>
 
         <TextView
             android:id="@+id/tool_description"
@@ -36,7 +35,7 @@
             android:fontFamily="@font/dmsans_regular"
             android:text="Description"
             android:textSize="12sp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black_no_meals"/>
     </LinearLayout>
         <ImageView
             android:id="@+id/tool_select_button"

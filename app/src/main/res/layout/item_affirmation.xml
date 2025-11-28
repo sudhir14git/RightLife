@@ -8,18 +8,16 @@
 
         <!-- Icon Box -->
         <FrameLayout
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="75dp"
             android:background="@drawable/yellow_curved_affirmation"
-            android:layout_marginEnd="16dp">
+            android:layout_marginEnd="10dp">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:src="@drawable/quote_icon"
-                android:textSize="28sp"
-                android:textColor="#914600" />
+                android:src="@drawable/quote_icon" />
         </FrameLayout>
 
         <!-- Text + Button Column -->
@@ -34,9 +32,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Your Affirmation Playlist"
-                android:fontFamily="@font/dmsans_bold"
-                android:textSize="20sp"
-                android:textColor="#000000" />
+                android:textColor="@color/black_no_meals"
+                android:textSize="18sp"
+                android:fontFamily="@font/dmsans_semibold" />
 
             <TextView
                 android:id="@+id/subtitle"
@@ -44,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:text="Create playlist &amp; practice affirmation playlist"
                 android:textSize="12sp"
-                android:textColor="#666666"
+                android:textColor="@color/black_no_meals"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="8dp" />

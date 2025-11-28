@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.7.3" type="baseline" client="gradle" dependencies="false" name="AGP (8.7.3)" variant="fatal" version="8.7.3">
+
+    <issue
+        id="NotSibling"
+        message="`@+id/tv_modulename` is not a sibling in the same `RelativeLayout`"
+        errorLine1="                android:layout_below=&quot;@+id/tv_modulename&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/layout_continuelist_item.xml"
+            line="93"
+            column="17"/>
+    </issue>
+
+</issues>

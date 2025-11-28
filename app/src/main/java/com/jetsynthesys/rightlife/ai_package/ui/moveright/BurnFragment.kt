@@ -129,7 +129,6 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
-
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
         fetchActiveCalories("last_weekly")
@@ -143,15 +142,18 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
                 }
             }
-
             when (checkedId) {
-                R.id.rbWeek -> fetchActiveCalories("last_weekly")
-                R.id.rbMonth -> fetchActiveCalories("last_monthly")
-                R.id.rbSixMonths -> fetchActiveCalories("last_six_months")
+                R.id.rbWeek -> {
+                    selectHeartRateLayout.visibility = View.INVISIBLE
+                    fetchActiveCalories("last_weekly")}
+                R.id.rbMonth -> {
+                    selectHeartRateLayout.visibility = View.INVISIBLE
+                    fetchActiveCalories("last_monthly")}
+                R.id.rbSixMonths ->{
+                    selectHeartRateLayout.visibility = View.INVISIBLE
+                    fetchActiveCalories("last_six_months")}
             }
         }
-        // Handle Radio Button Selection
-
 
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId

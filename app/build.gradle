@@ -17,7 +17,7 @@ android {
         applicationId "com.jetsynthesys.rightlife"
         minSdk 26
         targetSdk 35
-        versionCode 300
+        versionCode 301
         versionName "1.1.13"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -304,7 +304,14 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.19.1'
 
 
+//facebook anndroid sdk
+    // Meta SDK (Facebook SDK)
+    implementation("com.facebook.android:facebook-android-sdk:17.0.0")
 
+    // Optional: For advanced features
+    implementation("com.facebook.android:facebook-core:17.0.0")
+    implementation("com.facebook.android:facebook-login:17.0.0")
+    implementation("com.facebook.android:facebook-share:17.0.0")
 
 
 
