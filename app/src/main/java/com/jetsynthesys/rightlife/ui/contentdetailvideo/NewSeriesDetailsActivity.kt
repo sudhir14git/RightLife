@@ -28,6 +28,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailContentResponse
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode
 import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
+import com.jetsynthesys.rightlife.shortVibrate
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall
@@ -236,20 +237,25 @@ class NewSeriesDetailsActivity : BaseActivity() {
             }
             setReadMoreView(contentResponseObj.data.desc)
 
-            /*   binding.imageLikeArticle.setOnClickListener { v ->
+               binding.imageLikeArticle.setOnClickListener { v ->
                    v.shortVibrate()
                    binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
-                   if (contentResponseObj.data.li) {
+                   if (contentResponseObj.data.isLike) {
                        binding.imageLikeArticle.setImageResource(R.drawable.like)
-                       contentResponseObj.data.like = false
-                       postContentLike(contentResponseObj.data.id, false)
+                       contentResponseObj.data.isLike = false
+                       postContentLike(contentResponseObj.data._id, false)
                    } else {
                        binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
-                       contentResponseObj.data.like = true
-                       postContentLike(contentResponseObj.data.id, true)
+                       contentResponseObj.data.isLike = true
+                       postContentLike(contentResponseObj.data._id, true)
                    }
-               }*/
+               }
             binding.imageShareArticle.setOnClickListener { shareIntent() }
+            if (contentResponseObj.data.isLike) {
+                binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
+            }
+            binding.imageShareArticle.setOnClickListener { shareIntent() }
+            binding.txtLikeCount.text = contentResponseObj.data.likeCount.toString()
         }
 
 
@@ -597,7 +603,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
         }
 
         val contentData = ContentResponseObj.data
-        if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
+        //if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
             CommonAPICall.postSeriesContentPlayedProgress(
                 this,
                 contentData.meta.duration.toDouble(),

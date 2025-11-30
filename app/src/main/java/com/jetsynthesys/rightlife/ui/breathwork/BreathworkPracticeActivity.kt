@@ -768,4 +768,50 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
     }
 
+    /**
+     * Pauses all currently playing sounds without stopping or releasing them.
+     */
+    private fun pauseAllSounds() {
+        try {
+            if (inhaleSound?.isPlaying == true) {
+                inhaleSound?.pause()
+            }
+            if (exhaleSound?.isPlaying == true) {
+                exhaleSound?.pause()
+            }
+            if (holdSound?.isPlaying == true) {
+                holdSound?.pause()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        muteAllSounds(true)
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+        muteAllSounds(false)
+
+    }
+
+    /**
+     * Mutes or unmutes all MediaPlayer instances.
+     * @param isMuted True to mute (set volume to 0), false to unmute (set to default volume).
+     */
+    private fun muteAllSounds(isMuted: Boolean) {
+        try {            val volume = if (isMuted) 0f else 0.7f // 0f for mute, 0.7f for default volume
+            inhaleSound?.setVolume(volume, volume)
+            exhaleSound?.setVolume(volume, volume)
+            holdSound?.setVolume(volume, volume)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }

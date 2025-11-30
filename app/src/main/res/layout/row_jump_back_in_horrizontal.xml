@@ -98,7 +98,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_regular"
-            android:textSize="@dimen/textsize_small"
+            android:textSize="@dimen/textsize_extrasmall"
             android:layout_weight="1"
             android:gravity="center"
             android:text="asdaskjdjakjsda"
@@ -107,7 +107,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="10dp"
-            android:layout_marginHorizontal="8dp"
+            android:layout_marginHorizontal="4dp"
             android:background="#767676"
             android:layout_gravity="center_vertical" />
 
@@ -117,7 +117,7 @@
             android:layout_height="match_parent"
             android:visibility="visible"
             android:fontFamily="@font/dmsans_regular"
-            android:textSize="@dimen/textsize_small"
+            android:textSize="@dimen/textsize_extrasmall"
             android:layout_weight="1"
             android:gravity="center"
             android:text="15 AUg 2323"
@@ -126,7 +126,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="10dp"
-            android:layout_marginHorizontal="8dp"
+            android:layout_marginHorizontal="4dp"
             android:background="#767676"
             android:layout_gravity="center_vertical" />
 
@@ -144,8 +144,8 @@
                 android:visibility="visible"
                 android:layout_weight="7"
                 android:fontFamily="@font/dmsans_regular"
-                android:textSize="@dimen/textsize_small"
-                android:text="1m 24sec"
+                android:textSize="@dimen/textsize_extrasmall"
+                android:text="1m 24sec mins left"
                 android:gravity="center"
                 android:textColor="#767676" />
 
@@ -153,7 +153,6 @@
                 android:id="@+id/img_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:src="@drawable/save_icon" />
         </LinearLayout>
     </LinearLayout>

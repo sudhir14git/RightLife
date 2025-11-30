@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.newdashboard
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -34,7 +35,8 @@ class JumpInBackAdapter(
 
             binding.itemText.text = item.contentType ?: "Untitled"
             binding.tvTitle.text = item.title
-            binding.tvLeftTime.text = item.leftDuration
+            Log.d("Type-------", ""+getTextAccording(item.contentType))
+            binding.tvLeftTime.text = "${item.leftDuration ?: ""} ${getTextAccording(item.contentType)}"
             binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.date)
             binding.tvName.text = item.categoryName
 
@@ -142,4 +144,20 @@ class JumpInBackAdapter(
         }
     }
 
+    // --- CORRECTED FUNCTION ---
+    /**
+     * Returns the appropriate duration unit text based on the content type.
+     * @param contentType The type of content (e.g., "VIDEO", "TEXT", "SERIES").
+     * @return A string like "mins left", "episodes left", etc.
+     */
+    private fun getTextAccording(contentType: String?): String {
+        // Use 'when' for better readability and safety.
+        return when {
+            "VIDEO".equals(contentType, ignoreCase = true) -> "mins left"
+            "AUDIO".equals(contentType, ignoreCase = true) -> "mins left"
+            "TEXT".equals(contentType, ignoreCase = true) -> "mins read"
+            "SERIES".equals(contentType, ignoreCase = true) -> ""
+            else -> "" // Return an empty string for unknown types to avoid showing "null"
+        }
+    }
 }
