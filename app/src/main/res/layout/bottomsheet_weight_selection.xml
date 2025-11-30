@@ -138,7 +138,7 @@
             android:layout_marginBottom="36dp"
             android:backgroundTint="@color/menuselected"
             android:fontFamily="@font/dmsans_bold"
-            android:text="Confirm"
+            android:text="Save"
             android:textColor="@color/white"
             android:textSize="@dimen/textsize_large" />
 

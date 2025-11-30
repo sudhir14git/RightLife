@@ -26,7 +26,7 @@
             android:fontFamily="@font/merriweather_bold"
             android:text="Follow Your Curiosity"
             android:textColor="@color/txt_color_header"
-            android:textSize="18sp" />
+            android:textSize="28sp" />
 
         <TextView
             android:layout_width="match_parent"

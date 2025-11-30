@@ -79,7 +79,6 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
 
 
         holder.itemView.setOnClickListener(v -> {
-            ButtonUtilsKt.disableViewForSeconds(v);
 
             emotion.setSelected(!emotion.isSelected());
             notifyItemChanged(position);
