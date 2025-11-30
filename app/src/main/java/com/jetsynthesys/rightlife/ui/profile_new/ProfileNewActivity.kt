@@ -21,6 +21,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
@@ -36,6 +37,7 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -382,6 +384,18 @@ class ProfileNewActivity : BaseActivity() {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        // Expand fully on show
+        bottomSheetDialog.setOnShowListener { dialog ->
+            val bottomSheet =
+                (dialog as BottomSheetDialog).findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            val behavior = BottomSheetBehavior.from(bottomSheet!!)
+
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED   // Open full height
+            behavior.skipCollapsed = true                          // No collapsed state
+            behavior.isFitToContents = true                        // Fit to content
+            behavior.isDraggable = false                           // Optional: disable swipe down
         }
 
         val years = arrayOf(

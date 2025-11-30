@@ -152,6 +152,7 @@ class SchedulePreferenceFragment : Fragment() {
 
                 dialogBinding.btnSetNow.disableViewForSeconds()
 
+                Utils.showCustomToast(requireContext(), "Reminder Time Saved")
                 if (!selectedMorningTime.isNullOrEmpty())
                     selectedMorningTime?.let { it1 -> setReminder(it1) }
                 if (!selectedAfternoonTime.isNullOrEmpty())
@@ -165,7 +166,6 @@ class SchedulePreferenceFragment : Fragment() {
                     requireContext(),
                     "Reminders Set  ", Toast.LENGTH_SHORT
                 ).show()*/
-                Utils.showCustomToast(requireContext(), "Reminder Time Saved")
                 submit(answer)
             }
         }

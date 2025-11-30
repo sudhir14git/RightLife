@@ -65,6 +65,9 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
 
             if (bottomSheet != null) {
                 val behavior: BottomSheetBehavior<*> = BottomSheetBehavior.from(bottomSheet)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED   // Open full height
+                behavior.skipCollapsed = true                          // No collapsed state
+                behavior.isFitToContents = true                        // Fit to content
                 behavior.isDraggable = false
             }
         }

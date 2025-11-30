@@ -78,13 +78,14 @@ class BeginMyFreeTrialActivity : BaseActivity()
         {
             override fun run()
             {
-                val nextItem: Int = binding.viewPager.currentItem + 1
+                val currentItem = binding.viewPager.currentItem
+                val nextItem: Int = if (currentItem < images.size - 1) currentItem + 1 else 0
                 binding.viewPager.setCurrentItem(nextItem, true)
                 sliderHandler?.removeCallbacks(sliderRunnable!!)
-                sliderHandler?.postDelayed(this, 3000)
+                sliderHandler?.postDelayed(this, timeDurationForImageSlider)
             }
         }
-        sliderHandler?.postDelayed(sliderRunnable!!, 3000)
+        sliderHandler?.postDelayed(sliderRunnable!!, timeDurationForImageSlider)
 
         binding.ivDialogClose.setOnClickListener {
             finish()
@@ -116,17 +117,6 @@ class BeginMyFreeTrialActivity : BaseActivity()
             setIndicatorStyle(IndicatorStyle.ROUND_RECT)
             setupWithViewPager(binding.viewPager)
         }
-
-        // Set up the auto-slide functionality
-        val handler = Handler(mainLooper)
-        runnable = Runnable {
-            val currentItem = binding.viewPager.currentItem
-            val nextItem = if (currentItem < images.size - 1) currentItem + 1 else 0
-            binding.viewPager.setCurrentItem(nextItem, true)
-            handler.postDelayed(runnable, timeDurationForImageSlider)
-        }
-
-
     }
 
     private fun showInternetError()

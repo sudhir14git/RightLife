@@ -242,7 +242,7 @@ class HealthCamRecorderActivity : BaseActivity() {
         ) {
             registerScan()
         } else {
-//             returnErrorResult("")
+            finish()
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }

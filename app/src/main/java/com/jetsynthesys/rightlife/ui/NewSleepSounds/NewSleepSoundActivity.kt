@@ -271,7 +271,7 @@ class NewSleepSoundActivity : BaseActivity() {
 
             override fun onFailure(call: Call<SleepCategoryResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                handleNoInternetView(t)
+                //handleNoInternetView(t)
             }
 
         })
@@ -337,7 +337,7 @@ class NewSleepSoundActivity : BaseActivity() {
             override fun onFailure(call: Call<SleepCategorySoundListResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
                 isLoading = false
-                handleNoInternetView(t)
+                //handleNoInternetView(t)
             }
         })
     }
@@ -523,7 +523,7 @@ class NewSleepSoundActivity : BaseActivity() {
 
             override fun onFailure(call: Call<AddPlaylistResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                handleNoInternetView(t)
+               // handleNoInternetView(t)
             }
         })
     }
@@ -625,7 +625,7 @@ class NewSleepSoundActivity : BaseActivity() {
 
             override fun onFailure(call: Call<SleepSoundPlaylistResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                handleNoInternetView(t)
+                //handleNoInternetView(t)
             }
 
         })
@@ -659,7 +659,7 @@ class NewSleepSoundActivity : BaseActivity() {
 
             override fun onFailure(call: Call<NewReleaseResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                handleNoInternetView(t)
+                //handleNoInternetView(t)
             }
 
         })
@@ -725,7 +725,7 @@ class NewSleepSoundActivity : BaseActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                handleNoInternetView(t)
+                //handleNoInternetView(t)
             }
 
         })

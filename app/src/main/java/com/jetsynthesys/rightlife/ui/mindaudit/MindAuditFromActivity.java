@@ -77,7 +77,7 @@ public class MindAuditFromActivity extends BaseActivity {
             int totalItems = adapter.getItemCount();
 
             if (currentItem == 0)
-                showExitDialog();
+                finishCurrentActivity();
             else
                 viewPager.setCurrentItem(currentItem - 1);
 
@@ -85,7 +85,8 @@ public class MindAuditFromActivity extends BaseActivity {
 
 
         close_dialog.setOnClickListener(view -> {
-            showExitDialog();
+            finishCurrentActivity();
+
         });
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -93,7 +94,7 @@ public class MindAuditFromActivity extends BaseActivity {
             public void handleOnBackPressed() {
                 int currentItem = viewPager.getCurrentItem();
                 if (currentItem == 0)
-                    showExitDialog();
+                    finishCurrentActivity();
                 else
                     viewPager.setCurrentItem(currentItem - 1);
             }
@@ -176,6 +177,18 @@ public class MindAuditFromActivity extends BaseActivity {
                     }
                     return null;
                 });
+    }
+
+    private void finishCurrentActivity(){
+        finish();
+        /*if (isFromMindAuditResult)
+            finish();
+        else {
+            Intent intent = new Intent(MindAuditFromActivity.this, HomeNewActivity.class);
+            intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
+            startActivity(intent);
+            finishAffinity();
+        }*/
     }
 
     private void getAssessmentResult() {

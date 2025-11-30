@@ -10,7 +10,6 @@
         android:id="@+id/image_slider"
         android:layout_width="wrap_content"
         android:layout_height="280dp"
-        android:scaleType="centerCrop"
         android:src="@drawable/planinfo" />
 
     <TextView
