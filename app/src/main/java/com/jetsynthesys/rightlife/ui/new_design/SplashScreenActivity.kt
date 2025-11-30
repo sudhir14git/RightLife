@@ -6,10 +6,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.VideoView
+import com.google.firebase.messaging.FirebaseMessaging
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
@@ -115,6 +117,21 @@ class SplashScreenActivity : BaseActivity() {
         }, SPLASH_DELAY)
 
         animateViews()
+        logCurrentFCMToken()
+    }
+
+    private fun logCurrentFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Log.d("FCM_TOKEN", "Current token: $token")
+                Log.d("FCM_TOKEN", "Token length: ${token?.length}")
+            } else {
+                Log.e("FCM_TOKEN", "Failed to get token", task.exception)
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("FCM_TOKEN", "Token retrieval failed: ${exception.message}", exception)
+        }
     }
 
     private fun animateViews() {

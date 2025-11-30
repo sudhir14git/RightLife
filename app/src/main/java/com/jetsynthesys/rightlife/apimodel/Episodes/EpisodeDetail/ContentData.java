@@ -1,5 +1,7 @@
 package com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Tag;
 
 import java.util.List;
@@ -32,4 +34,8 @@ public class ContentData {
     public Object recommended; // This is null in response thats why its object
     public NextEpisode nextEpisode;
     public boolean isBookmarked;
+
+    public Boolean isLike;
+
+    public Integer likeCount;
 }

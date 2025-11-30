@@ -35,9 +35,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="2dp"
-        android:ellipsize="marquee"
         android:fontFamily="@font/dmsans_bold"
         android:minLines="2"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:text="dkjfhskj"
         android:textColor="@color/text_color_app"
         android:textSize="@dimen/textsize_medium" />

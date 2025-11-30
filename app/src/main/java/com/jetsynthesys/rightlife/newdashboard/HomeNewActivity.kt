@@ -1089,7 +1089,7 @@ class HomeNewActivity : BaseActivity() {
     }
 
     fun checkTrailEndedAndShowDialog(): Boolean {
-        binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+      /*  binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
         binding.includedhomebottomsheet.bottomSheetParent.apply {
             isClickable = false
             isFocusable = false
@@ -1105,7 +1105,8 @@ class HomeNewActivity : BaseActivity() {
                 R.color.rightlife
             )
         )
-        isAdd = !isAdd // Toggle the state
+        isAdd = !isAdd // Toggle the state*/
+        // commented above code as now as per product it should be kept open while going to next screen
 
         return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity()
@@ -3260,6 +3261,10 @@ class HomeNewActivity : BaseActivity() {
                     }
                     isAdd = !isAdd // Toggle the state
                 }.start()
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+            updateMenuSelection(R.id.menu_explore)
         } else {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, HomeDashboardFragment())

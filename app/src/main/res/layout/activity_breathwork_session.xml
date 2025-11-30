@@ -71,7 +71,8 @@
                     android:text="Equal Breathing"
                     android:textColor="@color/text_color_breathwork"
                     android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="@font/merriweather_bold"
+                    />
 
                 <TextView
                     android:id="@+id/tvDescription"

@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityBreathworkSessionBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.shawnlin.numberpicker.NumberPicker
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -151,6 +152,8 @@ class BreathworkSessionActivity : BaseActivity() {
                 sessionCount++
                 binding.tvSessionCount.text = sessionCount.toString()
                 calculateSessiontime()
+            }else{
+                Utils.showNewDesignToast(this, "You cannot select more than 100 sets.", false)
             }
         }
 
