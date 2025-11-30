@@ -313,7 +313,7 @@ class ProfileNewActivity : BaseActivity() {
                 val height = userData.height.toString().split(".")
                 binding.tvHeight.text = "${height[0]} ft ${height[1]} in"
             } else {
-                binding.tvHeight.text = "${userData.height} cm"
+                binding.tvHeight.text = "${userData.height.toInt()} cm"
             }
     }
 
