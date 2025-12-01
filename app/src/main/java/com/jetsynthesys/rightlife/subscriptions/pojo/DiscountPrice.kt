@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 class DiscountPrice {
     @SerializedName("INR")
     @Expose
-    var inr: Int? = null
+    var inr: Double? = null
 
     @SerializedName("USD")
     @Expose
