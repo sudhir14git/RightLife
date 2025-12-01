@@ -1,10 +1,10 @@
 package com.jetsynthesys.rightlife.ui.affirmation.adapter
 
-import ai.nuralogix.anurasdk.output.e.d.v
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -25,6 +25,8 @@ class AffirmationCardPagerAdapter(
     PagerAdapter() {
 
     private val instantiatedViews = mutableMapOf<Int, View>()
+    private lateinit var indicatorView: IndicatorView
+    private lateinit var indicatorScroll: HorizontalScrollView
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val inflater = LayoutInflater.from(container.context)
@@ -38,7 +40,8 @@ class AffirmationCardPagerAdapter(
         val tvAffirmationTitle: TextView = view.findViewById(R.id.tvAffirmationTitle)
         val tvAffirmationAuthor: TextView = view.findViewById(R.id.tvAffirmationAuthor)
         val pageCount: TextView = view.findViewById(R.id.pageCount)
-        val indicatorView : IndicatorView = view.findViewById(R.id.indicator_view)
+        indicatorView = view.findViewById(R.id.indicator_view)
+        indicatorScroll = view.findViewById(R.id.indicator_scroller)
 
         // set card bg
 
@@ -46,47 +49,100 @@ class AffirmationCardPagerAdapter(
             "self-love" -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_selflove)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_selflove)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_selflove))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_selflove
+                    )
+                )
             }
+
             "manifestation" -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_manifestation)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_manifestation)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_manifestation))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_manifestation
+                    )
+                )
             }
+
             "health" -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_health)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_health)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_health))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_health
+                    )
+                )
             }
+
             "abundance" -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_abundance)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_abundance)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_abundance))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_abundance
+                    )
+                )
             }
+
             "gratitude" -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_gratitude)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_gratitude)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_gratitude))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_gratitude
+                    )
+                )
             }
+
             "relationships" -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_relationship)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_relationship)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_relationship))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_relationship
+                    )
+                )
             }
+
             "mindfulness" -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_mindfulness)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_mindfulness)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_mindfulness))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_mindfulness
+                    )
+                )
             }
+
             "stress relief" -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_stressrelief)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_stressrelief)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_stressrelief))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_stressrelief
+                    )
+                )
             }
+
             else -> {
                 imageAffirmationCard.setImageResource(R.drawable.ic_affirmationcard_gratitude)
                 cardViewAffirmation.setBackgroundResource(R.drawable.affirmationcard_bg_gratitude)
-                tvAffirmationAuthor.setTextColor(ContextCompat.getColor(context, R.color.checklist_text_color_gratitude))
+                tvAffirmationAuthor.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.checklist_text_color_gratitude
+                    )
+                )
             }
         }
 
@@ -100,13 +156,13 @@ class AffirmationCardPagerAdapter(
         // Load image using Glide
         //Glide.with(context).load(item).into(image)
 
-        indicatorView.setSlideMode(IndicatorSlideMode.NORMAL);
-        indicatorView.setIndicatorStyle(IndicatorStyle.ROUND_RECT);
+        indicatorView.setSlideMode(IndicatorSlideMode.NORMAL)
+        indicatorView.setIndicatorStyle(IndicatorStyle.ROUND_RECT)
 
 // Set slider sizes programmatically (supported in all releases)
-        indicatorView.setSliderWidth(dp(6));
-        indicatorView.setSliderHeight(dp(3));
-        indicatorView.setSliderGap(dp(2));
+        indicatorView.setSliderWidth(dp(6))
+        indicatorView.setSliderHeight(dp(3))
+        indicatorView.setSliderGap(dp(2))
 
 
 
@@ -118,10 +174,10 @@ class AffirmationCardPagerAdapter(
         return view
     }
 
-    private fun dp(v: Int): Float
-    {
+    private fun dp(v: Int): Float {
         return (v * context.resources.displayMetrics.density).toInt().toFloat()
     }
+
     override fun getCount() = items.size
 
     override fun isViewFromObject(view: View, `object`: Any) = view == `object`
@@ -129,8 +185,33 @@ class AffirmationCardPagerAdapter(
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         container.removeView(`object` as View)
     }
+
     fun getViewAt(position: Int): View? {
         return instantiatedViews[position]
     }
 
+    fun scrollToIndicator(position: Int) {
+        val pageCount = viewPager.adapter?.count ?: return
+
+        // Wait for layout
+        if (indicatorView.width == 0 || indicatorScroll.width == 0) {
+            indicatorView.post { scrollToIndicator(position) }
+            return
+        }
+
+        // Width of each indicator item
+        val itemWidth = indicatorView.width / pageCount.toFloat()
+
+        // X position of the selected indicator
+        val indicatorCenterX = (position * itemWidth) + (itemWidth / 2f)
+
+        // Scroll so that selected indicator appears centered inside the horizontalScrollView
+        val targetScrollX = (indicatorCenterX - indicatorScroll.width / 2f).toInt()
+
+        // Clamp scroll to valid range
+        val maxScrollX = indicatorView.width - indicatorScroll.width
+        val finalX = targetScrollX.coerceIn(0, maxScrollX.coerceAtLeast(0))
+
+        indicatorScroll.smoothScrollTo(finalX, 0)
+    }
 }
