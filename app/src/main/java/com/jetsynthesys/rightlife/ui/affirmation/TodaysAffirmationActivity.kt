@@ -827,6 +827,8 @@ class TodaysAffirmationActivity : BaseActivity() {
         val width = displayMetrics.widthPixels
 
         layoutParams?.width = width
+        val card = dialog.findViewById<View>(R.id.dialog_root_layout)
+        card.setOnClickListener { dialog.dismiss() }
 
         dialog.setOnCancelListener {
             if (sharedPreferenceManager.firstTimeUserForAffirmation)

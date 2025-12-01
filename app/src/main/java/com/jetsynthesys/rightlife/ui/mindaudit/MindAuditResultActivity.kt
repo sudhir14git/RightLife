@@ -1113,9 +1113,9 @@ class MindAuditResultActivity : BaseActivity() {
     private fun getColorResForScoreCAS(score: Int): Int {
         return when (score) {
             in 0..13 -> R.color.green_minimal
-            in 14..19-> R.color.cyan_mild
-            in 20..28 -> R.color.blue_moderate
-            in 29..63 -> R.color.orange_severe
+            in 14..19-> R.color.blue_moderate
+            in 20..28 -> R.color.orange_severe
+            in 29..63 -> R.color.red_ext_severe
             else -> R.color.red_ext_severe
         }
     }

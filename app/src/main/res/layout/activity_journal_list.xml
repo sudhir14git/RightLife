@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:text="Thur . 17 Feb 2025"
             android:textSize="16sp"
-            android:textColor="@color/black"
+            android:textColor="@color/black_plain"
             android:textStyle="bold"
             android:layout_weight="1"
             android:textAlignment="center"/>

@@ -1114,7 +1114,8 @@ class HomeNewActivity : BaseActivity() {
         } else {
             if (!DashboardChecklistManager.checklistStatus) {
                 DialogUtils.showCheckListQuestionCommonDialog(this) {
-                    myHealthFragmentSelected()
+                    //myHealthFragmentSelected()
+                    HandleQuicklinkmenu()
                 }
                 false
             } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
@@ -3235,12 +3236,18 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun myHealthFragmentSelected() {
+        // Get the current fragment
+        val currentFragment =
+                supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+
         if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+            binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
             binding.includedhomebottomsheet.bottomSheetParent.apply {
                 isClickable = false
                 isFocusable = false
                 visibility = View.GONE
             }
+
             binding.includedhomebottomsheet.bottomSheetParent.visibility = View.GONE
             binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
             binding.fab.animate().rotationBy(180f).setDuration(60)
@@ -3502,6 +3509,73 @@ class HomeNewActivity : BaseActivity() {
         editor.remove(SharedPreferenceConstants.ACCESS_TOKEN)
 
         editor.apply()
+    }
+
+
+    private fun HandleQuicklinkmenu(){
+
+            // Get the current fragment
+            val currentFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+
+        // Check if it's HomeExploreFragment
+        if (currentFragment is HomeDashboardFragment) {
+
+        } else
+        {
+
+
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE)
+            {
+                binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                }
+
+                binding.includedhomebottomsheet.bottomSheetParent.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+                binding.fab.animate().rotationBy(180f).setDuration(60)
+                        .setInterpolator(DecelerateInterpolator()).withEndAction {
+                            // Change icon after rotation
+                            if (isAdd)
+                            {
+                                binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                                binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                        this, R.color.rightlife
+                                )
+                                binding.fab.imageTintList = ColorStateList.valueOf(
+                                        resources.getColor(
+                                                R.color.black
+                                        )
+                                )
+                            } else
+                            {
+                                binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                                binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                        this, R.color.white
+                                )
+                                binding.fab.imageTintList = ColorStateList.valueOf(
+                                        resources.getColor(
+                                                R.color.rightlife
+                                        )
+                                )
+                            }
+                            isAdd = !isAdd // Toggle the state
+                        }.start()
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                        .commit()
+                updateMenuSelection(R.id.menu_explore)
+            } else
+            {
+                supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                        .commit()
+                updateMenuSelection(R.id.menu_explore)
+            }
+        }
     }
 }
 
