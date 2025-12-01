@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.questionnaire
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.viewpager2.widget.ViewPager2
@@ -105,6 +106,7 @@ class QuestionnaireEatRightActivity : BaseActivity() {
         fun navigateToNextPage() {
             if (viewPager.currentItem < questionnairePagerAdapter.itemCount - 1) {
                 viewPager.currentItem += 1
+                Log.d("navigateToNextPage: ", "navigateToNextPage: "+viewPager.currentItem)
             }
         }
 

@@ -62,6 +62,14 @@ class CalendarAdapter(
                     if (day.isSelected) R.color.btn_color_journal else R.color.white
                 )
             )
+            if (day.isSelected) {
+                tvDay.setTextColor(ContextCompat.getColor(context, R.color.color_think_right))
+                tvDate.setTextColor(ContextCompat.getColor(context, R.color.color_think_right))
+            } else {
+                tvDay.setTextColor(ContextCompat.getColor(context, R.color.black_plain))
+                tvDate.setTextColor(ContextCompat.getColor(context, R.color.black_plain))
+
+            }
 
             ivCheckMark.visibility = if (day.isSelected) View.VISIBLE else View.INVISIBLE
 
