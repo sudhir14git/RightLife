@@ -153,9 +153,9 @@ class JumpInBackAdapter(
     private fun getTextAccording(contentType: String?): String {
         // Use 'when' for better readability and safety.
         return when {
-            "VIDEO".equals(contentType, ignoreCase = true) -> "mins left"
-            "AUDIO".equals(contentType, ignoreCase = true) -> "mins left"
-            "TEXT".equals(contentType, ignoreCase = true) -> "mins read"
+            "VIDEO".equals(contentType, ignoreCase = true) -> "left"
+            "AUDIO".equals(contentType, ignoreCase = true) -> "left"
+            "TEXT".equals(contentType, ignoreCase = true) -> "read"
             "SERIES".equals(contentType, ignoreCase = true) -> ""
             else -> "" // Return an empty string for unknown types to avoid showing "null"
         }
