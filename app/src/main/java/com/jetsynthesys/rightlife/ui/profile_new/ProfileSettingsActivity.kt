@@ -112,10 +112,11 @@ class ProfileSettingsActivity : BaseActivity() {
                     startActivity(Intent(this, PurchasePlansActivity::class.java))
 
                 "View Past Reports" -> {
-                    if (isShowViewPastReports)
+                    /*if (isShowViewPastReports)
                         startActivity(Intent(this, PastReportActivity::class.java))
                     else
-                        Utils.showNewDesignToast(this, "No past reports available", false)
+                        Utils.showNewDesignToast(this, "No past reports available", false)*/
+                    startActivity(Intent(this, PastReportActivity::class.java))
                 }
 
             }

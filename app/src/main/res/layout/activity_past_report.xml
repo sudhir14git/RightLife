@@ -73,6 +73,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/margin_card_16dp"
+        android:visibility="gone"
         android:paddingHorizontal="8dp" />
+
+    <TextView
+        android:id="@+id/noPastReports"
+        android:layout_width="match_parent"
+        android:text="There are no part reports for you at the moment."
+        android:gravity="center"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
