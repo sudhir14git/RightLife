@@ -279,6 +279,7 @@ class HealthCamRecorderActivity : BaseActivity() {
                 intent.addCategory(Intent.CATEGORY_DEFAULT)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
+                finish()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
