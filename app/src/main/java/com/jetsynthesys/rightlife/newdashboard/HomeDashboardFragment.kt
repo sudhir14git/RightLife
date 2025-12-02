@@ -436,10 +436,20 @@ class HomeDashboardFragment : BaseFragment()
                     Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
                 }
                 markHealthSyncChecklistCompleted()
-            } else {
-                withContext(Dispatchers.Main) {
-                }
+            } else if (granted.isNotEmpty()) {
+                // User granted some permissions. This is a success case.
+                Toast.makeText(requireContext(), "Permissions Granted", Toast.LENGTH_SHORT).show()
+
+                // Proceed to mark the checklist as completed and sync the data.
                 markHealthSyncChecklistCompleted()
+
+            } else {
+                // User explicitly denied ALL permissions. This is a failure case.
+                Toast.makeText(
+                        requireContext(),
+                        "Permissions were denied. Health data cannot be synced.",
+                        Toast.LENGTH_LONG
+                ).show()
             }
         }
         } catch (e: Exception)
