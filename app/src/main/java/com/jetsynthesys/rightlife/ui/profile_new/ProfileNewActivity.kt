@@ -227,7 +227,12 @@ class ProfileNewActivity : BaseActivity() {
                 if (validateUsername(p0.toString())) {
 
                 } else {
-                    Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                    if (p0.toString().isNullOrBlank())
+                    {
+                        //Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 

@@ -124,13 +124,13 @@ class SplashScreenActivity : BaseActivity() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val token = task.result
-                Log.d("FCM_TOKEN", "Current token: $token")
-                Log.d("FCM_TOKEN", "Token length: ${token?.length}")
+                //Log.d("FCM_TOKEN", "Current token: $token")
+                //Log.d("FCM_TOKEN", "Token length: ${token?.length}")
             } else {
-                Log.e("FCM_TOKEN", "Failed to get token", task.exception)
+              // Log.e("FCM_TOKEN", "Failed to get token", task.exception)
             }
         }.addOnFailureListener { exception ->
-            Log.e("FCM_TOKEN", "Token retrieval failed: ${exception.message}", exception)
+            //Log.e("FCM_TOKEN", "Token retrieval failed: ${exception.message}", exception)
         }
     }
 

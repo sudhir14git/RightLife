@@ -261,7 +261,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- base domain -->
-                <data android:scheme="https" android:host="qa.rightlife.com"
+                <data android:scheme="https" android:host="${deeplinkHost}"
                     android:pathPattern="/.*" />
             </intent-filter>
         </activity>
