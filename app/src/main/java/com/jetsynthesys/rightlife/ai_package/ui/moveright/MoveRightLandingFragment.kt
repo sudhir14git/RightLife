@@ -1496,8 +1496,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchUserWorkouts() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val userid = "692d346117f0b54ee5cadb8f"//SharedPreferenceManager.getInstance(requireActivity()).userId
-                val currentDate = "2025-11-27"//LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = userid,
                     start_date = currentDate,
