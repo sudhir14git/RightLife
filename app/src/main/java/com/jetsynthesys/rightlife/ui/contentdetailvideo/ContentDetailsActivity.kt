@@ -722,15 +722,15 @@ class ContentDetailsActivity : BaseActivity() {
 
     private fun callTrackAPI(watchDuration: Double) {
         val contentData = contentResponseObj.data
-        if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
-            CommonAPICall.postVideoPlayedProgress(
-                this,
-                contentData.meta.duration.toDouble(),
-                contentId,
-                watchDuration,
-                contentData.moduleId,
-                contentData.contentType
-            )
+        //if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
+        CommonAPICall.postVideoPlayedProgress(
+            this,
+            contentData.meta.duration.toDouble(),
+            contentId,
+            watchDuration,
+            contentData.moduleId,
+            contentData.contentType
+        )
     }
 
     // analytics logger
