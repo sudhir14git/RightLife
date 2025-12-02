@@ -20,6 +20,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -49,6 +50,7 @@ import android.widget.VideoView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -847,6 +849,10 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     private var isTorchOn = false
     private var isGalleryOpen = false
     var imageSelectedListener: OnImageSelectedListener? = null
+    private var isCameraDialogShowing = false
+    private var cameraSettingsDialog: AlertDialog? = null
+
+
 
     // Activity Result Launcher for selecting an image from gallery
 
@@ -942,7 +948,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 view.findViewById<ImageView>(R.id.galleryButton)?.isEnabled = true
             }, 700) // 500 ms delay
         }
-
+        requestPermissionsIfNeeded()
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
@@ -950,23 +956,70 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         startCamera()
     }
 
-    private fun onPermissionsDenied(deniedPermissions: List<String>) {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+    private fun showCameraSettingsDialog() {
+        if (cameraSettingsDialog?.isShowing == true) return
+        val builder = AlertDialog.Builder(requireContext())
+            .setTitle("Camera Access Denied")
+            .setMessage("Please enable camera access in Settings to snap your meal.")
+            .setCancelable(false)
+            .setPositiveButton("Open Settings", null)
+            .setNegativeButton("Cancel", null)
+        cameraSettingsDialog = builder.create()
+        cameraSettingsDialog?.setOnShowListener {
+            val positiveBtn = cameraSettingsDialog?.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negativeBtn = cameraSettingsDialog?.getButton(AlertDialog.BUTTON_NEGATIVE)
+            positiveBtn?.setOnClickListener {
+                cameraSettingsDialog?.dismiss()
+                openAppSettings()
+            }
+            negativeBtn?.setOnClickListener {
+                cameraSettingsDialog?.dismiss()
+                closeSnapMealFragment()
+            }
+        }
+        cameraSettingsDialog?.show()
     }
 
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.all { it.value }
-
-        if (allGranted) {
-            // ✅ All permissions granted
-            onPermissionsGranted()
-        } else {
-
-            onPermissionsDenied(permissions.filterValues { !it }.keys.toList())
+    private fun openAppSettings() {
+        try {
+            val intent = Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", requireActivity().packageName, null)
+            )
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Fallback: App list settings
+            try {
+                val fallbackIntent = Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
+                fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(fallbackIntent)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
         }
     }
+
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val allGranted = permissions.all { it.value }
+            if (allGranted) {
+                onPermissionsGranted()
+                return@registerForActivityResult
+            }
+            // Some permissions denied
+            val permanentlyDenied = permissions.any { (perm, granted) ->
+                !granted && !shouldShowRequestPermissionRationale(perm)
+            }
+            if (permanentlyDenied) {
+                // User denied twice or pressed "Don't ask again"
+                showCameraSettingsDialog()
+//            } else {
+//                // Temporary deny (first time)
+//                showRationaleDialog()
+            }
+        }
 
     private fun requestPermissionsIfNeeded() {
         if (allPermissionsGranted()) {
@@ -978,17 +1031,17 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
 
     override fun onResume() {
         super.onResume()
-        requestPermissionsIfNeeded()
-        /*if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
-        }*/
+        if (isCameraPermissionGranted()) {
+            cameraSettingsDialog?.dismiss()
+            cameraSettingsDialog = null
 
+            if (!allPermissionsGranted()) {
+                // This will re-request CAMERA permission if needed
+                permissionLauncher.launch(REQUIRED_PERMISSIONS)
+            } else {
+                startCamera()
+            }
+        }
         // Intercept device back press while this dialog is showing
         dialog?.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
@@ -998,6 +1051,13 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 false
             }
         }
+    }
+
+    private fun isCameraPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun closeSnapMealFragment() {

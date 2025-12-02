@@ -18,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.model.CardItem
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
@@ -77,9 +78,13 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        arguments?.let {
-            cardItem = it.getSerializable("cardItem") as? CardItem
+
+        val cardItems = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("cardItem", CardItem::class.java)
+        } else {
+            arguments?.getParcelable("cardItem")
         }
+        cardItem = cardItems
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -166,7 +171,12 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             }
         })
         // Retrieve the CardItem from the Bundle
-        cardItem = arguments?.getSerializable("cardItem") as? CardItem
+        val cardItems = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("cardItem", CardItem::class.java)
+        } else {
+            arguments?.getParcelable("cardItem")
+        }
+        cardItem = cardItems
         // Set the CardItem data to the UI
         cardItem?.let { item ->
             // Set the title

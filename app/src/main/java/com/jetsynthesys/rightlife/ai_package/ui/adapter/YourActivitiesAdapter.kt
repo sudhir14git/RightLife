@@ -540,7 +540,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                         val fragment = WorkoutAnalyticsFragment().apply {
                             arguments = Bundle().apply {
                                 putString("YourActivity", "YourActivity")
-                                putSerializable("cardItem", cardItem)
+                                putParcelable("cardItem", cardItem)
                             }
                         }
                         (context as AppCompatActivity).supportFragmentManager.beginTransaction()

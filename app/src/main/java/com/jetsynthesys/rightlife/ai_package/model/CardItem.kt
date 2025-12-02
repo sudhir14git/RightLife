@@ -1,8 +1,10 @@
 package com.jetsynthesys.rightlife.ai_package.model
 
-import android.graphics.drawable.Icon
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
+
+@Parcelize
 data class CardItem(
     val title: String, // e.g., "Running"
     val duration: String, // e.g., "1 hr 03 mins"
@@ -14,4 +16,4 @@ data class CardItem(
     val heartRateZoneMinutes: HeartRateZoneMinutes, // e.g., {"Below Light": 338, ...}
     val heartRateZonePercentages: HeartRateZonePercentages ,// e.g., {"Below Light": 54.96, ...}
     val isSynced: Boolean
-) : Serializable
+) : Parcelable
