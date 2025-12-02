@@ -1496,8 +1496,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchUserWorkouts() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-                val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                val userid = "692d346117f0b54ee5cadb8f"//SharedPreferenceManager.getInstance(requireActivity()).userId
+                val currentDate = "2025-11-27"//LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = userid,
                     start_date = currentDate,
@@ -1612,7 +1612,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 //                                stepLineGraphView.invalidate()
                                 val adapter = CarouselAdapter(allCardItems) { cardItem, position ->
                                     val fragment = WorkoutAnalyticsFragment().apply {
-                                        arguments = Bundle().apply { putSerializable("cardItem", cardItem) }
+                                        arguments = Bundle().apply { putParcelable("cardItem", cardItem) }
                                     }
                                     requireActivity().supportFragmentManager.beginTransaction()
                                         .replace(R.id.flFragment, fragment, "workoutAnalysisFragment")
@@ -1637,7 +1637,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     if (currentPosition >= 0 && currentPosition < allCardItems.size) {
                                         val selectedCardItem = allCardItems[currentPosition]
                                         val fragment = WorkoutAnalyticsFragment().apply {
-                                            arguments = Bundle().apply { putSerializable("cardItem", selectedCardItem) }
+                                            arguments = Bundle().apply { putParcelable("cardItem", selectedCardItem) }
                                         }
                                         requireActivity().supportFragmentManager.beginTransaction()
                                             .replace(R.id.flFragment, fragment, "workoutAnalysisFragment")

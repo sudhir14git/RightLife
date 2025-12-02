@@ -436,8 +436,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             })
 
         fetchToolGridData()
-        fetchJournalAnswerData()
-        fetchAffirmationsList()
 
         rightLifeReportCard.setOnClickListener {
             var dynamicReportId = ""
