@@ -111,6 +111,7 @@ android {
             buildConfigField("String", "CDN_URL", "\"https://d1sacaybzizpm5.cloudfront.net/\"")
             buildConfigField("String", "VIDEO_CDN_URL", "\"https://jetsynthesisqa-us-east-1.s3-accelerate.amazonaws.com/\"")
             // buildConfigField("String", "BASE_URL", "\"https://"")
+            manifestPlaceholders = [ deeplinkHost: "qa.rightlife.com" ]
         }
 
         create("production") {
@@ -121,7 +122,7 @@ android {
             buildConfigField("String", "BASE_URL_AI", "\"https://ai.rightlife.com/\"")
             buildConfigField("String", "BASE_URL_AI_V2", "\"https://ai.rightlife.com/v2/\"")
             buildConfigField("String", "VIDEO_CDN_URL", "\"https://rightlife-prod-us-east-1.s3-accelerate.amazonaws.com/\"")
-
+            manifestPlaceholders = [ deeplinkHost: "rightlife.com" ]
         }
     }
 

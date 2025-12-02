@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.deeplink
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.healthpagemain.HealthPageMainActivity
 
@@ -12,12 +13,23 @@ import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.Articles.ReceipeDetailActivity
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 
-class DeepLinkRouterActivity : AppCompatActivity() {
+class DeepLinkRouterActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val authToken = sharedPreferenceManager.accessToken
+        if (authToken.isEmpty()) {
+            val intent = Intent(this, DataControlActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
         handleDeepLink()
         finish()
     }
