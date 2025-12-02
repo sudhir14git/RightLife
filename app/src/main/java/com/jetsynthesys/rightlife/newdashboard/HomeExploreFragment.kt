@@ -894,8 +894,8 @@ class HomeExploreFragment : BaseFragment() {
                     || item.category.equals("Health Cam", ignoreCase = true)
                 ) {
                     val spm = SharedPreferenceManager.getInstance(requireActivity())
-
-                    if (spm.userProfile != null && spm.userProfile.user_sub_status == 0) {
+                    (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
+                  /*  if (spm.userProfile != null && spm.userProfile.user_sub_status == 0) {
                         // Not subscribed → redirect to free trial
                         val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
                         intent.putExtra(
@@ -936,7 +936,7 @@ class HomeExploreFragment : BaseFragment() {
                                 ).show()
                             }
                         }
-                    }
+                    }*/
                 }
             }
             binding.viewPager.adapter = adapter
