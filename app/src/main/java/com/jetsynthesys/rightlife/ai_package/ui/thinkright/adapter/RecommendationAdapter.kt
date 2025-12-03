@@ -148,36 +148,36 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
        when(item.contentType) {
            "AUDIO" ->{
                Glide.with(context)
-                   .load( R.drawable.music_mini_icon)
-                   .placeholder(R.drawable.music_mini_icon)
+                   .load( R.drawable.audio_recomendation)
+                   .placeholder(R.drawable.audio_recomendation)
                    .into(holder.overlay)
                holder.bottomText.text = "AUDIO"
            }
            "SERIES" ->{
                Glide.with(context)
-                   .load( R.drawable.book_mini_icon)
-                   .placeholder(R.drawable.book_mini_icon)
+                   .load( R.drawable.series_recommended)
+                   .placeholder(R.drawable.series_recommended)
                    .into(holder.overlay)
                holder.bottomText.text = "SERIES"
            }
            "TEXT" ->{
                Glide.with(context)
-                   .load( R.drawable.book_mini_icon)
-                   .placeholder(R.drawable.book_mini_icon)
+                   .load( R.drawable.article_recomendation)
+                   .placeholder(R.drawable.article_recomendation)
                    .into(holder.overlay)
                holder.bottomText.text = "TEXT"
            }
            "VIDEO"  ->{
                Glide.with(context)
-                   .load( R.drawable.play_mini_icon)
-                   .placeholder(R.drawable.play_mini_icon)
+                   .load( R.drawable.video_recomendation)
+                   .placeholder(R.drawable.video_recomendation)
                    .into(holder.overlay)
                holder.bottomText.text = "VIDEO"
            }
            "YOUTUBE"  ->{
                Glide.with(context)
-                   .load( R.drawable.video_mini_icon)
-                   .placeholder(R.drawable.video_mini_icon)
+                   .load( R.drawable.video_recomendation)
+                   .placeholder(R.drawable.video_recomendation)
                    .into(holder.overlay)
                holder.bottomText.text = "YOUTUBE"
            }

@@ -173,6 +173,82 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/new_score_layout_new"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:visibility="gone"
+                android:layout_marginTop="120dp"
+                android:layout_marginBottom="25dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                card_view:cardBackgroundColor="@color/dotted_red"
+                card_view:cardCornerRadius="12dp"
+                card_view:cardElevation="4dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/mind_audit_scale_new"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dipression"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="20dp"
+                        card_view:layout_constraintStart_toStartOf="parent"
+                        card_view:layout_constraintTop_toTopOf="parent"/>
+                    <TextView
+                        android:id="@+id/mind_audit_scale_category_new"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mild"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="20dp"
+                        card_view:layout_constraintStart_toStartOf="parent"
+                        card_view:layout_constraintTop_toBottomOf="@+id/mind_audit_scale_new"/>
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        card_view:cardCornerRadius="50dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="3dp"
+                        card_view:cardBackgroundColor="@color/white"
+                        card_view:layout_constraintEnd_toEndOf="parent"
+                        card_view:layout_constraintTop_toTopOf="parent"
+                        card_view:layout_constraintBottom_toBottomOf="parent"
+                        >
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <TextView
+                                android:id="@+id/score_result_text_new"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="20sp"
+                                android:textColor="@color/black"
+                                android:text="2"
+                                android:fontFamily="@font/dmsans_bold"
+                                card_view:layout_constraintStart_toStartOf="parent"
+                                card_view:layout_constraintEnd_toEndOf="parent"
+                                card_view:layout_constraintTop_toTopOf="parent"
+                                card_view:layout_constraintBottom_toBottomOf="parent"/>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
 
 
             <ImageView

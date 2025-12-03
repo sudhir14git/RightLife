@@ -94,6 +94,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -500,7 +501,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun setJournalAnswerData(journalData: JournalAnswerData?) {
         tvJournalDate.text = journalData?.createdAt?.let { formatDate(it) }
-        tvJournalTime.text = journalData?.createdAt?.let { formatTime(it) }
+        tvJournalTime.text = journalData?.createdAt?.let { formatTimeNew(it) }
         tvJournalDesc.text = journalData?.answer
         val tagAdapter = journalData?.tags?.let { TagAdapter(it) }
         recyclerViewTags.adapter = tagAdapter
@@ -513,7 +514,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         val parsedDate = ZonedDateTime.parse(isoDate, inputFormatter)
         return parsedDate.format(outputFormatter)
     }
-
+    fun formatTimeNew(isoDate: String): String {
+        return try {
+            val zonedDateTime = ZonedDateTime.parse(isoDate, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+            val localDateTime = zonedDateTime.withZoneSameInstant(ZoneId.systemDefault())
+            localDateTime.format(DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH))
+        } catch (e: Exception) {
+            "Invalid Time"
+        }
+    }
     fun formatTime(isoDate: String): String {
         val inputFormatter = DateTimeFormatter.ISO_ZONED_DATE_TIME
         val outputFormatter = DateTimeFormatter.ofPattern("h a", Locale.ENGLISH)
@@ -1131,30 +1140,32 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                             dataFilledMindAudit.visibility = View.VISIBLE
                             noDataMindAudit.visibility = View.GONE
                             reassessYourMental.visibility = View.VISIBLE
-                            assessmentList =
-                                parseAssessmentData(assessmentResponse.result) // replace with real parsing
+
+                            assessmentList = parseAssessmentData(assessmentResponse.result)
                             adapter = AssessmentPagerAdapter(assessmentList)
                             viewPager.adapter = adapter
+
                             val transformer = CompositePageTransformer().apply {
-                                // Space between pages
-                                addTransformer(MarginPageTransformer(16))  // <- Adjust this to your desired gap
-                                // Optional: slight shrink for visual depth
+                                addTransformer(MarginPageTransformer(16))
                                 addTransformer { page, position ->
-                                    val scale = 0.95f + (1 - abs(position)) * 0.05f
+                                    val scale = 0.95f + (1 - kotlin.math.abs(position)) * 0.05f
                                     page.scaleY = scale
                                 }
                             }
                             viewPager.setPageTransformer(transformer)
                             viewPager.offscreenPageLimit = 3
-                            viewPager.registerOnPageChangeCallback(object :
-                                ViewPager2.OnPageChangeCallback() {
+
+                            // YE 2 LINES ADD KI HAIN → PROBLEM YAHIN THI
+                            dotsLayout.removeAllViews()  // ← SABSE ZAROORI LINE
+                            itemCount = adapter.itemCount  // ← pehle set karo, baad mein loop
+
+                            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                                 override fun onPageSelected(position: Int) {
                                     for (i in 0 until itemCount) {
-                                        val dot = dotsLayout.getChildAt(i)
+                                        val dot = dotsLayout.getChildAt(i) ?: continue
                                         val isActive = i == position
                                         val layoutParams = dot.layoutParams
-                                        layoutParams.width =
-                                            if (isActive) 32.dpToPx() else dotSize.dpToPx()
+                                        layoutParams.width = if (isActive) 32.dpToPx() else 14.dpToPx()
                                         dot.layoutParams = layoutParams
                                         dot.background = ContextCompat.getDrawable(
                                             requireContext(),
@@ -1163,14 +1174,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                     }
                                 }
                             })
-                            itemCount = adapter.itemCount
+
                             dotSize = 14
                             dotMargin = 6
+
+                            // Dots banate waqt pehle clear kiya → ab duplicate nahi honge
                             for (i in 0 until itemCount) {
-                                val ctx = context ?: return@onResponse
-                                val dot = View(ctx).apply {
+                                val dot = View(requireContext()).apply {
                                     layoutParams = LinearLayout.LayoutParams(
-                                        if (i == 0) 32 else dotSize.dpToPx(),  // Active is pill
+                                        if (i == 0) 32.dpToPx() else dotSize.dpToPx(),
                                         dotSize.dpToPx()
                                     ).apply {
                                         setMargins(dotMargin.dpToPx(), 0, dotMargin.dpToPx(), 0)
@@ -1182,26 +1194,27 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                 }
                                 dotsLayout.addView(dot)
                             }
+
                         } else {
                             dataFilledMindAudit.visibility = View.GONE
                             noDataMindAudit.visibility = View.VISIBLE
                             reassessYourMental.visibility = View.GONE
+                            dotsLayout.removeAllViews()  // No data → dots bhi hata do
                         }
                     }
                 } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    //        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     dataFilledMindAudit.visibility = View.GONE
                     noDataMindAudit.visibility = View.VISIBLE
                     reassessYourMental.visibility = View.GONE
+                    dotsLayout.removeAllViews()
                 }
             }
+
             override fun onFailure(call: Call<AssessmentResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                //       Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 dataFilledMindAudit.visibility = View.GONE
                 noDataMindAudit.visibility = View.VISIBLE
                 reassessYourMental.visibility = View.GONE
+                dotsLayout.removeAllViews()
             }
         })
     }

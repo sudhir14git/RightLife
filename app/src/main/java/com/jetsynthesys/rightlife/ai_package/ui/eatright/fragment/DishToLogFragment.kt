@@ -233,16 +233,31 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                         commit()
                     }
                 }else{
-                    val fragment = SearchDishToLogFragment()
-                    val args = Bundle()
-                    args.putString("ModuleName", moduleName)
-                    args.putString("mealType", mealType)
-                    args.putString("selectedMealDate", selectedMealDate)
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
+                    if (searchType.contentEquals("Frequently")){
+                        val fragment = HomeTabMealFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        args.putString("tabType", "null")
+                        fragment.arguments = args
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flFragment, fragment, "landing")
+                            addToBackStack("landing")
+                            commit()
+                        }
+                    }else{
+                        val fragment = SearchDishToLogFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        fragment.arguments = args
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flFragment, fragment, "landing")
+                            addToBackStack("landing")
+                            commit()
+                        }
                     }
                 }
             }
@@ -262,16 +277,31 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     commit()
                 }
             }else{
-                val fragment = SearchDishToLogFragment()
-                val args = Bundle()
-                args.putString("ModuleName", moduleName)
-                args.putString("mealType", mealType)
-                args.putString("selectedMealDate", selectedMealDate)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
+                if (searchType.contentEquals("Frequently")){
+                    val fragment = HomeTabMealFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
+                    args.putString("selectedMealDate", selectedMealDate)
+                    args.putString("tabType", "null")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }else{
+                    val fragment = SearchDishToLogFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
+                    args.putString("selectedMealDate", selectedMealDate)
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
                 }
             }
         }
