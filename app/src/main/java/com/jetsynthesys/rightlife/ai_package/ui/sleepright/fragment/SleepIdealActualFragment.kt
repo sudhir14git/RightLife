@@ -80,6 +80,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private lateinit var tv_ideal_time: TextView
     private lateinit var tv_actual_time: TextView
     private lateinit var sleepCard: CardView
+    private lateinit var sleep_ideal_card_new: CardView
     private lateinit var sleepNoCard: CardView
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -98,6 +99,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         sixMonthGraph = view.findViewById(R.id.sixMonthGraph)
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
+        sleep_ideal_card_new = view.findViewById(R.id.sleep_ideal_card_new)
         percentage_text_average = view.findViewById(R.id.percentage_text_average)
         percentage_text = view.findViewById(R.id.percentage_text)
         sleep_actual_time_box = view.findViewById(R.id.sleep_actual_time_box)
@@ -599,6 +601,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                 tvIdealMessage.visibility = View.VISIBLE
                                 ideal_extra_text.visibility = View.VISIBLE
                                 sleepCard.visibility = View.VISIBLE
+                                sleep_ideal_card_new.visibility = View.VISIBLE
                                 sleepNoCard.visibility = View.GONE
                                 percentage_text.text = "${response.body()!!.data?.progress_detail?.actual_sleep?.progress_percentage?.toInt().toString()}% of past week"
                                 percentage_text_average.text = "${response.body()!!.data?.progress_detail?.needed_sleep?.progress_percentage?.toInt().toString()}% of past week"
@@ -607,6 +610,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                 sleepCard.visibility = View.GONE
                                 sleepNoCard.visibility = View.VISIBLE
                                 tvIdealTitle.visibility = View.GONE
+                                sleep_ideal_card_new.visibility = View.GONE
                                 ideal_extra_text.visibility = View.GONE
                                 tvIdealMessage.visibility = View.GONE
                             }
@@ -616,6 +620,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                         sleepCard.visibility = View.GONE
                         sleepNoCard.visibility = View.VISIBLE
                         tvIdealTitle.visibility = View.GONE
+                        sleep_ideal_card_new.visibility = View.GONE
                         ideal_extra_text.visibility = View.GONE
                         tvIdealMessage.visibility = View.GONE
                         Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
