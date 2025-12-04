@@ -55,7 +55,7 @@
         android:layout_height="56dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:text="Explore Plans"
+        android:text="See Plans"
         android:textSize="16sp"
         android:layout_marginTop="@dimen/margin_card_16dp"
         android:layout_marginBottom="@dimen/margin_card_16dp"

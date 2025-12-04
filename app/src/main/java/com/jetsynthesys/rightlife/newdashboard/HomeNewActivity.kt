@@ -1236,7 +1236,7 @@ class HomeNewActivity : BaseActivity() {
         DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
             "Free Trial Ended",
-            "Explore Plans",
+            "See Plans",
             false,
             R.drawable.ft_ended,
             R.drawable.ft_warning,

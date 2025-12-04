@@ -914,7 +914,7 @@ While you do that here are some suggestion to help you in your journey."
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/merriweather_bold"
+                    android:fontFamily="@font/dmsans_bold"
                     android:padding="16dp"
                     android:text="Recommended For You"
                     android:textColor="@android:color/black"

@@ -39,7 +39,7 @@ class DeleteAccountSelectionActivity : BaseActivity() {
 
         binding.btnContinue.setOnClickListener {
             val selectedReasons = adapter.getSelectedReason()
-            if (selectedReasons?.isEmpty() == true) {
+            if (selectedReasons.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select at least one reason.", Toast.LENGTH_SHORT)
                     .show()
             } else {
