@@ -42,7 +42,7 @@
             android:text="Sleep"
             android:textColor="@color/txt_color_header"
             android:textSize="@dimen/textsize_large18sp"
-            android:fontFamily="@font/dmsans_bold" />
+            android:fontFamily="@font/merriweather_bold" />
 
         <TextView
             android:id="@+id/myPlaylist"
