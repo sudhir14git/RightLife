@@ -1227,19 +1227,45 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
         for (assessmentResult in listData) {
             for (taken in assessmentResult.assessmentsTaken) {
-                for ((interpretationName, interpretation) in taken.interpretations) {
-                    resultList.add(
-                        AssessmentResultData(
-                            assessment = taken.assessment,
-                            interpretation = interpretationName,  // "depression" string
-                            score = interpretation.score,
-                            level = interpretation.level
-                        )
-                    )
+                when (taken.assessment) {
+                    "DASS-21" -> {
+                        // DASS-21 ke liye ek hi entry banani hai, teeno scores ke saath
+                        val depression = taken.interpretations["depression"]
+                        val anxiety = taken.interpretations["anxiety"]
+                        val stress = taken.interpretations["stress"]
+
+                        // Safe check (agar koi missing ho)
+                        if (depression != null && anxiety != null && stress != null) {
+                            val combinedInterpretation = "Depression"
+                            val combinedLevel = "${depression.level} | ${anxiety.level} | ${stress.level}"
+                            val combinedScore = "${depression.score} | ${anxiety.score} | ${stress.score}"
+
+                            resultList.add(
+                                AssessmentResultData(
+                                    assessment = "DASS-21",
+                                    interpretation = combinedInterpretation, // ya "Depression, Anxiety, Stress"
+                                    score = combinedScore,        // "26.0 | 24.0 | 26.0"
+                                    level = combinedLevel         // "Severe | Extremely Severe | Severe"
+                                )
+                            )
+                        }
+                    }
+                    else -> {
+                        // Baaki assessments (PHQ-9, GAD-7 etc.) ke liye normally add karo
+                        for ((interpretationName, interpretation) in taken.interpretations) {
+                            resultList.add(
+                                AssessmentResultData(
+                                    assessment = taken.assessment,
+                                    interpretation = interpretationName.capitalize(),
+                                    score = interpretation.score.toString(),
+                                    level = interpretation.level
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }
-
         return resultList
     }
 
@@ -1392,9 +1418,17 @@ class AssessmentPagerAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.tvAssessmentTitle)
         val scoreText = itemView.findViewById<TextView>(R.id.score_result_text)
+        val scoreTextDepression = itemView.findViewById<TextView>(R.id.score_result_text_new)
+        val scoreTextStress = itemView.findViewById<TextView>(R.id.score_result_text_new_one)
         val mind_audit_scale = itemView.findViewById<TextView>(R.id.mind_audit_scale_category)
+        val mind_audit_scale_dipression_level = itemView.findViewById<TextView>(R.id.mind_audit_scale_category_new)
+        val mind_audit_scale_stress_level = itemView.findViewById<TextView>(R.id.mind_audit_scale_category_new_one)
         val mind_audit_scale_new = itemView.findViewById<TextView>(R.id.mind_audit_scale)
+        val mind_audit_scale_dipression = itemView.findViewById<TextView>(R.id.mind_audit_scale_new)
+        val mind_audit_scale_stress = itemView.findViewById<TextView>(R.id.mind_audit_scale_new_one)
         val new_score_layout = itemView.findViewById<CardView>(R.id.new_score_layout)
+        val new_score_layout_new = itemView.findViewById<CardView>(R.id.new_score_layout_new)
+        val new_score_layout_new_one = itemView.findViewById<CardView>(R.id.new_score_layout_new_one)
         val scaleLayout = itemView.findViewById<LinearLayout>(R.id.scoreScaleLayout)
         val pointer = itemView.findViewById<FrameLayout>(R.id.lyt_score)
         val scoreScaleImage = itemView.findViewById<ImageView>(R.id.scoreScaleImage)
@@ -1411,54 +1445,170 @@ class AssessmentPagerAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = assessments[position]
         holder.title.text = item.assessment
-        val result = item.score.substringBefore(".")
-        holder.scoreText.text = result
-        holder.mind_audit_scale.text = item.level
-        holder.mind_audit_scale_new.text = item.interpretation
+
+
         when (item?.assessment) {
             "DASS-21" -> {
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)
+                val scores = item.score.split("|").map { it.trim() }
+                val levels = item.level.split("|").map { it.trim() }
+
+                // Individual scores
+                val depressionScore = scores.getOrNull(0) ?: "0"
+                val anxietyScore = scores.getOrNull(1) ?: "0"
+                val stressScore = scores.getOrNull(2) ?: "0"
+
+                val score = anxietyScore.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                val dipressionscore = anxietyScore.toFloatOrNull() ?: 0f
+
+                val dipressionbackgroundColor = when {
+                    dipressionscore <= 4 -> "#06B27B"
+                    dipressionscore <= 9 -> "#54C8DB"
+                    dipressionscore <= 12 -> "#06B27B"
+                    dipressionscore <= 14 -> "#57A3FC"
+                    dipressionscore <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout_new.setCardBackgroundColor(Color.parseColor(dipressionbackgroundColor))
+                val stressscore = anxietyScore.toFloatOrNull() ?: 0f
+
+                val stressbackgroundColor = when {
+                    stressscore <= 4 -> "#06B27B"
+                    stressscore <= 9 -> "#54C8DB"
+                    stressscore <= 12 -> "#06B27B"
+                    stressscore <= 14 -> "#57A3FC"
+                    stressscore <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout_new_one.setCardBackgroundColor(Color.parseColor(stressbackgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.VISIBLE
+                holder.new_score_layout_new_one.visibility =View.VISIBLE
+                val anxietyResult = anxietyScore.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                val depressionResult = depressionScore.substringBefore(".")
+                holder.scoreTextDepression.text = depressionResult
+                val stressResult = stressScore.substringBefore(".")
+                holder.scoreTextStress.text = stressResult
+                holder.mind_audit_scale_new.text = "Anxiety"
+                holder.mind_audit_scale_dipression.text = "Depression"
+                holder.mind_audit_scale_stress.text = "Stress"
+                // Individual levels
+                val depressionLevel = levels.getOrNull(0) ?: ""
+                val anxietyLevel = levels.getOrNull(1) ?: ""
+                val stressLevel = levels.getOrNull(2) ?: ""
+                holder.mind_audit_scale.text = anxietyLevel
+                holder.mind_audit_scale_dipression_level.text = depressionLevel
+                holder.mind_audit_scale_stress_level.text = stressLevel
+
+
             }
             "GAD-7" -> {
+                val score = item.score.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.GONE
+                holder.new_score_layout_new_one.visibility =View.GONE
+                val anxietyResult = item.score.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                holder.mind_audit_scale.text = item.level
+                holder.mind_audit_scale_new.text = item.interpretation
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_gad7)
             }
             "OHQ" -> {
+                val score = item.score.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.GONE
+                holder.new_score_layout_new_one.visibility =View.GONE
+                val anxietyResult = item.score.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                holder.mind_audit_scale.text = item.level
+                holder.mind_audit_scale_new.text = item.interpretation
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_ohq)
             }
             "CAS" -> {
+                val score = item.score.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.GONE
+                holder.new_score_layout_new_one.visibility =View.GONE
+                val anxietyResult = item.score.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                holder.mind_audit_scale.text = item.level
+                holder.mind_audit_scale_new.text = item.interpretation
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_cas)
             }
             "PHQ-9" -> {
+                val score = item.score.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.GONE
+                holder.new_score_layout_new_one.visibility =View.GONE
+                val anxietyResult = item.score.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                holder.mind_audit_scale.text = item.level
+                holder.mind_audit_scale_new.text = item.interpretation
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)
             }
         }
         // Clear old views if recycled
       //  holder.scaleLayout.removeAllViews()
         val context = holder.itemView.context
-        val score = item.score.toFloatOrNull() ?: 0f
-        // Range and labels
-        val thresholds = listOf(0, 4, 9, 14, 19, 100)
-        val labels = listOf("Minimal", "Mild", "Moderate", "Severe", "Ext Severe")
-        val colors = listOf(
-            Color.parseColor("#2ECC71"), // Minimal - green
-            Color.parseColor("#1ABC9C"), // Mild - teal
-            Color.parseColor("#3498DB"), // Moderate - blue
-            Color.parseColor("#F39C12"), // Severe - orange
-            Color.parseColor("#E74C3C")  // Ext Severe - red
-        )
-       // val score = item.score.toFloatOrNull() ?: 0f
 
-        // === NEW: Set CardView Background Color Based on JB Score ===
-        val backgroundColor = when {
-            score <= 4 -> "#06B27B"
-            score <= 9 -> "#54C8DB"
-            score <= 12 -> "#06B27B"
-            score <= 14 -> "#57A3FC"
-            score <= 19 -> "#FFBD44"
-            else -> "#FC6656"
-        }
-
-        holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
       //  holder.scaleLayout.removeAllViews()
 //        for (i in labels.indices) {
 //            val column = LinearLayout(context).apply {
