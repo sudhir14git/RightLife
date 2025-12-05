@@ -115,6 +115,10 @@
             android:label="@string/title_activity_content_details"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ui.contentdetailvideo.FullscreenVideoActivity"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity
             android:name=".ui.NewSleepSounds.SleepSoundPlayerActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

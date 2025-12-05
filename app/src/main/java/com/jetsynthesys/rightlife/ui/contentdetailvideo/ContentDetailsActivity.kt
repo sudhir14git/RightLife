@@ -94,6 +94,21 @@ class ContentDetailsActivity : BaseActivity() {
         viewCountRequest.id = contentId
         viewCountRequest.userId = sharedPreferenceManager.userId
         CommonAPICall.updateViewCount(this, viewCountRequest)
+
+        binding.btnFullscreen.setOnClickListener {
+            try {
+                val url = ApiClient.VIDEO_CDN_URL + contentResponseObj.data.url
+                PlayerHolder.lastPosition = player.currentPosition
+                binding.exoPlayerView.player = null   // <<< MUST ADD THIS
+                val intent = Intent(this, FullscreenVideoActivity::class.java)
+                intent.putExtra("VIDEO_URL", url)
+                intent.putExtra("CONTENT_ID", contentId)
+                startActivity(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
     }
 
     // get single content details
@@ -354,71 +369,36 @@ class ContentDetailsActivity : BaseActivity() {
 
 
     private fun initializePlayer(previewUrl: String) {
-        // Ensure 'this' is a valid Context.
-        // If in an Activity, 'this' is fine.
-        // If in a Fragment, use 'requireContext()':
-        //player = ExoPlayer.Builder(this).build()
-        val renderersFactory = DefaultRenderersFactory(this)
-            .setEnableDecoderFallback(true)
 
-        player = ExoPlayer.Builder(this, renderersFactory).build()
-        player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
-
-        player.playWhenReady = true
+        player = PlayerHolder.initPlayer(this)
         binding.exoPlayerView.player = player
 
-        val fullVideoUrl =
-            ApiClient.VIDEO_CDN_URL + previewUrl // Re-integrating your original URL logic
-        val videoUri = Uri.parse(fullVideoUrl)
-
-        Log.d("ExoPlayerInit", "Attempting to play URL: $videoUri")
-
+        val videoUri = Uri.parse(ApiClient.VIDEO_CDN_URL + previewUrl)
         val dataSourceFactory = DefaultHttpDataSource.Factory()
-        // Set a User-Agent to improve compatibility and avoid 403 errors with some servers/CDNs
-        //.setUserAgent("ExoPlayer/2.x (Linux; Android) YourAppName/1.0") // Replace YourAppName and version
 
-        val mediaSource = if (videoUri.toString().endsWith(".m3u8", ignoreCase = true)) {
-            HlsMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(videoUri))
-        } else if (videoUri.toString().endsWith(".mp4", ignoreCase = true)) {
-            ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(videoUri))
-        } else {
-            // Handle other formats or throw an error if the format is not supported
-            Log.e("ExoPlayerInit", "Unsupported video format for URL: $videoUri")
-            // Optionally, return a dummy media source or throw an exception
-            return // Exit the function if format is unsupported
+        val mediaSource =
+            if (videoUri.toString().endsWith(".m3u8")) {
+                HlsMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(videoUri))
+            } else {
+                ProgressiveMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(videoUri))
+            }
+
+        // ⭐ DO NOT CHECK currentMediaItem — ALWAYS SET THE SOURCE
+        player.setMediaSource(mediaSource, /* resetPosition */ false)
+
+        // prepare only once
+        if (PlayerHolder.needsPrepare) {
+            player.prepare()
+            PlayerHolder.needsPrepare = false
         }
 
-        player.setMediaSource(mediaSource)
-
-        player.addListener(object : Player.Listener {
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                when (playbackState) {
-                    Player.STATE_IDLE -> Log.d("ExoPlayer", "State: IDLE")
-                    Player.STATE_BUFFERING -> Log.d("ExoPlayer", "State: BUFFERING")
-                    Player.STATE_READY -> {
-                        Log.d("ExoPlayer", "Player is ready to play")
-                        logContentOpenedEvent()
-                    }
-
-                    Player.STATE_ENDED -> {
-                        Log.d("ExoPlayer", "Playback ended")
-                        logContentWatchedEvent()
-                    }
-                }
-            }
-
-            override fun onPlayerError(error: PlaybackException) {
-                Log.e("ExoPlayer", "Playback error: ${error.message}", error)
-                error.printStackTrace()
-                // Optionally, show a Toast or dialog to the user about the error
-                // Toast.makeText(this@YourActivity, "Error playing video: ${error.message}", Toast.LENGTH_LONG).show()
-            }
-        })
-
-        player.prepare()
+        // resume video
+        player.seekTo(PlayerHolder.lastPosition)
+        player.playWhenReady = true
     }
+
 
 
     fun setModuleColor(moduleId: String) {
@@ -695,10 +675,15 @@ class ContentDetailsActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (Util.SDK_INT >= 24) {
-            //  initializePlayer();
+
+        // Some OEMs require video surface attachment in onStart()
+        if (PlayerHolder.player != null) {
+            binding.exoPlayerView.player = PlayerHolder.player
+            PlayerHolder.player?.seekTo(PlayerHolder.lastPosition)
+            PlayerHolder.player?.playWhenReady = true
         }
     }
+
 
 
     private fun releasePlayer() {
@@ -857,11 +842,7 @@ class ContentDetailsActivity : BaseActivity() {
         super.onPause()
 
         try {
-            // Pause video
-            if (::player.isInitialized && player.isPlaying) {
-                player.pause()
-                player.playWhenReady = false
-            }
+            PlayerHolder.lastPosition = player?.currentPosition ?: 0L
 
             // Pause audio (DON’T stop, only pause)
             if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
@@ -878,12 +859,13 @@ class ContentDetailsActivity : BaseActivity() {
         super.onResume()
 
         try {
-            // Resume video if needed
-            if (::player.isInitialized && !player.isPlaying) {
-                player.playWhenReady = false  // keep paused until user presses play
+            // Re-attach player surface here (most critical)
+            if (PlayerHolder.player != null) {
+                binding.exoPlayerView.player = PlayerHolder.player
+                PlayerHolder.player?.seekTo(PlayerHolder.lastPosition)
+                PlayerHolder.player?.playWhenReady = true
             }
 
-            // Resume audio player UI — don’t auto-play, just keep ready
             if (::mediaPlayer.isInitialized) {
                 mediaPlayer.setOnCompletionListener {
                     handler.removeCallbacks(updateProgress)
@@ -891,20 +873,19 @@ class ContentDetailsActivity : BaseActivity() {
                     logContentWatchedEventAudio()
                 }
             }
+
         } catch (e: Exception) {
-            Log.e("ContentDetails", "Error during onResume", e)
+            Log.e("ContentDetails", "onResume error", e)
         }
     }
+
 
 
     override fun onStop() {
         super.onStop()
         try {
             // Release or stop both players if user left app quickly (Home/Recent Apps)
-            if (::player.isInitialized) {
-                player.pause()
-                player.playWhenReady = false
-            }
+            PlayerHolder.lastPosition = player?.currentPosition ?: 0L
             if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
                 mediaPlayer.stop()
                 //  mediaPlayer.reset()
@@ -921,6 +902,9 @@ class ContentDetailsActivity : BaseActivity() {
             if (::player.isInitialized) {
                 callTrackAPI(player.currentPosition.toDouble() / 1000)
                 player.release()
+                binding.exoPlayerView.player = null
+                PlayerHolder.lastPosition = 0
+                PlayerHolder.release()
             }
 
             // Release audio player
