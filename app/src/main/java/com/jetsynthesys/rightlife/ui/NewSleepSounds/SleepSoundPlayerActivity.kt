@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -32,6 +31,8 @@ import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.max
+import kotlin.math.min
 
 class SleepSoundPlayerActivity : BaseActivity() {
 
@@ -43,6 +44,7 @@ class SleepSoundPlayerActivity : BaseActivity() {
     private var isSeekBarUpdating = false
     private var isFromUserPlayList = false
     private var isListUpdated = false
+    private var isRepeatEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,36 +134,75 @@ class SleepSoundPlayerActivity : BaseActivity() {
             updatePlayPauseButton()
         }
 
+        binding.prev10secButton.setOnClickListener {
+            animateButton(it)
+            val current = player.currentPosition
+            val seekTo = max(current - 10_000, 0)
+            player.seekTo(seekTo)
+        }
+
+        binding.next10secButton.setOnClickListener {
+            animateButton(it)
+            val current = player.currentPosition
+            val duration = player.duration
+            val seekTo = min(current + 10_000, duration)
+            player.seekTo(seekTo)
+        }
+
 
         // Previous Button
         binding.prevButton.setOnClickListener {
+            animateButton(it)
+            isRepeatEnabled = false
+            player.repeatMode = Player.REPEAT_MODE_OFF
             player.seekToPrevious()
             updateUI()
+            updateRepeatOnButtonUI()
         }
 
         // Next Button
         binding.nextButton.setOnClickListener {
-            /*player.seekToNext()
-            updateUI()*/
+            animateButton(it)
             if (player.currentMediaItemIndex == soundList.size - 1) {
                 //Toast.makeText(this, "No more tracks available.", Toast.LENGTH_SHORT).show()
                 Utils.showNewDesignToast(this, "No more tracks available.", false)
             } else {
+                isRepeatEnabled = false
+                player.repeatMode = Player.REPEAT_MODE_OFF
                 player.seekToNext()
                 updateUI()
+                updateRepeatOnButtonUI()
             }
         }
+
+
+        binding.castButton.setOnClickListener {
+            animateButton(it)
+
+            isRepeatEnabled = !isRepeatEnabled
+            updateRepeatOnButtonUI()
+        }
+
         binding.shareButton.setOnClickListener {
             shareIntent()
         }
         binding.shuffleButton.setOnClickListener {
-            if (player.shuffleModeEnabled) {
-                player.shuffleModeEnabled = false
-                Toast.makeText(this, "Shuffle Disabled", Toast.LENGTH_SHORT).show()
-            } else {
-                player.shuffleModeEnabled = true
-                Toast.makeText(this, "Shuffle Enabled", Toast.LENGTH_SHORT).show()
-            }
+            animateButton(it)
+            player.shuffleModeEnabled = !player.shuffleModeEnabled
+
+            val isShuffleOn = player.shuffleModeEnabled
+
+            binding.shuffleButton.setImageResource(
+                if (isShuffleOn) R.drawable.ic_shuffle_player_on
+                else R.drawable.ic_shuffle_player
+            )
+
+            Toast.makeText(
+                this,
+                if (isShuffleOn) "Shuffle Enabled" else "Shuffle Disabled",
+                Toast.LENGTH_SHORT
+            ).show()
+
         }
 
         // Set up SeekBar
@@ -247,9 +288,9 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         }
 
         AnalyticsLogger.logEvent(
-                this,
-                AnalyticsEvent.SR_SleepSound_Player_Opened,
-                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis(), )
+            this,
+            AnalyticsEvent.SR_SleepSound_Player_Opened,
+            mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
         )
     }
 
@@ -292,6 +333,16 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         updateAddButtonUI(service)
     }
 
+    private fun updateRepeatOnButtonUI() {
+        if (isRepeatEnabled) {
+            player.repeatMode = Player.REPEAT_MODE_ONE
+            binding.castButton.setImageResource(R.drawable.ic_cast_repeat_on)
+        } else {
+            player.repeatMode = Player.REPEAT_MODE_OFF
+            binding.castButton.setImageResource(R.drawable.ic_cast_player)
+        }
+    }
+
 
     private fun updatePlayPauseButton() {
         if (player.isPlaying) {
@@ -311,30 +362,22 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
 
     override fun onStart() {
         super.onStart()
-        if (Util.SDK_INT > 23) {
-            player.playWhenReady = true
-        }
+        player.playWhenReady = true
     }
 
     override fun onResume() {
         super.onResume()
-        if (Util.SDK_INT <= 23) {
-            player.playWhenReady = true
-        }
+        player.playWhenReady = true
     }
 
     override fun onPause() {
         super.onPause()
-        if (Util.SDK_INT <= 23) {
-            player.playWhenReady = false
-        }
+        player.playWhenReady = false
     }
 
     override fun onStop() {
         super.onStop()
-        if (Util.SDK_INT > 23) {
-            player.playWhenReady = false
-        }
+        player.playWhenReady = false
     }
 
     override fun onDestroy() {
@@ -435,5 +478,21 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         }
         finish()
     }
+
+    private fun animateButton(view: View) {
+        view.animate()
+            .scaleX(1.2f)
+            .scaleY(1.2f)
+            .setDuration(120)
+            .withEndAction {
+                view.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(120)
+                    .start()
+            }
+            .start()
+    }
+
 }
 
