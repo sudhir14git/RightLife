@@ -121,7 +121,7 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("auth/mobile/generate-otp?type=signup")
         // Assume the API endpoint is /login
-    Call<LoginResponse> generateOtpSignup(@Body SignupOtpRequest request); // Send the request body
+    Call<ResponseBody> generateOtpSignup(@Body SignupOtpRequest request); // Send the request body
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -152,7 +152,7 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("auth/mobile/login")
     // Assume the API endpoint is /login
-    Call<LoginResponseMobile> submitOtpLogin(@Body SubmitLoginOtpRequest request); // Send the request body
+    Call<GoogleLoginTokenResponse> submitOtpLogin(@Body SubmitLoginOtpRequest request); // Send the request body
 
     //Home Page
     // submit OTP Login
@@ -1258,6 +1258,13 @@ public interface ApiService {
     Call<ResponseBody> getDeviceInfo(
             @Query("deviceId") String deviceId,
             @Query("email") String emailId
+
+    );
+
+    @GET("user/device")
+    Call<ResponseBody> getDeviceInfoMobile(
+            @Query("deviceId") String deviceId,
+            @Query("phoneNumber") String phoneNumber
     );
 
     @GET("continue")

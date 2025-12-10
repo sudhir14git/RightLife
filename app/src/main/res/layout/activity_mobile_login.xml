@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:padding="24dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Back Button -->
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_interestscreen"
+            android:padding="0dp" />
+
+
+        <!-- PHONE ENTRY SCREEN -->
+
+
+        <LinearLayout
+            android:id="@+id/layoutPhoneEntry"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_marginTop="32dp">
+
+            <TextView
+                android:text="Ready? Let’s Get Started"
+                android:textSize="@dimen/textsize_large24sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/merriweather_bold"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Enter Your Phone Number"
+                android:layout_marginTop="6dp"
+                android:textSize="@dimen/textsize_large"
+                android:textColor="@color/black_plain"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:text="For Indian Users Only"
+                android:layout_marginTop="6dp"
+                android:textSize="@dimen/textsize_medium"
+                android:textColor="#808080"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvValidationError"
+                android:text="Enter a valid phone number."
+                android:layout_marginTop="6dp"
+                android:textSize="@dimen/textsize_medium"
+                android:textColor="#FD6967"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/dmsans_medium"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"/>
+
+
+            <!-- Phone Input + +91 Box -->
+            <LinearLayout
+                android:layout_marginTop="32dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:background="@drawable/bg_edittext_gray"
+                android:paddingHorizontal="@dimen/margin_card_16dp"
+                android:backgroundTint="@color/gray_light_bg"
+                android:layout_height="50dp">
+
+                <TextView
+                    android:id="@+id/tvCountryCode"
+                    android:text="+91"
+                    android:textSize="18sp"
+                    android:paddingRight="12dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/black_plain"
+                    android:layout_height="wrap_content"/>
+                <View
+                    android:layout_width="1dp"
+                    android:background="#707070"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginVertical="10dp"
+                    android:layout_height="match_parent"/>
+
+                <EditText
+                    android:id="@+id/etPhone"
+                    android:hint="Enter Your Mobile Number Here"
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:textSize="18sp"
+                    android:layout_marginStart="@dimen/margin_card_16dp"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/bg_edittext_gray"
+                    android:textColor="@color/text_color_app"
+                    android:backgroundTint="@color/gray_light_bg"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+
+            <TextView
+                android:text="We do not share your personal data."
+                android:layout_marginTop="@dimen/margin_card_16dp"
+                android:textSize="@dimen/textsize_large"
+                android:textColor="@color/black_plain"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/btnGetOtp"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="20dp"
+
+                android:text="Get OTP"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/menuselected" />
+
+
+        </LinearLayout>
+
+
+        <!-- OTP VERIFICATION SCREEN -->
+
+
+        <LinearLayout
+            android:id="@+id/layoutOtpScreen"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_marginTop="32dp">
+
+            <TextView
+                android:text="Enter The OTP Below"
+                android:textSize="@dimen/textsize_large24sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/merriweather_bold"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvOtpSubtitle"
+                android:text="Please enter the four digit code sent to"
+                android:layout_marginTop="16dp"
+                android:textSize="14sp"
+                android:textColor="@color/black_plain"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"/>
+
+            <!-- Phone Number with Change Option -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/margin_card_16dp"
+                android:layout_marginTop="@dimen/margin_card_16dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+91"
+                    android:textSize="@dimen/textsize_medium"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/black" />
+                <TextView
+                    android:id="@+id/tvMobileNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_marginStart="10dp"
+                    android:textSize="@dimen/textsize_medium"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/text_color_app" />
+
+                <TextView
+                    android:id="@+id/changeNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Change"
+                    android:textSize="@dimen/textsize_medium"
+                    android:textColor="@color/text_color_app"
+                    android:layout_marginStart="16dp"
+                    android:gravity="end"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:padding="4dp" />
+
+            </LinearLayout>
+
+            <!-- OTP BOXES -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/et_otp1"
+                    style="@style/OtpEditTextStyle" />
+
+                <EditText
+                    android:id="@+id/et_otp2"
+                    style="@style/OtpEditTextStyle"
+                    android:layout_marginStart="8dp" />
+
+                <EditText
+                    android:id="@+id/et_otp3"
+                    style="@style/OtpEditTextStyle"
+                    android:layout_marginStart="8dp" />
+
+                <EditText
+                    android:id="@+id/et_otp4"
+                    style="@style/OtpEditTextStyle"
+                    android:layout_marginStart="8dp" />
+
+                <EditText
+                    android:id="@+id/et_otp5"
+                    style="@style/OtpEditTextStyle"
+                    android:layout_marginStart="8dp" />
+
+                <EditText
+                    android:id="@+id/et_otp6"
+                    style="@style/OtpEditTextStyle"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvOtpError"
+                android:text="Incorrect OTP"
+                android:textColor="@color/red"
+                android:visibility="visible"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- Resend Timer -->
+            <TextView
+                android:id="@+id/tvResend"
+                android:layout_marginTop="16dp"
+                android:text="Resend OTP"
+                android:textSize="@dimen/textsize_large18sp"
+                android:textColor="@color/menuselected"
+                android:gravity="center"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvResendCounter"
+                android:text="(30s)"
+                android:textSize="@dimen/textsize_large18sp"
+                android:textColor="@color/menuselected"
+                android:gravity="center"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_width="match_parent"
+                android:enabled="false"
+                android:layout_marginTop="16dp"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btnVerifyOtp"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="20dp"
+                android:text="Verify"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/menuselected" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
