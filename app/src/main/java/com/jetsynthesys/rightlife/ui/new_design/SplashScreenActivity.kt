@@ -72,6 +72,19 @@ class SplashScreenActivity : BaseActivity() {
                     }
                 }
 
+                email = try {
+                    sharedPreferenceManager.userProfile.userdata.phoneNumber
+                } catch (e: NullPointerException) {
+                    sharedPreferenceManager.email
+                }
+                if (loggedInUser == null) {
+                    for (user in sharedPreferenceManager.loggedUserList) {
+                        if (email == user.email) {
+                            loggedInUser = user
+                        }
+                    }
+                }
+
                 AnalyticsLogger.logEvent(this,
                         AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
                         AnalyticsParam.USER_ID to sharedPreferenceManager.userId,

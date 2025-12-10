@@ -25,7 +25,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.viewpager2.widget.ViewPager2
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -107,6 +110,9 @@ class ImageSliderActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setChildContentView(R.layout.activity_image_slider)
+        val logger = AppEventsLogger.newLogger(this)
+        logger.logEvent("my_debug_test_event")
+        logger.flush()
 
         // Initialize the ViewPager2 and TabLayout
         viewPager = findViewById(R.id.viewPager_image_slider)
@@ -222,6 +228,10 @@ class ImageSliderActivity : BaseActivity() {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
+        val btnMobile = findViewById<TextView>(R.id.btn_mobile)
+        btnMobile.setOnClickListener {
+            startActivity(Intent(this, MobileLoginActivity::class.java))
+        }
 
 
     }
@@ -229,6 +239,29 @@ class ImageSliderActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         handler.postDelayed(runnable, timeDurationForImageSlider)
+
+        //AppEventsLogger.activateApp(this)
+
+
+        val logger = AppEventsLogger.newLogger(this)
+
+        // Optional: one app-start test event
+        val params = Bundle().apply {
+            putString("source", "app_start")
+            putString("build_type", if (BuildConfig.DEBUG) "debug" else "release")
+        }
+        logger.logEvent("rl_app_start_test", params)
+        logger.logEvent("test_event_code", bundleOf(
+                "test_param" to "debug_value",
+                "test_event_code" to "TEST86160",
+                "app_version" to BuildConfig.VERSION_NAME
+        ))
+
+        logger.logEvent("this_is_some_event")
+        logger.logEvent("TEST86160")
+        logger.flush()
+
+        Log.d("MetaSDK", "Sent rl_app_start_test")
     }
 
     override fun onPause() {
