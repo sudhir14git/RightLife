@@ -152,7 +152,16 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_EAT_EXPLORE = "eatright-explore"
         const val TARGET_SLEEP_EXPLORE = "sleepright-explore"
         const val TARGET_MOVE_EXPLORE = "moveright-explore"
-
+        const val TARGET_MOVERIGHT_HOME = "moveright-home"
+        const val TARGET_WORKOUT_LOG_DEEP = "workoutlog-deep"
+        const val TARGET_EATRIGHT_HOME      = "eatright-home"
+        const val TARGET_SLEEPRIGHT_HOME    = "sleepright-home"
+        const val TARGET_WEIGHT_LOG_DEEP = "weight-log-deep"
+        const val TARGET_WATER_LOG_DEEP = "water-log-deep"
+        const val TARGET_SNAP_MEAL_DEEP = "snap-meal-deep"
+        const val TARGET_FOOD_LOG_DEEP = "food-log-deep"
+        const val TARGET_SLEEP_LOG_DEEP = "sleep-log-deep"
+        const val TARGET_THINKRIGHT_HOME = "thinkright-home"
 
 // Quick link section
         const val TARGET_FACE_SCAN = "face-scan"
@@ -285,6 +294,88 @@ class HomeNewActivity : BaseActivity() {
             }
             TARGET_FACE_SCAN -> {
                 callFaceScanClick()
+            }
+            TARGET_EATRIGHT_HOME -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "Not")
+                    })
+                }
+            }
+
+            TARGET_SLEEPRIGHT_HOME -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "SleepRight")
+                        putExtra("BottomSeatName", "Not")
+                    })
+                }
+            }
+            TARGET_MOVERIGHT_HOME -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "MoveRight")
+                        putExtra("BottomSeatName", "Not")
+                    })
+                }
+            }
+
+            TARGET_WORKOUT_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "MoveRight")
+                        putExtra("BottomSeatName", "SearchActivityLogMove") // YourActivityFragment
+                    })
+                }
+            }
+            TARGET_WEIGHT_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "LogWeightEat")  // ← Ye hi Weight Log kholta hai
+                    })
+                }
+            }
+            TARGET_WATER_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "LogWaterIntakeEat")  // Water Log screen
+                    })
+                }
+            }
+            TARGET_SNAP_MEAL_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "SnapMealTypeEat")  // Ye hi Snap Meal kholta hai
+                    })
+                }
+            }
+            TARGET_FOOD_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "MealLogTypeEat")  // Ye hi Food Log kholta hai
+                    })
+                }
+            }
+            TARGET_SLEEP_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "SleepRight")
+                        putExtra("BottomSeatName", "LogLastNightSleep")  // Ye hi Sleep Log kholta hai
+                    })
+                }
+            }
+            TARGET_THINKRIGHT_HOME -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "ThinkRight")
+                        putExtra("BottomSeatName", "Not")  // ThinkRight ka default home tab
+                    })
+                }
             }
             TARGET_SNAP_MEAL -> {
                 callSnapMealClick()
