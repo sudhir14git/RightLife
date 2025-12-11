@@ -153,14 +153,19 @@ class DeepLinkRouterActivity : BaseActivity() {
                         HomeNewActivity.TARGET_WATER_LOG
                 )
             }
-
+            path == "/thinkright" || path == "/thinkright-home" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_THINKRIGHT_HOME
+                )
+            }
             // sleep-log
-            path == "/sleep-log" -> {
+           /* path == "/sleep-log" -> {
                 intent.putExtra(
                         HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
                         HomeNewActivity.TARGET_SLEEP_LOG
                 )
-            }
+            }*/
 
 
             // food-log
@@ -219,13 +224,62 @@ class DeepLinkRouterActivity : BaseActivity() {
                         HomeNewActivity.TARGET_MOVE_EXPLORE
                 )
             }
-
+            path == "/moveright-home" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_MOVERIGHT_HOME
+                )
+            }
+            path == "/eatright-home" -> {
+                intent.putExtra(HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_EATRIGHT_HOME)
+            }
+            path == "/sleepright-home" -> {
+                intent.putExtra(HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_SLEEPRIGHT_HOME)
+            }
+            path == "/weight-log" || path == "/weight_log" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_WEIGHT_LOG_DEEP
+                )
+            }
+            path == "/water-log" || path == "/water_log" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_WATER_LOG_DEEP
+                )
+            }
+            path == "/snap-meal" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_SNAP_MEAL_DEEP
+                )
+            }
+            path == "/food-log" || path == "/food_log" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_FOOD_LOG_DEEP
+                )
+            }
+            path == "/sleep-log" || path == "/sleep_log" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_SLEEP_LOG_DEEP
+                )
+            }
 
             // Profile
             path == "/saved-content" -> {
                 intent.putExtra(
                         HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
                         HomeNewActivity.TARGET_SAVED_ITEMS
+                )
+            }
+            path == "/workoutlog" || path == "/workout-log" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_WORKOUT_LOG_DEEP
                 )
             }
 

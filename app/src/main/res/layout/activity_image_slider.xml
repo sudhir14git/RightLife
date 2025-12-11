@@ -56,8 +56,23 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/btn_mobile"
+                android:layout_width="300dp"
+                android:layout_height="45dp"
+                android:text="Continue With Phone Number"
+                android:textColor="@color/txt_color_header"
+                android:drawableStart="@drawable/ic_mobile_login"
+                android:textSize="@dimen/textsize_medium"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center"
+                android:drawablePadding="8dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_google_btn" />
+            <TextView
                 android:id="@+id/btn_google"
-                android:layout_width="wrap_content"
+                android:layout_width="300dp"
                 android:layout_height="45dp"
                 android:text="@string/continue_google"
                 android:textColor="@color/txt_color_header"
