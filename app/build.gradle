@@ -327,6 +327,8 @@ dependencies {
 // Notification
     implementation "com.google.firebase:firebase-messaging"
 
+    //razorPay
+    implementation 'com.razorpay:checkout:1.6.33'
 // Auto read sms
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'

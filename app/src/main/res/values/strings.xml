@@ -329,5 +329,10 @@ We also use device identifiers to improve analytics and tailor your in-app exper
     <!--<string name="facebook_client_token">e6b3688449411d8e23741468c7bf7a66</string>-->
     <string name="facebook_client_token">72b5ef62f4169bb4551d00f2d45bc568</string>
 
+    <string name="change_plan_underlined"><u>Change plan</u></string>
+
+    <string name="razorpay_key">rzp_test_xxxxxxxxx</string>
+
+
 
 </resources>
