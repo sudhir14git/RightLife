@@ -316,7 +316,6 @@ dependencies {
 // Notification
     implementation "com.google.firebase:firebase-messaging"
 
-
-
-
+    //razorPay
+    implementation 'com.razorpay:checkout:1.6.33'
 }

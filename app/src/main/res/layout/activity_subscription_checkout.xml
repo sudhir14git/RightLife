@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/settings_bg_color"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Back Arrow and Title -->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_back" />
+
+        <TextView
+            android:id="@+id/tvHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/merriweather_bold"
+            android:text="Checkout"
+            android:textColor="@color/txt_color_mind"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/tvChangePlan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="@string/change_plan_underlined"
+                android:layout_gravity="end"
+                android:textColor="@color/txt_color_mind"
+                android:textSize="14sp" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                android:layout_marginTop="8dp"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:id="@+id/llHeaderLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:src="@drawable/logo_rightlife" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginHorizontal="8dp">
+
+                            <TextView
+                                android:id="@+id/planTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Monthly"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textColor="@color/txt_color_mind"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/tvCancel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cancel anytime online"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@color/gray_past_price"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="end"
+                        android:layout_alignParentEnd="true">
+
+                        <TextView
+                            android:id="@+id/tvPlanAmmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0.0"
+                            android:textColor="@color/txt_color_journal_date"
+                            android:textSize="20sp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:paddingVertical="4dp"
+                            android:backgroundTint="@color/color_green" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:id="@+id/ll_planOffer"
+                            android:orientation="horizontal"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/planOffer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="amount/month"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@color/txt_color_journal_date"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/planOffer_discount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@color/txt_color_journal_date"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose how to pay"
+                android:textSize="18sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/txt_color_mind"
+                android:layout_marginTop="24dp" />
+
+            <!-- Underline Text 1 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose who will secure and process your payment and provide customer service. Benefits and available forms of payment may vary. "
+                android:textColor="@color/txt_color_mind"
+                android:textSize="14sp"
+                android:layout_marginVertical="8dp" />
+
+            <FrameLayout
+                android:id="@+id/layoutRazorPay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                android:background="@android:color/transparent"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <!-- RelativeLayout to position the star icon and dialog content -->
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_subscription_plan"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:layout_marginTop="20dp">
+
+                    <!-- Star Icon Positioned Half Above the Dialog -->
+                    <TextView
+                        android:id="@+id/tvBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recommended"
+                        android:background="@drawable/roundedcornershape"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="-16dp"
+                        android:adjustViewBounds="true"
+                        android:textColor="@color/white"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="4dp"
+                        android:layout_marginHorizontal="8dp"
+                        android:textSize="@dimen/textsize_small"
+                        android:backgroundTint="@color/color_green" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:id="@+id/llHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+
+                            <!-- Logo -->
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/logo_rightlife" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginStart="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="RightLife"
+                                    android:textSize="18sp"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:textColor="@color/txt_color_mind" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Powered by RazorPay"
+                                    android:textSize="12sp"
+                                    android:fontFamily="@font/dmsans_regular"
+                                    android:textColor="@color/txt_color_mind" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llIconsRazorPay"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_below="@id/llHeader"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginStart="50dp"/>
+
+                        <!-- Divider -->
+                        <View
+                            android:id="@+id/divider"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="12dp"
+                            android:background="#DDDDDD"
+                            android:layout_below="@id/llIconsRazorPay" />
+
+                        <LinearLayout
+                            android:id="@+id/llBulletPoints"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_below="@id/divider" />
+
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </FrameLayout>
+
+            <!-- ===================== CARD 2 (Google Play) ====================== -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewInAppPurchase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                app:cardElevation="3dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <!-- Google Play Icon -->
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/logo_rightlife" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Google Play"
+                            android:textSize="18sp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textColor="@color/txt_color_mind" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Managed by Google"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:textColor="@color/txt_color_mind" />
+
+                        <LinearLayout
+                            android:id="@+id/llIconsGooglePlay"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_below="@id/llHeader"
+                            android:layout_marginTop="12dp" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -1,38 +1,29 @@
 package com.jetsynthesys.rightlife.subscriptions.adapter
 
-import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.ProductDetails
-import com.jetsynthesys.rightlife.databinding.RowSubscriptionBinding
+import com.jetsynthesys.rightlife.databinding.RowPlanSelectionBinding
 import com.jetsynthesys.rightlife.subscriptions.pojo.PlanList
 import java.text.NumberFormat
 import java.util.Currency
 
-class SubscriptionPlanAdapter(
+class PlanSelectionAdapter(
     private val plans: List<PlanList>,
     private val productDetailsMap: HashMap<String, ProductDetails>,
-    private val onPlanSelected: (PlanList) -> Unit,
-    private val onBuyClick: (Int) -> Unit
-) : RecyclerView.Adapter<SubscriptionPlanAdapter.PlanViewHolder>() {
+    private val onPlanSelected: (Int) -> Unit,
+) : RecyclerView.Adapter<PlanSelectionAdapter.PlanViewHolder>() {
 
     private var selectedPosition = -1
-    val Int.dp: Int
-        get() =
-            (this * Resources.getSystem().displayMetrics.density).toInt()
 
-    inner class PlanViewHolder(private val binding: RowSubscriptionBinding) :
+    inner class PlanViewHolder(private val binding: RowPlanSelectionBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(plan: PlanList, position: Int) {
             binding.planTitle.text = plan.title ?: ""
-            binding.planName.text = plan.desc ?: ""
 
             // Get product details from Play Store
             val productDetails = plan.googlePlay?.let { productDetailsMap[it] }
@@ -55,23 +46,9 @@ class SubscriptionPlanAdapter(
 
             binding.root.setOnClickListener {
                 selectedPosition = bindingAdapterPosition
-                onPlanSelected(plan)
+                onPlanSelected(position)
                 notifyDataSetChanged()
             }
-
-            binding.tvBuy.setOnClickListener {
-                onBuyClick(bindingAdapterPosition)
-            }
-
-            val bulletPoints = listOf(
-                "RightLife Premium, monthly",
-                "Everything unlocked, all tools and content",
-                "Unlimited Meal Snap, scan any meal, get calories and macros in seconds",
-                "4 Face Scans every month, HR, HRV, stress, breathing rate, CVD risk",
-                "Auto renews; cancel anytime"
-            )
-
-            addBulletPoints(binding.llBulletPoints, bulletPoints)
         }
 
         private fun displayPlayStorePricing(productDetails: ProductDetails, plan: PlanList) {
@@ -176,7 +153,7 @@ class SubscriptionPlanAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlanViewHolder {
         val binding =
-            RowSubscriptionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            RowPlanSelectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PlanViewHolder(binding)
     }
 
@@ -185,22 +162,4 @@ class SubscriptionPlanAdapter(
     }
 
     override fun getItemCount(): Int = plans.size
-
-    private fun addBulletPoints(container: LinearLayout, points: List<String>) {
-
-        container.removeAllViews()  // Clear old bullets
-
-        points.forEachIndexed { index, point ->
-
-            val tv = TextView(container.context).apply {
-                text = "• $point"
-                setTextColor(Color.parseColor("#14142A"))
-                textSize = 13f
-                setPadding(0, if (index == 0) 0 else 6.dp, 0, 0)
-            }
-
-            container.addView(tv)
-        }
-    }
-
 }
