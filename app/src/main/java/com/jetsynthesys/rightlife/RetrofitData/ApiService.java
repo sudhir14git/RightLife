@@ -24,6 +24,8 @@ import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQu
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
+import com.jetsynthesys.rightlife.subscriptions.pojo.OrderRequestRazorpay;
+import com.jetsynthesys.rightlife.subscriptions.pojo.OrderResponseRazorpay;
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentIntentResponse;
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest;
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse;
@@ -1322,7 +1324,14 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Query("title") String searchText
     );
+
+    // Razorpay api
+    @POST("payment/order")
+    Call<OrderResponseRazorpay> createPaymentOrder(
+            @Header("Authorization") String authToken,
+            @Body OrderRequestRazorpay request);
 }
+
 
 
 //private static final String BASE_URL = "https://qa.rightlife.com/api/app/api/"; // Your API URL

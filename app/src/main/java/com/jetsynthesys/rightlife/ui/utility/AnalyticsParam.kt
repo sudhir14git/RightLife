@@ -70,4 +70,13 @@ object AnalyticsParam {
 
     const val MR_Crash_Msg = "mr_crash_msh"
 
+    // Razorpay
+    const val PAYMENT_METHOD = "payment_method"
+    const val PAYMENT_STATUS = "payment_status"
+    const val PAYMENT_ID = "payment_id"
+    const val ORDER_ID = "order_id"
+    const val AMOUNT = "amount"
+    const val CURRENCY = "currency"
+    const val RECEIPT = "receipt"
+
 }

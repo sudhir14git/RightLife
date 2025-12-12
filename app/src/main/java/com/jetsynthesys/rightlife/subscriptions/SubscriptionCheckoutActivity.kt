@@ -38,6 +38,9 @@ import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionCheckoutBindin
 import com.jetsynthesys.rightlife.databinding.BottomsheetPlanSelectionBinding
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.adapter.PlanSelectionAdapter
+import com.jetsynthesys.rightlife.subscriptions.pojo.OrderDataRazorpay
+import com.jetsynthesys.rightlife.subscriptions.pojo.OrderRequestRazorpay
+import com.jetsynthesys.rightlife.subscriptions.pojo.OrderResponseRazorpay
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentIntentResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
@@ -758,15 +761,100 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
         }
     }
 
-    override fun onPaymentSuccess(p0: String?) {
+ /*   override fun onPaymentSuccess(p0: String?) {
         // Success of RazorPay
     }
 
     override fun onPaymentError(p0: Int, p1: String?) {
         showCustomToast("Payment failed.")
-    }
+    }*/
 
     private fun startRazorPayPayment() {
+        val plan = planList[position]
+
+        // Show loading indicator
+        binding.layoutRazorPay.isEnabled = false
+        // You can show a progress dialog here if needed
+
+        // Create order request
+        val orderRequestRazorpay = OrderRequestRazorpay(
+                userId = sharedPreferenceManager.userId ?: "", // Make sure you have userId in SharedPreferenceManager
+                planId = plan.id ?: "",
+                amount = plan.price?.inr ?: 0,
+                currency = "INR",
+                receipt = "rcpt_${System.currentTimeMillis()}"
+        )
+
+        // Call backend to create order
+        val call = apiService.createPaymentOrder(
+                sharedPreferenceManager.accessToken,
+                orderRequestRazorpay
+        )
+
+        call.enqueue(object : Callback<OrderResponseRazorpay> {
+            override fun onResponse(
+                    call: Call<OrderResponseRazorpay>,
+                    response: Response<OrderResponseRazorpay>
+            ) {
+                binding.layoutRazorPay.isEnabled = true
+
+                if (response.isSuccessful && response.body() != null) {
+                    val orderData = response.body()!!.data
+                    initiateRazorpayCheckout(orderData)
+                } else {
+                    showToast("Failed to create order. Please try again.")
+                    Log.e("RazorPay", "Order creation failed: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<OrderResponseRazorpay>, t: Throwable) {
+                binding.layoutRazorPay.isEnabled = true
+                handleNoInternetView(t)
+                Log.e("RazorPay", "Order creation error", t)
+            }
+        })
+    }
+
+    private fun initiateRazorpayCheckout(orderData: OrderDataRazorpay) {
+        val co = Checkout()
+        co.setKeyID(getString(R.string.razorpay_key))
+
+        try {
+            val plan = planList[position]
+            val options = JSONObject()
+
+            // Use order ID from backend
+            options.put("order_id", orderData.orderId)
+            options.put("name", "RightLife")
+            options.put("description", plan.title ?: "Subscription Plan")
+            options.put("currency", orderData.currency)
+            options.put("amount", orderData.amount * 100) // Convert to paise
+
+            // Get user info from shared preferences
+            val preFill = JSONObject()
+            preFill.put("email", sharedPreferenceManager.email ?: "")
+            preFill.put("contact", sharedPreferenceManager.mobile ?: "")
+            options.put("prefill", preFill)
+
+            // Theme customization (optional)
+            val theme = JSONObject()
+            theme.put("color", "#3399cc")
+            options.put("theme", theme)
+
+            // Store order data for success callback
+            sharedPreferenceManager.saveString("pending_order_id", orderData.dbOrderId)
+            sharedPreferenceManager.saveString("pending_razorpay_order_id", orderData.orderId)
+
+            co.open(this, options)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            showToast("Error: ${e.localizedMessage}")
+            Log.e("RazorPay", "Checkout error", e)
+        }
+    }
+    // old keep for test
+    /*private fun startRazorPayPayment() {
 
         val co = Checkout()
         co.setKeyID(getString(R.string.razorpay_key))
@@ -790,6 +878,81 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
             e.printStackTrace()
             Toast.makeText(this, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
         }
+    }*/
+    override fun onPaymentSuccess(razorpayPaymentId: String?) {
+        Log.d("RazorPay", "Payment successful: $razorpayPaymentId")
+
+        if (razorpayPaymentId.isNullOrEmpty()) {
+            showToast("Payment ID not received")
+            return
+        }
+
+        // Get stored order data
+        val dbOrderId = sharedPreferenceManager.getString("pending_db_order_id", "")
+        val razorpayOrderId = sharedPreferenceManager.getString("pending_razorpay_order_id", "")
+
+        // Create payment success request
+        val paymentSuccessRequest = PaymentSuccessRequest()
+        paymentSuccessRequest.planId = planList[position].id
+        paymentSuccessRequest.planName = planList[position].purchase?.planName
+        paymentSuccessRequest.paymentGateway = "razorpay"
+        paymentSuccessRequest.orderId = razorpayOrderId
+        paymentSuccessRequest.environment = "payment"
+        paymentSuccessRequest.notifyType = "SDK"
+        paymentSuccessRequest.couponId = ""
+        paymentSuccessRequest.obfuscatedExternalAccountId = ""
+        paymentSuccessRequest.price = planList[position].price?.inr.toString()
+
+        val sdkDetail = SdkDetail()
+        sdkDetail.price = planList[position].price?.inr.toString()
+        sdkDetail.orderId = razorpayOrderId
+        sdkDetail.title = planList[position].title ?: ""
+        sdkDetail.environment = "payment"
+        sdkDetail.description = "Razorpay Payment - $razorpayPaymentId"
+        sdkDetail.currencyCode = "INR"
+        sdkDetail.currencySymbol = "₹"
+
+        paymentSuccessRequest.sdkDetail = sdkDetail
+
+        // Clear stored order data
+        sharedPreferenceManager.removeKey("pending_db_order_id")
+        sharedPreferenceManager.removeKey("pending_razorpay_order_id")
+
+        // Save to backend
+        saveSubscriptionSuccess(paymentSuccessRequest)
+
+        // Log analytics event
+        logRazorpayPurchaseEvent()
+
+        showToast("Payment successful!")
+        isSubscriptionTaken = true
     }
 
+    override fun onPaymentError(errorCode: Int, errorMessage: String?) {
+        Log.e("RazorPay", "Payment failed: $errorCode - $errorMessage")
+
+        // Clear stored order data
+        sharedPreferenceManager.removeKey("pending_db_order_id")
+        sharedPreferenceManager.removeKey("pending_razorpay_order_id")
+
+        showCustomToast("Payment failed: ${errorMessage ?: "Unknown error"}")
+    }
+
+    private fun logRazorpayPurchaseEvent() {
+        val eventName = if (type == "FACIAL_SCAN") {
+            AnalyticsEvent.FACE_SCAN_PURCHASE_COMPLETED
+        } else {
+            AnalyticsEvent.SUBSCRIPTION_PURCHASE_COMPLETED
+        }
+
+        /*AnalyticsLogger.logEvent(
+                this,
+                eventName,
+                mapOf(
+                        AnalyticsParam.PRODUCT_ID to "${planList[position].id}",
+                        AnalyticsParam.PAYMENT_METHOD to "razorpay",
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                )
+        )*/
+    }
 }

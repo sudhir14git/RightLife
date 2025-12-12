@@ -603,5 +603,36 @@ public class SharedPreferenceManager {
         editor.putBoolean(name, false);
         editor.apply();
     }
+
+
+    // Add to SharedPreferenceManager.java
+
+    // Generic string save/get/remove methods
+    public void saveString(String key, String value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, value);
+        editor.apply();
+    }
+
+    public String getString(String key, String defaultValue) {
+        return sharedPreferences.getString(key, defaultValue);
+    }
+
+    public void removeKey(String key) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(key);
+        editor.apply();
+    }
+
+    // Mobile number getter (add setter too if not present)
+    public String getMobile() {
+        return sharedPreferences.getString(SharedPreferenceConstants.USER_MOBILE, "");
+    }
+
+    public void setMobile(String mobile) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.USER_MOBILE, mobile);
+        editor.apply();
+    }
 }
 
