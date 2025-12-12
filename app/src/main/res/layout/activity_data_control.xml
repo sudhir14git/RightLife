@@ -6,12 +6,7 @@
     android:orientation="vertical">
 
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/btn_continue">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,7 +66,7 @@
             </LinearLayout>
 
 
-            <LinearLayout
+            <!--<LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -85,7 +80,7 @@
                     app:buttonTint="@color/checkbox_color"
                     android:layout_marginEnd="8dp" />
 
-                <!-- TextView -->
+                &lt;!&ndash; TextView &ndash;&gt;
                 <TextView
                     android:id="@+id/tv_privacy_policy"
                     android:layout_width="wrap_content"
@@ -112,7 +107,7 @@
                     app:buttonTint="@color/checkbox_color"
                     android:layout_marginEnd="8dp" />
 
-                <!-- TextView -->
+                &lt;!&ndash; TextView &ndash;&gt;
                 <TextView
                     android:id="@+id/tv_terms_condition"
                     android:layout_width="wrap_content"
@@ -121,10 +116,66 @@
                     android:autoLink="web"
                     android:textColorLink="@color/nuraBlue"
                     android:textSize="11sp" />
-            </LinearLayout>
+            </LinearLayout>-->
         </LinearLayout>
-    </ScrollView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_continue"
+        android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="16dp"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/ck_privacy_policy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:buttonTint="@color/checkbox_color"
+            android:layout_marginEnd="8dp" />
+
+        <!-- TextView -->
+        <TextView
+            android:id="@+id/tv_privacy_policy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:textColorLink="@color/nuraBlue"
+            android:fontFamily="@font/dmsans_regular"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/ck_terms_conditions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:buttonTint="@color/checkbox_color"
+            android:layout_marginEnd="8dp" />
+
+        <!-- TextView -->
+        <TextView
+            android:id="@+id/tv_terms_condition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_regular"
+            android:autoLink="web"
+            android:textColorLink="@color/nuraBlue"
+            android:textSize="11sp" />
+    </LinearLayout>
+</LinearLayout>
     <Button
         android:id="@+id/btn_continue"
         android:layout_width="270dp"

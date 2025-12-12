@@ -92,7 +92,7 @@ class BreathworkPracticeActivity : BaseActivity() {
         sessionDurationSeconds = (totalSets * cycleDuration / 1000).toInt()
 
         // Set initial values
-        binding.setIndicator.text = "Set $currentSet/$totalSets"
+        binding.setIndicator.text = "Set $currentSet/${totalSets/4}"
         updateSessionTimer(sessionDurationSeconds * 1000L)
 
         // Set click listeners
@@ -338,7 +338,13 @@ class BreathworkPracticeActivity : BaseActivity() {
                     AnalyticsParam.BREATHING_SESSION_DURATION to breathingData?.duration!!
                 )
             )
-            binding.setIndicator.text = "Set $currentSet/$totalSets"
+            //binding.setIndicator.text = "Set ${currentSet/4}/${totalSets/4}"
+            // Calculate the current "lap" of 4, starting from 1
+            val currentLap = ((currentSet - 1) / 4) + 1
+            val totalLaps = totalSets /4
+
+            binding.setIndicator.text = "Set $currentLap/$totalLaps"
+
             startBreathIn()
         } else {
             //finish()
