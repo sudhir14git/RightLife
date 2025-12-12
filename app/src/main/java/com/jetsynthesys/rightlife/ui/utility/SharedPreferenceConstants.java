@@ -76,6 +76,7 @@ public class SharedPreferenceConstants {
     public static final String FIRST_TIME_CHECKLIST_EVENT = "FIRST_TIME_CHECKLIST_EVENT";
 
 
+    public static final String USER_MOBILE = "user_mobile";
 }
 
 

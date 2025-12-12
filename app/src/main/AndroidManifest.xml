@@ -602,6 +602,10 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".subscriptions.SubscriptionCheckoutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".subscriptions.PlanInfoActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
@@ -679,6 +683,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
         </provider>
+
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="@string/razorpay_key"/>
 
         <receiver
             android:name=".ui.affirmation.ReminderReceiver"
