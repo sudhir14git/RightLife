@@ -56,6 +56,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -63,6 +64,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
+import kotlin.reflect.KClass
 
 class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
     private lateinit var healthConnectClient: HealthConnectClient
@@ -250,7 +252,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         return zonedDateTime.toInstant()
     }
 
-    private suspend fun fetchAllHealthData() {
+    private suspend fun fetchAllHealthDatas() {
         try {
             if (!isAdded) {
                 Log.d("ActivitySyncBottomSheet", "Fragment not attached, skipping fetch")
@@ -653,6 +655,165 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             }
             Log.e("ActivitySyncBottomSheet", "Fetch error: ${e.message}", e)
         }
+    }
+
+    private suspend fun fetchAllHealthData() {
+        try {
+            if (!isAdded) {
+                Log.d("ActivitySyncBottomSheet", "Fragment not attached, skipping fetch")
+                return
+            }
+            val client = healthConnectClient
+            val granted = client.permissionController.getGrantedPermissions()
+            val now = Instant.now()
+            // ------------------------------
+            // 1) Load last sync time
+            // ------------------------------
+            val savedSync = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime.orEmpty()
+            val isFirstSync = savedSync.isBlank()
+            // FIRST SYNC → last 30 days
+            val defaultStart = now.minus(Duration.ofDays(30))
+            // Next sync starts from last modified time
+            val lastSyncInstant = if (isFirstSync) null else Instant.parse(savedSync)
+            // ------------------------------
+            // 2) Always re-sync TODAY (Fix for Fitbit/Samsung)
+            // ------------------------------
+            val todayStart = LocalDate.now()
+                .atStartOfDay()
+                .toInstant(ZoneOffset.UTC)
+
+            val computedStartTime = when {
+                isFirstSync -> defaultStart
+                lastSyncInstant != null -> {
+                    // If lastSyncInstant lies inside today,
+                    // force resync whole today
+                    if (lastSyncInstant.isAfter(todayStart))
+                        todayStart
+                    else
+                        lastSyncInstant
+                }
+                else -> defaultStart
+            }
+            val endTime = now
+            Log.d("HealthSync", "StartTime = $computedStartTime")
+            Log.d("HealthSync", "EndTime   = $endTime")
+            var latestModified: Instant? = null
+            var foundNewData = false
+
+            // Update latest modified
+            fun markModified(record: Record) {
+                foundNewData = true
+                val modified = record.metadata.lastModifiedTime
+                if (latestModified == null || modified.isAfter(latestModified))
+                    latestModified = modified
+            }
+            // ------------------------------
+            // 3) Chunked reading for first sync
+            // ------------------------------
+            suspend fun <T : Record> fetchChunk(type: KClass<T>): List<T> {
+                return if (isFirstSync)
+                    fetchChunked(type, computedStartTime, endTime, 15)
+                else
+                    client.readRecords(
+                        ReadRecordsRequest(
+                            type,
+                            TimeRangeFilter.between(computedStartTime, endTime)
+                        )
+                    ).records
+            }
+            // ------------------------------
+            // 4) Permission check
+            // ------------------------------
+            fun <T : Record> hasPermission(type: KClass<T>) =
+                HealthPermission.getReadPermission(type) in granted
+            // ------------------------------
+            // 5) Loader & assignment helper
+            // ------------------------------
+            suspend fun <T : Record> load(
+                type: KClass<T>,
+                assign: (List<T>) -> Unit
+            ) {
+                if (!hasPermission(type)) {
+                    Log.w("HealthSync", "Permission missing for ${type.simpleName}")
+                    assign(emptyList())
+                    return
+                }
+                val records = fetchChunk(type)
+                assign(records)
+                records.forEach { markModified(it) }
+            }
+            // ------------------------------
+            // 6) Fetch all record types
+            // ------------------------------
+            load(TotalCaloriesBurnedRecord::class) { totalCaloriesBurnedRecord = it }
+            load(StepsRecord::class) { stepsRecord = it }
+            load(HeartRateRecord::class) { heartRateRecord = it }
+            load(RestingHeartRateRecord::class) { restingHeartRecord = it }
+            load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
+            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+            load(BloodPressureRecord::class) { bloodPressureRecord = it }
+            load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
+            load(SleepSessionRecord::class) { sleepSessionRecord = it }
+            load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+            load(WeightRecord::class) { weightRecord = it }
+            load(BodyFatRecord::class) { bodyFatRecord = it }
+            load(DistanceRecord::class) { distanceRecord = it }
+            load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
+            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+            // ------------------------------
+            // 7) Device origin detection
+            // ------------------------------
+            val devicePackage =
+                stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName ?: "unknown"
+            val deviceManufacturer =
+                stepsRecord?.firstOrNull()?.metadata?.device?.manufacturer ?: devicePackage
+            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(deviceManufacturer)
+            // ------------------------------
+            // 8) Save updated sync time
+            // ------------------------------
+            if (foundNewData && latestModified != null) {
+                SharedPreferenceManager.getInstance(context?.let { it }).saveMoveRightSyncTime(latestModified.toString())
+                Log.d("HealthSync", "Updated lastSync = $latestModified")
+            } else {
+                Log.d("HealthSync", "No new data. Sync time unchanged")
+            }
+            // ------------------------------
+            // 9) Push to your server
+            // ------------------------------
+            when (devicePackage) {
+                "com.google.android.apps.fitness" -> storeHealthData()
+                "com.sec.android.app.shealth",
+                "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
+                else -> storeHealthData()
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+           // hideLoaderSafe()
+        }
+    }
+
+    private suspend fun <T : Record> fetchChunked(
+        type: KClass<T>,
+        start: Instant,
+        end: Instant,
+        chunks: Int
+    ): List<T> {
+        val output = mutableListOf<T>()
+        val total = Duration.between(start, end)
+        val chunk = total.dividedBy(chunks.toLong())
+
+        var cursor = start
+        repeat(chunks) { i ->
+            val next = if (i == chunks - 1) end else cursor.plus(chunk)
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(type, TimeRangeFilter.between(cursor, next))
+            )
+            output.addAll(response.records)
+            cursor = next
+        }
+        return output
     }
 
     private suspend fun storeHealthData() {
