@@ -2,7 +2,11 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -586,7 +590,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                         // Ensure all UI updates are on the main thread
                         withContext(Dispatchers.Main) {
                             carbs_description_heading.text = data.heading
-                            carbs_description_text.text = data.description
+                            carbs_description_text.text = formatMarkdownBold(data.description)
                             if (data.consumedCarbsTotals.size > 31) {
                                 barChart.visibility = View.GONE
                                 layoutLineChart.visibility = View.VISIBLE
@@ -955,6 +959,32 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private fun updateDateRangeLabel() {
         val sdf = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
         //   dateRangeLabel.text = "${sdf.format(viewModel.startDate)} - ${sdf.format(viewModel.endDate)}"
+    }
+    private fun formatMarkdownBold(input: String): SpannableStringBuilder {
+        val result = SpannableStringBuilder()
+        val regex = Regex("\\*\\*(.*?)\\*\\*") // matches text between ** **
+        var lastIndex = 0
+        regex.findAll(input).forEach { match ->
+            val range = match.range
+            val boldText = match.groupValues[1]
+            // Append text before the bold part
+            result.append(input.substring(lastIndex, range.first))
+            // Apply bold
+            val start = result.length
+            result.append(boldText)
+            result.setSpan(
+                StyleSpan(Typeface.BOLD),
+                start,
+                start + boldText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            lastIndex = range.last + 1
+        }
+        // Append remaining text after the last match
+        if (lastIndex < input.length) {
+            result.append(input.substring(lastIndex))
+        }
+        return result
     }
 
     private fun fetchEatRecommendedData() {
