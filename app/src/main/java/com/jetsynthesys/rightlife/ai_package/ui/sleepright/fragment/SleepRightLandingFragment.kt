@@ -50,6 +50,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
 import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
@@ -145,6 +146,7 @@ import kotlin.math.max
 import java.time.ZoneId
 import kotlin.math.floor
 import kotlin.math.roundToInt
+import kotlin.reflect.KClass
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>() {
 
@@ -620,7 +622,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 //        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
 //    }
 
-    private suspend fun fetchAllHealthData() {
+    private suspend fun fetchAllHealthDatas() {
         try {
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
             val now = Instant.now()
@@ -978,6 +980,448 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
+    private suspend fun fetchAllHealthData() {
+        try {
+            if (isAdded  && view != null){
+                requireActivity().runOnUiThread {
+                    showLoader(requireView())
+                }
+            }
+            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+            val now = Instant.now()
+            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime.orEmpty()
+            val startTime: Instant = if (syncTime.isBlank()) {
+                // First-time sync: pull last 30 days
+                now.minus(Duration.ofDays(30))
+            } else {
+                // Next sync: only fetch new data
+                Instant.parse(syncTime)
+            }
+            val endTime: Instant = now
+            // Trackers for incremental sync
+            var latestModifiedTime: Instant? = null
+            var recordsFound = false
+
+            // Update function for lastModifiedTime
+            fun updateLastSync(record: Record) {
+                val modified = record.metadata.lastModifiedTime
+                if (latestModifiedTime == null || modified.isAfter(latestModifiedTime)) {
+                    latestModifiedTime = modified
+                }
+            }
+//            var startTime = Instant.now()
+//            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime ?: ""
+//            if (syncTime == "") {
+//                endTime = Instant.now()
+//                startTime = endTime.minus(Duration.ofDays(30))
+//            }else{
+//                endTime = Instant.now()
+//                startTime = convertUtcToInstant(syncTime)
+//            }
+            if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
+                if (syncTime == "") {
+                    val totalCaloroieResponse = mutableListOf<TotalCaloriesBurnedRecord>()
+                    val totalDuration = Duration.between(startTime, endTime)
+                    val chunkDuration = totalDuration.dividedBy(15)
+                    var chunkStart = startTime
+                    repeat(15) { i ->
+                        val chunkEnd = if (i == 14) endTime else chunkStart.plus(chunkDuration)
+                        val response = healthConnectClient.readRecords(
+                            ReadRecordsRequest(
+                                recordType = TotalCaloriesBurnedRecord::class,
+                                timeRangeFilter = TimeRangeFilter.between(chunkStart, chunkEnd)
+                            )
+                        )
+                        totalCaloroieResponse.addAll(response.records)
+                        Log.d("HealthData", "Chunk $i → ${response.records.size} Step records")
+                        chunkStart = chunkEnd
+                    }
+                    totalCaloriesBurnedRecord = totalCaloroieResponse
+                }else{
+                    val caloriesResponse = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = TotalCaloriesBurnedRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                        )
+                    )
+                    totalCaloriesBurnedRecord = caloriesResponse.records
+                }
+                // Iterate each record individually
+                totalCaloriesBurnedRecord?.forEach { record ->
+                    val burnedCalories = record.energy.inKilocalories
+                    val start = record.startTime
+                    val end = record.endTime
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
+                }
+            } else {
+                totalCaloriesBurnedRecord = emptyList()
+                Log.d("HealthData", "Total Calories Burned permission denied")
+            }
+            if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
+                if (syncTime == "") {
+                    val stepsResponse = mutableListOf<StepsRecord>()
+                    val totalDuration = Duration.between(startTime, endTime)
+                    val chunkDuration = totalDuration.dividedBy(15)
+                    var chunkStart = startTime
+                    repeat(15) { i ->
+                        val chunkEnd = if (i == 14) endTime else chunkStart.plus(chunkDuration)
+                        val response = healthConnectClient.readRecords(
+                            ReadRecordsRequest(
+                                recordType = StepsRecord::class,
+                                timeRangeFilter = TimeRangeFilter.between(chunkStart, chunkEnd)
+                            )
+                        )
+                        stepsResponse.addAll(response.records)
+                        Log.d("HealthData", "Chunk $i → ${response.records.size} Step records")
+                        chunkStart = chunkEnd
+                    }
+                    stepsRecord = stepsResponse
+                }else{
+                    val stepsResponse = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = StepsRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                        )
+                    )
+                    stepsRecord = stepsResponse.records
+                }
+                stepsRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
+            } else {
+                stepsRecord = emptyList()
+                Log.d("HealthData", "Steps permission denied")
+            }
+            if (HealthPermission.getReadPermission(HeartRateRecord::class) in grantedPermissions) {
+                if (syncTime == "") {
+                    val results = mutableListOf<HeartRateRecord>()
+                    val totalDuration = Duration.between(startTime, endTime)
+                    val chunkDuration = totalDuration.dividedBy(15)
+                    var chunkStart = startTime
+                    repeat(15) { i ->
+                        val chunkEnd = if (i == 14) endTime else chunkStart.plus(chunkDuration)
+                        val response = healthConnectClient.readRecords(
+                            ReadRecordsRequest(
+                                recordType = HeartRateRecord::class,
+                                timeRangeFilter = TimeRangeFilter.between(chunkStart, chunkEnd)
+                            )
+                        )
+                        results.addAll(response.records)
+                        Log.d("HealthData", "Chunk $i → ${results.size} HR records")
+                        chunkStart = chunkEnd
+                    }
+                    heartRateRecord = results
+                }else{
+                    val response = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = HeartRateRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                        )
+                    )
+                    heartRateRecord = response.records
+                    Log.d("HealthData", "Total HR records fetched: ${response.records.size}")
+                }
+                heartRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
+            }else {
+                heartRateRecord = emptyList()
+                Log.d("HealthData", "Heart rate permission denied")
+            }
+            if (HealthPermission.getReadPermission(RestingHeartRateRecord::class) in grantedPermissions) {
+                val restingHRResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = RestingHeartRateRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                restingHeartRecord = restingHRResponse.records
+                restingHeartRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
+                }
+            }else {
+                restingHeartRecord = emptyList()
+                Log.d("HealthData", "Resting Heart rate permission denied")
+            }
+            if (HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class) in grantedPermissions) {
+                val activeCalorieResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = ActiveCaloriesBurnedRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                activeCalorieBurnedRecord = activeCalorieResponse.records
+                activeCalorieBurnedRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Active Calories Burn Rate: ${record.energy} kCal, Time: ${record.startTime}")
+                }
+            }else {
+                activeCalorieBurnedRecord = emptyList()
+                Log.d("HealthData", "Active Calories burn permission denied")
+            }
+            if (HealthPermission.getReadPermission(BasalMetabolicRateRecord::class) in grantedPermissions) {
+                val basalMetabolic = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = BasalMetabolicRateRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                basalMetabolicRateRecord = basalMetabolic.records
+                basalMetabolicRateRecord?.forEach { record ->
+                    Log.d("HealthData", "Basal Metabolic Rate: ${record.basalMetabolicRate}, Time: ${record.time}")
+                }
+            }else {
+                basalMetabolicRateRecord = emptyList()
+                Log.d("HealthData", "Basal Metabolic permission denied")
+            }
+            if (HealthPermission.getReadPermission(BloodPressureRecord::class) in grantedPermissions) {
+                val bloodPressure = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = BloodPressureRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                bloodPressureRecord = bloodPressure.records
+                bloodPressureRecord?.forEach { record ->
+                    Log.d("HealthData", "Blood Pressure: ${record.systolic}, Time: ${record.time}")
+                }
+            }else {
+                bloodPressureRecord = emptyList()
+                Log.d("HealthData", "Blood Pressure  permission denied")
+            }
+            if (HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class) in grantedPermissions) {
+                val restingVresponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = HeartRateVariabilityRmssdRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                heartRateVariability = restingVresponse.records
+                heartRateVariability?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Heart Rate Variability: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
+                }
+            }else {
+                heartRateVariability = emptyList()
+                Log.d("HealthData", "Heart rate Variability permission denied")
+            }
+            if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
+                val sleepResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = SleepSessionRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                sleepSessionRecord = sleepResponse.records
+                sleepSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
+                }
+            } else {
+                sleepSessionRecord = emptyList()
+                Log.d("HealthData", "Sleep session permission denied")
+            }
+            if (HealthPermission.getReadPermission(ExerciseSessionRecord::class) in grantedPermissions) {
+                val exerciseResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = ExerciseSessionRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                exerciseSessionRecord = exerciseResponse.records
+                exerciseSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
+                }
+            } else {
+                exerciseSessionRecord = emptyList()
+                Log.d("HealthData", "Exercise session permission denied")
+            }
+            if (HealthPermission.getReadPermission(WeightRecord::class) in grantedPermissions) {
+                val weightResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = WeightRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                weightRecord = weightResponse.records
+                weightRecord?.forEach { record ->
+                    Log.d("HealthData", "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}")
+                }
+            } else {
+                weightRecord = emptyList()
+                Log.d("HealthData", "Weight permission denied")
+            }
+            if (HealthPermission.getReadPermission(BodyFatRecord::class) in grantedPermissions) {
+                val bodyFatResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = BodyFatRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                bodyFatRecord = bodyFatResponse.records
+                bodyFatRecord?.forEach { record ->
+                    Log.d("HealthData", "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}")
+                }
+            } else {
+                bodyFatRecord = emptyList()
+                Log.d("HealthData", "Body Fat permission denied")
+            }
+            if (HealthPermission.getReadPermission(DistanceRecord::class) in grantedPermissions) {
+                val distanceResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = DistanceRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                distanceRecord = distanceResponse.records
+                val totalDistance = distanceRecord?.sumOf { it.distance.inMeters } ?: 0.0
+                Log.d("HealthData", "Total Distance: $totalDistance meters")
+            } else {
+                distanceRecord = emptyList()
+                Log.d("HealthData", "Distance permission denied")
+            }
+            if (HealthPermission.getReadPermission(OxygenSaturationRecord::class) in grantedPermissions) {
+                val oxygenSaturationResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = OxygenSaturationRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                oxygenSaturationRecord = oxygenSaturationResponse.records
+                oxygenSaturationRecord?.forEach { record ->
+                    Log.d("HealthData", "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}")
+                }
+            } else {
+                oxygenSaturationRecord = emptyList()
+                Log.d("HealthData", "Oxygen saturation permission denied")
+            }
+            if (HealthPermission.getReadPermission(RespiratoryRateRecord::class) in grantedPermissions) {
+                val respiratoryRateResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = RespiratoryRateRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                respiratoryRateRecord = respiratoryRateResponse.records
+                respiratoryRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
+                }
+            } else {
+                respiratoryRateRecord = emptyList()
+                Log.d("HealthData", "Respiratory rate permission denied")
+            }
+            var dataOrigin = "android phone"
+            if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
+                val stepsResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = StepsRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                for (record in stepsResponse.records) {
+                    dataOrigin = record.metadata.dataOrigin.packageName
+                    val deviceInfo = record.metadata.device
+                    if (deviceInfo != null) {
+                        if (deviceInfo.manufacturer != "") {
+                            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(deviceInfo.manufacturer)
+                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                            break
+                        }else{
+                            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(dataOrigin)
+                            break
+                        }
+                    } else {
+                        SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(dataOrigin)
+                        break
+                    }
+                }
+            }
+            if (recordsFound && latestModifiedTime != null) {
+                context?.let {
+                    SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(latestModifiedTime.toString())
+                }
+                Log.d("HealthSync", "✔ Saved new last sync time: $latestModifiedTime")
+
+            } else {
+                Log.d("HealthSync", "⚠ No new data found → NOT updating last sync time")
+            }
+            if (dataOrigin.equals("com.google.android.apps.fitness")){
+                storeHealthData()
+            }else if(dataOrigin.equals("com.sec.android.app.shealth")){
+                storeSamsungHealthData()
+            }else if(dataOrigin.equals("com.samsung.android.wear.shealth")){
+                storeSamsungHealthData()
+            }else{
+                storeHealthData()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                // Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        }
+    }
+
+    private fun <T : androidx.health.connect.client.records.Record> hasPermission(
+        granted: Set<String>,
+        type: KClass<T>
+    ): Boolean {
+        return HealthPermission.getReadPermission(type) in granted
+    }
+
+    private suspend fun <T : Record> fetchChunked(
+        type: KClass<T>,
+        start: Instant,
+        end: Instant,
+        chunks: Int
+    ): List<T> {
+        val output = mutableListOf<T>()
+        val total = Duration.between(start, end)
+        val chunk = total.dividedBy(chunks.toLong())
+
+        var cursor = start
+        repeat(chunks) { i ->
+            val next = if (i == chunks - 1) end else cursor.plus(chunk)
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(type, TimeRangeFilter.between(cursor, next))
+            )
+            output.addAll(response.records)
+            cursor = next
+        }
+        return output
+    }
+
+    private fun showLoaderSafe() {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread { showLoader(requireView()) }
+        }
+    }
+
+    private fun hideLoaderSafe() {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread { dismissLoader(requireView()) }
+        }
+    }
+
     private fun storeHealthData() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -1314,9 +1758,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    context?.let {
-                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
-                    }
+//                    context?.let {
+//                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+//                    }
                     isRepeat = true
                     fetchSleepLandingData()
                 }
@@ -1670,9 +2114,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    context?.let {
-                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
-                    }
+//                    context?.let {
+//                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+//                    }
                     isRepeat = true
                     fetchSleepLandingData()
                 }

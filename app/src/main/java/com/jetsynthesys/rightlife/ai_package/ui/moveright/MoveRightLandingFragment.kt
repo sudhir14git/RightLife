@@ -83,6 +83,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
 import kotlin.math.abs
+import kotlin.reflect.KClass
 
 class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
@@ -1152,6 +1153,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 Instant.parse(syncTime)
             }
             val endTime: Instant = now
+            // Trackers for incremental sync
+            var latestModifiedTime: Instant? = null
+            var recordsFound = false
+
+            // Update function for lastModifiedTime
+            fun updateLastSync(record: Record) {
+                val modified = record.metadata.lastModifiedTime
+                if (latestModifiedTime == null || modified.isAfter(latestModifiedTime)) {
+                    latestModifiedTime = modified
+                }
+            }
 //            var startTime = Instant.now()
 //            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime ?: ""
 //            if (syncTime == "") {
@@ -1194,6 +1206,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     val burnedCalories = record.energy.inKilocalories
                     val start = record.startTime
                     val end = record.endTime
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
                 }
             } else {
@@ -1228,6 +1242,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     )
                     stepsRecord = stepsResponse.records
                 }
+                stepsRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
             } else {
                 stepsRecord = emptyList()
                 Log.d("HealthData", "Steps permission denied")
@@ -1261,6 +1279,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     heartRateRecord = response.records
                     Log.d("HealthData", "Total HR records fetched: ${response.records.size}")
                 }
+                heartRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
             }else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
@@ -1274,6 +1296,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 restingHeartRecord = restingHRResponse.records
                 restingHeartRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
                 }
             }else {
@@ -1289,6 +1313,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     )
                     activeCalorieBurnedRecord = activeCalorieResponse.records
                     activeCalorieBurnedRecord?.forEach { record ->
+                        recordsFound = true
+                        updateLastSync(record)
                         Log.d("HealthData", "Active Calories Burn Rate: ${record.energy} kCal, Time: ${record.startTime}")
                     }
             }else {
@@ -1334,6 +1360,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 heartRateVariability = restingVresponse.records
                 heartRateVariability?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Heart Rate Variability: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
                 }
             }else {
@@ -1349,6 +1377,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 sleepSessionRecord = sleepResponse.records
                 sleepSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
                 }
             } else {
@@ -1364,6 +1394,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 exerciseSessionRecord = exerciseResponse.records
                 exerciseSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
                 }
             } else {
@@ -1438,6 +1470,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 respiratoryRateRecord = respiratoryRateResponse.records
                 respiratoryRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
                 }
             } else {
@@ -1471,6 +1505,15 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     }
                 }
             }
+            if (recordsFound && latestModifiedTime != null) {
+                context?.let {
+                    SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(latestModifiedTime.toString())
+                }
+                Log.d("HealthSync", "✔ Saved new last sync time: $latestModifiedTime")
+
+            } else {
+                Log.d("HealthSync", "⚠ No new data found → NOT updating last sync time")
+            }
             if (dataOrigin.equals("com.google.android.apps.fitness")){
                 storeHealthData()
             }else if(dataOrigin.equals("com.sec.android.app.shealth")){
@@ -1490,6 +1533,178 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun fetchAllHealthDat() {
+        try {
+            showLoaderSafe()
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+            val now = Instant.now()
+
+            val lastSync = SharedPreferenceManager
+                .getInstance(context?.let { it })
+                .moveRightSyncTime.orEmpty()
+
+            val startTime: Instant =
+                if (lastSync.isBlank()) now.minus(Duration.ofDays(30))
+                else Instant.parse(lastSync)
+
+            val endTime = now
+            var latestModified: Instant? = null
+            var foundNewData = false
+
+            fun markRecord(record: Record) {
+                foundNewData = true
+                val modified = record.metadata.lastModifiedTime
+                if (latestModified == null || modified.isAfter(latestModified)) {
+                    latestModified = modified
+                }
+            }
+
+            // Fetch with chunking support
+            suspend fun <T : Record> fetch(
+                type: KClass<T>,
+                chunked: Boolean = lastSync.isBlank()
+            ): List<T> {
+                return if (!hasPermission(granted, type)) {
+                    Log.d("HealthData", "${type.simpleName} permission denied")
+                    emptyList()
+                } else {
+                    if (!chunked) {
+                        healthConnectClient.readRecords(
+                            ReadRecordsRequest(type, TimeRangeFilter.between(startTime, endTime))
+                        ).records
+                    } else {
+                        fetchChunked(type, startTime, endTime, 15)
+                    }
+                }
+            }
+
+            // Fetch + iteration helper
+            suspend fun <T : Record> load(
+                type: KClass<T>,
+                assign: (List<T>) -> Unit,
+                onRecord: (T) -> Unit = {}
+            ) {
+                val records = fetch(type)
+                assign(records)
+                records.forEach {
+                    markRecord(it)
+                    onRecord(it)
+                }
+            }
+
+            // --- DATA FETCHING ---
+            load(TotalCaloriesBurnedRecord::class, { totalCaloriesBurnedRecord = it }) { rec ->
+                Log.d("HealthData", "Calories Burned: ${rec.energy.inKilocalories} kcal")
+            }
+
+            load(StepsRecord::class, { stepsRecord = it })
+
+            load(HeartRateRecord::class, { heartRateRecord = it })
+
+            load(RestingHeartRateRecord::class, { restingHeartRecord = it }) { rec ->
+                Log.d("HealthData", "Resting HR: ${rec.beatsPerMinute} bpm @ ${rec.time}")
+            }
+
+            load(ActiveCaloriesBurnedRecord::class, { activeCalorieBurnedRecord = it })
+
+            load(BasalMetabolicRateRecord::class, { basalMetabolicRateRecord = it })
+
+            load(BloodPressureRecord::class, { bloodPressureRecord = it })
+
+            load(HeartRateVariabilityRmssdRecord::class, { heartRateVariability = it })
+
+            load(SleepSessionRecord::class, { sleepSessionRecord = it })
+
+            load(ExerciseSessionRecord::class, { exerciseSessionRecord = it })
+
+            load(WeightRecord::class, { weightRecord = it })
+
+            load(BodyFatRecord::class, { bodyFatRecord = it })
+
+            load(DistanceRecord::class, { distanceRecord = it }) { rec ->
+                Log.d("HealthData", "Distance: ${rec.distance.inMeters} meters")
+            }
+
+            load(OxygenSaturationRecord::class, { oxygenSaturationRecord = it })
+
+            load(RespiratoryRateRecord::class, { respiratoryRateRecord = it })
+
+            // --- DEVICE ORIGIN DETECTION ---
+            val devicePackage = stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName
+                ?: "unknown"
+
+            val deviceInfo = stepsRecord?.firstOrNull()?.metadata?.device
+            val deviceName = when {
+                deviceInfo?.manufacturer?.isNotBlank() == true -> deviceInfo.manufacturer
+                else -> devicePackage
+            }
+            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(deviceName)
+
+            // --- SAVE UPDATED SYNC TIME ---
+            if (foundNewData && latestModified != null) {
+                SharedPreferenceManager
+                    .getInstance(context?.let { it })
+                    .saveMoveRightSyncTime(latestModified.toString())
+
+                Log.d("HealthSync", "✔ Updated lastSync = $latestModified")
+            } else {
+                Log.d("HealthSync", "⚠ No new data, syncTime unchanged")
+            }
+            // --- STORE TO YOUR SERVER ---
+            when (devicePackage) {
+                "com.google.android.apps.fitness" -> storeHealthData()
+                "com.sec.android.app.shealth",
+                "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
+                else -> storeHealthData()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            hideLoaderSafe()
+        }
+    }
+
+    private fun <T : Record> hasPermission(
+        granted: Set<String>,
+        type: KClass<T>
+    ): Boolean {
+        return HealthPermission.getReadPermission(type) in granted
+    }
+
+    private suspend fun <T : Record> fetchChunked(
+        type: KClass<T>,
+        start: Instant,
+        end: Instant,
+        chunks: Int
+    ): List<T> {
+        val output = mutableListOf<T>()
+        val total = Duration.between(start, end)
+        val chunk = total.dividedBy(chunks.toLong())
+
+        var cursor = start
+        repeat(chunks) { i ->
+            val next = if (i == chunks - 1) end else cursor.plus(chunk)
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(type, TimeRangeFilter.between(cursor, next))
+            )
+            output.addAll(response.records)
+            cursor = next
+        }
+        return output
+    }
+
+    private fun showLoaderSafe() {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread { showLoader(requireView()) }
+        }
+    }
+
+    private fun hideLoaderSafe() {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread { dismissLoader(requireView()) }
         }
     }
 
@@ -2028,9 +2243,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    context?.let {
-                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
-                    }
+//                    context?.let {
+//                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+//                    }
                     isRepeat = true
                     fetchMoveLanding(recyclerView, adapter)
                     fetchUserWorkouts()
@@ -2384,9 +2599,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    context?.let {
-                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
-                    }
+//                    context?.let {
+//                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+//                    }
                     isRepeat = true
                     fetchMoveLanding(recyclerView, adapter)
                     fetchUserWorkouts()

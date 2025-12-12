@@ -36,6 +36,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
 import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
@@ -1822,14 +1823,23 @@ class HomeNewActivity : BaseActivity() {
                 Instant.parse(syncTime)
             }
             val endTime: Instant = now
-//            var endTime = Instant.now()
+            // Trackers for incremental sync
+            var latestModifiedTime: Instant? = null
+            var recordsFound = false
+
+            // Update function for lastModifiedTime
+            fun updateLastSync(record: Record) {
+                val modified = record.metadata.lastModifiedTime
+                if (latestModifiedTime == null || modified.isAfter(latestModifiedTime)) {
+                    latestModifiedTime = modified
+                }
+            }
 //            var startTime = Instant.now()
-//            val syncTime =
-//                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime ?: ""
+//            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime ?: ""
 //            if (syncTime == "") {
 //                endTime = Instant.now()
 //                startTime = endTime.minus(Duration.ofDays(30))
-//            } else {
+//            }else{
 //                endTime = Instant.now()
 //                startTime = convertUtcToInstant(syncTime)
 //            }
@@ -1852,7 +1862,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     totalCaloriesBurnedRecord = totalCaloroieResponse
-                } else {
+                }else{
                     val caloriesResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = TotalCaloriesBurnedRecord::class,
@@ -1866,10 +1876,9 @@ class HomeNewActivity : BaseActivity() {
                     val burnedCalories = record.energy.inKilocalories
                     val start = record.startTime
                     val end = record.endTime
-                    Log.d(
-                        "HealthData",
-                        "Total Calories Burned: $burnedCalories kcal | From: $start To: $end"
-                    )
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
                 }
             } else {
                 totalCaloriesBurnedRecord = emptyList()
@@ -1894,7 +1903,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     stepsRecord = stepsResponse
-                } else {
+                }else{
                     val stepsResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = StepsRecord::class,
@@ -1902,6 +1911,10 @@ class HomeNewActivity : BaseActivity() {
                         )
                     )
                     stepsRecord = stepsResponse.records
+                }
+                stepsRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                 }
             } else {
                 stepsRecord = emptyList()
@@ -1926,7 +1939,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     heartRateRecord = results
-                } else {
+                }else{
                     val response = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = HeartRateRecord::class,
@@ -1936,9 +1949,30 @@ class HomeNewActivity : BaseActivity() {
                     heartRateRecord = response.records
                     Log.d("HealthData", "Total HR records fetched: ${response.records.size}")
                 }
-            } else {
+                heartRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
+            }else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
+            }
+            if (HealthPermission.getReadPermission(RestingHeartRateRecord::class) in grantedPermissions) {
+                val restingHRResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = RestingHeartRateRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                restingHeartRecord = restingHRResponse.records
+                restingHeartRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
+                }
+            }else {
+                restingHeartRecord = emptyList()
+                Log.d("HealthData", "Resting Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class) in grantedPermissions) {
                 val activeCalorieResponse = healthConnectClient.readRecords(
@@ -1949,14 +1983,13 @@ class HomeNewActivity : BaseActivity() {
                 )
                 activeCalorieBurnedRecord = activeCalorieResponse.records
                 activeCalorieBurnedRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Active Calories Burned: ${record.energy} kCal, Time: ${record.startTime}"
-                    )
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Active Calories Burn Rate: ${record.energy} kCal, Time: ${record.startTime}")
                 }
-            } else {
+            }else {
                 activeCalorieBurnedRecord = emptyList()
-                Log.d("HealthData", "Active Calories Burned permission denied")
+                Log.d("HealthData", "Active Calories burn permission denied")
             }
             if (HealthPermission.getReadPermission(BasalMetabolicRateRecord::class) in grantedPermissions) {
                 val basalMetabolic = healthConnectClient.readRecords(
@@ -1967,14 +2000,11 @@ class HomeNewActivity : BaseActivity() {
                 )
                 basalMetabolicRateRecord = basalMetabolic.records
                 basalMetabolicRateRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Basal Metabolic Rate: ${record.basalMetabolicRate}, Time: ${record.time}"
-                    )
+                    Log.d("HealthData", "Basal Metabolic Rate: ${record.basalMetabolicRate}, Time: ${record.time}")
                 }
-            } else {
+            }else {
                 basalMetabolicRateRecord = emptyList()
-                Log.d("HealthData", "Basal Metabolic rate permission denied")
+                Log.d("HealthData", "Basal Metabolic permission denied")
             }
             if (HealthPermission.getReadPermission(BloodPressureRecord::class) in grantedPermissions) {
                 val bloodPressure = healthConnectClient.readRecords(
@@ -1985,14 +2015,11 @@ class HomeNewActivity : BaseActivity() {
                 )
                 bloodPressureRecord = bloodPressure.records
                 bloodPressureRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Blood Pressure: ${record.systolic}, Time: ${record.time}"
-                    )
+                    Log.d("HealthData", "Blood Pressure: ${record.systolic}, Time: ${record.time}")
                 }
-            } else {
+            }else {
                 bloodPressureRecord = emptyList()
-                Log.d("HealthData", "Blood Pressure permission denied")
+                Log.d("HealthData", "Blood Pressure  permission denied")
             }
             if (HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class) in grantedPermissions) {
                 val restingVresponse = healthConnectClient.readRecords(
@@ -2003,14 +2030,13 @@ class HomeNewActivity : BaseActivity() {
                 )
                 heartRateVariability = restingVresponse.records
                 heartRateVariability?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Heart Rate Variability Rmssd: ${record.heartRateVariabilityMillis}, Time: ${record.time}"
-                    )
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Heart Rate Variability: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
                 }
-            } else {
+            }else {
                 heartRateVariability = emptyList()
-                Log.d("HealthData", "Heart rate Variability Rmssdpermission denied")
+                Log.d("HealthData", "Heart rate Variability permission denied")
             }
             if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
                 val sleepResponse = healthConnectClient.readRecords(
@@ -2021,10 +2047,9 @@ class HomeNewActivity : BaseActivity() {
                 )
                 sleepSessionRecord = sleepResponse.records
                 sleepSessionRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}"
-                    )
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
                 }
             } else {
                 sleepSessionRecord = emptyList()
@@ -2039,10 +2064,9 @@ class HomeNewActivity : BaseActivity() {
                 )
                 exerciseSessionRecord = exerciseResponse.records
                 exerciseSessionRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}"
-                    )
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
                 }
             } else {
                 exerciseSessionRecord = emptyList()
@@ -2057,10 +2081,7 @@ class HomeNewActivity : BaseActivity() {
                 )
                 weightRecord = weightResponse.records
                 weightRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}"
-                    )
+                    Log.d("HealthData", "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}")
                 }
             } else {
                 weightRecord = emptyList()
@@ -2075,10 +2096,7 @@ class HomeNewActivity : BaseActivity() {
                 )
                 bodyFatRecord = bodyFatResponse.records
                 bodyFatRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}"
-                    )
+                    Log.d("HealthData", "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}")
                 }
             } else {
                 bodyFatRecord = emptyList()
@@ -2107,10 +2125,7 @@ class HomeNewActivity : BaseActivity() {
                 )
                 oxygenSaturationRecord = oxygenSaturationResponse.records
                 oxygenSaturationRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}"
-                    )
+                    Log.d("HealthData", "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}")
                 }
             } else {
                 oxygenSaturationRecord = emptyList()
@@ -2125,10 +2140,9 @@ class HomeNewActivity : BaseActivity() {
                 )
                 respiratoryRateRecord = respiratoryRateResponse.records
                 respiratoryRateRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}"
-                    )
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
                 }
             } else {
                 respiratoryRateRecord = emptyList()
@@ -2145,16 +2159,14 @@ class HomeNewActivity : BaseActivity() {
                 for (record in stepsResponse.records) {
                     dataOrigin = record.metadata.dataOrigin.packageName
                     val deviceInfo = record.metadata.device
-                    if (deviceInfo != null && deviceInfo.manufacturer != "null") {
+                    if (deviceInfo != null) {
                         if (deviceInfo.manufacturer != "") {
                             SharedPreferenceManager.getInstance(this@HomeNewActivity)
-                                .saveDeviceName(deviceInfo.manufacturer)
-                            Log.d(
-                                "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-               Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
-                            )
+                                .saveDeviceName(dataOrigin)
+                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
                             break
-                        } else {
+                        }else{
                             SharedPreferenceManager.getInstance(this@HomeNewActivity)
                                 .saveDeviceName(dataOrigin)
                             break
@@ -2166,13 +2178,21 @@ class HomeNewActivity : BaseActivity() {
                     }
                 }
             }
-            if (dataOrigin.equals("com.google.android.apps.fitness")) {
-                storeHealthData()
-            } else if (dataOrigin.equals("com.sec.android.app.shealth")) {
-                storeSamsungHealthData()
-            } else if (dataOrigin.equals("com.samsung.android.wear.shealth")) {
-                storeSamsungHealthData()
+            if (recordsFound && latestModifiedTime != null) {
+                SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                    .saveMoveRightSyncTime(Instant.now().toString())
+                Log.d("HealthSync", "✔ Saved new last sync time: $latestModifiedTime")
+
             } else {
+                Log.d("HealthSync", "⚠ No new data found → NOT updating last sync time")
+            }
+            if (dataOrigin.equals("com.google.android.apps.fitness")){
+                storeHealthData()
+            }else if(dataOrigin.equals("com.sec.android.app.shealth")){
+                storeSamsungHealthData()
+            }else if(dataOrigin.equals("com.samsung.android.wear.shealth")){
+                storeSamsungHealthData()
+            }else{
                 storeHealthData()
             }
         } catch (e: Exception) {
@@ -2531,8 +2551,8 @@ class HomeNewActivity : BaseActivity() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
-                        .saveMoveRightSyncTime(Instant.now().toString())
+//                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
+//                        .saveMoveRightSyncTime(Instant.now().toString())
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -2903,8 +2923,8 @@ class HomeNewActivity : BaseActivity() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
-                        .saveMoveRightSyncTime(Instant.now().toString())
+//                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
+//                        .saveMoveRightSyncTime(Instant.now().toString())
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
