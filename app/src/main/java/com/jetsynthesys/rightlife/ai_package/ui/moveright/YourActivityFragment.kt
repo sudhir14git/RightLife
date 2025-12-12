@@ -91,7 +91,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var lastDayOfCurrentWeek : String = ""
     private var moduleName : String = ""
     private var selectedDate: String? = null
-    private var isTodayDate : Boolean = false
     private var currentWeekStartItem: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
@@ -144,12 +143,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
         myActivityRecyclerView.layoutManager = LinearLayoutManager(context)
         myActivityRecyclerView.adapter = myActivityAdapter
-
-//        activitySync.setOnClickListener {
-//            val bottomSheet = ActivitySyncBottomSheet()
-//            bottomSheet.show(parentFragmentManager, "ActivitySyncBottomSheet")
-//        }
-
         activitySync.setOnClickListener {
             val existingSheet = parentFragmentManager.findFragmentByTag("ActivitySyncBottomSheet")
             if (existingSheet == null) {
@@ -159,7 +152,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
 
         healthConnectSyncButton.setOnClickListener {
-            // AddWorkoutSearchFragment navigation (commented as per original)
+
         }
         moduleName = arguments?.getString("ModuleName").toString()
 
@@ -257,7 +250,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         layoutAddWorkout.setOnClickListener {
-           // val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.ENGLISH)
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val date = LocalDate.parse(selectedDate, formatter)
             val currentDate = LocalDate.now()
@@ -344,7 +336,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         handler.removeCallbacksAndMessages(null)
     }
     private fun onDateRecyclerRefresh(){
-        // Refresh current date and workout history
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
@@ -354,11 +345,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         if (selectedDate == null || selectedDate.equals("")){
             selectedDate = formattedDate
         }
-
-        // Refresh workout history for current selected date
         getWorkoutLogHistory(selectedDate!!)
-
-        // Also refresh the weekly calendar view
         workoutWeeklyDayList = getWeekFrom(currentWeekStart)
         lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
         onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
@@ -380,7 +367,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
 
-        // Capture context and activity safely at the start
         val context = if (isAdded) requireContext() else null
         val activity = if (isAdded) requireActivity() else null
 
@@ -605,14 +591,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
         handler.postDelayed(tooltipRunnable1!!, 1000)
-
-      //  tooltipRunnable2 = Runnable {
-      //      if (isResumed) {
-      //          showTooltipDialog(imageCalender, "You can access calendar \n view from here.")
-     //       }
-    //    }
-     //   handler.postDelayed(tooltipRunnable2!!, 5000)
-
         val prefs = requireContext().getSharedPreferences("TooltipPrefs", Context.MODE_PRIVATE)
         prefs.edit().putBoolean("hasShownTooltips", true).apply()
     }

@@ -1135,7 +1135,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             .show()
     }
 
-    private suspend fun fetchAllHealthData() {
+    private suspend fun fetchAllHealthDataFinal() {
         try {
             if (isAdded  && view != null){
                 requireActivity().runOnUiThread {
@@ -1536,130 +1536,133 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
 
-    private suspend fun fetchAllHealthDat() {
+    private suspend fun fetchAllHealthData() {
         try {
             showLoaderSafe()
-            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+            val client = healthConnectClient
+            val granted = client.permissionController.getGrantedPermissions()
             val now = Instant.now()
+            // ------------------------------
+            // 1) Load last sync time
+            // ------------------------------
+            val savedSync = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime.orEmpty()
+            val isFirstSync = savedSync.isBlank()
+            // FIRST SYNC → last 30 days
+            val defaultStart = now.minus(Duration.ofDays(30))
+            // Next sync starts from last modified time
+            val lastSyncInstant = if (isFirstSync) null else Instant.parse(savedSync)
+            // ------------------------------
+            // 2) Always re-sync TODAY (Fix for Fitbit/Samsung)
+            // ------------------------------
+            val todayStart = LocalDate.now()
+                .atStartOfDay()
+                .toInstant(ZoneOffset.UTC)
 
-            val lastSync = SharedPreferenceManager
-                .getInstance(context?.let { it })
-                .moveRightSyncTime.orEmpty()
-
-            val startTime: Instant =
-                if (lastSync.isBlank()) now.minus(Duration.ofDays(30))
-                else Instant.parse(lastSync)
-
+            val computedStartTime = when {
+                isFirstSync -> defaultStart
+                lastSyncInstant != null -> {
+                    // If lastSyncInstant lies inside today,
+                    // force resync whole today
+                    if (lastSyncInstant.isAfter(todayStart))
+                        todayStart
+                    else
+                        lastSyncInstant
+                }
+                else -> defaultStart
+            }
             val endTime = now
+            Log.d("HealthSync", "StartTime = $computedStartTime")
+            Log.d("HealthSync", "EndTime   = $endTime")
             var latestModified: Instant? = null
             var foundNewData = false
 
-            fun markRecord(record: Record) {
+            // Update latest modified
+            fun markModified(record: Record) {
                 foundNewData = true
                 val modified = record.metadata.lastModifiedTime
-                if (latestModified == null || modified.isAfter(latestModified)) {
+                if (latestModified == null || modified.isAfter(latestModified))
                     latestModified = modified
-                }
             }
-
-            // Fetch with chunking support
-            suspend fun <T : Record> fetch(
-                type: KClass<T>,
-                chunked: Boolean = lastSync.isBlank()
-            ): List<T> {
-                return if (!hasPermission(granted, type)) {
-                    Log.d("HealthData", "${type.simpleName} permission denied")
-                    emptyList()
-                } else {
-                    if (!chunked) {
-                        healthConnectClient.readRecords(
-                            ReadRecordsRequest(type, TimeRangeFilter.between(startTime, endTime))
-                        ).records
-                    } else {
-                        fetchChunked(type, startTime, endTime, 15)
-                    }
-                }
+            // ------------------------------
+            // 3) Chunked reading for first sync
+            // ------------------------------
+            suspend fun <T : Record> fetchChunk(type: KClass<T>): List<T> {
+                return if (isFirstSync)
+                    fetchChunked(type, computedStartTime, endTime, 15)
+                else
+                    client.readRecords(
+                        ReadRecordsRequest(
+                            type,
+                            TimeRangeFilter.between(computedStartTime, endTime)
+                        )
+                    ).records
             }
-
-            // Fetch + iteration helper
+            // ------------------------------
+            // 4) Permission check
+            // ------------------------------
+            fun <T : Record> hasPermission(type: KClass<T>) =
+                HealthPermission.getReadPermission(type) in granted
+            // ------------------------------
+            // 5) Loader & assignment helper
+            // ------------------------------
             suspend fun <T : Record> load(
                 type: KClass<T>,
-                assign: (List<T>) -> Unit,
-                onRecord: (T) -> Unit = {}
+                assign: (List<T>) -> Unit
             ) {
-                val records = fetch(type)
-                assign(records)
-                records.forEach {
-                    markRecord(it)
-                    onRecord(it)
+                if (!hasPermission(type)) {
+                    Log.w("HealthSync", "Permission missing for ${type.simpleName}")
+                    assign(emptyList())
+                    return
                 }
+                val records = fetchChunk(type)
+                assign(records)
+                records.forEach { markModified(it) }
             }
-
-            // --- DATA FETCHING ---
-            load(TotalCaloriesBurnedRecord::class, { totalCaloriesBurnedRecord = it }) { rec ->
-                Log.d("HealthData", "Calories Burned: ${rec.energy.inKilocalories} kcal")
-            }
-
-            load(StepsRecord::class, { stepsRecord = it })
-
-            load(HeartRateRecord::class, { heartRateRecord = it })
-
-            load(RestingHeartRateRecord::class, { restingHeartRecord = it }) { rec ->
-                Log.d("HealthData", "Resting HR: ${rec.beatsPerMinute} bpm @ ${rec.time}")
-            }
-
-            load(ActiveCaloriesBurnedRecord::class, { activeCalorieBurnedRecord = it })
-
-            load(BasalMetabolicRateRecord::class, { basalMetabolicRateRecord = it })
-
-            load(BloodPressureRecord::class, { bloodPressureRecord = it })
-
-            load(HeartRateVariabilityRmssdRecord::class, { heartRateVariability = it })
-
-            load(SleepSessionRecord::class, { sleepSessionRecord = it })
-
-            load(ExerciseSessionRecord::class, { exerciseSessionRecord = it })
-
-            load(WeightRecord::class, { weightRecord = it })
-
-            load(BodyFatRecord::class, { bodyFatRecord = it })
-
-            load(DistanceRecord::class, { distanceRecord = it }) { rec ->
-                Log.d("HealthData", "Distance: ${rec.distance.inMeters} meters")
-            }
-
-            load(OxygenSaturationRecord::class, { oxygenSaturationRecord = it })
-
-            load(RespiratoryRateRecord::class, { respiratoryRateRecord = it })
-
-            // --- DEVICE ORIGIN DETECTION ---
-            val devicePackage = stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName
-                ?: "unknown"
-
-            val deviceInfo = stepsRecord?.firstOrNull()?.metadata?.device
-            val deviceName = when {
-                deviceInfo?.manufacturer?.isNotBlank() == true -> deviceInfo.manufacturer
-                else -> devicePackage
-            }
-            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(deviceName)
-
-            // --- SAVE UPDATED SYNC TIME ---
+            // ------------------------------
+            // 6) Fetch all record types
+            // ------------------------------
+            load(TotalCaloriesBurnedRecord::class) { totalCaloriesBurnedRecord = it }
+            load(StepsRecord::class) { stepsRecord = it }
+            load(HeartRateRecord::class) { heartRateRecord = it }
+            load(RestingHeartRateRecord::class) { restingHeartRecord = it }
+            load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
+            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+            load(BloodPressureRecord::class) { bloodPressureRecord = it }
+            load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
+            load(SleepSessionRecord::class) { sleepSessionRecord = it }
+            load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+            load(WeightRecord::class) { weightRecord = it }
+            load(BodyFatRecord::class) { bodyFatRecord = it }
+            load(DistanceRecord::class) { distanceRecord = it }
+            load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
+            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+            // ------------------------------
+            // 7) Device origin detection
+            // ------------------------------
+            val devicePackage =
+                stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName ?: "unknown"
+            val deviceManufacturer =
+                stepsRecord?.firstOrNull()?.metadata?.device?.manufacturer ?: devicePackage
+            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(deviceManufacturer)
+            // ------------------------------
+            // 8) Save updated sync time
+            // ------------------------------
             if (foundNewData && latestModified != null) {
-                SharedPreferenceManager
-                    .getInstance(context?.let { it })
-                    .saveMoveRightSyncTime(latestModified.toString())
-
-                Log.d("HealthSync", "✔ Updated lastSync = $latestModified")
+                SharedPreferenceManager.getInstance(context?.let { it }).saveMoveRightSyncTime(latestModified.toString())
+                Log.d("HealthSync", "Updated lastSync = $latestModified")
             } else {
-                Log.d("HealthSync", "⚠ No new data, syncTime unchanged")
+                Log.d("HealthSync", "No new data. Sync time unchanged")
             }
-            // --- STORE TO YOUR SERVER ---
+            // ------------------------------
+            // 9) Push to your server
+            // ------------------------------
             when (devicePackage) {
                 "com.google.android.apps.fitness" -> storeHealthData()
                 "com.sec.android.app.shealth",
                 "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
                 else -> storeHealthData()
             }
+
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
