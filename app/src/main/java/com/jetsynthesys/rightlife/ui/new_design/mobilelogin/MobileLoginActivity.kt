@@ -40,6 +40,7 @@ import com.jetsynthesys.rightlife.apimodel.SubmitLoginOtpRequest
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityMobileLoginBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteSettingBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetSwitchAccountBinding
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
@@ -826,7 +827,7 @@ class MobileLoginActivity : BaseActivity() {
 
     private fun showSwitchBottomSheet() {
         val bottomSheetDialog = BottomSheetDialog(this)
-        val dialogBinding = BottomsheetDeleteSettingBinding.inflate(layoutInflater)
+        val dialogBinding = BottomsheetSwitchAccountBinding.inflate(layoutInflater)
         val bottomSheetView = dialogBinding.root
         bottomSheetDialog.setContentView(bottomSheetView)
 
@@ -838,7 +839,7 @@ class MobileLoginActivity : BaseActivity() {
         }
 
         dialogBinding.tvTitle.text = "You're Logged In with a Different Account"
-        dialogBinding.tvDescription.text = "This device is already logged in with a different account. As a result, free services are not available. Please log out and sign in with your original account to access free features."
+        dialogBinding.tvDescription.text = "This device is already logged in with a different account. As a result, free services are not available. \n\nPlease log out and sign in with your original account to access free features."
 
         dialogBinding.ivDialogClose.setImageResource(R.drawable.close_breathwork)
 
@@ -846,17 +847,17 @@ class MobileLoginActivity : BaseActivity() {
             bottomSheetDialog.dismiss()
         }
 
-        dialogBinding.btnYes.text = "Switch Account"
-        dialogBinding.btnCancel.text = "OK"
+        dialogBinding.btnYes.text = "Skip"
+        dialogBinding.btnCancel.text = "Switch Account"
 
-        dialogBinding.btnCancel.setOnClickListener {
+        dialogBinding.btnYes.setOnClickListener {
             requestOtp(phoneNumber)
             bottomSheetDialog.dismiss()
         }
         /*dialogBinding.btnYes.setOnClickListener {
             bottomSheetDialog.dismiss()
         }*/
-        dialogBinding.btnYes.setOnClickListener {
+        dialogBinding.btnCancel.setOnClickListener {
             bottomSheetDialog.dismiss()
         }
 

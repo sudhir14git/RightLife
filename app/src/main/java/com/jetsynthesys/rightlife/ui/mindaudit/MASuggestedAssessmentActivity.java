@@ -51,6 +51,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
     private String selectedAssessment;
     private boolean isFromThinkRight = false;
     private TextView tv_all_assessment;
+    private boolean isDisclaimerDialogShowing = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,7 +139,9 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (selectedAssessment != null) {
-            showDisclaimerDialog(selectedAssessment);
+            if (!isDisclaimerDialogShowing) {
+                showDisclaimerDialog(selectedAssessment);
+            }
         } else {
             fetchThinkRecomendedData();
         }
@@ -187,6 +190,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         // Close button
         binding.icCloseDialog.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
+            isDisclaimerDialogShowing = false;
             if (selectedAssessment != null) finish();
         });
 
@@ -205,6 +209,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         // Start assessment
         binding.btnTakeAssessment.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
+            isDisclaimerDialogShowing = false;
             Intent intent = new Intent(MASuggestedAssessmentActivity.this, MAAssessmentQuestionaireActivity.class);
             intent.putExtra("AssessmentType", header);
             intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
@@ -218,6 +223,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN ||
                         newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     bottomSheetDialog.dismiss();
+                    isDisclaimerDialogShowing = false;
                     if (selectedAssessment != null) finish();
                 }
             }
@@ -230,6 +236,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
 
         bottomSheetDialog.show();
+        isDisclaimerDialogShowing = true;
     }
 
     private void setDialogText(TextView tvItem1, TextView tvItem2, TextView tvItem3, String header) {
@@ -321,4 +328,9 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isDisclaimerDialogShowing = false;
+    }
 }
