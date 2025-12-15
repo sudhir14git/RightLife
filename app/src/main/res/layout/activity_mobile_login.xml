@@ -107,6 +107,7 @@
                     android:background="@drawable/bg_edittext_gray"
                     android:textColor="@color/text_color_app"
                     android:backgroundTint="@color/gray_light_bg"
+                    android:fontFamily="@font/dmsans_bold"
                     android:layout_height="match_parent"/>
             </LinearLayout>
 
@@ -184,23 +185,24 @@
                     android:textColor="@color/black" />
                 <TextView
                     android:id="@+id/tvMobileNumber"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text=""
                     android:layout_marginStart="10dp"
                     android:textSize="@dimen/textsize_medium"
+                    android:layout_weight="1"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/text_color_app" />
 
                 <TextView
                     android:id="@+id/changeNumber"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Change"
+                    android:text="@string/change_text"
                     android:textSize="@dimen/textsize_medium"
                     android:textColor="@color/text_color_app"
                     android:layout_marginStart="16dp"
-                    android:gravity="end"
+                    android:gravity="center"
                     android:fontFamily="@font/dmsans_regular"
                     android:padding="4dp" />
 
@@ -255,6 +257,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+
+
+            <Button
+                android:id="@+id/btnVerifyOtp"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="30dp"
+                android:text="Verify"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/menuselected" />
+
             <!-- Resend Timer -->
             <TextView
                 android:id="@+id/tvResend"
@@ -278,17 +293,6 @@
                 android:enabled="false"
                 android:layout_marginTop="16dp"
                 android:layout_height="wrap_content"/>
-
-            <Button
-                android:id="@+id/btnVerifyOtp"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="20dp"
-                android:text="Verify"
-                android:textSize="16sp"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/menuselected" />
 
         </LinearLayout>
 

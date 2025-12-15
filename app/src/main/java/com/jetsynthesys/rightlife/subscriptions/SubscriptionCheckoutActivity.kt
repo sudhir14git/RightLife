@@ -895,7 +895,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
         val paymentSuccessRequest = PaymentSuccessRequest()
         paymentSuccessRequest.planId = planList[position].id
         paymentSuccessRequest.planName = planList[position].purchase?.planName
-        paymentSuccessRequest.paymentGateway = "razorpay"
+        paymentSuccessRequest.paymentGateway = "googlePlay"
         paymentSuccessRequest.orderId = razorpayOrderId
         paymentSuccessRequest.environment = "payment"
         paymentSuccessRequest.notifyType = "SDK"
