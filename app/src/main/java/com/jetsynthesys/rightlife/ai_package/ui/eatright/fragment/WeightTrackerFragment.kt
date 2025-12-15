@@ -974,6 +974,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
             // Legend
             val legend = lineChart.legend
             legend.setDrawInside(false)
+            legend.isEnabled = false
 
             lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                 override fun onValueSelected(e: Entry?, h: Highlight?) {

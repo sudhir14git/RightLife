@@ -624,6 +624,8 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                                 } else {
                                     barChart.visibility = View.VISIBLE
                                     layoutLineChart.visibility = View.GONE
+                                    selectHeartRateLayout.visibility = View.INVISIBLE
+                                    dottedLine.visibility = View.GONE
                                     updateChart(entries, labels, labelsDate)
                                 }
                             }

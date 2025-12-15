@@ -731,6 +731,7 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         // Legend
         val legend = lineChart.legend
         legend.setDrawInside(false)
+        legend.isEnabled = false
 
         // Chart selection listener
         lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {

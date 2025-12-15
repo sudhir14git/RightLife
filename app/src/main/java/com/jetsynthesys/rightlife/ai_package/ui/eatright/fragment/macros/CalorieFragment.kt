@@ -411,6 +411,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         // Legend
         val legend = barChart.legend
         legend.setDrawInside(false)
+        legend.isEnabled = false
 
         selectedItemDate.text = labelsDate.getOrNull(entries.size-1) ?: ""
         selectedCalorieTv.text = entries.get(entries.size-1).y.toInt().toString()
