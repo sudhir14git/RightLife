@@ -1,15 +1,23 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Path
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebViewFragment
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RadioButton
@@ -798,17 +806,71 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
     private fun setLastAverageValue(activeCaloriesResponse: ActiveCaloriesResponse, type: String) {
         activity?.runOnUiThread {
             heartRateDescriptionHeading.text = activeCaloriesResponse.heading
-            heartRateDescription.text = activeCaloriesResponse.description
+            val text = activeCaloriesResponse.description ?: ""
+
+            // Markdown style [text](url) detect karo
+            val markdownLinkPattern = "\\[([^\\]]+)\\]\\(([^\\)]+)\\)".toRegex()
+            var processedText = text
+            val spannableString = android.text.SpannableStringBuilder(text)
+
+            val matches = markdownLinkPattern.findAll(text).toList()
+            var offset = 0
+
+            for (match in matches) {
+                val linkText = match.groupValues[1]  // [ye text]
+                val linkUrl = match.groupValues[2]   // (ye url)
+                val matchStart = match.range.first - offset
+                val matchEnd = match.range.last + 1 - offset
+
+                // Replace markdown syntax with just the link text
+                spannableString.replace(matchStart, matchEnd, linkText)
+
+                val clickableSpan = object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        // WebView Fragment open karo
+                        openWebViewFragment(linkUrl)
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        super.updateDrawState(ds)
+                        ds.isUnderlineText = true
+                        ds.color = ContextCompat.getColor(requireContext(), R.color.primary_color)
+                    }
+                }
+
+                val newLinkEnd = matchStart + linkText.length
+                spannableString.setSpan(
+                    clickableSpan,
+                    matchStart,
+                    newLinkEnd,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                offset += (matchEnd - matchStart) - linkText.length
+            }
+
+            heartRateDescription.text = spannableString
+            heartRateDescription.movementMethod = LinkMovementMethod.getInstance()
+
             averageBurnCalorie.text = activeCaloriesResponse.currentAvgCalories.toInt().toString()
-            if (activeCaloriesResponse.progressSign.contentEquals("plus")){
+            if (activeCaloriesResponse.progressSign.contentEquals("plus")) {
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
                 percentageIc.setImageResource(R.drawable.ic_up)
-            }else if (activeCaloriesResponse.progressSign.contentEquals("minus")){
+            } else if (activeCaloriesResponse.progressSign.contentEquals("minus")) {
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
                 percentageIc.setImageResource(R.drawable.ic_down)
-            }else{
             }
         }
+    }
+
+    // Fragment open karne ka function add karo
+    private fun openWebViewFragment(url: String) {
+        val fragment = com.jetsynthesys.rightlife.ai_package.ui.moveright.WebViewFragment.newInstance(url)
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.flFragment, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     fun showLoader(view: View) {
