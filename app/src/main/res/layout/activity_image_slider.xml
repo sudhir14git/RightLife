@@ -29,7 +29,7 @@
                 android:id="@+id/viewPager_image_slider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp" />
+                android:layout_marginTop="10dp" />
 
             <!-- TabLayout for dots -->
             <com.google.android.material.tabs.TabLayout
@@ -68,7 +68,7 @@
                 android:drawablePadding="8dp"
                 android:paddingStart="24dp"
                 android:paddingEnd="24dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/margin_card_16dp"
                 android:background="@drawable/bg_google_btn" />
             <TextView
                 android:id="@+id/btn_google"
@@ -83,7 +83,7 @@
                 android:drawablePadding="8dp"
                 android:paddingStart="24dp"
                 android:paddingEnd="24dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/margin_card_16dp"
                 android:background="@drawable/bg_google_btn" />
 
 
