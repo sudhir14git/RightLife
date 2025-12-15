@@ -548,7 +548,7 @@ class MobileLoginActivity : BaseActivity() {
                                                             // New user - go to username creation
                                                             val intent = Intent(this@MobileLoginActivity, CreateUsernameActivity::class.java).apply {
                                                                 putExtra("USERNAME_KEY", phone)
-                                                                putExtra("EMAIL", email)
+                                                                putExtra("EMAIL", "")
                                                             }
 
                                                             val loggedInUsers = sharedPreferenceManager.loggedUserList
@@ -618,20 +618,21 @@ class MobileLoginActivity : BaseActivity() {
         timer?.cancel()
         tvResendCounter.visibility = View.VISIBLE
 
-        timer = object : CountDownTimer(30_000, 1_000) {
+        timer = object : CountDownTimer(60_000, 1_000) {
             override fun onTick(millisUntilFinished: Long) {
                 val sec = millisUntilFinished / 1000
                 tvResendCounter.text = "(${sec}s)"
                 tvResendCounter.setTextColor(ContextCompat.getColor(this@MobileLoginActivity, R.color.menuselected))
-                tvResend.text = "Resend code in"
+                //tvResend.text = "Resend code in"
+                tvResend.setTextColor(colorStateListNonSelected)
                 tvResend.isClickable = false
             }
 
             override fun onFinish() {
                 tvResend.text = "Resend OTP"
-                tvResend.setTextColor(ContextCompat.getColor(this@MobileLoginActivity, R.color.black))
+                tvResend.setTextColor(ContextCompat.getColor(this@MobileLoginActivity, R.color.menuselected))
                 tvResend.isClickable = true
-                tvResendCounter.visibility = View.GONE
+                tvResendCounter.visibility = View.INVISIBLE
             }
         }.start()
     }

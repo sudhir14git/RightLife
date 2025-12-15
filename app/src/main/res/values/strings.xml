@@ -331,8 +331,8 @@ We also use device identifiers to improve analytics and tailor your in-app exper
 
     <string name="change_plan_underlined"><u>Change plan</u></string>
 
-    <string name="razorpay_key">rzp_test_xxxxxxxxx</string>
-
+    <string name="razorpay_key">rzp_test_RqEmfR1seJQbMB</string>
+    <string name="change_text"><u>Change</u></string>
 
 
 </resources>
