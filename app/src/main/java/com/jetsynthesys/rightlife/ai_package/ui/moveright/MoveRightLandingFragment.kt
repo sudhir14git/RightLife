@@ -1662,7 +1662,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
                 else -> storeHealthData()
             }
-
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -2847,7 +2846,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             // Update UI after API response
             swipeRefreshLayout.isRefreshing = false
             context?.let {
-                Toast.makeText(it, "Data refreshed", Toast.LENGTH_SHORT).show()
+              //  Toast.makeText(it, "Data refreshed", Toast.LENGTH_SHORT).show()
                 val availabilityStatus = HealthConnectClient.getSdkStatus(it)
                 if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                     healthConnectClient = HealthConnectClient.getOrCreate(it)
