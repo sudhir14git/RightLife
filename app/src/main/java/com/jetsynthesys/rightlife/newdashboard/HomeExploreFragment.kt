@@ -250,20 +250,6 @@ class HomeExploreFragment : BaseFragment() {
         binding.llMoverightCategor2.setOnClickListener {
             if (NetworkUtils.isInternetAvailable(requireContext())) {
 
-                if (MoveRSubModuleResponse?.data?.size!! > 1) {
-                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
-                    intent.putExtra(
-                        "Categorytype",
-                        MoveRSubModuleResponse?.data?.get(1)?.categoryId
-                    )
-                    intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(1)?.moduleId)
-                    startActivity(intent)
-                }
-            } else showInternetError()
-        }
-        binding.llMoverightCategory3.setOnClickListener {
-            if (NetworkUtils.isInternetAvailable(requireContext())) {
-
                 if (MoveRSubModuleResponse?.data?.size!! > 2) {
                     val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
                     intent.putExtra(
@@ -271,6 +257,20 @@ class HomeExploreFragment : BaseFragment() {
                         MoveRSubModuleResponse?.data?.get(2)?.categoryId
                     )
                     intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(2)?.moduleId)
+                    startActivity(intent)
+                }
+            } else showInternetError()
+        }
+        binding.llMoverightCategory3.setOnClickListener {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+
+                if (MoveRSubModuleResponse?.data?.size!! > 1) {
+                    val intent = Intent(requireContext(), NewCategoryListActivity::class.java)
+                    intent.putExtra(
+                        "Categorytype",
+                        MoveRSubModuleResponse?.data?.get(1)?.categoryId
+                    )
+                    intent.putExtra("moduleId", MoveRSubModuleResponse?.data?.get(1)?.moduleId)
                     startActivity(intent)
                 }
             } else showInternetError()
@@ -723,9 +723,9 @@ class HomeExploreFragment : BaseFragment() {
         }
         if (MoveRSubModuleResponse?.data?.size!! > 1) {
             with(binding) {
-                tvMoveRightCategory3.text = MoveRSubModuleResponse?.data?.get(2)?.name
+                tvMoveRightCategory3.text = MoveRSubModuleResponse?.data?.get(1)?.name
                 Glide.with(requireActivity())
-                    .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(2)?.imageUrl)
+                    .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(1)?.imageUrl)
                     .placeholder(R.drawable.rl_placeholder)
                     .error(R.drawable.rl_placeholder)
                     .into(imageMoveRightCategory3)
@@ -733,9 +733,9 @@ class HomeExploreFragment : BaseFragment() {
         }
         if (MoveRSubModuleResponse?.data?.size!! > 2) {
             with(binding) {
-                tvMoveRightCategory2.text = MoveRSubModuleResponse?.data?.get(1)?.name
+                tvMoveRightCategory2.text = MoveRSubModuleResponse?.data?.get(2)?.name
                 Glide.with(requireActivity())
-                    .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(1)?.imageUrl)
+                    .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(2)?.imageUrl)
                     .placeholder(R.drawable.rl_placeholder)
                     .error(R.drawable.rl_placeholder)
                     .into(imageMoveRightCategory2)
