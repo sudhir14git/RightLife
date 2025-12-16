@@ -12,6 +12,7 @@ import com.facebook.LoggingBehavior
 import com.facebook.appevents.AppEventsLogger
 
 import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jetsynthesys.rightlife.ui.affirmation.ReminderReceiver
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -26,6 +27,7 @@ class MainApplication : Application() {
         if (FirebaseApp.getApps(this).isEmpty()) {
             FirebaseApp.initializeApp(this)
         }
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(true);
 // --- THIS IS THE CONDITIONAL LOGIC ---
         // Use the build config flag to enable or disable Crashlytics data collection.
         // For 'release' builds, BuildConfig.ENABLE_CRASHLYTICS will be true.

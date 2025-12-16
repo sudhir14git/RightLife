@@ -656,7 +656,8 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
                 response: Response<PaymentIntentResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    showToast(response.message())
+                    if (response.body()?.status != "")
+                        showToast(response.message())
                     //getSubscriptionList(type)
                 } else {
                     showToast(response.message())

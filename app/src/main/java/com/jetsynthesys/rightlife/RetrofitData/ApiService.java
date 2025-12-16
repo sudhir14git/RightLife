@@ -795,7 +795,6 @@ public interface ApiService {
     );
 
     @Headers({
-            "x-forwarded-for: 60.254.127.250",
             "Content-Type: application/json"
     })
     @POST("auth/google/login")
