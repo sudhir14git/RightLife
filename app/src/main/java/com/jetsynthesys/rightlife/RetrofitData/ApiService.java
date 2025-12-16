@@ -1329,6 +1329,15 @@ public interface ApiService {
     Call<OrderResponseRazorpay> createPaymentOrder(
             @Header("Authorization") String authToken,
             @Body OrderRequestRazorpay request);
+
+
+    // Firebase Token update
+    @Headers("Content-Type: application/json")
+    @PUT("user/device")
+    Call<CommonResponse> updateDeviceToken(
+            @Header("Authorization") String authToken,
+            @Body Map<String, String> requestBody
+    );
 }
 
 

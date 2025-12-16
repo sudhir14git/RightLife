@@ -92,6 +92,7 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.ActivityUtils
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
@@ -987,6 +988,7 @@ class HomeNewActivity : BaseActivity() {
         val deepLinkTarget = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
         handleDeepLinkTarget(deepLinkTarget)
 
+        sendTokenToServer("")
     }
 
 
@@ -3845,6 +3847,13 @@ class HomeNewActivity : BaseActivity() {
             }
         }
     }
+
+    // save FCM TOken
+    private fun sendTokenToServer(token: String) {
+        // Implement API call to send token to your backend
+        Log.d("FCM_TOKEN", "Token should be sent to server: $token")
+        //sharedPreferenceManager.getString(SharedPreferenceConstants.FCM_TOKEN,token)
+
+        CommonAPICall.sendTokenToServer(applicationContext, sharedPreferenceManager.getString(SharedPreferenceConstants.FCM_TOKEN,token))
+    }
 }
-
-

@@ -77,6 +77,8 @@ public class SharedPreferenceConstants {
 
 
     public static final String USER_MOBILE = "user_mobile";
+    public static final String FCM_TOKEN = "fcm_token";
+
 }
 
 
