@@ -33,11 +33,11 @@
             <TextView
                 android:text="Ready? Let’s Get Started"
                 android:textSize="@dimen/textsize_large24sp"
-                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/merriweather_bold"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"/>
 
             <TextView
                 android:text="Enter Your Phone Number"
@@ -130,6 +130,7 @@
                 android:textSize="16sp"
                 android:fontFamily="@font/dmsans_bold"
                 android:textColor="@color/white"
+                android:background="@drawable/bg_rounded_yellow"
                 android:backgroundTint="@color/rightlife" />
 
 
@@ -281,6 +282,7 @@
                 android:textSize="16sp"
                 android:fontFamily="@font/dmsans_bold"
                 android:textColor="@color/white"
+                android:background="@drawable/bg_rounded_yellow"
                 android:backgroundTint="@color/rightlife" />
 
             <!-- Resend Timer -->

@@ -95,10 +95,9 @@
                     android:layout_marginTop="7dp"
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:text="Your body, mind, and soul deserve some attention. Check in and make sure everything’s running smoothly."
+                    android:text="Your body, mind, and soul deserve some attention.\nCheck in to make sure everything’s running smoothly."
                     android:textColor="@color/txt_color_header"
-                    android:textSize="@dimen/textsize_medium"
-                    android:textStyle="normal" />
+                    android:textSize="@dimen/textsize_medium" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -1080,7 +1079,7 @@
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
-                                    android:maxLines="2"
+                                    android:maxLines="3"
                                     android:ellipsize="marquee"
                                     android:textSize="@dimen/textsize_medium" />
 
@@ -1162,7 +1161,7 @@
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
-                                    android:maxLines="2"
+                                    android:maxLines="3"
                                     android:ellipsize="marquee"
                                     android:textSize="@dimen/textsize_medium" />
 
@@ -1244,7 +1243,7 @@
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
-                                    android:maxLines="2"
+                                    android:maxLines="3"
                                     android:ellipsize="marquee"
                                     android:textSize="@dimen/textsize_medium" />
 
@@ -1320,7 +1319,7 @@
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
-                                    android:maxLines="2"
+                                    android:maxLines="3"
                                     android:ellipsize="marquee"
                                     android:textSize="@dimen/textsize_medium" />
 

@@ -19,6 +19,7 @@ import android.os.Looper
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -26,9 +27,11 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -200,6 +203,8 @@ class ProfileNewActivity : BaseActivity() {
             binding.btnVerify.isEnabled = false
             binding.btnVerify.text = "Verified"
             binding.etMobile.isEnabled = false
+            binding.btnVerify.visibility = GONE
+            setEndDrawable(binding.etMobile)
         } else {
             binding.btnVerify.isEnabled = true
             binding.btnVerify.text = "Verify"
@@ -222,16 +227,36 @@ class ProfileNewActivity : BaseActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
-                val c = binding.etFirstName.text.length
-                //"$c/20 Characters".also { tvCharLeft.text = it }
                 if (validateUsername(p0.toString())) {
 
                 } else {
-                    if (p0.toString().isNullOrBlank())
-                    {
+                    if (p0.toString().isNullOrBlank()) {
                         //Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
-                    }else{
-                        Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                    } else {
+                        showCustomToast("Invalid First Name")
+                    }
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
+
+        binding.etLastName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
+                if (validateUsername(p0.toString())) {
+
+                } else {
+                    if (p0.toString().isNullOrBlank()) {
+                        //Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                    } else {
+                        showCustomToast("Invalid Last Name")
                     }
                 }
             }
@@ -280,6 +305,8 @@ class ProfileNewActivity : BaseActivity() {
             binding.btnVerify.isEnabled = false
             binding.btnVerify.text = "Verified"
             binding.etMobile.isEnabled = false
+            binding.btnVerify.visibility = GONE
+            setEndDrawable(binding.etMobile)
         } else {
             binding.btnVerify.isEnabled = true
             binding.btnVerify.text = "Verify"
@@ -294,7 +321,8 @@ class ProfileNewActivity : BaseActivity() {
             binding.tvGender.text = "Female"
 
         if (userData.weight != null)
-            binding.tvWeight.text = "${userData.weight} ${userData.weightUnit.lowercase(Locale.getDefault())}"
+            binding.tvWeight.text =
+                "${userData.weight} ${userData.weightUnit.lowercase(Locale.getDefault())}"
 
         if (userData.profilePicture.isNullOrEmpty()) {
             /*if (userData.firstName.isNotEmpty())
@@ -1147,6 +1175,8 @@ class ProfileNewActivity : BaseActivity() {
                     binding.btnVerify.isEnabled = false
                     binding.btnVerify.text = "Verified"
                     binding.etMobile.isEnabled = false
+                    binding.btnVerify.visibility = GONE
+                    setEndDrawable(binding.etMobile)
 
                 } else {
                     bindingDialog.tvResult.text = "(Verification Failed-Incorrect OTP)"
@@ -1194,7 +1224,6 @@ class ProfileNewActivity : BaseActivity() {
     }
 
 
-
     private fun saveData() {
         val firstName = binding.etFirstName.text.toString()
         val lastName = binding.etLastName.text.toString()
@@ -1208,6 +1237,10 @@ class ProfileNewActivity : BaseActivity() {
             || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty()
         ) {
             showCustomToast("Please fill all required fields before proceeding.")
+        } else if (!validateUsername(firstName)) {
+            showCustomToast("Please enter valid First Name")
+        } else if (!validateUsername(firstName)) {
+            showCustomToast("Please enter valid Last Name")
         } else if (!email.matches(Utils.emailPattern.toRegex())) {
             showCustomToast("Invalid Email format")
         } else if (age.split(" ")[0].toInt() !in 13..80)
@@ -1389,4 +1422,29 @@ class ProfileNewActivity : BaseActivity() {
             }
         })
     }
+
+    private fun setEndDrawable(
+        editText: EditText,
+        @DrawableRes drawableRes: Int? = R.drawable.icon_verified,
+        paddingDp: Int = 8
+    ) {
+        val drawable = drawableRes?.let {
+            ContextCompat.getDrawable(editText.context, it)
+        }
+
+        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            null,
+            null,
+            drawable,
+            null
+        )
+
+        editText.compoundDrawablePadding =
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                paddingDp.toFloat(),
+                editText.resources.displayMetrics
+            ).toInt()
+    }
+
 }
