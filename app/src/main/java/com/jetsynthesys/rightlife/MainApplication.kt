@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
 
@@ -57,7 +58,7 @@ class MainApplication : Application() {
         val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
 // Check if the current build is a debug/QA build
-        if (BuildConfig.DEBUG) {
+        if (true) {
             // 1. Log the property setting for confirmation
             Log.d("FirebaseSetup", "Setting Firebase Analytics Debug Mode.")
 
@@ -73,7 +74,24 @@ class MainApplication : Application() {
 
             // You can use a more reliable method by setting the user property:
             firebaseAnalytics.setUserProperty("google_debug", "1")
+            // Toggle collection to "wake up" the debug stream
+            firebaseAnalytics.setAnalyticsCollectionEnabled(false)
+            firebaseAnalytics.setAnalyticsCollectionEnabled(true)
+
+            // Log a specific event to 'ping' the console
+            val bundle = Bundle().apply {
+                putString("debug_mode", "active")
+                putString("tester_name", "QA_Internal")
+            }
+            firebaseAnalytics.logEvent("debug_ping", bundle)
+
+            Log.d("FirebaseDebug", "Debug mode forced for build.")
         }
+        val params = Bundle()
+        params.putLong(FirebaseAnalytics.Param.VALUE, 1)
+        FirebaseAnalytics.getInstance(this).logEvent("enable_debug_view", params)
+
+        Toast.makeText(this, "Ping sent to Firebase. Check DebugView!", Toast.LENGTH_SHORT).show()
     }
 
     /**
