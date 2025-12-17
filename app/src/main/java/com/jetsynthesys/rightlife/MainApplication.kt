@@ -50,6 +50,30 @@ class MainApplication : Application() {
         // Initialize Meta SDK for install tracking
         initializeMetaSDK()
         ReminderReceiver.ringtone?.stop()
+
+
+        // debug mode firebase
+
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
+// Check if the current build is a debug/QA build
+        if (BuildConfig.DEBUG) {
+            // 1. Log the property setting for confirmation
+            Log.d("FirebaseSetup", "Setting Firebase Analytics Debug Mode.")
+
+            // 2. The key step: set the debug mode property on the app
+            // Setting this property enables DebugView for this app instance.
+            val params = Bundle()
+            params.putString(FirebaseAnalytics.Param.SOURCE, "debug_build")
+            firebaseAnalytics.logEvent("app_debug_mode_enabled", params)
+
+            // Although the previous logEvent often works, this is the explicit
+            // way to set the user property that triggers DebugView.
+            // However, the previous method usually suffices for simple enabling.
+
+            // You can use a more reliable method by setting the user property:
+            firebaseAnalytics.setUserProperty("google_debug", "1")
+        }
     }
 
     /**
