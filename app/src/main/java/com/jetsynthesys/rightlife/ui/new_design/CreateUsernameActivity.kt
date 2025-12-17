@@ -88,12 +88,18 @@ class CreateUsernameActivity : BaseActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
                 val c = edtUsername.text.length
                 "$c/20 Characters".also { tvCharLeft.text = it }
-                if (validateUsername(p0.toString())) {
+                if (p0.toString().isNotEmpty()) {
+                    tvError.visibility = GONE
+                    if (validateUsername(p0.toString())) {
                     tvError.visibility = GONE
                     btnContinue.backgroundTintList = colorStateListSelected
                     btnContinue.isEnabled = true
                 } else {
                     tvError.visibility = VISIBLE
+                    btnContinue.backgroundTintList = colorStateList
+                    btnContinue.isEnabled = false
+                }
+                }else{
                     btnContinue.backgroundTintList = colorStateList
                     btnContinue.isEnabled = false
                 }

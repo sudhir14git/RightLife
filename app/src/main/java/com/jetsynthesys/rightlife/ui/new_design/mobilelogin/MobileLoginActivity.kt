@@ -145,8 +145,8 @@ class MobileLoginActivity : BaseActivity() {
                         if (valid) colorStateListSelected else colorStateListNonSelected
                 } else {
                     /*binding.tvValidationError.visibility = View.VISIBLE
-                    binding.tvValidationError.text = "Enter a valid phone number."
-                    btnGetOtp.isEnabled = false*/
+                    binding.tvValidationError.text = "Enter a valid phone number."*/
+                    binding.btnGetOtp.isEnabled = false
                 }
                 binding.btnGetOtp.backgroundTintList =
                     if (valid) colorStateListSelected else colorStateListNonSelected

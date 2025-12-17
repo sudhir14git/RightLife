@@ -206,10 +206,10 @@ class NewCategoryListActivity : BaseActivity() {
             chipStrokeWidth = 0f
             /*chipStrokeColor =
                 Utils.getModuleColorStateList(this@NewCategoryListActivity, selectedModuleId)*/
-            textSize = 12f
+            textSize = 14f
 
             typeface =
-                ResourcesCompat.getFont(this@NewCategoryListActivity, R.font.merriweather_regular)
+                ResourcesCompat.getFont(this@NewCategoryListActivity, R.font.dmsans_semibold)
 
             // Background color states
             chipBackgroundColor = ColorStateList(
