@@ -47,9 +47,10 @@
                 android:fontFamily="@font/dmsans_bold" />
 
             <RelativeLayout
-                android:layout_width="320dp"
+                android:layout_width="300dp"
                 android:layout_centerInParent="true"
                 android:id="@+id/rl_triangle"
+                android:gravity="center_horizontal"
                 android:layout_height="310dp">
 
 
@@ -107,9 +108,11 @@
                 />
             <ImageView
                 android:layout_width="20dp"
+                android:id="@+id/img_ovrerthinking"
                 android:src="@drawable/img_overthinking"
                 android:layout_centerInParent="true"
-                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/rl_triangle"
+                android:layout_marginEnd="10dp"
                 android:layout_height="100dp"/>
         </RelativeLayout>
 

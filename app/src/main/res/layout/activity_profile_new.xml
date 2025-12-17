@@ -140,7 +140,7 @@
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="sampleemail@123.com"
+                android:text=""
                 android:background="@drawable/edittext_bg"
                 android:padding="12dp"
                 android:textSize="16sp"

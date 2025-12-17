@@ -222,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
-                android:text="Do You Smoke?"
+                android:text="Do you smoke or use tobacco?"
                 android:textSize="@dimen/textsize_medium"
                 android:drawableEnd="@drawable/astric" />
 
