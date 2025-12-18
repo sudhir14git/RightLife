@@ -39,26 +39,26 @@
         android:textSize="14sp" />
 
     <Button
-        android:id="@+id/btnCancel"
+        android:id="@+id/btnYes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:text="Cancel"
+        android:text="Yes"
         android:textSize="16sp"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/white"
         android:backgroundTint="@color/menuselected"/>
 
     <Button
-        android:id="@+id/btnYes"
+        android:id="@+id/btnCancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:text="Yes"
+        android:text="Cancel"
         android:textSize="16sp"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/black"

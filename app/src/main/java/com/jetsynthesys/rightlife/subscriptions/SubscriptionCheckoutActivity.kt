@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.subscriptions
 
+import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Paint
@@ -59,7 +60,8 @@ import retrofit2.Response
 import java.text.NumberFormat
 import java.util.Currency
 
-class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, PaymentResultListener {
+class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
+    PaymentResultListener {
 
     private val Int.dp: Int get() = (this * Resources.getSystem().displayMetrics.density).toInt()
     private lateinit var binding: ActivitySubscriptionCheckoutBinding
@@ -73,6 +75,9 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
     private var lastClickTime = 0L
     private val CLICK_DEBOUNCE_TIME = 2000L
     private var receivedProductId: String? = null
+    private lateinit var colorStateListSelected: ColorStateList
+    private lateinit var colorStateListNonSelected: ColorStateList
+    private var clickPosition: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,25 +88,51 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
         planList = intent.getSerializableExtra("PLAN_LIST") as? ArrayList<PlanList>
             ?: arrayListOf()
 
+        binding.iconBack.setOnClickListener {
+            finish()
+        }
+
         type = intent.getStringExtra("SUBSCRIPTION_TYPE").toString()
 
         if (type == "FACIAL_SCAN") {
-            binding.tvHeader.text = "Booster Plan"
+            binding.tvChangePlan.text = getString(R.string.change_pack_underlined)
+            val planName = planList[position].title?.split("-")
+            binding.planTitle.text = planName?.get(0) ?: "Face Scan"
+            binding.tvCancel.text = planName?.get(1) ?: "Pack of 1"
+        } else {
+            binding.planTitle.text = planList[position].title ?: ""
+            binding.tvCancel.text = "Cancel anytime online"
         }
 
+        colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)!!
+        colorStateListNonSelected = ContextCompat.getColorStateList(this, R.color.rightlife)!!
+
+        binding.tvChangePlan.paintFlags =
+            binding.tvChangePlan.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
         val iconListRazorPay = listOf(
+            R.drawable.paytm,
+            R.drawable.bhim,
+            R.drawable.phonepay,
+            R.drawable.googlepay,
+            R.drawable.visa,
             R.drawable.ic_mastercard,
             R.drawable.ic_mastercard,
             R.drawable.ic_mastercard,
-            R.drawable.ic_mastercard,
-            R.drawable.ic_mastercard,
-            R.drawable.ic_mastercard,
-            R.drawable.ic_mastercard,
+            R.drawable.ic_mastercard
         )
 
-        addPaymentIcons(binding.llIconsRazorPay, iconListRazorPay)
+        val iconListPlayStore = listOf(
+            R.drawable.playstore,
+            R.drawable.visa,
+            R.drawable.ic_mastercard,
+            R.drawable.ic_mastercard,
+            R.drawable.ic_mastercard
+        )
 
-        addPaymentIcons(binding.llIconsGooglePlay, iconListRazorPay, 3)
+        addPaymentIcons(binding.llIconsRazorPay, iconListRazorPay, 5)
+
+        addPaymentIcons(binding.llIconsGooglePlay, iconListPlayStore, 3)
 
         addBulletPointsWithGreenTick(
             binding.llBulletPoints,
@@ -112,68 +143,98 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
             )
         )
 
-        setPriceAmount(position)
+        initializeBillingClient()
+
+        //setPriceAmount(position)
 
         binding.tvChangePlan.setOnClickListener {
             showPlanListBottomSheet()
         }
 
-        binding.cardViewInAppPurchase.setOnClickListener {
-            val plan = planList[position]
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime < CLICK_DEBOUNCE_TIME) {
-                showToast("Please wait before making another purchase")
-                return@setOnClickListener
-            }
-            lastClickTime = currentTime
-
-            receivedProductId = plan.googlePlay
-
-            if (type == "FACIAL_SCAN") {
-                receivedProductType = "BOOSTER"
-                if (plan.title?.contains("Pack of 12", true) == true)
-                    logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan12_Tap)
-                else
-                    logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan1_Tap)
-
-                plan.googlePlay?.let { launchPurchaseFlow(it, BillingClient.ProductType.INAPP) }
-            } else {
-                if (plan.status.equals("ACTIVE", ignoreCase = true)) {
-                    showToast("This plan is currently active.")
-                    return@setOnClickListener
-                }
-
-                var hasActiveSubscription = false
-                planList.forEach {
-                    if (it.status.equals("ACTIVE", ignoreCase = true)) {
-                        hasActiveSubscription = true
-                        return@forEach
-                    }
-                }
-
-                if (hasActiveSubscription) {
-                    showToast("You have currently one Active Subscription!!")
-                } else {
-                    receivedProductType = "SUBSCRIPTION"
-                    if (plan.title.equals("MONTHLY", true))
-                        logPurchaseTapEvent(AnalyticsEvent.Subscription_Monthly_Tap)
-                    else
-                        logPurchaseTapEvent(AnalyticsEvent.Subscription_Annual_Tap)
-
-                    plan.googlePlay?.let { launchPurchaseFlow(it, BillingClient.ProductType.SUBS) }
-                }
-            }
+        binding.llGooglePlay.setOnClickListener {
+            //startGooglePay()
+            clickPosition = 1
+            binding.rlRazorPay.setBackgroundResource(
+                R.drawable.bg_subscription_plan
+            )
+            binding.llGooglePlay.setBackgroundResource(
+                R.drawable.bg_subscription_plan_selected
+            )
+            binding.btnContinue.isEnabled = true
+            binding.btnContinue.backgroundTintList = colorStateListSelected
         }
 
         binding.layoutRazorPay.setOnClickListener {
-            startRazorPayPayment()
+            //startRazorPayPayment()
+            clickPosition = 0
+            binding.rlRazorPay.setBackgroundResource(
+                R.drawable.bg_subscription_plan_selected
+            )
+            binding.llGooglePlay.setBackgroundResource(
+                R.drawable.bg_subscription_plan
+            )
+            binding.btnContinue.isEnabled = true
+            binding.btnContinue.backgroundTintList = colorStateListSelected
+        }
+
+        binding.btnContinue.setOnClickListener {
+            if (clickPosition == 0)
+                startRazorPayPayment()
+            else
+                startGooglePay()
         }
 
     }
 
+    private fun startGooglePay() {
+        val plan = planList[position]
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastClickTime < CLICK_DEBOUNCE_TIME) {
+            showToast("Please wait before making another purchase")
+            return
+        }
+        lastClickTime = currentTime
+
+        receivedProductId = plan.googlePlay
+
+        if (type == "FACIAL_SCAN") {
+            receivedProductType = "BOOSTER"
+            if (plan.title?.contains("Pack of 12", true) == true)
+                logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan12_Tap)
+            else
+                logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan1_Tap)
+
+            plan.googlePlay?.let { launchPurchaseFlow(it, BillingClient.ProductType.INAPP) }
+        } else {
+            if (plan.status.equals("ACTIVE", ignoreCase = true)) {
+                showToast("This plan is currently active.")
+                return
+            }
+
+            var hasActiveSubscription = false
+            planList.forEach {
+                if (it.status.equals("ACTIVE", ignoreCase = true)) {
+                    hasActiveSubscription = true
+                    return@forEach
+                }
+            }
+
+            if (hasActiveSubscription) {
+                showToast("You have currently one Active Subscription!!")
+            } else {
+                receivedProductType = "SUBSCRIPTION"
+                if (plan.title.equals("MONTHLY", true))
+                    logPurchaseTapEvent(AnalyticsEvent.Subscription_Monthly_Tap)
+                else
+                    logPurchaseTapEvent(AnalyticsEvent.Subscription_Annual_Tap)
+
+                plan.googlePlay?.let { launchPurchaseFlow(it, BillingClient.ProductType.SUBS) }
+            }
+        }
+    }
+
     private fun setPriceAmount(position: Int) {
 
-        binding.planTitle.text = planList[position].title ?: ""
         val productDetails = planList[position].googlePlay?.let { productDetailsMap[it] }
 
         if (productDetails != null) {
@@ -182,6 +243,14 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
         } else {
             // Fallback to backend pricing
             displayBackendPricing(planList[position])
+        }
+
+        // Show discount percentage if available
+        if (planList[position].discountPercent != null && planList[position].discountPercent!! > 0) {
+            binding.planOfferDiscount.visibility = View.VISIBLE
+            binding.planOfferDiscount.text = " (${planList[position].discountPercent}% Off)"
+        } else {
+            binding.planOfferDiscount.visibility = View.GONE
         }
     }
 
@@ -196,14 +265,14 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
         toShow.forEachIndexed { index, iconRes ->
             val iv = ImageView(llIcons.context).apply {
 
-                layoutParams = LinearLayout.LayoutParams(36.dp, 24.dp).apply {
-                    if (index != 0) marginStart = 8.dp
-                    marginEnd = 2.dp
-                    topMargin = 2.dp
-                    bottomMargin = 2.dp
+                layoutParams = LinearLayout.LayoutParams(30.dp, 22.dp).apply {
+                    if (index != 0) marginStart = 1.dp
+                    marginEnd = 1.dp
+                    topMargin = 1.dp
+                    bottomMargin = 1.dp
                 }
 
-                setPadding(2.dp, 2.dp, 2.dp, 2.dp)  // 2dp inner spacing inside the box
+                setPadding(1.dp, 1.dp, 1.dp, 1.dp)
 
                 background = ContextCompat.getDrawable(context, R.drawable.bg_icon_border)
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
@@ -465,6 +534,8 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
                     }
                 }
 
+                setPriceAmount(position)
+
             } catch (e: Exception) {
                 Log.e("Billing", "Error querying product details", e)
             }
@@ -688,11 +759,18 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
             bottomSheetLayout.animation = slideUpAnimation
         }
 
-        val adapter = PlanSelectionAdapter(planList, productDetailsMap) { selectedPosition ->
-            position = selectedPosition
-            setPriceAmount(position)
-            bottomSheetDialog.dismiss()
-        }
+        if (type == "FACIAL_SCAN")
+            dialogBinding.tvHeader.text = "Choose A Pack"
+        else
+            dialogBinding.tvHeader.text = "Choose A Plan"
+
+
+        val adapter =
+            PlanSelectionAdapter(type, planList, productDetailsMap, position) { selectedPosition ->
+                position = selectedPosition
+                setPriceAmount(position)
+                bottomSheetDialog.dismiss()
+            }
 
         dialogBinding.recyclerViewPlanList.layoutManager = LinearLayoutManager(this)
         dialogBinding.recyclerViewPlanList.adapter = adapter
@@ -762,14 +840,6 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
         }
     }
 
- /*   override fun onPaymentSuccess(p0: String?) {
-        // Success of RazorPay
-    }
-
-    override fun onPaymentError(p0: Int, p1: String?) {
-        showCustomToast("Payment failed.")
-    }*/
-
     private fun startRazorPayPayment() {
         val plan = planList[position]
 
@@ -779,23 +849,24 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
 
         // Create order request
         val orderRequestRazorpay = OrderRequestRazorpay(
-                userId = sharedPreferenceManager.userId ?: "", // Make sure you have userId in SharedPreferenceManager
-                planId = plan.id ?: "",
-                amount = plan.price?.inr ?: 0,
-                currency = "INR",
-                receipt = "rcpt_${System.currentTimeMillis()}"
+            userId = sharedPreferenceManager.userId
+                ?: "", // Make sure you have userId in SharedPreferenceManager
+            planId = plan.id ?: "",
+            amount = plan.price?.inr ?: 0,
+            currency = "INR",
+            receipt = "rcpt_${System.currentTimeMillis()}"
         )
 
         // Call backend to create order
         val call = apiService.createPaymentOrder(
-                sharedPreferenceManager.accessToken,
-                orderRequestRazorpay
+            sharedPreferenceManager.accessToken,
+            orderRequestRazorpay
         )
 
         call.enqueue(object : Callback<OrderResponseRazorpay> {
             override fun onResponse(
-                    call: Call<OrderResponseRazorpay>,
-                    response: Response<OrderResponseRazorpay>
+                call: Call<OrderResponseRazorpay>,
+                response: Response<OrderResponseRazorpay>
             ) {
                 binding.layoutRazorPay.isEnabled = true
 
@@ -854,32 +925,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
             Log.e("RazorPay", "Checkout error", e)
         }
     }
-    // old keep for test
-    /*private fun startRazorPayPayment() {
 
-        val co = Checkout()
-        co.setKeyID(getString(R.string.razorpay_key))
-
-        try {
-            val options = JSONObject()
-            options.put("name", "RightLife")
-            options.put("description", "Order Payment")
-            options.put("currency", "INR")
-            options.put("amount", 100 * 100)  // 100₹ = 100 * 100 = 10000 paise
-
-            // Optional prefill
-            val preFill = JSONObject()
-            preFill.put("email", "test@example.com")
-            preFill.put("contact", "9876543210")
-            options.put("prefill", preFill)
-
-            co.open(this, options)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-        }
-    }*/
     override fun onPaymentSuccess(razorpayPaymentId: String?) {
         Log.d("RazorPay", "Payment successful: $razorpayPaymentId")
 
@@ -936,7 +982,8 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener, P
         sharedPreferenceManager.removeKey("pending_db_order_id")
         sharedPreferenceManager.removeKey("pending_razorpay_order_id")
 
-        showCustomToast("Payment failed: ${errorMessage ?: "Unknown error"}")
+        if (errorCode != 0)
+            showCustomToast("Payment failed: ${errorMessage ?: "Unknown error"}")
     }
 
     private fun logRazorpayPurchaseEvent() {

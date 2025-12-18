@@ -91,7 +91,7 @@ class MainApplication : Application() {
         params.putLong(FirebaseAnalytics.Param.VALUE, 1)
         FirebaseAnalytics.getInstance(this).logEvent("enable_debug_view", params)
 
-        Toast.makeText(this, "Ping sent to Firebase. Check DebugView!", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "Ping sent to Firebase. Check DebugView!", Toast.LENGTH_SHORT).show()
     }
 
     /**

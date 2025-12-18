@@ -43,9 +43,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
-import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteSettingBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetSwitchAccountBinding
-import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.drawermenu.PrivacyPolicyActivity
 import com.jetsynthesys.rightlife.ui.drawermenu.TermsAndConditionsActivity
@@ -252,11 +250,13 @@ class ImageSliderActivity : BaseActivity() {
             putString("build_type", if (BuildConfig.DEBUG) "debug" else "release")
         }
         logger.logEvent("rl_app_start_test", params)
-        logger.logEvent("test_event_code", bundleOf(
+        logger.logEvent(
+            "test_event_code", bundleOf(
                 "test_param" to "debug_value",
                 "test_event_code" to "TEST86160",
                 "app_version" to BuildConfig.VERSION_NAME
-        ))
+            )
+        )
 
         logger.logEvent("this_is_some_event")
         logger.logEvent("TEST86160")
@@ -323,7 +323,11 @@ class ImageSliderActivity : BaseActivity() {
                             )
                         } catch (e: Exception) {
                             Log.e("GoogleAuthUtil", "Error retrieving access token", e)
-                            Utils.showNewDesignToast(this@ImageSliderActivity, "Verification Failed", false)
+                            Utils.showNewDesignToast(
+                                this@ImageSliderActivity,
+                                "Verification Failed",
+                                false
+                            )
                         }
                     }
                 }
@@ -388,7 +392,11 @@ class ImageSliderActivity : BaseActivity() {
                 response: Response<GoogleLoginTokenResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    Utils.showNewDesignToast(this@ImageSliderActivity, "Verification Successful", true)
+                    Utils.showNewDesignToast(
+                        this@ImageSliderActivity,
+                        "Verification Successful",
+                        true
+                    )
                     val apiResponse = response.body()
                     SharedPreferenceManager.getInstance(this@ImageSliderActivity)
                         .saveAccessToken(apiResponse?.accessToken)
@@ -546,11 +554,11 @@ class ImageSliderActivity : BaseActivity() {
                     val responseCode = response.code()
 
                     if (responseCode == 500) {
-                      /*  Toast.makeText(
-                            this@ImageSliderActivity,
-                            "Server Error: 500 - Internal Server Error",
-                            Toast.LENGTH_SHORT
-                        ).show()*/
+                        /*  Toast.makeText(
+                              this@ImageSliderActivity,
+                              "Server Error: 500 - Internal Server Error",
+                              Toast.LENGTH_SHORT
+                          ).show()*/
                         showSwitchBottomSheet()
                     } else {
                         // Try to parse errorBody if present
@@ -624,7 +632,8 @@ class ImageSliderActivity : BaseActivity() {
         }
 
         dialogBinding.tvTitle.text = "You're Logged In with a Different Account"
-        dialogBinding.tvDescription.text = "This device is already logged in with a different account. As a result, free services are not available. \n\nPlease log out and sign in with your original account to access free features."
+        dialogBinding.tvDescription.text =
+            "This device is already logged in with a different account. As a result, free services are not available. \n\nPlease log out and sign in with your original account to access free features."
 
         dialogBinding.ivDialogClose.setImageResource(R.drawable.close_breathwork)
 
@@ -647,16 +656,16 @@ class ImageSliderActivity : BaseActivity() {
 
             // Force a full logout and new chooser
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
-                    .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
-                    .requestProfile()
-                    .requestScopes(
-                            Scope("https://www.googleapis.com/auth/userinfo.email"),
-                            Scope("https://www.googleapis.com/auth/userinfo.profile"),
-                            Scope("openid")
-                    )
-                    .build()
+                .requestEmail()
+                .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                .requestProfile()
+                .requestScopes(
+                    Scope("https://www.googleapis.com/auth/userinfo.email"),
+                    Scope("https://www.googleapis.com/auth/userinfo.profile"),
+                    Scope("openid")
+                )
+                .build()
 
             val googleSignInClient = GoogleSignIn.getClient(this@ImageSliderActivity, gso)
 
@@ -674,7 +683,7 @@ class ImageSliderActivity : BaseActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun clickForPrivacyPolicyAndTermsOfService(){
+    private fun clickForPrivacyPolicyAndTermsOfService() {
         val textView = findViewById<TextView>(R.id.textView)
         val fullText = "By signing up, I agree to RightLife’s Terms of Service & Privacy Policy."
 
@@ -720,8 +729,18 @@ class ImageSliderActivity : BaseActivity() {
         }
 
 // Apply spans
-        spannableString.setSpan(termsClickable, termsStart, termsEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        spannableString.setSpan(privacyClickable, privacyStart, privacyEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(
+            termsClickable,
+            termsStart,
+            termsEnd,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannableString.setSpan(
+            privacyClickable,
+            privacyStart,
+            privacyEnd,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         textView.text = spannableString
         textView.movementMethod = LinkMovementMethod.getInstance()
