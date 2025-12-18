@@ -77,8 +77,10 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestResponse;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.UserInterestResponse;
 import com.jetsynthesys.rightlife.ui.payment.PaymentCardResponse;
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpEmailRequest;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse;
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpEmailRequest;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest;
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest;
 import com.jetsynthesys.rightlife.ui.scan_history.ScanHistoryResponse;
@@ -1337,6 +1339,17 @@ public interface ApiService {
     Call<CommonResponse> updateDeviceToken(
             @Header("Authorization") String authToken,
             @Body Map<String, String> requestBody
+    );
+
+    @POST("auth/email/generate-otp")
+    Call<ResponseBody> generateEmailOtp(
+            @Header("Authorization") String authToken,
+            @Body OtpEmailRequest otpEmailRequest);
+
+    @POST("auth/email/verify-with-otp")
+    Call<ResponseBody> verifyOtpForEmail(
+            @Header("Authorization") String authToken,
+            @Body VerifyOtpEmailRequest verifyOtpEmailRequest
     );
 }
 
