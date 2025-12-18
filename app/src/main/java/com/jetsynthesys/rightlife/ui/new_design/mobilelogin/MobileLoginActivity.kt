@@ -117,8 +117,10 @@ class MobileLoginActivity : BaseActivity() {
         binding.etPhone.setHintSize("Enter your mobile number here", 14)
 
         binding.layoutOtpScreen.visibility = View.GONE
-        //btnGetOtp.isEnabled = false
-        //btnVerifyOtp.isEnabled = false
+        binding.btnGetOtp.isEnabled = false
+        binding.btnGetOtp.backgroundTintList = colorStateListNonSelected
+        binding.btnVerifyOtp.isEnabled = false
+        binding.btnVerifyOtp.backgroundTintList = colorStateListNonSelected
         binding.tvValidationError.visibility = View.INVISIBLE
         binding.tvOtpError.visibility = View.GONE
         binding.tvValidationError.visibility = View.GONE
@@ -137,7 +139,7 @@ class MobileLoginActivity : BaseActivity() {
         binding.etPhone.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val valid = isValidIndianMobile(s.toString())
-                //btnGetOtp.isEnabled = valid
+                binding.btnGetOtp.isEnabled = valid
                 if (valid) {
                     binding.tvValidationError.visibility = View.GONE
                     binding.btnGetOtp.isEnabled = true
@@ -523,7 +525,6 @@ class MobileLoginActivity : BaseActivity() {
                 // New user - go to username creation
                 val intent =
                     Intent(this@MobileLoginActivity, CreateUsernameActivity::class.java).apply {
-                        putExtra("USERNAME_KEY", phone)
                         putExtra("EMAIL", "")
                     }
 
