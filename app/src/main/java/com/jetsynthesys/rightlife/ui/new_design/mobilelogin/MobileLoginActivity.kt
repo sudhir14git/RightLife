@@ -53,6 +53,7 @@ import com.jetsynthesys.rightlife.ui.utility.AppSignatureHelper
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.isValidIndianMobile
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -619,6 +620,7 @@ class MobileLoginActivity : BaseActivity() {
                 )
                 binding.tvResend.isClickable = true
                 binding.tvResendCounter.visibility = View.INVISIBLE
+                binding.tvOtpSent.visibility = View.GONE
             }
         }.start()
     }
@@ -851,20 +853,6 @@ class MobileLoginActivity : BaseActivity() {
         }
 
         bottomSheetDialog.show()
-    }
-
-    private fun isValidIndianMobile(number: String): Boolean {
-        val trimmed = number.trim()
-
-        // Must be exactly 10 digits
-        if (trimmed.length != 10) return false
-
-        // Reject all same digits like 0000000000, 1111111111
-        if (trimmed.all { it == trimmed[0] }) return false
-
-        // Must start with 6–9
-        val regex = Regex("^[6-9]\\d{9}$")
-        return regex.matches(trimmed)
     }
 
 
