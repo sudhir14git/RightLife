@@ -1,12 +1,16 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -44,6 +48,7 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
     private lateinit var dataFilledMyRoutine : ConstraintLayout
     private lateinit var noDataMyRoutine : ConstraintLayout
     private lateinit var btnCreateRoutine : LinearLayoutCompat
+    private var currentToast: Toast? = null
 
     private val myRoutineListAdapter by lazy {
         MyRoutineMainListAdapter(
@@ -75,7 +80,8 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
                     override fun onResponse(call: Call<AddWorkoutResponse>, response: Response<AddWorkoutResponse>) {
                         if (response.isSuccessful) {
                             if (response.body() != null) {
-                                Toast.makeText(activity, "Workout Added Successfully.", Toast.LENGTH_SHORT).show()
+                                showCustomToast(requireContext(),"Workout Created Successfully")
+                               // Toast.makeText(activity, "Workout Added Successfully.", Toast.LENGTH_SHORT).show()
                                 navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
                               //  val bottomSheet = LoggedBottomSheet()
                               //     bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
@@ -227,7 +233,30 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
         Log.d("MyRoutineFragment", "Workout clicked: ${workout.activityName}, Position: $position")
         // Add click handling logic here if needed
     }
-
+    private fun showCustomToast(context: Context, message: String?) {
+        // Cancel any old toast
+        currentToast?.cancel()
+        val inflater = LayoutInflater.from(context)
+        val toastLayout = inflater.inflate(R.layout.custom_toast_ai_eat, null)
+        val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+        // ✅ Wrap layout inside FrameLayout to apply margins
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val marginInPx = (20 * context.resources.displayMetrics.density).toInt()
+        params.setMargins(marginInPx, 0, marginInPx, 0)
+        toastLayout.layoutParams = params
+        container.addView(toastLayout)
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = container
+        toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 100)
+        currentToast = toast
+        toast.show()
+    }
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         val args = Bundle()
         args.putString("selected_date", selectedDate) // Put the string in the bundle
