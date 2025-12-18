@@ -101,11 +101,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Set background
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
-
-        // Initialize views
         barChart = view.findViewById(R.id.heartRateChart)
         dottedLineView = view.findViewById(R.id.dottedLineView)
         radioGroup = view.findViewById(R.id.tabGroup)
@@ -140,7 +136,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             }
         }
 
-        // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
         fetchActiveCalories("last_weekly")
         setupLineChart()
@@ -160,7 +155,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                 R.id.rbSixMonths -> fetchActiveCalories("last_six_months")
             }
         }
-        // Handle Radio Button Selection
 
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
@@ -200,16 +194,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                 selectedMonthDate = dateStr
                 fetchActiveCalories("last_monthly")
             } else {
-//                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-//                val calendar = Calendar.getInstance()
-//                val dateString = selectedHalfYearlyDate
-//                val date = dateFormat.parse(dateString)
-//                calendar.time = date!!
-//                val year = calendar.get(Calendar.YEAR)
-//                val month = calendar.get(Calendar.MONTH)
-//                val day = calendar.get(Calendar.DAY_OF_MONTH)
-//                calendar.set(year, month - 6, day)
-//                val dateStr = dateFormat.format(calendar.time)
                 selectedHalfYearlyDate = ""
                 fetchActiveCalories("last_six_months")
             }
@@ -264,18 +248,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
                 }
             } else {
-//                if (!selectedHalfYearlyDate.contentEquals(currentDate)) {
-//                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-//                    val calendar = Calendar.getInstance()
-//                    val dateString = selectedHalfYearlyDate
-//                    val date = dateFormat.parse(dateString)
-//                    calendar.time = date!!
-//                    val year = calendar.get(Calendar.YEAR)
-//                    val month = calendar.get(Calendar.MONTH)
-//                    val day = calendar.get(Calendar.DAY_OF_MONTH)
-//                    calendar.set(year, month + 6, day)
-//                    val dateStr = dateFormat.format(calendar.time)
-//                    selectedHalfYearlyDate = dateStr
                 if (!selectedHalfYearlyDate.contentEquals(currentDate)){
                     selectedHalfYearlyDate = ""
                     fetchActiveCalories("last_six_months")
@@ -298,13 +270,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         }
     }
 
-    private fun navigateToFragment(fragment: Fragment, tag: String) {
-        requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, fragment, tag)
-            addToBackStack(null)
-            commit()
-        }
-    }
 
     /** Update BarChart with new data */
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
@@ -437,8 +402,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                     if (x >= 0 && x < labelsDate.size) { // Boundary check
                         selectedItemDate.text = labelsDate[x]
                         selectedCalorieTv.text = y.toInt().toString()
-                        // Draw vertical dotted line using custom canvas drawing
-                       // drawVerticalDottedLine(h?.x ?: 0f)
                         val pos = FloatArray(2)
                         pos[0] = h.x
                         pos[1] = 0f
@@ -464,14 +427,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 
                         selectHeartRateLayout.x = clampedX
 
-                        // Wait for layout to be drawn before getting positions
-                        /*selectHeartRateLayout.post {
-                            val cardX = clampedX + cardWidth / 2f
-                            val cardY = selectHeartRateLayout.y + selectHeartRateLayout.height
-
-                            val barY = h.yPx
-                        }*/
-
                     } else {
                         Log.e("ChartClick", "Index $x out of bounds for labelsDate size ${labelsDate.size}")
                         selectHeartRateLayout.visibility = View.INVISIBLE
@@ -489,48 +444,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         barChart.invalidate()
     }
 
-    // Helper function to draw vertical dotted line
-    private fun drawVerticalDottedLine(xPosition: Float) {
-        // Create a custom overlay view with canvas drawing
-        val overlay = object : View(requireContext()) {
-            override fun onDraw(canvas: Canvas) {
-                super.onDraw(canvas)
-                canvas?.let { c ->
-                    val paint = Paint().apply {
-                        color = Color.BLACK
-                        strokeWidth = 3f
-                        style = Paint.Style.STROKE
-                        pathEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
-                    }
-                    // Get chart bounds
-                    val chartRect = barChart.contentRect
-                    // Convert chart value to pixel position
-                    val transformer = barChart.getTransformer(YAxis.AxisDependency.LEFT)
-                    val pts = floatArrayOf(xPosition, 0f)
-                    transformer.pointValuesToPixel(pts)
-                    // Draw vertical line
-                    c.drawLine(
-                        pts[0],
-                        chartRect.bottom,
-                        pts[0],
-                        chartRect.bottom,
-                        paint
-                    )
-                }
-            }
-        }
-
-        // Add overlay to chart (this approach might need adjustment based on your layout)
-        val chartParent = barChart.parent as? ViewGroup
-        chartParent?.addView(overlay, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        ))
-
-        overlay.tag = "dotted_line_overlay"
-    }
-
-    // Helper function to remove vertical dotted line
     private fun removeVerticalDottedLine() {
         val chartParent = barChart.parent as? ViewGroup
         val overlay = chartParent?.findViewWithTag<View>("dotted_line_overlay")
@@ -577,22 +490,17 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                 } else if (period.contentEquals("last_monthly")) {
                     if (selectedMonthDate.contentEquals("")) {
                         selectedDate = currentDateTime.format(formatter)
-//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-//                        selectedDate = firstDateOfMonth
+
                         selectedMonthDate = selectedDate
                     } else {
-                        // val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
                         selectedDate = selectedMonthDate
                     }
                     setSelectedDateMonth(selectedMonthDate, "Month")
                 } else {
                     if (selectedHalfYearlyDate.contentEquals("")) {
                         selectedDate = currentDateTime.format(formatter)
-//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-//                        selectedDate = firstDateOfMonth
                         selectedHalfYearlyDate = selectedDate
                     } else {
-                        //  val firstDateOfMonth = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
                         selectedDate = selectedHalfYearlyDate
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
@@ -724,30 +632,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         val labels = formatDateList(dateList)
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
-        /* for (i in 0 until 30) {
-             weeklyLabels.add(
-                 when (i) {
-                     2 -> "1-7"
-                     9 -> "8-14"
-                     15 -> "15-21"
-                     22 -> "22-28"
-                     29 -> "29-31"
-                     else -> ""
-                 }
-             )
-             val dateLabel = (convertMonth(dateString) + "," + year)
-             if (i < 7) {
-                 labelsDate.add("1-7 $dateLabel")
-             } else if (i < 14) {
-                 labelsDate.add("8-14 $dateLabel")
-             } else if (i < 21) {
-                 labelsDate.add("15-21 $dateLabel")
-             } else if (i < 28) {
-                 labelsDate.add("22-28 $dateLabel")
-             } else {
-                 labelsDate.add("29-31 $dateLabel")
-             }
-         }*/
 
         // Aggregate calories by day
         calorieAnalysisResponse.data.calorie_data.forEach { calorie ->
@@ -773,48 +657,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         }
     }
 
-    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
-        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
-
-        val startDate = dateFormat.parse(startDateStr)!!
-        val calendar = Calendar.getInstance()
-        calendar.time = startDate
-
-        val endDate = Calendar.getInstance().apply {
-            time = startDate
-            add(Calendar.DAY_OF_MONTH, 29)
-        }.time
-
-        val result = mutableListOf<String>()
-
-        while (calendar.time <= endDate) {
-            val weekStart = calendar.time
-            val weekStartIndex = result.size
-            calendar.add(Calendar.DAY_OF_MONTH, 6)
-            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
-
-            val startDay = dayFormat.format(weekStart)
-            val endDay = dayFormat.format(weekEnd)
-            val startMonth = monthFormat.format(weekStart)
-            val endMonth = monthFormat.format(weekEnd)
-            val dateItem = LocalDate.parse(startDateStr)
-            val yearItem = dateItem.year
-
-            val label = if (startMonth == endMonth) {
-                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
-            } else {
-                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
-            }
-            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
-            repeat(daysInThisWeek) {
-                result.add(label)
-            }
-            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
-        }
-        return result
-    }
     private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dayFormat = SimpleDateFormat("d", Locale.getDefault())
@@ -934,9 +776,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             calendar.add(Calendar.DAY_OF_YEAR, -29)
             val dateStr = dateFormat.format(calendar.time)
             if (dateViewType.contentEquals("Month")){
-//                val lastDayOfMonth = getDaysInMonth(month+1 , year)
-//                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-                //               val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
                 val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedMonthDate)+","+ year.toString()
                 selectedDate.text = dateView
                 selectedDate.gravity = Gravity.CENTER
@@ -1132,14 +971,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         }
     }
 
-    private fun updateDateRangeLabel() {
-        val sdf = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
-        // Placeholder for future use
-    }
 
-    private fun updateAverageStats() {
-        // Placeholder for future use
-    }
 }
 
 class DottedLineView @JvmOverloads constructor(

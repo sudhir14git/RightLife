@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
@@ -38,7 +39,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ToolsAdapterList(private val context1: Context, private val items: List<ToolDisplayItem>, private val onItemClick: (Int, ToolsData?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ToolsAdapterList(private val context1: Context, private val items: List<ToolDisplayItem>, private val onItemClick: (Int, ToolsData?) -> Unit,private val onItemClickNew: (Int, ToolsData?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val contexts = context1
 
@@ -50,6 +51,7 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
     class ToolViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val icon: ImageView = itemView.findViewById(R.id.tool_icon)
         val name: TextView = itemView.findViewById(R.id.tool_name)
+        val new_main_linear_layout: LinearLayout = itemView.findViewById(R.id.new_main_linear_layout)
         val description: TextView = itemView.findViewById(R.id.tool_description)
         val selectButton: ImageView = itemView.findViewById(R.id.tool_select_button)
     }
@@ -159,6 +161,12 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                 )
 
 
+                holder.itemView.findViewById<ImageView>(R.id.tool_icon).setOnClickListener {
+                    onItemClickNew(position, tool)
+                }
+                holder.itemView.findViewById<LinearLayout>(R.id.new_main_linear_layout).setOnClickListener {
+                    onItemClickNew(position, tool)
+                }
                 toolHolder.selectButton.setOnClickListener {
                     onItemClick(position, tool)
                 }
@@ -390,8 +398,25 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
             }
         }
         filterRecyclerView.adapter = filterAdapter
+        toolsAdapter = ToolsAdapterList(requireContext(), tools,
+            onItemClickNew = { position, toolsData ->
+                ActivityUtils.startBreathWorkActivity(requireContext())
 
-        toolsAdapter = ToolsAdapterList(requireContext(),tools) { position,toolsData ->
+            },
+            onItemClick = { position, toolsData ->
+                if (toolsData!=null) {
+                    moduleId = toolsData._id ?: ""
+                    isSelectedModule = if (toolsData.isSelectedModule == true) false else true
+                    selectTools(toolsData?.title,isSelectedModule)
+                }else{
+                    ActivityUtils.startTodaysAffirmationActivity(requireContext())
+                }
+                // YEH NAYA ACTION HAI → jaise tool open karna
+
+            }
+        )
+
+       /* toolsAdapter = ToolsAdapterList(requireContext(),tools) { position,toolsData ->
             if (toolsData!=null) {
                 moduleId = toolsData._id ?: ""
                 isSelectedModule = if (toolsData.isSelectedModule == true) false else true
@@ -399,7 +424,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
             }else{
                 ActivityUtils.startTodaysAffirmationActivity(requireContext())
             }
-        }
+        }*/
         recyclerView.adapter = toolsAdapter
     }
 

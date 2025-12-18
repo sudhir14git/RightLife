@@ -711,7 +711,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                                 .replace(R.id.flFragment, fragment, "YourActivityFragment")
                                 .addToBackStack("YourActivityFragment")
                                 .commit()
-                            showCustomToast(requireContext(), "Workout Created")
+                            showCustomToast(requireContext(), "Workout Created Successfully")
                         } ?: showCustomToast(requireContext(), "Empty response")
                     } else {
                         showCustomToast(requireContext(), "Error: ${response.code()}")
