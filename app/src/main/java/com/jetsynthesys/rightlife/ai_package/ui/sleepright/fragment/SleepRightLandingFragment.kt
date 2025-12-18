@@ -147,6 +147,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import java.time.ZoneId
 import kotlin.math.floor
+import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
@@ -2099,40 +2100,39 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
-        var result = "0"
-        if (hoursDecimal == 0.0 || hoursDecimal == null){
-            val totalMinutes = (hoursDecimal * 60).toInt()
-            val hours = totalMinutes / 60
-            val minutes = totalMinutes % 60
-            result = "0 mins"
-        }else {
-           // val totalMinutes = (hoursDecimal * 60).toInt()
-            val minutesDecimal = hoursDecimal * 60
-            val totalMinutes = if (minutesDecimal - floor(minutesDecimal) > 0.5) {
-                floor(minutesDecimal).toInt() + 1
-            } else {
-                floor(minutesDecimal).toInt()
-            }
-            val hours = totalMinutes / 60
-            val minutes = totalMinutes % 60
-            val safeHours = hours ?: 0
-            val safeMinutes = minutes ?: 0
-             result = String.format("%02dhr %02dmins", safeHours, safeMinutes)
-        }
-        return result
-    }
 
-    fun convertDecimalMinutesToHrMinFormat(decimalMinutes: Double): String {
-        val totalMinutes = decimalMinutes.toInt()
+        if (hoursDecimal <= 0.0) return "0 mins"
+
+        // STEP 1: hours → total minutes
+        val totalMinutes = kotlin.math.round(hoursDecimal * 60).toInt()
+
+        // STEP 2: minutes → hr + min
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
 
         return when {
-            hours > 0 && minutes > 0 -> "${hours} hr ${minutes} min"
-            hours > 0 -> "${hours} hr"
-            else -> "${minutes} min"
+            hours > 0 && minutes > 0 -> "$hours hr $minutes mins"
+            hours > 0 -> "$hours hr"
+            else -> "$minutes mins"
         }
     }
+
+
+    private fun convertDecimalMinutesToHrMinFormat(decimalMinutes: Double): String {
+
+        if (decimalMinutes <= 0.0) return "0 min"
+
+        val totalMinutes = kotlin.math.round(decimalMinutes).toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+
+        return when {
+            hours > 0 && minutes > 0 -> "$hours hr $minutes min"
+            hours > 0 -> "$hours hr"
+            else -> "$minutes min"
+        }
+    }
+
 
     fun formatIsoTo12Hour(timeStr: String): String {
         val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -2178,6 +2178,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         view?.let { showLoader(it) }
         val ctx = context ?: return
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
+        //val userId = "692d8548977eb3ebd50ec742"
+        //val date = "2025-12-17"
         val date = getCurrentDate()
         val source = "android"
         val preferences = "nature_sounds"
@@ -2692,34 +2694,33 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             var totalDeepDuration = 0f
 
             for (i in 0 until sleepStageResponse.size) {
-                val startDateTime =
-                    LocalDateTime.parse(sleepStageResponse[i].startDatetime, formatters)
+                val startDateTime = LocalDateTime.parse(sleepStageResponse[i].startDatetime, formatters)
                 val endDateTime = LocalDateTime.parse(sleepStageResponse[i].endDatetime, formatters)
-                val duration = Duration.between(startDateTime, endDateTime).toMinutes()
-                    .toFloat() / 60f // Convert to hours
+
+                // Include seconds to get accurate duration
+                val durationInSeconds = Duration.between(startDateTime, endDateTime).seconds
+                val durationInHours = durationInSeconds.toDouble() / 3600.0 // Convert seconds → hours
 
                 when (sleepStageResponse[i].stage) {
                     "REM Sleep" -> {
-                        remData.add(duration)
-                        totalRemDuration += duration
+                        remData.add(durationInHours.toFloat())
+                        totalRemDuration += durationInHours.toFloat()
                     }
-
                     "Deep Sleep" -> {
-                        deepData.add(duration)
-                        totalDeepDuration += duration
+                        deepData.add(durationInHours.toFloat())
+                        totalDeepDuration += durationInHours.toFloat()
                     }
-
                     "Light Sleep" -> {
-                        coreData.add(duration)
-                        totalCoreDuration += duration
+                        coreData.add(durationInHours.toFloat())
+                        totalCoreDuration += durationInHours.toFloat()
                     }
-
                     "Awake" -> {
-                        awakeData.add(duration)
-                        totalAwakeDuration += duration
+                        awakeData.add(durationInHours.toFloat())
+                        totalAwakeDuration += durationInHours.toFloat()
                     }
                 }
             }
+
             val timeCore = formatDuration(totalCoreDuration)
             val hourRegex = Regex("(\\d+)\\s*hr")
             val minRegex = Regex("(\\d+)\\s*mins")
@@ -2751,14 +2752,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun formatDuration(durationHours: Float): String {
-        val hours = durationHours.toInt()
-        val minutes = ((durationHours - hours) * 60).toInt()
-        return if (hours > 0) {
-            "$hours hr $minutes mins"
-        } else {
-            "$minutes mins"
-        }
+        if (durationHours <= 0f) return "0 mins"
+
+        // Convert hours → total minutes and round to nearest minute
+        val totalMinutes = (durationHours * 60).roundToInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+
+        return if (hours > 0) "$hours hr $minutes mins" else "$minutes mins"
     }
+
 
     private fun fetchThinkRecomendedData() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
