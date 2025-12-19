@@ -394,7 +394,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         fetchThinkRecomendedData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
-            val ctx = context ?: return   // ✅ Safe guard
+            val ctx = context ?: return
+            // ✅ Safe guard
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
+            }
             val dialog = LogYourNapDialogFragment(
                 requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
@@ -454,7 +460,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         logYourNap.setOnClickListener {
-            val ctx = context ?: return@setOnClickListener   // ✅ Safe guard
+            val ctx = context ?: return@setOnClickListener
+            // ✅ Safe guard
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
+            }
             val dialog = LogYourNapDialogFragment(
                 requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
@@ -2212,6 +2224,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     consistencySleep.visibility = View.GONE
                     sleepConsistencyChart.visibility = View.GONE
                     if (!bottomSeatName.contentEquals("LogLastNightSleep") && !isRepeat){
+                        context?.let { it1 ->
+                            AnalyticsLogger.logEvent(
+                                it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                            )
+                        }
                         val dialog = LogYourNapDialogFragment(
                             requireContext = requireContext(),
                             listener = object : OnLogYourNapSelectedListener {
@@ -2246,6 +2263,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepConsistencyChart.visibility = View.GONE
                     sleepStageCardView.visibility = View.GONE
                     if (!bottomSeatName.contentEquals("LogLastNightSleep") && !isRepeat){
+                        context?.let { it1 ->
+                            AnalyticsLogger.logEvent(
+                                it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                            )
+                        }
                         val dialog = LogYourNapDialogFragment(
                             requireContext = requireContext(),
                             listener = object : OnLogYourNapSelectedListener {
@@ -2830,6 +2852,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 tvPerformStartTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
                 tvPerformWakeTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
             val ctx = context ?: return   // ✅ Safe guard
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
+            }
             val dialog = LogYourNapDialogFragment(
                 requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
@@ -2931,7 +2958,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
             if (!isRepeat) {
-                val ctx = context ?: return   // ✅ Safe guard
+                val ctx = context ?: return
+                context?.let { it1 ->
+                    AnalyticsLogger.logEvent(
+                        it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                    )
+                }
+                // ✅ Safe guard
                 val dialog = LogYourNapDialogFragment(
                     requireContext = ctx,
                     listener = object : OnLogYourNapSelectedListener {

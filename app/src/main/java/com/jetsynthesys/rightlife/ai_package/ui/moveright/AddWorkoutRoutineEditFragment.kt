@@ -488,7 +488,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                                 addToBackStack("YourActivityFragment")
                                 commit()
                             }
-                            Toast.makeText(requireContext(), "Workout Created Successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Workout Saved Successfully", Toast.LENGTH_SHORT).show()
                         } ?: Toast.makeText(
                             requireContext(),
                             "Empty response",

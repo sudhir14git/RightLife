@@ -552,7 +552,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                             moduleIcon = moduleIcon!!
                         )
                         withContext(Dispatchers.Main) {
-                            showCustomToast(requireContext(), "Updated calories for ${lastEntry.moduleName}: ${caloriesResponse.caloriesBurned} kcal")
+                            showCustomToast(requireContext(), "Workout Created Successfully")
                             navigateToCreateRoutineFragment()
                         }
                     } else {
@@ -651,7 +651,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         )
                         withContext(Dispatchers.Main) {
                             setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
-                            showCustomToast(requireContext(), "Updated calories: ${caloriesResponse.caloriesBurned} kcal")
+                            showCustomToast(requireContext(), "Workout Created Successfully")
                             navigateToCreateRoutineFragment()
                         }
                     } else {
@@ -711,7 +711,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                                 .replace(R.id.flFragment, fragment, "YourActivityFragment")
                                 .addToBackStack("YourActivityFragment")
                                 .commit()
-                            showCustomToast(requireContext(), "Workout Created Successfully")
+                            showCustomToast(requireContext(), "Workout Saved Successfully")
                         } ?: showCustomToast(requireContext(), "Empty response")
                     } else {
                         showCustomToast(requireContext(), "Error: ${response.code()}")

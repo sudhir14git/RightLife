@@ -80,7 +80,7 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
                     override fun onResponse(call: Call<AddWorkoutResponse>, response: Response<AddWorkoutResponse>) {
                         if (response.isSuccessful) {
                             if (response.body() != null) {
-                                showCustomToast(requireContext(),"Workout Created Successfully")
+                                showCustomToast(requireContext(),"Workout Saved Successfully")
                                // Toast.makeText(activity, "Workout Added Successfully.", Toast.LENGTH_SHORT).show()
                                 navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
                               //  val bottomSheet = LoggedBottomSheet()
