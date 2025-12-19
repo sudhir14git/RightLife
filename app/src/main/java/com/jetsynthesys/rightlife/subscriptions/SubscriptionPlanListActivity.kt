@@ -94,7 +94,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
 
         binding.tvPrivacyPolicy.setOnClickListener {
             startActivity(Intent(this, GeneralInformationActivity::class.java).apply {
-                putExtra("INFO", "Policies")
+                putExtra("INFO", "Privacy Policy")
             })
         }
         binding.tvTermsCondition.setOnClickListener {
@@ -153,6 +153,11 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             binding.continueButton.visibility = View.GONE
             binding.continueButton.visibility = View.VISIBLE
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getSubscriptionList(planType)
     }
 
     private fun openPlayStoreSubscriptionPage() {

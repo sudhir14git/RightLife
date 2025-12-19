@@ -29,7 +29,7 @@
             android:textSize="18sp"
             android:fontFamily="@font/merriweather_bold"
             android:textColor="@color/txt_color_mind"
-            android:gravity="center" />
+            android:gravity="center_vertical" />
     </LinearLayout>
 
     <HorizontalScrollView

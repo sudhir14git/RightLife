@@ -41,13 +41,13 @@
 
         <ImageView
             android:id="@+id/ic_bookmark"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="12dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="28dp"
             android:src="@drawable/ic_video_bookmark"
-            android:visibility="visible"/>
+            android:visibility="gone" />
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
