@@ -60,7 +60,23 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
 
         searchWorkoutBackButton.setOnClickListener {
-            navigateToYourActivityFragment()
+            if(routine.equals("routine")){
+                val fragment = CreateRoutineFragment()
+                val args = Bundle().apply {
+                    putString("routine", routine)
+                    putString("routineName", routineName)
+                    putParcelableArrayList("workoutList", workoutList)
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
+            }else{
+                navigateToYourActivityFragment()
+            }
+
         }
 
         // Set up tabs
@@ -143,7 +159,22 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         // Handle back press
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToYourActivityFragment()
+                if(routine.equals("routine")){
+                    val fragment = CreateRoutineFragment()
+                    val args = Bundle().apply {
+                        putString("routine", routine)
+                        putString("routineName", routineName)
+                        putParcelableArrayList("workoutList", workoutList)
+                    }
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack(null)
+                        commit()
+                    }
+                }else{
+                    navigateToYourActivityFragment()
+                }
             }
         })
     }
@@ -169,7 +200,8 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
     private fun navigateToYourActivityFragment() {
         if (moduleName.equals("HomeDashboard")){
             activity?.finish()
-        }else{
+        }
+        else{
             val fragment = YourActivityFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
