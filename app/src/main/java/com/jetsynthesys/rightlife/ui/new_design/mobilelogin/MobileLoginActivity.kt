@@ -19,11 +19,7 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -123,7 +119,6 @@ class MobileLoginActivity : BaseActivity() {
         binding.btnVerifyOtp.backgroundTintList = colorStateListNonSelected
         binding.tvValidationError.visibility = View.INVISIBLE
         binding.tvOtpError.visibility = View.GONE
-        binding.tvValidationError.visibility = View.GONE
 
         AnalyticsLogger.logEvent(
             AnalyticsEvent.LOGIN_SCREEN_VISIT,
@@ -141,14 +136,17 @@ class MobileLoginActivity : BaseActivity() {
                 val valid = isValidIndianMobile(s.toString())
                 binding.btnGetOtp.isEnabled = valid
                 if (valid) {
-                    binding.tvValidationError.visibility = View.GONE
+                    binding.tvValidationError.visibility = View.INVISIBLE
                     binding.btnGetOtp.isEnabled = true
 
                     binding.btnGetOtp.backgroundTintList =
                         if (valid) colorStateListSelected else colorStateListNonSelected
                 } else {
-                    /*binding.tvValidationError.visibility = View.VISIBLE
-                    binding.tvValidationError.text = "Enter a valid phone number."*/
+                    if (s?.length == 10)
+                        binding.tvValidationError.visibility = View.VISIBLE
+                    else
+                        binding.tvValidationError.visibility = View.INVISIBLE
+                    binding.tvValidationError.text = "Enter a valid phone number."
                     binding.btnGetOtp.isEnabled = false
                 }
                 binding.btnGetOtp.backgroundTintList =
@@ -203,7 +201,9 @@ class MobileLoginActivity : BaseActivity() {
         }
 
         binding.tvResend.setOnClickListener {
-            if (binding.tvResend.isClickable && binding.tvResend.text.toString().startsWith("Resend")) {
+            if (binding.tvResend.isClickable && binding.tvResend.text.toString()
+                    .startsWith("Resend")
+            ) {
                 /* AnalyticsLogger.logEvent(
                          AnalyticsEvent.RESEND_OTP_CLICK,
                          mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
@@ -231,7 +231,14 @@ class MobileLoginActivity : BaseActivity() {
     // -------------------------------------------------------------------
 
     private fun setupOtpInputs() {
-        val boxes = listOf(binding.etOtp1, binding.etOtp2, binding.etOtp3, binding.etOtp4, binding.etOtp5, binding.etOtp6)
+        val boxes = listOf(
+            binding.etOtp1,
+            binding.etOtp2,
+            binding.etOtp3,
+            binding.etOtp4,
+            binding.etOtp5,
+            binding.etOtp6
+        )
 
         boxes.forEachIndexed { index, editText ->
             editText.addTextChangedListener(object : TextWatcher {
@@ -829,7 +836,7 @@ class MobileLoginActivity : BaseActivity() {
             bottomSheetLayout.animation = slideUpAnimation
         }
 
-        dialogBinding.tvTitle.text = "You're Logged In with a Different Account"
+        dialogBinding.tvTitle.text = "You’re Logged In With Different Account"
         dialogBinding.tvDescription.text =
             "This device is already logged in with a different account. As a result, free services are not available. \n\nPlease log out and sign in with your original account to access free features."
 

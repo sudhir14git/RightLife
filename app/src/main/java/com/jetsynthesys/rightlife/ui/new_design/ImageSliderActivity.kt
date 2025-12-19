@@ -642,6 +642,7 @@ class ImageSliderActivity : BaseActivity() {
         }
 
         dialogBinding.btnYes.text = "Skip"
+        dialogBinding.btnYes.setTextColor(ContextCompat.getColor(this, R.color.menuselected))
         dialogBinding.btnCancel.text = "Switch Account"
 
         dialogBinding.btnYes.setOnClickListener {

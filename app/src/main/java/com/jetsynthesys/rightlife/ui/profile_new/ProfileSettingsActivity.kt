@@ -59,7 +59,7 @@ class ProfileSettingsActivity : BaseActivity() {
 
         binding.llProfile.setOnClickListener {
 
-            /*if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
                 freeTrialDialogActivity()
             } else if (!DashboardChecklistManager.checklistStatus) {
                 DialogUtils.showCheckListQuestionCommonDialog(this) {
@@ -72,8 +72,8 @@ class ProfileSettingsActivity : BaseActivity() {
                 }
             } else {
                 activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
-            }*/
-            activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
+            }
+            //activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
         }
         binding.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsNewActivity::class.java))

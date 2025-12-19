@@ -38,7 +38,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionCheckoutBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetAwakeNightBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetPaymentStatusResultBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetPlanSelectionBinding
 import com.jetsynthesys.rightlife.showCustomToast
@@ -54,9 +53,9 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
-import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Call
@@ -777,6 +776,16 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                 position = selectedPosition
                 setPriceAmount(position)
                 bottomSheetDialog.dismiss()
+
+                if (type == "FACIAL_SCAN") {
+                    binding.tvChangePlan.text = getString(R.string.change_pack_underlined)
+                    val planName = planList[position].title?.split("-")
+                    binding.planTitle.text = planName?.get(0) ?: "Face Scan"
+                    binding.tvCancel.text = planName?.get(1) ?: "Pack of 1"
+                } else {
+                    binding.planTitle.text = planList[position].title ?: ""
+                    binding.tvCancel.text = "Cancel anytime online"
+                }
             }
 
         dialogBinding.recyclerViewPlanList.layoutManager = LinearLayoutManager(this)
@@ -978,7 +987,6 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
         // Log analytics event
         logRazorpayPurchaseEvent()
 
-        showToast("Payment successful!")
         isSubscriptionTaken = true
     }
 
@@ -1012,7 +1020,6 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
     }
 
 
-
     // show Success bottom sheet
     private fun showPaymentStatusBottomSheet() {
         // Create and configure BottomSheetDialog
@@ -1028,33 +1035,22 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
             val slideUpAnimation: Animation =
-                    AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
         }
 
-      /*  dialogBinding.btnNO.setOnClickListener {
-            dialogBinding.btnNO.disableViewForSeconds()
-            bottomSheetDialog.dismiss()
-
-
-        }
-
-        dialogBinding.btnYes.setOnClickListener {
-            dialogBinding.btnYes.disableViewForSeconds()
-            bottomSheetDialog.dismiss()
-
-        }*/
         dialogBinding.root.setOnClickListener {
             bottomSheetDialog.dismiss()
         }
 
         // Post a delayed action to dismiss the dialog after 3 seconds
-        Handler(Looper.getMainLooper()).postDelayed({
-                                                        // Check if the dialog is still showing to prevent crashes if the activity is destroyed
-                                                        if (bottomSheetDialog.isShowing) {
-                                                            bottomSheetDialog.dismiss()
-                                                        }
-                                                    }, 3000) // 3000 milliseconds = 3 seconds
+        lifecycleScope.launch {
+            delay(3000)
+            if (bottomSheetDialog.isShowing) {
+                bottomSheetDialog.dismiss()
+            }
+            finish()
+        }
 
         bottomSheetDialog.show()
     }

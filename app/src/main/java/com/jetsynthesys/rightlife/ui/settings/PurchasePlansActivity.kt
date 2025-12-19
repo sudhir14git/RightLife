@@ -31,7 +31,9 @@ class PurchasePlansActivity : BaseActivity() {
             SettingItem("Booster Packs")
         )
 
-        settingsAdapter = SettingsAdapter(settingsItems) { item ->
+        val listDesc = listOf("RightLife Pro Plans", "Face Scan Cards")
+
+        settingsAdapter = SettingsAdapter(settingsItems,listDesc) { item ->
             when (item.title) {
                 "Subscription Plans" -> {
                     startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
