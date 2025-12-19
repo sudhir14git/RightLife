@@ -5,6 +5,8 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -36,6 +38,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionCheckoutBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetAwakeNightBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetPaymentStatusResultBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetPlanSelectionBinding
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.adapter.PlanSelectionAdapter
@@ -50,6 +54,7 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import kotlinx.coroutines.launch
@@ -582,6 +587,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                                 Log.d("Billing--", "Consumable purchase successful")
                                 updateBackendForPurchase(purchase)
                                 isSubscriptionTaken = true
+                                showPaymentStatusBottomSheet()
                             } else {
                                 Toast.makeText(
                                     this@SubscriptionCheckoutActivity,
@@ -619,6 +625,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                                     showSubscriptionStatus(purchase)
                                     updateBackendForPurchase(purchase)
                                     isSubscriptionTaken = true
+                                    showPaymentStatusBottomSheet()
                                 } else {
                                     Toast.makeText(
                                         this@SubscriptionCheckoutActivity,
@@ -928,7 +935,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
 
     override fun onPaymentSuccess(razorpayPaymentId: String?) {
         Log.d("RazorPay", "Payment successful: $razorpayPaymentId")
-
+        showPaymentStatusBottomSheet()
         if (razorpayPaymentId.isNullOrEmpty()) {
             showToast("Payment ID not received")
             return
@@ -1002,5 +1009,53 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
                 )
         )*/
+    }
+
+
+
+    // show Success bottom sheet
+    private fun showPaymentStatusBottomSheet() {
+        // Create and configure BottomSheetDialog
+        val bottomSheetDialog = BottomSheetDialog(this)
+
+        // Inflate the BottomSheet layout
+        val dialogBinding = BottomsheetPaymentStatusResultBinding.inflate(layoutInflater)
+        val bottomSheetView = dialogBinding.root
+
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                    AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+      /*  dialogBinding.btnNO.setOnClickListener {
+            dialogBinding.btnNO.disableViewForSeconds()
+            bottomSheetDialog.dismiss()
+
+
+        }
+
+        dialogBinding.btnYes.setOnClickListener {
+            dialogBinding.btnYes.disableViewForSeconds()
+            bottomSheetDialog.dismiss()
+
+        }*/
+        dialogBinding.root.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        // Post a delayed action to dismiss the dialog after 3 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+                                                        // Check if the dialog is still showing to prevent crashes if the activity is destroyed
+                                                        if (bottomSheetDialog.isShowing) {
+                                                            bottomSheetDialog.dismiss()
+                                                        }
+                                                    }, 3000) // 3000 milliseconds = 3 seconds
+
+        bottomSheetDialog.show()
     }
 }
