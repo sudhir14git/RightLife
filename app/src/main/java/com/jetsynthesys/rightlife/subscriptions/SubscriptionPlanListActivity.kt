@@ -571,7 +571,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                 Log.d("Billing-Restore", "No SUBS purchases to restore: ${billingResult.debugMessage}")
             }
 
-            // After SUBS query completes, if nothing at all was restored, tell the user.
+
             // After SUBS query completes, if nothing at all was restored, tell the user.
             if (!anyPurchaseFound) {
                 showToastOnUiThread("No purchases found to restore for this account.")
