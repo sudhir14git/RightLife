@@ -232,7 +232,7 @@ class SchedulePreferenceFragment : Fragment() {
             minute,
             false
         ) // 12 hour time
-        mTimePicker.setTitle("Select Time")
+        mTimePicker.setTitle("Set Time For Breakfast")
         mTimePicker.show()
     }
 

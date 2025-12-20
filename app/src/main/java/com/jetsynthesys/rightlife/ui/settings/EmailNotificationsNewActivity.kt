@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ui.settings
 
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityEmailNotificationsBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
@@ -10,6 +9,9 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall
 class EmailNotificationsNewActivity : BaseActivity() {
 
     private lateinit var binding: ActivityEmailNotificationsBinding
+    private var countN = 0
+    private var countP = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +30,9 @@ class EmailNotificationsNewActivity : BaseActivity() {
         binding.newsletterSwitch.setOnCheckedChangeListener { _, isChecked ->
             val requestBody = mapOf("newsLetter" to isChecked)
             CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
-                showToast(message)
+                if (countN > 0)
+                    showToast(message)
+                countN++
                 if (!result) binding.newsletterSwitch.isChecked = !isChecked
             }
         }
@@ -36,7 +40,9 @@ class EmailNotificationsNewActivity : BaseActivity() {
         binding.promotionalOffersSwitch.setOnCheckedChangeListener { _, isChecked ->
             val requestBody = mapOf("promotionalOffers" to isChecked)
             CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
-                showToast(message)
+                if (countP > 0)
+                    showToast(message)
+                countP++
                 if (!result) binding.promotionalOffersSwitch.isChecked = !isChecked
             }
         }
