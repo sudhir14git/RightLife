@@ -21,12 +21,14 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.acknowledgePurchase
 import com.android.billingclient.api.consumePurchase
 import com.android.billingclient.api.queryProductDetails
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionPlanListBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.adapter.SubscriptionPlanAdapter
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentIntentResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
@@ -38,6 +40,7 @@ import com.jetsynthesys.rightlife.ui.settings.GeneralInformationActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.Utils.showCustomToast
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -142,7 +145,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
         }
 
         binding.continueButton.setOnClickListener {
-            openPlayStoreSubscriptionPage()
+            restorePurchases()
         }
 
         if (planType == "FACIAL_SCAN") {
@@ -494,4 +497,105 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             )
         }
     }
+
+    // RESTORE: Safely query existing purchases and route them through existing handlePurchase()
+    private fun restorePurchases() {
+        if (!::billingClient.isInitialized) {
+            initializeBillingClient()
+            Toast.makeText(this, "Please try again in a moment…", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!billingClient.isReady) {
+            Toast.makeText(this, "Billing service not ready. Please try again.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        var anyPurchaseFound = false
+
+        // --- Restore INAPP (boosters) ---
+        val inAppParams = QueryPurchasesParams.newBuilder()
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build()
+
+        billingClient.queryPurchasesAsync(inAppParams) { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !purchases.isNullOrEmpty()) {
+                // Filter only purchases that match our known productIds
+                val matchingPurchases = purchases.filter { purchase ->
+                    purchase.products.any { productId ->
+                        planList.any { plan -> plan.googlePlay == productId }
+                    }
+                }
+
+                if (matchingPurchases.isNotEmpty()) {
+                    anyPurchaseFound = true
+                    // BOOSTER purchases
+                    receivedProductType = "BOOSTER"
+                    matchingPurchases.forEach { purchase ->
+                        handlePurchase(purchase)
+                    }
+                }
+            } else {
+                Log.d("Billing-Restore", "No INAPP purchases to restore: ${billingResult.debugMessage}")
+            }
+
+            // We only show "nothing to restore" once both INAPP and SUBS queries are done.
+            // So we don't show toast here yet.
+        }
+
+        // --- Restore SUBSCRIPTIONS ---
+        val subsParams = QueryPurchasesParams.newBuilder()
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build()
+
+        billingClient.queryPurchasesAsync(subsParams) { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !purchases.isNullOrEmpty()) {
+                val matchingPurchases = purchases.filter { purchase ->
+                    purchase.products.any { productId ->
+                        planList.any { plan -> plan.googlePlay == productId }
+                    }
+                }
+
+                if (matchingPurchases.isNotEmpty()) {
+                    anyPurchaseFound = true
+                    // SUBSCRIPTION purchases
+                    receivedProductType = "SUBSCRIPTION"
+                    matchingPurchases.forEach { purchase ->
+                        handlePurchase(purchase)
+                    }
+
+                    // For subscriptions, this will usually just call showSubscriptionStatus()
+                    // if already acknowledged, which is safe.
+                }
+            } else {
+                Log.d("Billing-Restore", "No SUBS purchases to restore: ${billingResult.debugMessage}")
+            }
+
+            // After SUBS query completes, if nothing at all was restored, tell the user.
+            // After SUBS query completes, if nothing at all was restored, tell the user.
+            if (!anyPurchaseFound) {
+                showToastOnUiThread("No purchases found to restore for this account.")
+                Log.d("Billing-Restore2", "No purchases found to restore for this account.")
+            } else {
+                showToastOnUiThread("Checking and restoring your purchases…")
+                Log.d("Billing-Restore2", "purchases found to restore for this account.")
+            }
+
+        }
+    }
+    private fun showToastOnUiThread(message: String) {
+        if (isFinishing || isDestroyed) {
+            Log.w("Billing-Restore", "Activity finishing/destroyed, skipping toast: $message")
+            return
+        }
+
+        runOnUiThread {
+            Toast.makeText(
+                    applicationContext,   // use applicationContext to be extra safe
+                    message,
+                    Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
 }

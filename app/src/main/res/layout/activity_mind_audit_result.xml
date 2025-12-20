@@ -612,6 +612,16 @@
                                         android:layout_height="wrap_content" />
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Know what this means"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="@dimen/textsize_small"
+                                android:textColor="#6E7191"
+                                android:layout_height="wrap_content"
+                                android:drawablePadding="5dp"
+                                android:layout_marginTop="@dimen/margin_card_16dp"
+                                app:drawableEndCompat="@drawable/ic_ohq_info" />
                         </LinearLayout>
                     </RelativeLayout>
 
