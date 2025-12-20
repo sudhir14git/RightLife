@@ -43,8 +43,27 @@ class NewCategoryListAdapter(
             binding.tvTitle.text = item.title
             if ("TEXT".equals(item.contentType, ignoreCase = true))
                 binding.tvLeftTime.text = item.readingTime + " m"
-            else
+            else if ("VIDEO".equals(item.contentType, ignoreCase = true))
+            {
+                if (item.isWatched)
+                {
+                    binding.tvLeftTime.text = item.leftDuration + ""
+                }else{
+                    binding.tvLeftTime.text = item.leftDuration + " left"
+                }
+            } else if ("AUDIO".equals(item.contentType, ignoreCase = true)){
+
+                if (item.isWatched)
+                {
+                    binding.tvLeftTime.text = item.leftDuration + ""
+                }else{
+                    binding.tvLeftTime.text = item.leftDuration + " left"
+                }
+            }else if ("SERIES".equals(item.contentType, ignoreCase = true)){
                 binding.tvLeftTime.text = item.leftDuration
+            }else{
+                binding.tvLeftTime.text = item.leftDuration
+            }
             binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.createdAt)
             binding.tvName.text = item.categoryName
 

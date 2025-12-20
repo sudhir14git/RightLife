@@ -1221,7 +1221,7 @@ class ProfileNewActivity : BaseActivity() {
         val timer = object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 binding.tvCountdown.text = "${millisUntilFinished / 1000}"
-                binding.tvResendCounter.text = "${millisUntilFinished / 1000}"
+                binding.tvResendCounter.text = "${millisUntilFinished / 1000}s"
             }
 
             override fun onFinish() {

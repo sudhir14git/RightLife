@@ -35,6 +35,7 @@ class NewCategoryListActivity : BaseActivity() {
     private lateinit var adapter: NewCategoryListAdapter
     private var selectedModuleId = ""
     private var selectedCategoryId = ""
+    private var selectedPosition = 0
     private var isLoading = false
     private var skip = 0
     private val limit = 10
@@ -466,4 +467,9 @@ class NewCategoryListActivity : BaseActivity() {
         else -> module
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        fetchContent(skip, selectedContentType, selectedCategoryId)
+    }
 }
