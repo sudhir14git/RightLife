@@ -328,6 +328,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 .commit()
         }
         calorie_balance_icon_no_data.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MR_Report_PageOpen
+                )
+            }
             val fragment = CalorieBalance()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.flFragment, fragment, "CalorieBalance")

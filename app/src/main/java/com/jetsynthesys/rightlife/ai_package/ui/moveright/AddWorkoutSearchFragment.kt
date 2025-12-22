@@ -39,6 +39,8 @@ import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CustomProgressBar
 import com.jetsynthesys.rightlife.databinding.FragmentAddWorkoutSearchBinding
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
@@ -115,7 +117,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         val allworkout = arguments?.getString("allworkout") ?: ""
         moduleName = arguments?.getString("ModuleName").toString()
         workout = arguments?.getParcelable("workout")
-
+        context?.let { it1 ->
+            AnalyticsLogger.logEvent(
+                it1, AnalyticsEvent.MR_Workout_AddToLog
+            )
+        }
         // Views
         caloriesText = view.findViewById(R.id.calories_text)
         val hourPicker = view.findViewById<NumberPicker>(R.id.hourPicker)
@@ -329,19 +335,19 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             workoutName.text = workout?.title
             val imageBaseUrl = "https://d1sacaybzizpm5.cloudfront.net/" + workout?.iconUrl
             moduleIcon = imageBaseUrl
-            Glide.with(requireContext())
+           /* Glide.with(requireContext())
                 .load(imageBaseUrl)
                 .placeholder(R.drawable.athelete_search)
                 .error(R.drawable.athelete_search)
-                .into(workoutIcon)
+                .into(workoutIcon)*/
         } else if (activityModel != null) {
             workoutName.text = activityModel?.workoutType
             moduleIcon = activityModel?.icon
-            Glide.with(requireContext())
+          /*  Glide.with(requireContext())
                 .load(moduleIcon)
                 .placeholder(R.drawable.athelete_search)
                 .error(R.drawable.athelete_search)
-                .into(workoutIcon)
+                .into(workoutIcon)*/
         } else if (workoutModel != null) {
             workoutName.text = workoutModel?.activityName
         }

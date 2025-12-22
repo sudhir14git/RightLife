@@ -20,6 +20,7 @@ object AnalyticsParam {
     const val CHECKLIST_COMPLETE = "checklist_complete"
     const val FACE_SCAN_COMPLETE = "face_scan_complete"
     const val MEAL_SCAN_COMPLETE = "meal_scan_complete"
+    const val MR_Workout_AddToLog = "MR_Workout_AddToLog"
     const val MEAL_SCAN_RATING = "meal_scan_rating"
     const val RATING = "rating"
     const val STAR_RATING = "rating"
