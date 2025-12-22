@@ -851,6 +851,8 @@ class HomeNewActivity : BaseActivity() {
         }
 
 
+
+
         with(binding) {
             includedhomebottomsheet.llJournal.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
