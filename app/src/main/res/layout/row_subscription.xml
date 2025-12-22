@@ -12,7 +12,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_subscription_plan"
-        android:foreground="?attr/selectableItemBackground"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:layout_marginTop="20dp">
@@ -157,6 +156,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Buy"
+                        android:foreground="?attr/selectableItemBackground"
                         android:background="@drawable/rounded_bg"
                         android:textColor="@color/white"
                         android:paddingHorizontal="16dp"

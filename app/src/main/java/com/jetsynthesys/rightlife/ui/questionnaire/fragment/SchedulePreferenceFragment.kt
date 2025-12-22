@@ -240,7 +240,8 @@ class SchedulePreferenceFragment : Fragment() {
         if (!checkPermission()) {
             return
         }
-        NotificationHelper.setReminder(requireContext(), "EAT_ALARM_TRIGGERED", time)
+        val requestCode = System.currentTimeMillis().toInt()
+        NotificationHelper.setReminder(requireContext(), "EAT_ALARM_TRIGGERED", time, requestCode)
     }
 
 

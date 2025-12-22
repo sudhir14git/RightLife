@@ -430,7 +430,8 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         if (!checkPermission()) {
             return
         }
-        NotificationHelper.setReminder(this, "PRACTICE_ALARM_TRIGGERED", time)
+        val requestCode = System.currentTimeMillis().toInt()
+        NotificationHelper.setReminder(this, "PRACTICE_ALARM_TRIGGERED", time, requestCode)
     }
 
     private fun setupReminderSetBottomSheet() {

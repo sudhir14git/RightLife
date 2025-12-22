@@ -69,11 +69,7 @@ class CreateUsernameActivity : BaseActivity() {
             if (edtUsername.text.toString().isNotEmpty()){
                 tvError.visibility = VISIBLE
                 tvError.setText(R.string.error_username)
-            }else{
-                tvError.visibility = VISIBLE
-                tvError.setText("Please enter valid username")
             }
-
             btnContinue.backgroundTintList = colorStateList
             btnContinue.isEnabled = false
         }

@@ -127,7 +127,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
         )
 
         val iconListPlayStore = listOf(
-            R.drawable.playstore,
+            R.drawable.google_paystore,
             R.drawable.visa,
             R.drawable.ic_mastercard,
             R.drawable.ic_mastercard,
@@ -278,7 +278,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
 
                 setPadding(1.dp, 1.dp, 1.dp, 1.dp)
 
-                background = ContextCompat.getDrawable(context, R.drawable.bg_icon_border)
+               // background = ContextCompat.getDrawable(context, R.drawable.bg_icon_border)
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
                 setImageResource(iconRes)
             }

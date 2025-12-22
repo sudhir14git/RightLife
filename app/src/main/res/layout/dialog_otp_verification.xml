@@ -136,11 +136,12 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
+        android:enabled="false"
         android:text="Verify"
         android:textSize="16sp"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/white"
-        android:backgroundTint="@color/menuselected" />
+        android:backgroundTint="@color/rightlife" />
 
     <Button
         android:id="@+id/tv_resend"
