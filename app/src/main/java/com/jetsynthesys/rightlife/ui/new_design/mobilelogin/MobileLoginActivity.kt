@@ -55,6 +55,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.view.isVisible
 
 class MobileLoginActivity : BaseActivity() {
 
@@ -160,7 +161,7 @@ class MobileLoginActivity : BaseActivity() {
 
     private fun setupListeners() {
         binding.ivBack.setOnClickListener {
-            if (binding.layoutOtpScreen.visibility == View.VISIBLE) {
+            if (binding.layoutOtpScreen.isVisible) {
                 showPhoneEntry()
             } else {
                 finish()
@@ -224,6 +225,7 @@ class MobileLoginActivity : BaseActivity() {
         clearOtpBoxes()
         timer?.cancel()
         binding.tvResendCounter.visibility = View.GONE
+        binding.tvValidationError.visibility = View.GONE
     }
 
     // -------------------------------------------------------------------
@@ -601,6 +603,7 @@ class MobileLoginActivity : BaseActivity() {
 
     private fun startTimer() {
         timer?.cancel()
+        binding.tvOtpError.visibility = View.GONE
         binding.tvResendCounter.visibility = View.VISIBLE
 
         timer = object : CountDownTimer(60_000, 1_000) {

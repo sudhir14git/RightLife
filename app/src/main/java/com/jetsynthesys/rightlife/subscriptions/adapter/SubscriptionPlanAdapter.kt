@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.ProductDetails
@@ -87,13 +88,24 @@ class SubscriptionPlanAdapter(
             }
 
             binding.root.setOnClickListener {
-                selectedPosition = bindingAdapterPosition
+                /*selectedPosition = bindingAdapterPosition
                 onPlanSelected(plan, bindingAdapterPosition)
-                notifyDataSetChanged()
+                notifyDataSetChanged()*/
             }
 
             binding.tvBuy.setOnClickListener {
-                onBuyClick(bindingAdapterPosition)
+                if (!plan.status.equals("ACTIVE", ignoreCase = true)) {
+                    if (isAnyPackPurchased()) {
+                        Toast.makeText(
+                            binding.tvBuy.context, "You already have an active subscription",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        selectedPosition = bindingAdapterPosition
+                        onBuyClick(bindingAdapterPosition)
+                        notifyDataSetChanged()
+                    }
+                }
             }
 
             val bulletPoints = if (plan.title?.contains("monthly", true) == true)
@@ -126,6 +138,15 @@ class SubscriptionPlanAdapter(
                 )
 
             addBulletPoints(binding.llBulletPoints, bulletPoints)
+        }
+
+        private fun isAnyPackPurchased(): Boolean {
+            plans.forEach {
+                if (it.status.equals("ACTIVE", ignoreCase = true)) {
+                    return true
+                }
+            }
+            return false
         }
 
         private fun displayPlayStorePricing(productDetails: ProductDetails, plan: PlanList) {

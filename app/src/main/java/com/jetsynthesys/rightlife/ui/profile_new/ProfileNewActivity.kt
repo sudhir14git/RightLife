@@ -39,6 +39,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -82,6 +83,9 @@ import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.jetsynthesys.rightlife.ui.utility.isValidIndianMobile
 import com.shawnlin.numberpicker.NumberPicker
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -1203,6 +1207,14 @@ class ProfileNewActivity : BaseActivity() {
                     } else if (s?.length == 0 && index > 0) {
                         otpFields[index - 1].requestFocus()
                     }
+                    val otp = otpFields.joinToString("") { it.text.toString().trim() }
+                    if (otp.length == 6) {
+                        bindingDialog.btnVerify.isEnabled = true
+                        binding.btnVerify.backgroundTintList = colorStateListSelected
+                    } else {
+                        bindingDialog.btnVerify.isEnabled = false
+                        binding.btnVerify.backgroundTintList = colorStateListNonSelected
+                    }
                 }
 
                 override fun beforeTextChanged(
@@ -1270,6 +1282,13 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         dialogOtp?.show()
+
+        lifecycleScope.launch {
+            delay(2000)
+            otpFields.forEachIndexed { index, editText ->
+                editText.setText(""+index)
+            }
+        }
     }
 
     private fun verifyEmailOtp(

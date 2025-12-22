@@ -43,7 +43,7 @@
                     android:layout_margin="12dp"
                     android:scaleType="centerCrop"
                     android:padding="5dp"
-                    android:src="@drawable/mr_er1" />
+                    android:src="@drawable/mr_er1_new" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

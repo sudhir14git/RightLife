@@ -41,6 +41,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 )
         }
         val time = intent.getStringExtra("Time") ?: ""
-        NotificationHelper.setReminder(context, intent.action!!, time)
+        val requestCode = System.currentTimeMillis().toInt()
+        NotificationHelper.setReminder(context, intent.action!!, time, requestCode)
     }
 }
