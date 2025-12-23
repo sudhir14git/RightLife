@@ -111,6 +111,9 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
         colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)!!
         colorStateListNonSelected = ContextCompat.getColorStateList(this, R.color.rightlife)!!
 
+        binding.btnContinue.isEnabled = false
+        binding.btnContinue.backgroundTintList = colorStateListNonSelected
+
         binding.tvChangePlan.paintFlags =
             binding.tvChangePlan.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 

@@ -41,7 +41,7 @@
         {
           "name": "Hilfetelefon \"Gewalt gegen Frauen\"",
           "hotline": "116016",
-          "website": "hilfetelefon.de"
+          "website": "http://hilfetelefon.de/"
         }
       ]
     },
@@ -51,7 +51,7 @@
         {
           "name": "SOS Amitié",
           "hotline": "0972394050",
-          "website": "sos-amitie.com"
+          "website": "http://sos-amitie.com/"
         },
         {
           "name": "Suicide Écoute",
@@ -60,7 +60,7 @@
         {
           "name": "3114, numéro national de prévention du suicide",
           "hotline": "3114",
-          "website": "3114.fr"
+          "website": "http://3114.fr/"
         }
       ]
     },
@@ -74,7 +74,7 @@
         {
           "name": "Samaritans in Spain",
           "hotline": "900525100",
-          "website": "samaritansinspain.com"
+          "website": "http://samaritansinspain.com/"
         }
       ]
     },
@@ -86,7 +86,8 @@
           "hotline": "131114"
         },
         {
-          "name": "R U OK?"
+          "name": "R U OK?",
+          "website": "https://www.ruok.org.au/findhelp"
         }
       ]
     },
@@ -96,7 +97,7 @@
         {
           "name": "1737 Need to talk?",
           "hotline": "1737",
-          "website": "1737.org.nz"
+          "website": "http://1737.org.nz/"
         },
         {
           "name": "0800 Whats Up",
@@ -105,7 +106,7 @@
         {
           "name": "Lifeline",
           "hotline": "0800 543354",
-          "website": "lifeline.org.nz"
+          "website": "http://lifeline.org.nz/"
         }
       ]
     },
@@ -121,12 +122,12 @@
         {
           "name": "YouthSpace",
           "hotline": "778 783-0177",
-          "website": "youthspace.ca"
+          "website": "http://youthspace.ca/"
         },
         {
           "name": "Nisa Helpline",
           "hotline": "888 315-6472",
-          "website": "nisahelpline.com"
+          "website": "http://nisahelpline.com/"
         },
         {
           "name": "CASP (Canadian Association for Suicide Prevention)",
@@ -140,18 +141,18 @@
         {
           "name": "988 Suicide & Crisis Lifeline",
           "hotline": "988",
-          "website": "988lifeline.org"
+          "website": "http://988lifeline.org/"
         },
         {
           "name": "TrevorLifeline",
           "hotline": "(866)488-7386",
           "text": "678678",
-          "website": "thetrevorproject.org"
+          "website": "http://thetrevorproject.org/"
         },
         {
           "name": "Hey Sam",
           "hotline": "439-726",
-          "website": "samaritanshope.org"
+          "website": "http://samaritanshope.org/"
         }
       ]
     },

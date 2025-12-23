@@ -86,7 +86,11 @@ class QuestionnaireEatRightActivity : BaseActivity() {
         val progressPercentage =
             (((fragmentIndex + 1) / questionnairePagerAdapter.itemCount.toDouble()) * 100).toInt()
         binding.progressQuestionnaire.progress = progressPercentage
-        binding.tvFragmentCount.text = "${fragmentIndex + 1}/${questionnairePagerAdapter.itemCount}"
+        //binding.tvFragmentCount.text = "${fragmentIndex + 1}/${questionnairePagerAdapter.itemCount}"
+        if (questionnairePagerAdapter.itemCount == 11 && fragmentIndex >= 8)
+            binding.tvFragmentCount.text = "${fragmentIndex + 4}/14"
+        else
+            binding.tvFragmentCount.text = "${fragmentIndex + 1}/14"
     }
 
 
@@ -106,7 +110,7 @@ class QuestionnaireEatRightActivity : BaseActivity() {
         fun navigateToNextPage() {
             if (viewPager.currentItem < questionnairePagerAdapter.itemCount - 1) {
                 viewPager.currentItem += 1
-                Log.d("navigateToNextPage: ", "navigateToNextPage: "+viewPager.currentItem)
+                Log.d("navigateToNextPage: ", "navigateToNextPage: " + viewPager.currentItem)
             }
         }
 

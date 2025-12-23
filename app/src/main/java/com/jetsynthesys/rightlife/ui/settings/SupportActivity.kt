@@ -1,6 +1,8 @@
 package com.jetsynthesys.rightlife.ui.settings
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +28,16 @@ class SupportActivity : BaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         setupSupportRecyclerView()
+
+        binding.tvSupportEmail.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("support@rightlife.com"))
+            }
+            startActivity(Intent.createChooser(intent, "Send Email via"))
+        }
+        binding.tvSupportEmail.paintFlags = binding.tvSupportEmail.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        binding.tvSupportEmail.setTextColor(Color.BLUE)
     }
 
     private fun setupSupportRecyclerView() {

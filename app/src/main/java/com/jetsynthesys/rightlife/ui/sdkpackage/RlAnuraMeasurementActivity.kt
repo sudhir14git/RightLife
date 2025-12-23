@@ -30,6 +30,7 @@ import ai.nuralogix.dfx.ConstraintResult.ConstraintReason
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Color
 import android.opengl.GLSurfaceView.Renderer
 import android.os.Bundle
 import android.util.Log
@@ -973,6 +974,7 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
         }
         measurementView.setMeasurementUIConfiguration(measurementUIConfig)
         measurementView.showAnuraIcon(false)
+        measurementView.setPromptMsgColor(Color.RED)
 
         /**
          * Set camera frame dimensions for MeasurementView
