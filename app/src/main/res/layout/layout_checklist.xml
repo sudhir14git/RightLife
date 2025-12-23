@@ -34,15 +34,15 @@
             android:layout_height="wrap_content" />
     </RelativeLayout>
 
-        <TextView
-            android:id="@+id/tv_checklist_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_regular"
-            android:gravity="center_vertical"
-            android:text="1 of 6 tasks completed"
-            android:textColor="@color/text_color_char_left"
-            android:textSize="@dimen/textsize_medium" />
+    <TextView
+        android:id="@+id/tv_checklist_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dmsans_regular"
+        android:gravity="center_vertical"
+        android:text="1 of 6 tasks completed"
+        android:textColor="@color/text_color_char_left"
+        android:textSize="@dimen/textsize_medium" />
 
     <RelativeLayout
         android:id="@+id/rl_checklist_profile"
@@ -249,7 +249,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:text="2 mins"
+                    android:text="3-5 mins"
                     android:gravity="center_vertical"
                     android:textColor="@color/text_color_char_left"
                     android:textSize="@dimen/textsize_medium" />
@@ -397,7 +397,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:text="2 mins"
+                    android:text="3-5 mins"
                     android:gravity="center_vertical"
                     android:textColor="@color/text_color_char_left"
                     android:textSize="@dimen/textsize_medium" />
