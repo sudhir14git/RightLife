@@ -1958,7 +1958,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             android:src="@drawable/resto_line2"
-                            android:layout_marginStart="30dp"
+                            android:layout_marginStart="10dp"
                             android:layout_marginTop="15dp"/>
 
                         <!-- Chart View -->
@@ -1977,7 +1977,7 @@
                             android:id="@+id/img_end_resto_graph"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:layout_marginEnd="30dp"
+                            android:layout_marginEnd="10dp"
                             android:layout_marginTop="15dp"/>
 
                         <!-- Sleep Icon + Time -->

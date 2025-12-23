@@ -282,11 +282,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
 
         val layoutParams = dottedLine.layoutParams as ConstraintLayout.LayoutParams
-        layoutParams.width = if (screenWidthDp < 600) {
-            resources.getDimensionPixelSize(R.dimen.dotted_line_width_small) // e.g., 50dp
-        } else {
-            resources.getDimensionPixelSize(R.dimen.dotted_line_width_large) // e.g., 56dp
-        }
+
         dottedLine.layoutParams = layoutParams
         val dottedRed = view.findViewById<View>(R.id.horizontal_dotted_red)
         val redLayoutParams = dottedRed.layoutParams as ConstraintLayout.LayoutParams

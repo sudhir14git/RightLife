@@ -1932,7 +1932,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             .filter { record ->
                 val recordStart = record.startTime
                 val recordEnd = record.endTime
-                // Only include records within workout time range
                 !recordStart.isBefore(startInstant) && !recordEnd.isAfter(endInstant)
             }
             .sumOf { it.energy.inKilocalories}
@@ -2173,7 +2172,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         view?.let { showLoader(it) }
         val ctx = context ?: return
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
-        //val userId = "692d8548977eb3ebd50ec742"
+        //val userId = "6903b1c535dd33137383dedc"
         //val date = "2025-12-17"
         val date = getCurrentDate()
         val source = "android"
@@ -2988,7 +2987,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         convertTo12HourZoneFormat(sleepRestorativeDetail.sleepEndTime!!)
                 }
                 if (sleepRestorativeDetail?.sleepStagesData != null) {
-                    restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData!!)
+                    sleepRestorativeDetail.sleepStartTime?.let {
+                        sleepRestorativeDetail.sleepEndTime?.let { it1 ->
+                            restorativeChart.setSleepData(
+                                sleepRestorativeDetail.sleepStagesData!!,
+                                it,
+                                it1
+                            )
+                        }
+                    }
                 }
             } else {
                 //  restroNoDataCardView.visibility = View.VISIBLE
@@ -3479,84 +3486,149 @@ class SleepMarkerView(context: Context, private val data: List<SleepGraphData>) 
     }
 }
 
-class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
+class SleepRestoChartView(
+    context: Context,
+    attrs: AttributeSet? = null
+) : View(context, attrs) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val sleepSegments = mutableListOf<Segment>()
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    private val timelineSegments = mutableListOf<TimelineSegment>()
+    private val dateFormat =
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
-    private data class Segment(
-        val position: Position1,
-        val widthFraction: Float,
-        val color: Int
+    private val segmentSpacing = 4f
+
+    private data class TimelineSegment(
+        val startTime: Long,
+        val endTime: Long,
+        val position: Position1?,
+        val color: Int?
     )
 
-    fun setSleepData(data: List<SleepStagesData>) {
-        sleepSegments.clear()
+    /**
+     * 🔹 MAIN METHOD
+     * Graph poora sleepStartTime → sleepEndTime ka banega
+     */
+    fun setSleepData(
+        data: List<SleepStagesData>,
+        sleepStartTime: String,
+        sleepEndTime: String
+    ) {
+        timelineSegments.clear()
         if (data.isEmpty()) return
-        // Parse timestamps and calculate total duration
+
+        val overallStart = dateFormat.parse(sleepStartTime)?.time ?: return
+        val overallEnd = dateFormat.parse(sleepEndTime)?.time ?: return
+
+        // Parse & sort stage data
         val parsedData = data.mapNotNull {
             try {
                 val start = dateFormat.parse(it.startDatetime)?.time ?: return@mapNotNull null
                 val end = dateFormat.parse(it.endDatetime)?.time ?: return@mapNotNull null
-                val durationMinutes = TimeUnit.MILLISECONDS.toMinutes(end - start).toInt()
-                Triple(it.stage, durationMinutes, getPositionForRecordType(it.stage!!))
+                Triple(start, end, it.stage)
             } catch (e: Exception) {
                 null
             }
+        }.sortedBy { it.first }
+
+        var currentTime = overallStart
+
+        // Build timeline with gaps
+        parsedData.forEach { (start, end, stage) ->
+
+            // gap before stage
+            if (currentTime < start) {
+                timelineSegments.add(
+                    TimelineSegment(currentTime, start, null, null)
+                )
+            }
+
+            val position = getPositionForRecordType(stage!!)
+            val color = getColorForRecordType(stage)
+
+            timelineSegments.add(
+                TimelineSegment(start, end, position, color)
+            )
+
+            currentTime = end
         }
 
-        val totalMinutes = parsedData.sumOf { it.second }
-
-        parsedData.forEach { (recordType, duration, position) ->
-            val fraction = duration.toFloat() / max(totalMinutes, 1)
-            val color = getColorForRecordType(recordType!!)
-            sleepSegments.add(Segment(position, fraction, color))
+        // gap after last stage till sleep end
+        if (currentTime < overallEnd) {
+            timelineSegments.add(
+                TimelineSegment(currentTime, overallEnd, null, null)
+            )
         }
+
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
         val w = width.toFloat()
         val h = height.toFloat()
 
-        // Background
         canvas.drawColor(Color.parseColor("#F5F9FF"))
 
-        val barHeight = h * 0.25f
+        if (timelineSegments.isEmpty()) return
+
+        val barHeight = h * 0.35f
         val cornerRadius = barHeight / 4
+        val verticalGap = h * 0.05f
+
+        val totalDuration =
+            timelineSegments.last().endTime - timelineSegments.first().startTime
+
+        val totalSpacing = segmentSpacing * (timelineSegments.size - 1)
+        val availableWidth = w - totalSpacing
+
         var currentX = 0f
 
-        // Draw sleep bars (unchanged)
-        sleepSegments.forEach { segment ->
-            paint.color = segment.color
-            val top = when (segment.position) {
-                Position1.UPPER -> h * 0.1f
-                Position1.LOWER -> h * 0.35f
+        timelineSegments.forEach { segment ->
+            val duration = segment.endTime - segment.startTime
+            val segmentWidth =
+                (duration.toFloat() / totalDuration) * availableWidth
+
+            if (segment.position != null && segment.color != null) {
+                paint.color = segment.color
+
+                val top = when (segment.position) {
+                    Position1.UPPER -> h * 0.1f
+                    Position1.LOWER -> h * 0.1f + barHeight + verticalGap
+                }
+
+                val bottom = top + barHeight
+                val right = currentX + segmentWidth
+
+                canvas.drawRoundRect(
+                    RectF(currentX, top, right, bottom),
+                    cornerRadius,
+                    cornerRadius,
+                    paint
+                )
             }
-            val bottom = top + barHeight
-            val right = currentX + (segment.widthFraction * w)
-            canvas.drawRoundRect(RectF(currentX, top, right, bottom), cornerRadius, cornerRadius, paint)
-            currentX = right
+
+            currentX += segmentWidth + segmentSpacing
         }
 
-        // === RULER – THODA NICHE, HORIZONTAL LINE TRANSPARENT ===
-        val rulerY = h * 0.95f          // Ruler ko neeche shift kiya (0.75f → 0.85f)
-        val tickHeight = 10f            // Thoda bada tick (optional)
-        val tickSpacing = w / 12f       // 12 ticks
+        // ---- RULER ----
+        val rulerY = h * 0.95f
+        val tickHeight = 10f
+        val tickSpacing = w / 12f
 
-        // Horizontal line – Transparent (alpha = 0)
-        paint.color = Color.TRANSPARENT
-        paint.strokeWidth = 2f
-        canvas.drawLine(0f, rulerY, w, rulerY, paint)   // Invisible line (keeps layout)
-
-        // Vertical ticks – Black
         paint.color = Color.BLACK
         paint.strokeWidth = 2f
+
         for (i in 0..12) {
             val x = i * tickSpacing
-            canvas.drawLine(x, rulerY - tickHeight / 2, x, rulerY + tickHeight / 2, paint)
+            canvas.drawLine(
+                x,
+                rulerY - tickHeight / 2,
+                x,
+                rulerY + tickHeight / 2,
+                paint
+            )
         }
     }
 
@@ -3576,6 +3648,7 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
         }
     }
 }
+
 
 enum class Position1 {
     UPPER, LOWER

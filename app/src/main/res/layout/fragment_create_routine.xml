@@ -147,7 +147,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/name_routine_layout" />
                 <androidx.appcompat.widget.LinearLayoutCompat
-
                     android:id="@+id/add_btn_log"
                     android:layout_width="62dp"
                     android:layout_height="24dp"
@@ -281,6 +280,16 @@
                         app:layout_constraintBottom_toBottomOf="parent"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/count_character"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#707070"
+                    app:layout_constraintTop_toBottomOf="@+id/edit_text_routine_layout"
+                    app:layout_constraintStart_toStartOf="@+id/edit_text_routine_layout"
+                    app:layout_constraintEnd_toEndOf="@+id/edit_text_routine_layout"
+                    />
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="105dp"
