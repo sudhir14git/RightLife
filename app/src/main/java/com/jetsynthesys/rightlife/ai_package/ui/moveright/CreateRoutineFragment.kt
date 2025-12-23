@@ -43,6 +43,7 @@ import kotlinx.coroutines.withContext
 
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText: EditText
+    private lateinit var count_character:TextView
     private lateinit var textViewRoutine: TextView
     private lateinit var no_workout_heading: TextView
     private lateinit var no_workout_discription: TextView
@@ -106,6 +107,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         editText = view.findViewById(R.id.editText)
+        count_character = view.findViewById(R.id.count_character)
         edit_icon_create_routine = view.findViewById(R.id.edit_icon_create_routine)
         textViewRoutine = view.findViewById(R.id.name_routine_text_view)
         no_workout_heading = view.findViewById(R.id.no_workout_heading)
@@ -277,30 +279,56 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             }
         }
 
-
+        count_character.text = "0/20 Ch"
         editText.addTextChangedListener(object : TextWatcher {
+
             private val maxLength = 20
+
             override fun afterTextChanged(s: Editable?) {
-                if (s != null && s.length > maxLength) {
+                if (s == null) return
+
+                // LIMIT CHECK
+                if (s.length > maxLength) {
                     s.replace(maxLength, s.length, "")
                     Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(editText.context, "Name cannot exceed $maxLength characters", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            editText.context,
+                            "Name cannot exceed $maxLength characters",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
+
+                // CHARACTER COUNT DISPLAY
+                val currentCount = s.length
+                count_character.text = "$currentCount/$maxLength Ch"
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                // BUTTON ENABLE / DISABLE
                 if (s.isNullOrEmpty()) {
                     layoutBtnLog.background = filledBackground
                     layoutBtnLog.isEnabled = false
+                    count_character.text = "0/$maxLength Ch"
                 } else {
                     layoutBtnLog.background = defaultBackground
                     layoutBtnLog.isEnabled = true
                 }
             }
         })
+
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
