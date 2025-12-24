@@ -79,7 +79,6 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
-import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
@@ -994,7 +993,9 @@ class HomeNewActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        checkForUpdate()
+        //checkForUpdate()
+        //new force update check below
+        //checkForceUpdate()
         getUserDetails()
         initBillingAndRecover()
         getDashboardChecklistStatus()
@@ -1228,6 +1229,39 @@ class HomeNewActivity : BaseActivity() {
 
     }
 
+    private fun checkForceUpdate() {
+        if (!sharedPreferenceManager.isForceUpdateEnabled()) return
+
+        val minRequired = sharedPreferenceManager.forceUpdateMinVersion
+        val currentVersion = BuildConfig.VERSION_NAME ?: "0"
+
+        if (isVersionLower(currentVersion, minRequired)) {
+            showForceUpdateDialog(
+                    sharedPreferenceManager.forceUpdateMessage,
+                    sharedPreferenceManager.forceUpdateUrl
+            )
+        }
+    }
+
+    private fun isVersionLower(current: String?, required: String?): Boolean {
+        if (current.isNullOrBlank() || required.isNullOrBlank()) return false
+
+        val currentParts = current.split(".").map { it.toIntOrNull() ?: 0 }
+        val requiredParts = required.split(".").map { it.toIntOrNull() ?: 0 }
+
+        val maxLength = maxOf(currentParts.size, requiredParts.size)
+
+        for (i in 0 until maxLength) {
+            val currentValue = currentParts.getOrElse(i) { 0 }
+            val requiredValue = requiredParts.getOrElse(i) { 0 }
+
+            if (currentValue < requiredValue) return true
+            if (currentValue > requiredValue) return false
+        }
+        return false
+    }
+
+
     private fun checkForUpdate() {
         val remoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
@@ -1251,7 +1285,7 @@ class HomeNewActivity : BaseActivity() {
                 val currentVersion = BuildConfig.VERSION_NAME
 
                 if (isForceUpdate && isVersionOutdated(currentVersion, latestVersion)) {
-                    showForceUpdateDialog()
+                    showForceUpdateDialog(sharedPreferenceManager.forceUpdateMessage, sharedPreferenceManager.forceUpdateUrl)
                 }
             }
         }
@@ -1269,7 +1303,8 @@ class HomeNewActivity : BaseActivity() {
         return diffInDays.toInt()
     }
 
-    private fun showForceUpdateDialog() {
+    private fun showForceUpdateDialog(forceUpdateMessage: String, forceUpdateUrl: String)
+    {
 
         // Create the dialog
         val dialog = Dialog(this)
