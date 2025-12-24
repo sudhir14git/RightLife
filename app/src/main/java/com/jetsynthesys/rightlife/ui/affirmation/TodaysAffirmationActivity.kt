@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -777,12 +778,14 @@ class TodaysAffirmationActivity : BaseActivity() {
                         )
                     )
 
-                    if (sharedPreferenceManager.firstTimeUserForAffirmation) {
+                    Log.e("firstaffirmation", "onResponse: bool "+ sharedPreferenceManager.firstTimeUserPlaylistAffirmation)
+                    if (sharedPreferenceManager.firstTimeUserPlaylistAffirmation) {
                         CommonAPICall.postWellnessStreak(
                             this@TodaysAffirmationActivity,
                             "Affirmation"
                         )
                         showCreatedUpdatedDialog("Playlist Created")
+                        sharedPreferenceManager.firstTimeUserPlaylistAffirmation = false
                         sharedPreferenceManager.firstTimeUserForAffirmation = false
                     } else {
                         showCreatedUpdatedDialog("Changes Saved")

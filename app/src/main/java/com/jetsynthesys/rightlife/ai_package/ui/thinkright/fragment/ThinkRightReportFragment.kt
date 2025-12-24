@@ -83,6 +83,7 @@ import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditResultActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -98,6 +99,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.Locale.getDefault
 import kotlin.math.abs
 
 class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>() {
@@ -328,10 +330,32 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             startActivity(Intent(context?.let { it }, PractiseAffirmationPlaylistActivity::class.java))
         }
         view.findViewById<LinearLayout>(R.id.play_now_mind_audit).setOnClickListener {
-            ActivityUtils.startMindAuditActivity(requireContext(), true)
+
+            //ActivityUtils.startMindAuditActivity(requireContext(), true)
+            if (isAdded && assessmentList.isNotEmpty()) {
+
+                val first = assessmentList.firstOrNull()
+                if (isAdded && first != null) {
+                    startActivity(Intent(requireContext(), MindAuditResultActivity::class.java).apply {
+                        putExtra("Assessment", first.assessment.uppercase(Locale.getDefault()))
+                    })
+                } else {
+                    context?.let { Toast.makeText(it, "No assessment to show", Toast.LENGTH_SHORT).show() }
+                }
+            } else {
+                context?.let { ctx -> ActivityUtils.startMindAuditActivity(ctx, true) }
+            }
         }
         reassessYourMental.setOnClickListener {
-            ActivityUtils.startMindAuditActivity(requireContext(), true)
+            //ActivityUtils.startMindAuditActivity(requireContext(), true)
+            val first = assessmentList.firstOrNull()
+            if (isAdded && first != null) {
+                startActivity(Intent(requireContext(), MindAuditResultActivity::class.java).apply {
+                    putExtra("Assessment", first.assessment.uppercase(Locale.getDefault()))
+                })
+            } else {
+                context?.let { Toast.makeText(it, "No assessment to show", Toast.LENGTH_SHORT).show() }
+            }
         }
         view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
             ActivityUtils.startJournalListActivity(requireContext(), true)
@@ -343,7 +367,20 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             ActivityUtils.startBreathWorkActivity(requireContext())
         }
         view.findViewById<ConstraintLayout>(R.id.lyt_top_header).setOnClickListener {
-            ActivityUtils.startMindAuditActivity(requireContext(), true)
+            //ActivityUtils.startMindAuditActivity(requireContext(), true)
+            if (isAdded && assessmentList.isNotEmpty()) {
+
+                val first = assessmentList.firstOrNull()
+                if (isAdded && first != null) {
+                    startActivity(Intent(requireContext(), MindAuditResultActivity::class.java).apply {
+                        putExtra("Assessment", first.assessment.uppercase(Locale.getDefault()))
+                    })
+                } else {
+                    context?.let { Toast.makeText(it, "No assessment to show", Toast.LENGTH_SHORT).show() }
+                }
+            } else {
+                context?.let { ctx -> ActivityUtils.startMindAuditActivity(ctx, true) }
+            }
         }
         view.findViewById<ImageView>(R.id.ivSetting).setOnClickListener {
             ActivityUtils.startTodaysAffirmationActivity(requireContext())

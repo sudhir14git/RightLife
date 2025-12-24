@@ -3,6 +3,8 @@ package com.jetsynthesys.rightlife.ui.utility;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
@@ -462,6 +464,16 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
+    public Boolean getFirstTimeUserPlaylistAffirmation() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION_PLAYLIST, true);
+    }
+
+    public void setFirstTimeUserPlaylistAffirmation(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION_PLAYLIST, isUnlock);
+        editor.apply();
+    }
+
     public Boolean getFirstTimeUserAffirmationInfoShown() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, true);
     }
@@ -615,8 +627,10 @@ public class SharedPreferenceManager {
     }
 
     public String getString(String key, String defaultValue) {
-        return sharedPreferences.getString(key, defaultValue);
+        String value = sharedPreferences.getString(key, defaultValue);
+        return value != null ? value : defaultValue;
     }
+
 
     public void removeKey(String key) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -633,6 +647,51 @@ public class SharedPreferenceManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(SharedPreferenceConstants.USER_MOBILE, mobile);
         editor.apply();
+    }
+
+    // ---------- Force Update (Config API) ----------
+
+    public void saveForceUpdateConfig(boolean enabled, String minVersion, String updateUrl, String message) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FORCE_UPDATE_ENABLED, enabled);
+        editor.putString(SharedPreferenceConstants.FORCE_UPDATE_MIN_VERSION, minVersion != null ? minVersion : "");
+        editor.putString(SharedPreferenceConstants.FORCE_UPDATE_URL, updateUrl != null ? updateUrl : "");
+        editor.putString(SharedPreferenceConstants.FORCE_UPDATE_MESSAGE, message != null ? message : "");
+        editor.apply();
+    }
+
+    public boolean isForceUpdateEnabled() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FORCE_UPDATE_ENABLED, false);
+    }
+
+    public String getForceUpdateMinVersion() {
+        return getString(SharedPreferenceConstants.FORCE_UPDATE_MIN_VERSION, "");
+    }
+
+    public String getForceUpdateUrl() {
+        return getString(SharedPreferenceConstants.FORCE_UPDATE_URL, "");
+    }
+
+    public String getForceUpdateMessage() {
+        return getString(SharedPreferenceConstants.FORCE_UPDATE_MESSAGE, "");
+    }
+
+    public void clearForceUpdateConfig() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(SharedPreferenceConstants.FORCE_UPDATE_ENABLED);
+        editor.remove(SharedPreferenceConstants.FORCE_UPDATE_MIN_VERSION);
+        editor.remove(SharedPreferenceConstants.FORCE_UPDATE_URL);
+        editor.remove(SharedPreferenceConstants.FORCE_UPDATE_MESSAGE);
+        editor.apply();
+    }
+
+    public void saveAppConfigJson(@NonNull String json) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.APP_CONFIG_RESPONSE, json);
+        editor.apply();
+    }
+    public String getAppConfigJson() {
+        return sharedPreferences.getString(SharedPreferenceConstants.APP_CONFIG_RESPONSE, "");
     }
 }
 

@@ -1351,6 +1351,12 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body VerifyOtpEmailRequest verifyOtpEmailRequest
     );
+
+    // NEW APP CONFIG API
+    @Headers("Content-Type: application/json")
+    @GET("config")
+    Call<ResponseBody> getAppConfig();
+
 }
 
 
