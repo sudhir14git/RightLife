@@ -67,6 +67,7 @@ object AnalyticsLogger {
         val subGoal = sp.selectedOnboardingSubModule?.trim()
         val loginType =sp.userProfile?.userdata?.loginType?.trim()?.lowercase() ?: "google" // if you store it
         val userId = sp.userId
+        val userDaysCount = sp.userProfile?.daysCount?:"NA"
 
 
         // Device name
@@ -97,6 +98,7 @@ object AnalyticsLogger {
 
         // Firebase already timestamps events, but if you want your own key, keep it as Long epoch ms
         out.putIfAbsent(AnalyticsParam.TIMESTAMP, System.currentTimeMillis())
+        out.putIfAbsent(AnalyticsParam.DAY_FROM_LOGIN, userDaysCount)
 
         return out
     }
