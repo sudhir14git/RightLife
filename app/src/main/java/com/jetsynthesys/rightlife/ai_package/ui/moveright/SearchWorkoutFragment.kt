@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -78,6 +79,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             }
 
         }
+
 
         // Set up tabs
         val tabTitles = arrayOf("All Workouts", "My Routine", "Frequently Logged")
@@ -157,26 +159,27 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         })
 
         // Handle back press
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if(routine.equals("routine")){
-                    val fragment = CreateRoutineFragment()
-                    val args = Bundle().apply {
-                        putString("routine", routine)
-                        putString("routineName", routineName)
-                        putParcelableArrayList("workoutList", workoutList)
-                    }
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
-                        addToBackStack(null)
-                        commit()
-                    }
-                }else{
-                    navigateToYourActivityFragment()
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            true  // 🔥 Yeh important hai - callback ko enable karta hai
+        ) {
+            if(routine.equals("routine")){
+                val fragment = CreateRoutineFragment()
+                val args = Bundle().apply {
+                    putString("routine", routine)
+                    putString("routineName", routineName)
+                    putParcelableArrayList("workoutList", workoutList)
                 }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
+            }else{
+                navigateToYourActivityFragment()
             }
-        })
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {
