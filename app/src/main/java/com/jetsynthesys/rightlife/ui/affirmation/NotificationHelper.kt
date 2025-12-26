@@ -13,6 +13,7 @@ import android.os.PowerManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.new_design.SplashScreenActivity
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -42,7 +43,7 @@ object NotificationHelper {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.app_icon_notification)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
