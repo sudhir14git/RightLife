@@ -53,7 +53,9 @@ import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.queryProductDetails
 import com.bumptech.glide.Glide
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
@@ -130,6 +132,7 @@ import java.time.format.DateTimeParseException
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlin.collections.set
 import kotlin.reflect.KClass
 
 class HomeNewActivity : BaseActivity() {
@@ -1000,6 +1003,7 @@ class HomeNewActivity : BaseActivity() {
         initBillingAndRecover()
         getDashboardChecklistStatus()
         getDashboardChecklist()
+        getSubscriptionProducts(binding.tvStriketroughPrice);
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -1507,7 +1511,7 @@ class HomeNewActivity : BaseActivity() {
                     // Query subscriptions
 
                     recoverSubscriptions()
-
+                    getSubscriptionProducts(binding.tvStriketroughPrice);
                 }
 
             }
@@ -3891,4 +3895,114 @@ class HomeNewActivity : BaseActivity() {
 
         CommonAPICall.sendTokenToServer(applicationContext, sharedPreferenceManager.getString(SharedPreferenceConstants.FCM_TOKEN,token))
     }
-}
+// Query subscription products
+
+    private fun getSubscriptionProducts(priceTextView: TextView) {
+        // 1. Safety check for BillingClient readiness
+        if (!billingClient.isReady) {
+            Log.e("Billing", "BillingClient is not ready yet.")
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val productList = listOf(
+                        QueryProductDetailsParams.Product.newBuilder()
+                                .setProductId("test_sub_yearly")
+                                .setProductType(BillingClient.ProductType.SUBS)
+                                .build()
+                )
+
+                val params = QueryProductDetailsParams.newBuilder()
+                        .setProductList(productList)
+                        .build()
+
+                // 2. Query the products
+                val subsResult = billingClient.queryProductDetails(params)
+                val billingResult = subsResult.billingResult
+                val productDetailsList = subsResult.productDetailsList
+
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
+
+                    if (productDetailsList.isEmpty()) {
+                        Log.w("Billing", "No products found. Check Console ID.")
+                        return@launch
+                    }
+
+                    for (productDetails in productDetailsList) {
+                        // 3. Extract the Offer Details (Base plans and offers)
+                        val offerDetails = productDetails.subscriptionOfferDetails
+
+                        if (!offerDetails.isNullOrEmpty()) {
+                            // For a simple setup, we take the first available offer/base plan
+                            val subOffer = offerDetails[0]
+
+                            // 4. Extract Pricing Phases (where the formatted price lives)
+                            val pricingPhases = subOffer.pricingPhases.pricingPhaseList
+
+                            if (pricingPhases.isNotEmpty()) {
+                                // formattedPrice will be "₹7.00" based on your JSON
+                                val price = pricingPhases[0].formattedPrice
+
+                                Log.d("Billing", "Success! Found price: $price")
+
+                                // 5. Update UI on the Main Thread
+                                withContext(Dispatchers.Main) {
+                                    priceTextView.text = price
+                                }
+                            }
+                        } else {
+                            Log.e("Billing", "No subscription offer details found for this product.")
+                        }
+                    }
+                } else {
+                    Log.e("Billing", "Error: ${billingResult.debugMessage} Code: ${billingResult.responseCode}")
+                }
+            } catch (e: Exception) {
+                Log.e("Billing", "Exception during query: ${e.message}")
+            }
+        }
+    }
+
+/*private fun getSubscriptionProducts() {
+    // Check if client is ready first
+    if (!billingClient.isReady) {
+        Log.e("Billing", "BillingClient is not ready yet.")
+        return
+    }
+
+    lifecycleScope.launch {
+        try {
+            val productList = listOf(
+                    QueryProductDetailsParams.Product.newBuilder()
+                            .setProductId("test_sub_yearly")
+                            .setProductType(BillingClient.ProductType.SUBS)
+                            .build()
+            )
+
+            val params = QueryProductDetailsParams.newBuilder()
+                    .setProductList(productList)
+                    .build()
+
+            // Leverage the suspending function
+            val subsResult = billingClient.queryProductDetails(params)
+
+            val billingResult = subsResult.billingResult
+            val productDetailsList = subsResult.productDetailsList
+
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
+                if (productDetailsList.isEmpty()) {
+                    Log.w("Billing", "No products found. Check if ID is correct and active in Play Console.")
+                }
+                for (details in productDetailsList) {
+                    Log.d("Billing", "Found Product: ${details.name} - ${details.productId}")
+                }
+            } else {
+                Log.e("Billing", "Error: ${billingResult.debugMessage} Code: ${billingResult.responseCode}")
+            }
+        } catch (e: Exception) {
+            Log.e("Billing", "Exception during query", e)
+        }
+    }
+}*/
+    }
