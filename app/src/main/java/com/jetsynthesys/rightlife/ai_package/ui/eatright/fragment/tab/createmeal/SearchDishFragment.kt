@@ -250,6 +250,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
 //            getSnapMealRecipesList()
 //            onSnapSearchDishItemRefresh()
 //        }
+
+        getSnapMealRecipesList("")
     }
 
     private fun onSearchDishItemRefresh() {
