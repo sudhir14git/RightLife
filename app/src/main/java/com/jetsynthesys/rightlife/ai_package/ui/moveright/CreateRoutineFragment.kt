@@ -94,8 +94,6 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             ?: arguments?.getString("routineId")).toString()
 
         Log.d("CreateRoutineFragment", "Received ${routineIdworkout} activities from YourActivityFragment")
-
-        // Map ActivityModel to WorkoutSessionRecord and append to workoutList
         if (activityList.isNotEmpty()) {
             mapActivityModelToWorkoutSessionRecord(activityList)
         }
@@ -181,16 +179,6 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             no_workout_discription.visibility = View.GONE
             no_workout_heading.visibility = View.GONE
         }
-
-        /* if (workoutLists != null) {
-             addNameLayout.visibility = View.GONE
-             createListRoutineLayout.visibility = View.VISIBLE
-             textViewRoutine.text = workoutLists?.routineName
-             // Map workoutList to RoutineWorkoutDisplayModel and update the adapter
-             val routineWorkoutModels = mapWorkoutSessionRecordsToRoutineWorkoutModels(workoutList)
-             routineWorkoutListAdapter.setData(routineWorkoutModels)
-             createRoutineRecyclerView.visibility = View.VISIBLE
-         }*/
 
         addBtnLog.setOnClickListener {
             if (editRoutine == "edit_routine") {

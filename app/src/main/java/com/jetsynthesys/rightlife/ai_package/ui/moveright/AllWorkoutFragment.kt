@@ -56,11 +56,6 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         super.onActivityCreated(savedInstanceState)
         appPreference = AppPreference(requireContext())
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                // Optionally navigate to a previous fragment or do nothing
-            }
-        })
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
