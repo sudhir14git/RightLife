@@ -63,6 +63,8 @@ object AnalyticsParam {
     const val CONTENT_CATEGORY = "content_category"
     const val SERIES_TYPE = "series_type"
 
+    const val PHONE_NUMBER = "Phone Number"
+
 
     // new defaults
     // AnalyticsParam

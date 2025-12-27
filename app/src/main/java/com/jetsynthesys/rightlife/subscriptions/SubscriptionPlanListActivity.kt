@@ -139,6 +139,12 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             openPlayStoreSubscriptionPage()
             AnalyticsLogger.logEvent(
                 this,
+                AnalyticsEvent.ManageSubs_CancelSubs,
+                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+            )
+
+            AnalyticsLogger.logEvent(
+                this,
                 AnalyticsEvent.Subscription_CancelSubscription_Tap,
                 mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
             )
