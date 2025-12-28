@@ -888,7 +888,6 @@ class HomeNewActivity : BaseActivity() {
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startJournalListActivity(this@HomeNewActivity)
                 }
-                ActivityUtils.startJournalListActivity(this@HomeNewActivity)
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
