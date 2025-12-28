@@ -32,10 +32,9 @@ class PlanSelectionAdapter(
                 val planName = plan.title?.split("-")
                 binding.planTitle.text = planName?.get(0) ?: "Face Scan"
                 binding.tvCancel.text = planName?.get(1) ?: "Pack of 1"
-                binding.tvCancel.visibility = View.VISIBLE
             } else {
                 binding.planTitle.text = plan.title ?: ""
-                binding.tvCancel.visibility = View.GONE
+                binding.tvCancel.text = "Cancel anytime online"
             }
 
             binding.tvBadge.visibility = if (plan.title?.contains(
