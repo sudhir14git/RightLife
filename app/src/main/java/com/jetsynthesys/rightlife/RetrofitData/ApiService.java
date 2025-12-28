@@ -175,6 +175,14 @@ public interface ApiService {
             @Query("position") String position
     );
 
+    @GET("promotionWeekly")
+    Call<JsonElement> getPromotionListWeekly(
+            @Header("Authorization") String authToken,
+            @Query("appId") String appId,
+            @Query("position") String userId,
+            @Query("userId") String position
+    );
+
     //ModuleService Pane
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @GET("user")
