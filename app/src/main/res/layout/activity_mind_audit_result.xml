@@ -691,6 +691,8 @@
                             <ImageView
                                 android:id="@+id/iv_main_score_image"
                                 android:layout_width="60dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginBottom="10dp"
                                 android:src="@drawable/rounded_corder_border_gray"
                                 android:layout_alignParentEnd="true"
                                 android:layout_alignBottom="@+id/tv_main_score_happiness"
