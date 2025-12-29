@@ -71,6 +71,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
+import com.jetsynthesys.rightlife.ui.utility.MetaEventLogger
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -544,10 +545,20 @@ class HomeDashboardFragment : BaseFragment()
         {
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
-            if (sharedPreferenceManager.getFirstTimeForHomeDashboard())
+            if (sharedPreferenceManager.getFirstTimeCheckListEventLogged())
             {
                 sharedPreferenceManager.firstTimeCheckListEventLogged = false
                 AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.CHECKLIST_COMPLETE, mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true))
+                // (Facebook) Event
+                MetaEventLogger.log(
+                        requireContext(),
+                        AnalyticsEvent.CHECKLIST_COMPLETE,
+                        mapOf(
+                                "status" to "completed",
+                                "source" to "home_dashboard",
+                                "first_time" to true
+                        )
+                )
             }
                 /*
                         val activity = requireActivity() as HomeNewActivity
