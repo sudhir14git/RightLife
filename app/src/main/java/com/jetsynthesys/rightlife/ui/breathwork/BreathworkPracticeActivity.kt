@@ -70,10 +70,6 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         // Retrieve the selected breathing practice from the intent
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
-        /*startDate = intent.getStringExtra("StartDate").toString()
-        if (startDate.isEmpty())
-            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())*/
-        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         val sessionCount = intent.getIntExtra("sessionCount", 3)
         totalSets = sessionCount
         isHapticFeedBack = intent.getBooleanExtra("HAPTIC_FEEDBACK", false)
@@ -92,7 +88,7 @@ class BreathworkPracticeActivity : BaseActivity() {
         sessionDurationSeconds = (totalSets * cycleDuration / 1000).toInt()
 
         // Set initial values
-        binding.setIndicator.text = "Set $currentSet/${totalSets/4}"
+        binding.setIndicator.text = "Set $currentSet/${totalSets / 4}"
         updateSessionTimer(sessionDurationSeconds * 1000L)
 
         // Set click listeners
@@ -211,6 +207,8 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startBreathingSession() {
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         isPreparationPhase = false
 
         // Restore UI elements
@@ -341,7 +339,7 @@ class BreathworkPracticeActivity : BaseActivity() {
             //binding.setIndicator.text = "Set ${currentSet/4}/${totalSets/4}"
             // Calculate the current "lap" of 4, starting from 1
             val currentLap = ((currentSet - 1) / 4) + 1
-            val totalLaps = totalSets /4
+            val totalLaps = totalSets / 4
 
             binding.setIndicator.text = "Set $currentLap/$totalLaps"
 
@@ -389,6 +387,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun showCompletedBottomSheetNew() {
+        callPostMindFullDataAPI()
         binding.rlPracticeComplete.visibility = View.VISIBLE
         binding.rlBreathingPracticeMain.visibility = View.GONE
         binding.btnExit.setOnClickListener {
@@ -793,14 +792,12 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
     }
 
-    override fun onPause()
-    {
+    override fun onPause() {
         super.onPause()
         muteAllSounds(true)
     }
 
-    override fun onResume()
-    {
+    override fun onResume() {
         super.onResume()
         muteAllSounds(false)
 
@@ -811,7 +808,8 @@ class BreathworkPracticeActivity : BaseActivity() {
      * @param isMuted True to mute (set volume to 0), false to unmute (set to default volume).
      */
     private fun muteAllSounds(isMuted: Boolean) {
-        try {            val volume = if (isMuted) 0f else 0.7f // 0f for mute, 0.7f for default volume
+        try {
+            val volume = if (isMuted) 0f else 0.7f // 0f for mute, 0.7f for default volume
             inhaleSound?.setVolume(volume, volume)
             exhaleSound?.setVolume(volume, volume)
             holdSound?.setVolume(volume, volume)

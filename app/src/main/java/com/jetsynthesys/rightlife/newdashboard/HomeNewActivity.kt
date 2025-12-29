@@ -53,9 +53,7 @@ import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
-import com.android.billingclient.api.queryProductDetails
 import com.bumptech.glide.Glide
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
@@ -134,7 +132,6 @@ import java.time.format.DateTimeParseException
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.reflect.KClass
 
 class HomeNewActivity : BaseActivity() {
@@ -980,6 +977,7 @@ class HomeNewActivity : BaseActivity() {
                     putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
                 }
                 startActivity(intent)
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.RL_AI_Report_Card_Tap)
             }
 
         }
@@ -3994,8 +3992,7 @@ class HomeNewActivity : BaseActivity() {
                                 if (sharedPreferenceManager.userProfile.userdata.country.equals("IN")) {
                                     binding.tvStriketroughPrice.text = "₹ ${plan.price?.inr}"
                                     binding.tvZero.text = "₹0"
-                                }
-                                else {
+                                } else {
                                     binding.tvStriketroughPrice.text = "\$ ${plan.price?.usd}"
                                     binding.tvZero.text = "\$0"
                                 }

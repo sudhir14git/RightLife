@@ -231,6 +231,20 @@ object AnalyticsEvent {
     const val Checkout_GooglePlay_Continue = "Checkout_GooglePlay_Continue"
 
     const val ManageSubs_CancelSubs = "ManageSubs_CancelSubs"
+    const val Subs_Monthly_Purchased = "Subs_Monthly_Purchased"
+    const val Subs_Annual_Purchased = "Subs_Annual_Purchased"
+    const val FaceScan12_Purchased = "FaceScan12_Purchased"
+    const val FaceScan1_Purchased = "FaceScan1_Purchased"
+
+    const val RL_AI_Report_Card_Tap = "RL_AI_Report_Card_Tap"
+    const val Checklist_MRER_Completed = "Checklist_MRER_Completed"
+    const val Checklist_TRSR_Completed = "Checklist_TRSR_Completed"
+    const val Checklist_Profile_Completed = "Checklist_Profile_Completed"
+
+
+
+
+
 
     const val ManageSubs_Explore = "ManageSubs_Explore"
 

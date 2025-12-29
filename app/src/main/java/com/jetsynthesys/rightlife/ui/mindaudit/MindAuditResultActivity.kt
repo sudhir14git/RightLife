@@ -174,21 +174,6 @@ class MindAuditResultActivity : BaseActivity() {
                 response: Response<MindAuditResultResponse?>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    /*      try {
-                              if (response.body()!!.result.isNullOrEmpty()){
-
-                                  binding.rlAssessmentNotTaken.visibility = View.GONE
-                                  binding.scrollviewResult.visibility = View.VISIBLE
-                              // binding.tvMainScore.text = response.body()!!.result[0].assessmentsTaken[0].interpretations.anger.level.toString() + " " + response.body()!!.result[0].assessmentsTaken[0].interpretations.anger.score.toString()
-                                  handleAssessmentScore(response)
-                              }else{
-                                  binding.rlAssessmentNotTaken.visibility = View.VISIBLE
-                                  binding.scrollviewResult.visibility = View.GONE
-                              }
-                          } catch (e: Exception) {
-                              e.printStackTrace()
-                          }*/
-
                     try {
                         val resultList = response.body()?.result
 
@@ -1061,9 +1046,9 @@ class MindAuditResultActivity : BaseActivity() {
                     else
                         binding.tvOtherAssessment.visibility = View.VISIBLE
                 } else {
+
                     binding.tvCheckprogressDays.visibility = View.VISIBLE
                     binding.llOtherSection.visibility = View.GONE
-                    binding.scrollviewResult.visibility = View.VISIBLE
                     getAssessmentResult(selectedChip.text.toString())
                     binding.tvAssessmentTaken.text = selectedChip.text.toString() + " " + "Score"
                 }
