@@ -2,6 +2,10 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Typeface
+import android.text.SpannableStringBuilder
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,10 +42,12 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
             .into(holder.mealIcon)*/
         holder.mealName.text = item.mealType
         holder.servesCount.text = item.serve
-        holder.calValue.text = item.cal
-        holder.subtractionValue.text = item.subtraction +" Intensity"
-        holder.baguetteValue.text = item.baguette
+        holder.calValue.text = formatCaloriesString(item.cal.toString())
+        holder.subtractionValue.text = item.subtraction
+       // holder.baguetteValue.text = item.baguette
         holder.dewpointValue.text = item.dewpoint
+        holder.serves.text = item.baguette?.let { formatTimeString(it) }
+
 
         holder.edit.setOnClickListener {
 
@@ -275,58 +281,7 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
                 holder.mealIcon.setImageResource(R.drawable.other)
             }
         }
-       // holder.editDeleteLayout.visibility = if (selectedItem == position) View.VISIBLE else View.GONE
-       /* holder.deleteLayout.setOnClickListener {
-            val bottomSheet = DeleteWorkoutBottomSheet()
-            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
-            holder.editDeleteLayout.visibility = View.GONE
-        }*/
 
-        // Handle three-dot click
-      /*  holder.threedots.setOnClickListener {
-            // If the same item is clicked again, toggle visibility
-            if (selectedItem == position) {
-                selectedItem = -1 // Hide the menu
-            } else {
-                // Show the menu for the clicked item and hide the previous one
-                val previousSelectedItem = selectedItem
-                selectedItem = position
-
-                // Notify the adapter to update the previous and current items
-                if (previousSelectedItem != -1) {
-                    notifyItemChanged(previousSelectedItem)
-                }
-                notifyItemChanged(position)
-            }
-        }*/
-//        if (item.status == true) {
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_check)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-//        }else{
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_uncheck)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-        //     }
-
-//        holder.layoutMain.setOnClickListener {
-//           // holder.createNewVersionCard.visibility = View.GONE
-//            onMealLogDateItem(item, position, true)
-//        }
     }
 
     override fun getItemCount(): Int {
@@ -360,6 +315,113 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
+    }
+    private fun formatTimeString(timeString: String): SpannableStringBuilder {
+        // Step 1: Convert string to total minutes (handles "60.0" format)
+        val totalMinutes = timeString.toDoubleOrNull()?.toInt() ?: 0
+
+        // Step 2: Convert total minutes to hours and minutes
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+
+        // Step 3: Build the formatted string (e.g., "1 hr 0 mins")
+        val formattedText = buildString {
+            if (hours > 0) {
+                append("$hours hr ")
+            }
+            if (minutes > 0 || hours == 0) { // Show minutes even if 0 when hours is 0
+                append("$minutes mins")
+            }
+        }.trim()
+
+        // Step 4: Create SpannableStringBuilder for styling
+        val spannable = SpannableStringBuilder(formattedText)
+
+        // Apply bold and 14sp to numbers, 10sp to units
+        var currentIndex = 0
+        if (hours > 0) {
+            // Style the hours number
+            spannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                0,
+                hours.toString().length,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                AbsoluteSizeSpan(14, true), // 14sp
+                0,
+                hours.toString().length,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            // Style the "hr" unit (normal, 10sp, no bold)
+            spannable.setSpan(
+                AbsoluteSizeSpan(10, true), // 10sp
+                hours.toString().length,
+                hours.toString().length + 3, // " hr"
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            currentIndex = hours.toString().length + 4 // Move index past "X hr "
+        }
+
+        // Style the minutes number
+        if (minutes > 0 || hours == 0) {
+            val minutesStart = currentIndex
+            val minutesEnd = minutesStart + minutes.toString().length
+            spannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                minutesStart,
+                minutesEnd,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                AbsoluteSizeSpan(14, true), // 14sp
+                minutesStart,
+                minutesEnd,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            // Style the "mins" unit (normal, 10sp, no bold)
+            spannable.setSpan(
+                AbsoluteSizeSpan(10, true), // 10sp
+                minutesEnd,
+                formattedText.length, // " mins"
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        return spannable
+    }
+    private fun formatCaloriesString(caloriesString: String): SpannableStringBuilder {
+        // Step 1: Convert string to integer (ignores decimal part)
+        val calories = caloriesString.toDoubleOrNull()?.toInt() ?: 0
+
+        // Step 2: Build the formatted string (e.g., "516 cal")
+        val formattedText = "$calories cal"
+
+        // Step 3: Create SpannableStringBuilder for styling
+        val spannable = SpannableStringBuilder(formattedText)
+
+        // Style the number (bold, 14sp)
+        spannable.setSpan(
+            StyleSpan(Typeface.BOLD),
+            0,
+            calories.toString().length,
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannable.setSpan(
+            AbsoluteSizeSpan(14, true),
+            0,
+            calories.toString().length,
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        // Style the unit "cal" (normal, 10sp)
+        spannable.setSpan(
+            AbsoluteSizeSpan(10, true),
+            calories.toString().length,
+            formattedText.length,
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        return spannable
     }
 
     fun addAll(item : ArrayList<FrequentLoggedRoutine>?, pos: Int, mealLogItem : FrequentLoggedRoutine?, isClick : Boolean) {

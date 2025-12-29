@@ -72,7 +72,7 @@ class FrequentlyLoggedSearchFragment : BaseFragment<FragmentFrequentlyLoggedSear
                                 cal = workoutItem.caloriesBurned.toString(),
                                 subtraction = workoutItem.intensity,
                                 icon = workoutItem.icon,
-                                baguette = "308", // These hardcoded values may need to be updated based on API data
+                                baguette = workoutItem.duration.toString(), // These hardcoded values may need to be updated based on API data
                                 dewpoint = "17",  // These hardcoded values may need to be updated based on API data
                                 isAddDish = false
                             )

@@ -274,6 +274,8 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
 //            getSnapMealRecipesList()
 //            onSnapSearchDishItemRefresh()
 //        }
+
+        getSearchMealList("")
     }
 
     fun View.listenKeyboardVisibility(onChanged: (Boolean) -> Unit) {
