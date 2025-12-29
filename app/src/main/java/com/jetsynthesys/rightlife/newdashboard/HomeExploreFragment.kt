@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import PromotionWeeklyResponse
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -23,7 +24,6 @@ import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.apimodel.PromotionResponse
 import com.jetsynthesys.rightlife.apimodel.affirmations.AffirmationResponse
 import com.jetsynthesys.rightlife.apimodel.rledit.RightLifeEditResponse
 import com.jetsynthesys.rightlife.apimodel.servicepane.HomeService
@@ -34,7 +34,6 @@ import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse
 import com.jetsynthesys.rightlife.databinding.FragmentHomeExploreBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ContentDetails
 import com.jetsynthesys.rightlife.newdashboard.model.ContentResponse
-import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager.facialScanStatus
 import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.ActivityUtils.startFaceScanActivity
@@ -108,7 +107,8 @@ class HomeExploreFragment : BaseFragment() {
         swipeRefreshLayout?.setOnRefreshListener {
             // Call your refresh logic
             sliderHandler?.postDelayed(sliderRunnable!!, 3000)
-            getPromotionList()
+            getPromotionListWeekly()
+            //getPromotionList()
             getRightLifeEdit()
             getWellnessPlaylist()
             swipeRefreshLayout.isRefreshing = false // Stop the spinner
@@ -398,7 +398,8 @@ class HomeExploreFragment : BaseFragment() {
         super.onResume()
         // Resume auto-slide when activity is visible
         sliderHandler?.postDelayed(sliderRunnable!!, 3000)
-        getPromotionList()
+        //getPromotionList()
+        getPromotionListWeekly()
         getRightLifeEdit()
         getWellnessPlaylist()
         Handler(Looper.getMainLooper()).postDelayed({
@@ -456,7 +457,7 @@ class HomeExploreFragment : BaseFragment() {
         })
     }
 
-    private fun getPromotionList() {
+    /*private fun getPromotionList() {
         val call = apiService.getPromotionList(
             sharedPreferenceManager.accessToken,
             "HOME_PAGE",
@@ -475,6 +476,45 @@ class HomeExploreFragment : BaseFragment() {
                     )
                     if (promotionResponse.success) {
                         runWhenAttached { handlePromotionResponse(promotionResponse) }
+                    } else {
+                        Toast.makeText(
+                            requireActivity(),
+                            "Failed: " + promotionResponse.statusCode,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                if (!isFragmentSafe()) return
+                handleNoInternetView(t)
+            }
+        })
+    }*/
+
+
+    private fun getPromotionListWeekly() {
+        val call = apiService.getPromotionListWeekly(
+            sharedPreferenceManager.accessToken,
+            "HOME_PAGE",
+            "TOP",
+            sharedPreferenceManager.userId
+        )
+        call.enqueue(object : Callback<JsonElement?> {
+            override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (!isFragmentSafe()) return
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+                    val promotionResponse = gson.fromJson(
+                        jsonResponse,
+                        PromotionWeeklyResponse::class.java
+                    )
+                    if (promotionResponse.success) {
+                        runWhenAttached { handlePromotionResponseWeekly(promotionResponse) }
                     } else {
                         Toast.makeText(
                             requireActivity(),
@@ -653,7 +693,7 @@ class HomeExploreFragment : BaseFragment() {
                             )
                             handleSleepRightResponse()
                         }
-                        (requireActivity() as? HomeNewActivity)?.isCategoryModuleLoaded  = true
+                        (requireActivity() as? HomeNewActivity)?.isCategoryModuleLoaded = true
                     }
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -843,7 +883,7 @@ class HomeExploreFragment : BaseFragment() {
         }
     }
 
-    private fun handlePromotionResponse(promotionResponse: PromotionResponse) {
+    /*private fun handlePromotionResponse(promotionResponse: PromotionResponse) {
         cardItems.clear()
         for (i in promotionResponse.promotiondata.promotionList.indices) {
             val cardItem = CardItem(
@@ -895,48 +935,150 @@ class HomeExploreFragment : BaseFragment() {
                 ) {
                     val spm = SharedPreferenceManager.getInstance(requireActivity())
                     (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
-                  /*  if (spm.userProfile != null && spm.userProfile.user_sub_status == 0) {
-                        // Not subscribed → redirect to free trial
-                        val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
-                        intent.putExtra(
-                            FeatureFlags.EXTRA_ENTRY_DEST,
-                            FeatureFlags.FACE_SCAN
-                        )
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                    } else {
-                        var isFacialScanService = false
-                        try {
-                            isFacialScanService = spm.userProfile.facialScanService
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                    *//*  if (spm.userProfile != null && spm.userProfile.user_sub_status == 0) {
+                          // Not subscribed → redirect to free trial
+                          val intent = Intent(requireActivity(), BeginMyFreeTrialActivity::class.java)
+                          intent.putExtra(
+                              FeatureFlags.EXTRA_ENTRY_DEST,
+                              FeatureFlags.FACE_SCAN
+                          )
+                          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                          startActivity(intent)
+                      } else {
+                          var isFacialScanService = false
+                          try {
+                              isFacialScanService = spm.userProfile.facialScanService
+                          } catch (e: Exception) {
+                              e.printStackTrace()
+                          }
 
-                        if (isFacialScanService) {
-                            if (facialScanStatus) {
-                                val intent =
-                                    Intent(
-                                        requireActivity(),
-                                        NewHealthCamReportActivity::class.java
-                                    )
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(intent)
-                            } else {
-                                startFaceScanActivity(requireActivity())
-                            }
-                        } else {
-                            if (requireActivity() is HomeNewActivity) {
-                                (requireActivity() as HomeNewActivity)
-                                    .showSwitchAccountDialog(requireActivity(), "", "")
-                            } else {
-                                Toast.makeText(
-                                    requireActivity(),
-                                    "Please switch to your original account.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    }*/
+                          if (isFacialScanService) {
+                              if (facialScanStatus) {
+                                  val intent =
+                                      Intent(
+                                          requireActivity(),
+                                          NewHealthCamReportActivity::class.java
+                                      )
+                                  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                  startActivity(intent)
+                              } else {
+                                  startFaceScanActivity(requireActivity())
+                              }
+                          } else {
+                              if (requireActivity() is HomeNewActivity) {
+                                  (requireActivity() as HomeNewActivity)
+                                      .showSwitchAccountDialog(requireActivity(), "", "")
+                              } else {
+                                  Toast.makeText(
+                                      requireActivity(),
+                                      "Please switch to your original account.",
+                                      Toast.LENGTH_SHORT
+                                  ).show()
+                              }
+                          }
+                      }*//*
+                }
+            }
+            binding.viewPager.adapter = adapter
+            adapter?.notifyDataSetChanged()
+
+
+            // Set up the initial position for circular effect
+            val initialPosition = Int.MAX_VALUE / 2
+            binding.viewPager.setCurrentItem(
+                initialPosition - initialPosition % cardItems.size,
+                false
+            )
+
+            binding.viewPager.apply {
+                clipToPadding = false
+                clipChildren = false
+                offscreenPageLimit = 5
+                setPadding(60, 0, 60, 0)
+            }
+
+            // Set offscreen page limit and page margin
+            binding.viewPager.offscreenPageLimit = 5 // Load adjacent pages
+            binding.viewPager.clipToPadding = false
+            binding.viewPager.clipChildren = false
+            binding.viewPager.setPageTransformer { page, position ->
+                val MIN_SCALE = 0.9f     // center = 1.0, side cards smaller
+                val MIN_ALPHA = 0.7f
+                val translationFactor = 4f  // controls overlap/spacing
+
+                // Keep center card on top
+                page.z = 1f - abs(position)
+
+                // Scale cards
+                val scale = MIN_SCALE + (1 - abs(position)) * (1 - MIN_SCALE)
+                page.scaleX = scale
+                page.scaleY = scale
+
+                // Fade cards slightly
+                val alpha = MIN_ALPHA + (1 - abs(position)) * (1 - MIN_ALPHA)
+                page.alpha = alpha
+
+                // Adjust horizontal position for peeking
+                page.translationX = -position * page.width / translationFactor
+            }
+
+        } else {
+            binding.viewPager.visibility = View.GONE
+        }
+    }*/
+
+    private fun handlePromotionResponseWeekly(promotionResponse: PromotionWeeklyResponse) {
+        cardItems.clear()
+        promotionResponse.data.promotionList.indices.forEach { i ->
+            val cardItem = CardItem(
+                promotionResponse.data.promotionList[i]._id,
+                promotionResponse.data.promotionList[i].name,
+                R.drawable.facialconcept,
+                promotionResponse.data.promotionList[i].desktopImage,
+                promotionResponse.data.promotionList[i].content,
+                promotionResponse.data.promotionList[i].buttonName,
+                promotionResponse.data.promotionList[i].category,
+                promotionResponse.data.promotionList[i].views.toString(),
+                promotionResponse.data.promotionList[i].seriesId,
+                promotionResponse.data.promotionList[i].seriesType,
+                promotionResponse.data.promotionList[i].selectedContentType,
+                promotionResponse.data.promotionList[i].titleImage,
+                promotionResponse.data.promotionList[i].buttonImage
+            )
+            cardItems.add(i, cardItem)
+        }
+
+        if (cardItems.isNotEmpty()) {
+            binding.viewPager.visibility = View.VISIBLE
+            adapter = CircularCardAdapter(requireActivity(), cardItems) { item: CardItem ->
+
+                if (item.seriesType.equals("daily", ignoreCase = true) ||
+                    item.category.equals("CONTENT", ignoreCase = true) || item.category
+                        .equals("Test Category", ignoreCase = true)
+                ) {
+                    //Call Content Activity here
+                    callRlEditDetailActivity(item)
+                } else if (item.category.equals("live", ignoreCase = true)) {
+                    Toast.makeText(requireActivity(), "Live Content", Toast.LENGTH_SHORT).show()
+                } else if (item.category.equals("MIND_AUDIT", ignoreCase = true) ||
+                    item.category.equals("Mind Audit", ignoreCase = true) ||
+                    item.category.equals("Health Audit", ignoreCase = true) ||
+                    item.category.equals("mindAudit", ignoreCase = true)
+                ) {
+                    if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true) {
+                        ActivityUtils.startMindAuditActivity(requireContext())
+                    }
+                } else if (item.category.equals("VOICE_SCAN", ignoreCase = true)) {
+                    val intent = Intent(requireActivity(), VoiceScanActivity::class.java)
+                    // Optionally pass data
+                    //intent.putExtra("key", "value");
+                    startActivity(intent)
+                } else if (item.category.equals("FACIAL_SCAN", ignoreCase = true)
+                    || item.category.equals("FACE_SCAN", ignoreCase = true)
+                    || item.category.equals("Health Cam", ignoreCase = true)
+                ) {
+                    val spm = SharedPreferenceManager.getInstance(requireActivity())
+                    (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
                 }
             }
             binding.viewPager.adapter = adapter
@@ -1454,8 +1596,7 @@ class HomeExploreFragment : BaseFragment() {
 
 
     // depplinking to detail pages
-     fun deeplinkExploreModuleActivity()
-    {
+    fun deeplinkExploreModuleActivity() {
         callExploreModuleActivity(SleepRSubModuleResponse!!)
     }
 }
