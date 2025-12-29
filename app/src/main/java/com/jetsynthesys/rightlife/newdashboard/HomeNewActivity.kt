@@ -92,6 +92,7 @@ import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
+import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
@@ -1037,7 +1038,8 @@ class HomeNewActivity : BaseActivity() {
         initBillingAndRecover()
         getDashboardChecklistStatus()
         getDashboardChecklist()
-        getSubscriptionProducts(binding.tvStriketroughPrice);
+        getSubscriptionList()
+        //getSubscriptionProducts(binding.tvStriketroughPrice);
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -1550,7 +1552,7 @@ class HomeNewActivity : BaseActivity() {
                     // Query subscriptions
 
                     recoverSubscriptions()
-                    getSubscriptionProducts(binding.tvStriketroughPrice);
+                    //getSubscriptionProducts(binding.tvStriketroughPrice);
                 }
 
             }
@@ -3974,9 +3976,46 @@ class HomeNewActivity : BaseActivity() {
             sharedPreferenceManager.getString(SharedPreferenceConstants.FCM_TOKEN, token)
         )
     }
-// Query subscription products
 
-    private fun getSubscriptionProducts(priceTextView: TextView) {
+    private fun getSubscriptionList() {
+        val call = apiService.getSubscriptionPlanList(
+            sharedPreferenceManager.accessToken,
+            "SUBSCRIPTION_PLAN"
+        )
+        call.enqueue(object : Callback<SubscriptionPlansResponse> {
+            override fun onResponse(
+                call: Call<SubscriptionPlansResponse>,
+                response: Response<SubscriptionPlansResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.result?.list?.let {
+                        it.forEach { plan ->
+                            if (plan.title.equals("Annual", true)) {
+                                if (sharedPreferenceManager.userProfile.userdata.country.equals("IN")) {
+                                    binding.tvStriketroughPrice.text = "₹ ${plan.price?.inr}"
+                                    binding.tvZero.text = "₹0"
+                                }
+                                else {
+                                    binding.tvStriketroughPrice.text = "\$ ${plan.price?.usd}"
+                                    binding.tvZero.text = "\$0"
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(this@HomeNewActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<SubscriptionPlansResponse>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+// Query subscription products
+    /*private fun getSubscriptionProducts(priceTextView: TextView) {
         // 1. Safety check for BillingClient readiness
         if (!billingClient.isReady) {
             Log.e("Billing", "BillingClient is not ready yet.")
@@ -4045,48 +4084,6 @@ class HomeNewActivity : BaseActivity() {
                 }
             } catch (e: Exception) {
                 Log.e("Billing", "Exception during query: ${e.message}")
-            }
-        }
-    }
-
-    /*private fun getSubscriptionProducts() {
-        // Check if client is ready first
-        if (!billingClient.isReady) {
-            Log.e("Billing", "BillingClient is not ready yet.")
-            return
-        }
-
-        lifecycleScope.launch {
-            try {
-                val productList = listOf(
-                        QueryProductDetailsParams.Product.newBuilder()
-                                .setProductId("test_sub_yearly")
-                                .setProductType(BillingClient.ProductType.SUBS)
-                                .build()
-                )
-
-                val params = QueryProductDetailsParams.newBuilder()
-                        .setProductList(productList)
-                        .build()
-
-                // Leverage the suspending function
-                val subsResult = billingClient.queryProductDetails(params)
-
-                val billingResult = subsResult.billingResult
-                val productDetailsList = subsResult.productDetailsList
-
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
-                    if (productDetailsList.isEmpty()) {
-                        Log.w("Billing", "No products found. Check if ID is correct and active in Play Console.")
-                    }
-                    for (details in productDetailsList) {
-                        Log.d("Billing", "Found Product: ${details.name} - ${details.productId}")
-                    }
-                } else {
-                    Log.e("Billing", "Error: ${billingResult.debugMessage} Code: ${billingResult.responseCode}")
-                }
-            } catch (e: Exception) {
-                Log.e("Billing", "Exception during query", e)
             }
         }
     }*/
