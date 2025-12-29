@@ -209,7 +209,7 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                                 productId = subscription.productId
                             }
                         }
-                        AnalyticsLogger.logEvent(
+                        /*AnalyticsLogger.logEvent(
                             this@OnboardingQuestionnaireActivity,
                             AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE, mapOf(
                                 AnalyticsParam.TIME_TO_COMPLETE to (System.currentTimeMillis() - startTime) / 1000,
@@ -225,6 +225,11 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                                 AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
                                 AnalyticsParam.PROFILE_SKIPPED to profileSkipped,
                             )
+                        )
+                        */
+                        AnalyticsLogger.logEvent(
+                            this@OnboardingQuestionnaireActivity,
+                            AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE
                         )
                     } else {
                         navigateToNextPage()

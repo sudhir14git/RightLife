@@ -16,6 +16,8 @@ import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.QuestionnaireEatRightPagerAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -127,6 +129,7 @@ class QuestionnaireEatRightActivity : BaseActivity() {
                         "You’re All Set",
                         "Your fitness and food patterns are now part of your plan."
                     )
+                    AnalyticsLogger.logEvent(it , AnalyticsEvent.Checklist_MRER_Completed)
                 }
             }
 

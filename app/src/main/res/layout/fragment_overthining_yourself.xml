@@ -47,17 +47,17 @@
                 android:fontFamily="@font/dmsans_bold" />
 
             <RelativeLayout
-                android:layout_width="300dp"
+                android:layout_width="290dp"
                 android:layout_centerInParent="true"
                 android:id="@+id/rl_triangle"
                 android:gravity="center_horizontal"
-                android:layout_height="310dp">
+                android:layout_height="300dp">
 
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardView"
-                    android:layout_width="300dp"
-                    android:layout_height="300dp"
+                    android:layout_width="290dp"
+                    android:layout_height="290dp"
                     app:cardElevation="1dp">
 
                     <com.jetsynthesys.rightlife.quiestionscustomviews.TriangleView
@@ -70,7 +70,7 @@
 
                 <SeekBar
                     android:id="@+id/seekBar"
-                    android:layout_width="315dp"
+                    android:layout_width="305dp"
                     android:layout_height="wrap_content"
                     android:max="4"
                     android:layout_alignParentBottom="true"
@@ -107,13 +107,14 @@
                 android:fontFamily="@font/dmsans_medium"
                 />
             <ImageView
-                android:layout_width="20dp"
+                android:layout_width="35dp"
                 android:id="@+id/img_ovrerthinking"
                 android:src="@drawable/img_overthinking"
                 android:layout_centerInParent="true"
-                android:layout_toLeftOf="@+id/rl_triangle"
-                android:layout_marginEnd="10dp"
-                android:layout_height="100dp"/>
+                android:layout_toStartOf="@+id/rl_triangle"
+                android:scaleType="fitXY"
+                android:layout_marginEnd="6dp"
+                android:layout_height="110dp"/>
         </RelativeLayout>
 
     </LinearLayout>

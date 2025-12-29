@@ -5,8 +5,6 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -558,6 +556,23 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
             for (purchase in purchases) {
                 handlePurchase(purchase)
+
+                val plan = planList[position]
+                val title = plan.title.orEmpty()
+                when {
+                    type == "FACIAL_SCAN" && title.contains("Pack of 1") ->
+                        AnalyticsLogger.logEvent(this, AnalyticsEvent.FaceScan1_Purchased)
+
+                    type == "FACIAL_SCAN" ->
+                        AnalyticsLogger.logEvent(this, AnalyticsEvent.FaceScan12_Purchased)
+
+                    title == "Monthly" ->
+                        AnalyticsLogger.logEvent(this, AnalyticsEvent.Subs_Monthly_Purchased)
+
+                    title == "Annual" ->
+                        AnalyticsLogger.logEvent(this, AnalyticsEvent.Subs_Annual_Purchased)
+                }
+
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
             Toast.makeText(this, "Purchase canceled", Toast.LENGTH_SHORT).show()
@@ -955,6 +970,22 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
         if (razorpayPaymentId.isNullOrEmpty()) {
             showToast("Payment ID not received")
             return
+        }
+
+        val plan = planList[position]
+        val title = plan.title.orEmpty()
+        when {
+            type == "FACIAL_SCAN" && title.contains("Pack of 1") ->
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.FaceScan1_Purchased)
+
+            type == "FACIAL_SCAN" ->
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.FaceScan12_Purchased)
+
+            title == "Monthly" ->
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.Subs_Monthly_Purchased)
+
+            title == "Annual" ->
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.Subs_Annual_Purchased)
         }
 
         // Get stored order data

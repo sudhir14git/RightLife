@@ -39,7 +39,6 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -83,9 +82,6 @@ import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.jetsynthesys.rightlife.ui.utility.isValidIndianMobile
 import com.shawnlin.numberpicker.NumberPicker
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -341,13 +337,9 @@ class ProfileNewActivity : BaseActivity() {
 
     private fun setUserData(userData: Userdata) {
 
-        if (userData.firstName != null)
-            binding.etFirstName.setText(userData.firstName)
-        if (userData.lastName != null)
-            binding.etLastName.setText(userData.lastName)
-        if (userData.email != null)
-            binding.etEmail.setText(userData.email)
-        /*if (userData.phoneNumber != null)
+        if (userData.firstName != null) binding.etFirstName.setText(userData.firstName)
+        if (userData.lastName != null) binding.etLastName.setText(userData.lastName)
+        if (userData.email != null) binding.etEmail.setText(userData.email)/*if (userData.phoneNumber != null)
             binding.etMobile.setText(userData.phoneNumber)*/
 
         userData.phoneNumber?.let { number ->
@@ -377,19 +369,14 @@ class ProfileNewActivity : BaseActivity() {
             binding.etEmail.isEnabled = true
         }
 
-        if (userData.age != null)
-            binding.tvAge.text = userData.age.toString() + " years"
-        if (userData.gender == "M")
-            binding.tvGender.text = "Male"
-        else
-            binding.tvGender.text = "Female"
+        if (userData.age != null) binding.tvAge.text = userData.age.toString() + " years"
+        if (userData.gender == "M") binding.tvGender.text = "Male"
+        else binding.tvGender.text = "Female"
 
-        if (userData.weight != null)
-            binding.tvWeight.text =
-                "${userData.weight} ${userData.weightUnit.lowercase(Locale.getDefault())}"
+        if (userData.weight != null) binding.tvWeight.text =
+            "${userData.weight} ${userData.weightUnit.lowercase(Locale.getDefault())}"
 
-        if (userData.profilePicture.isNullOrEmpty()) {
-            /*if (userData.firstName.isNotEmpty())
+        if (userData.profilePicture.isNullOrEmpty()) {/*if (userData.firstName.isNotEmpty())
                 binding.tvProfileLetter.text = userData.firstName.first().toString()
             else
                 binding.tvProfileLetter.text = "R"*/
@@ -398,28 +385,23 @@ class ProfileNewActivity : BaseActivity() {
         } else {
             binding.ivProfileImage.visibility = VISIBLE
             binding.tvProfileLetter.visibility = GONE
-            Glide.with(this)
-                .load(ApiClient.CDN_URL_QA + userData.profilePicture)
-                .placeholder(R.drawable.rl_profile)
-                .error(R.drawable.rl_profile)
+            Glide.with(this).load(ApiClient.CDN_URL_QA + userData.profilePicture)
+                .placeholder(R.drawable.rl_profile).error(R.drawable.rl_profile)
                 .into(binding.ivProfileImage)
         }
 
-        if (userData.height != null)
-            if (userData.heightUnit == "FT_AND_INCHES") {
-                val height = userData.height.toString().split(".")
-                binding.tvHeight.text = "${height[0]} ft ${height[1]} in"
-            } else {
-                binding.tvHeight.text = "${userData.height.toInt()} cm"
-            }
+        if (userData.height != null) if (userData.heightUnit == "FT_AND_INCHES") {
+            val height = userData.height.toString().split(".")
+            binding.tvHeight.text = "${height[0]} ft ${height[1]} in"
+        } else {
+            binding.tvHeight.text = "${userData.height.toInt()} cm"
+        }
     }
 
     private fun openCamera() {
         val photoFile = createImageFile()
         cameraImageUri = FileProvider.getUriForFile(
-            this,
-            "${packageName}.fileprovider",
-            photoFile
+            this, "${packageName}.fileprovider", photoFile
         )
         cameraImageUri?.let { uri ->
             cameraLauncher.launch(uri)
@@ -458,9 +440,7 @@ class ProfileNewActivity : BaseActivity() {
             SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile(
-            "JPEG_${timeStamp}_",
-            ".jpg",
-            storageDir
+            "JPEG_${timeStamp}_", ".jpg", storageDir
         )
     }
 
@@ -570,11 +550,9 @@ class ProfileNewActivity : BaseActivity() {
         val selectedAgeFromUi =
             if (selectedAgeArray.isNotEmpty() && selectedAgeArray[0].toInt() >= 13) {
                 binding.tvAge.text.toString()
-            } else
-                ""
+            } else ""
 
-        val value1 = if (selectedAgeFromUi.isNotEmpty())
-            years.indexOf(selectedAgeFromUi) + 1
+        val value1 = if (selectedAgeFromUi.isNotEmpty()) years.indexOf(selectedAgeFromUi) + 1
         else 15
 
         dialogBinding.numberPicker.apply {
@@ -585,9 +563,9 @@ class ProfileNewActivity : BaseActivity() {
             wheelItemCount = 7
         }
 
-        var selectedAge = if (selectedAgeFromUi.isNotEmpty())
-            years[years.indexOf(selectedAgeFromUi)]
-        else years[14]
+        var selectedAge =
+            if (selectedAgeFromUi.isNotEmpty()) years[years.indexOf(selectedAgeFromUi)]
+            else years[14]
 
         dialogBinding.numberPicker.setOnScrollListener { view, scrollState ->
             if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
@@ -672,8 +650,7 @@ class ProfileNewActivity : BaseActivity() {
 
         dialogBinding.selectedNumberText.text = selectedWeight
 
-        val layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         dialogBinding.rulerView.layoutManager = layoutManager
 
         // Generate numbers with increments of 0.1
@@ -716,10 +693,8 @@ class ProfileNewActivity : BaseActivity() {
             dialogBinding.lbsOption.setTextColor(Color.BLACK)
 
             selectedLabel = " kg"
-            selectedWeight = if (gender == "Male" || gender == "M")
-                "75 kg"
-            else
-                "55 kg"
+            selectedWeight = if (gender == "Male" || gender == "M") "75 kg"
+            else "55 kg"
             setKgsValue()
 
             dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
@@ -734,10 +709,8 @@ class ProfileNewActivity : BaseActivity() {
             dialogBinding.kgOption.setTextColor(Color.BLACK)
 
             selectedLabel = " lbs"
-            selectedWeight = if (gender == "Male" || gender == "M")
-                "165 lbs"
-            else
-                "120 lbs"
+            selectedWeight = if (gender == "Male" || gender == "M") "165 lbs"
+            else "120 lbs"
             setLbsValue()
 
             dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 1650 else 1200)
@@ -813,8 +786,7 @@ class ProfileNewActivity : BaseActivity() {
 
 
         // Set up the animation
-        val bottomSheetLayout =
-            bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
@@ -831,10 +803,8 @@ class ProfileNewActivity : BaseActivity() {
             selectedHeight = "5 ft 10 in"
         } else {
             val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1].equals("cm", ignoreCase = true))
-                " cm"
-            else
-                " feet"
+            selectedLabel = if (h[1].equals("cm", ignoreCase = true)) " cm"
+            else " feet"
             if (selectedLabel == " feet") {
                 dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
                 dialogBinding.feetOption.setTextColor(Color.WHITE)
@@ -864,10 +834,8 @@ class ProfileNewActivity : BaseActivity() {
 
             selectedLabel = " feet"
 
-            selectedHeight = if (gender == "Male" || gender == "M")
-                "5 ft 8 in"
-            else
-                "5 ft 4 in"
+            selectedHeight = if (gender == "Male" || gender == "M") "5 ft 8 in"
+            else "5 ft 4 in"
             setFtIn()
 
             dialogBinding.rulerView.post {
@@ -889,10 +857,8 @@ class ProfileNewActivity : BaseActivity() {
 
             selectedLabel = " cm"
 
-            selectedHeight = if (gender == "Male" || gender == "M")
-                "173 cm"
-            else
-                "163 cm"
+            selectedHeight = if (gender == "Male" || gender == "M") "173 cm"
+            else "163 cm"
             setCms()
 
             dialogBinding.rulerView.post {
@@ -934,8 +900,7 @@ class ProfileNewActivity : BaseActivity() {
                                 val remainingInches = snappedNumber.toInt() % 12
                                 val h = (feet).toString().split(".")
                                 val ft = h[0]
-                                dialogBinding.selectedNumberText.text =
-                                    "$ft ft $remainingInches in"
+                                dialogBinding.selectedNumberText.text = "$ft ft $remainingInches in"
                             }
                             selectedHeight = dialogBinding.selectedNumberText.text.toString()
                         }
@@ -964,10 +929,8 @@ class ProfileNewActivity : BaseActivity() {
                 selectedHeight = "5 Ft 10 In"
             } else {
                 val h = selectedHeight.split(" ")
-                selectedLabel = if (h[1].equals("cm", ignoreCase = true))
-                    " cm"
-                else
-                    " feet"
+                selectedLabel = if (h[1].equals("cm", ignoreCase = true)) " cm"
+                else " feet"
             }
 
             if (selectedLabel == " feet") {
@@ -1028,15 +991,12 @@ class ProfileNewActivity : BaseActivity() {
 
     private fun checkPermissions() {
         if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
+                this, Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_REQUEST
+                this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST
             )
         } else {
             openCamera()
@@ -1108,8 +1068,7 @@ class ProfileNewActivity : BaseActivity() {
 
     private fun generateEmailOTP(email: String) {
         val call = apiService.generateEmailOtp(
-            sharedPreferenceManager.accessToken,
-            OtpEmailRequest(email)
+            sharedPreferenceManager.accessToken, OtpEmailRequest(email)
         )
 
         call.enqueue(object : Callback<ResponseBody> {
@@ -1126,8 +1085,7 @@ class ProfileNewActivity : BaseActivity() {
                     val message = try {
                         val json = JSONObject(errorBody ?: "")
                         json.optString(
-                            "displayMessage",
-                            json.optString("errorMessage", "Something went wrong")
+                            "displayMessage", json.optString("errorMessage", "Something went wrong")
                         )
                     } catch (e: Exception) {
                         "Something went wrong"
@@ -1144,8 +1102,7 @@ class ProfileNewActivity : BaseActivity() {
 
     private fun generateOtp(mobileNumber: String) {
         val call = apiService.generateOtpForPhoneNumber(
-            sharedPreferenceManager.accessToken,
-            OtpRequest(mobileNumber)
+            sharedPreferenceManager.accessToken, OtpRequest(mobileNumber)
         )
 
         call.enqueue(object : Callback<ResponseBody> {
@@ -1162,8 +1119,7 @@ class ProfileNewActivity : BaseActivity() {
                     val message = try {
                         val json = JSONObject(errorBody ?: "")
                         json.optString(
-                            "displayMessage",
-                            json.optString("errorMessage", "Something went wrong")
+                            "displayMessage", json.optString("errorMessage", "Something went wrong")
                         )
                     } catch (e: Exception) {
                         "Something went wrong"
@@ -1179,9 +1135,7 @@ class ProfileNewActivity : BaseActivity() {
     }
 
     private fun showOtpDialog(
-        activity: Activity,
-        mobileNumberEmail: String,
-        isFromMobile: Boolean = true
+        activity: Activity, mobileNumberEmail: String, isFromMobile: Boolean = true
     ) {
         dialogOtp = Dialog(activity)
         val binding = DialogOtpVerificationBinding.inflate(LayoutInflater.from(activity))
@@ -1190,8 +1144,12 @@ class ProfileNewActivity : BaseActivity() {
         dialogOtp?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val otpFields = listOf(
-            binding.etOtp1, binding.etOtp2, binding.etOtp3,
-            binding.etOtp4, binding.etOtp5, binding.etOtp6
+            binding.etOtp1,
+            binding.etOtp2,
+            binding.etOtp3,
+            binding.etOtp4,
+            binding.etOtp5,
+            binding.etOtp6
         )
 
         bindingDialog = binding
@@ -1218,10 +1176,7 @@ class ProfileNewActivity : BaseActivity() {
                 }
 
                 override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
+                    s: CharSequence?, start: Int, count: Int, after: Int
                 ) {
                 }
 
@@ -1260,10 +1215,8 @@ class ProfileNewActivity : BaseActivity() {
             timer.cancel()
             binding.tvResend.setTextColor(colorStateListNonSelected)
             binding.tvResend.isEnabled = false
-            if (isFromMobile)
-                generateOtp(mobileNumberEmail)
-            else
-                generateEmailOTP(mobileNumberEmail)
+            if (isFromMobile) generateOtp(mobileNumberEmail)
+            else generateEmailOTP(mobileNumberEmail)
         }
 
         binding.tvPhone.text = mobileNumberEmail
@@ -1272,23 +1225,14 @@ class ProfileNewActivity : BaseActivity() {
         binding.btnVerify.setOnClickListener {
             val otp = otpFields.joinToString("") { it.text.toString().trim() }
             if (otp.length == 6) {
-                if (isFromMobile)
-                    verifyOtp(mobileNumberEmail, otp, binding, timer)
-                else
-                    verifyEmailOtp(mobileNumberEmail, otp, binding, timer)
+                if (isFromMobile) verifyOtp(mobileNumberEmail, otp, binding, timer)
+                else verifyEmailOtp(mobileNumberEmail, otp, binding, timer)
             } else {
                 showCustomToast("Enter all 6 digits")
             }
         }
 
         dialogOtp?.show()
-
-        lifecycleScope.launch {
-            delay(2000)
-            otpFields.forEachIndexed { index, editText ->
-                editText.setText(""+index)
-            }
-        }
     }
 
     private fun verifyEmailOtp(
@@ -1298,10 +1242,8 @@ class ProfileNewActivity : BaseActivity() {
         timer: CountDownTimer
     ) {
         val call = apiService.verifyOtpForEmail(
-            sharedPreferenceManager.accessToken,
-            VerifyOtpEmailRequest(
-                email = email,
-                otp = otp
+            sharedPreferenceManager.accessToken, VerifyOtpEmailRequest(
+                email = email, otp = otp
             )
         )
         call.enqueue(object : Callback<ResponseBody> {
@@ -1341,10 +1283,8 @@ class ProfileNewActivity : BaseActivity() {
         timer: CountDownTimer
     ) {
         val call = apiService.verifyOtpForPhoneNumber(
-            sharedPreferenceManager.accessToken,
-            VerifyOtpRequest(
-                phoneNumber = mobileNumber,
-                otp = otp
+            sharedPreferenceManager.accessToken, VerifyOtpRequest(
+                phoneNumber = mobileNumber, otp = otp
             )
         )
         call.enqueue(object : Callback<ResponseBody> {
@@ -1417,9 +1357,7 @@ class ProfileNewActivity : BaseActivity() {
         val height = binding.tvHeight.text.toString()
         val weight = binding.tvWeight.text.toString()
         val gender = binding.tvGender.text.toString()
-        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
-            || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty()
-        ) {
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty()) {
             showCustomToast("Please fill all required fields before proceeding.")
         } else if (!validateUsername(firstName)) {
             showCustomToast("Please enter valid First Name")
@@ -1427,8 +1365,7 @@ class ProfileNewActivity : BaseActivity() {
             showCustomToast("Please enter valid Last Name")
         } else if (!email.matches(Utils.emailPattern.toRegex())) {
             showCustomToast("Invalid Email format")
-        } else if (age.split(" ")[0].toInt() !in 13..80)
-            showCustomToast("Face Scan is available only for users aged 13–80.")
+        } else if (age.split(" ")[0].toInt() !in 13..80) showCustomToast("Face Scan is available only for users aged 13–80.")
         else {
             // ✅ Compare old and new phone number
             val oldPhone = userData.phoneNumber?.filter { it.isDigit() } ?: ""
@@ -1481,8 +1418,7 @@ class ProfileNewActivity : BaseActivity() {
                 }
             }
             AnalyticsLogger.logEvent(
-                this,
-                AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE, mapOf(
+                this, AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE, mapOf(
                     AnalyticsParam.TIME_TO_COMPLETE to "",
                     AnalyticsParam.WEIGHT to userData.weight,
                     AnalyticsParam.HEIGHT to userData.height
@@ -1524,15 +1460,13 @@ class ProfileNewActivity : BaseActivity() {
 
         call.enqueue(object : Callback<PreSignedUrlResponse?> {
             override fun onResponse(
-                call: Call<PreSignedUrlResponse?>,
-                response: Response<PreSignedUrlResponse?>
+                call: Call<PreSignedUrlResponse?>, response: Response<PreSignedUrlResponse?>
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     response.body()?.data?.let { preSignedUrlData = it }
                     response.body()?.data?.url?.let {
                         CommonAPICall.uploadImageToPreSignedUrl(
-                            this@ProfileNewActivity,
-                            file, it
+                            this@ProfileNewActivity, file, it
                         ) { success ->
                             if (success) {
                                 showToast("Image uploaded successfully!")
@@ -1555,16 +1489,14 @@ class ProfileNewActivity : BaseActivity() {
     private fun showImagePickerDialog() {
         val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
 
-        AlertDialog.Builder(this)
-            .setTitle("Upload Profile Picture")
+        AlertDialog.Builder(this).setTitle("Upload Profile Picture")
             .setItems(options) { dialog, which ->
                 when (options[which]) {
                     "Take Photo" -> checkPermissions()
                     "Choose from Gallery" -> openGallery()
                     "Cancel" -> dialog.dismiss()
                 }
-            }
-            .show()
+            }.show()
     }
 
     private fun openGallery() {
@@ -1617,18 +1549,12 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-            null,
-            null,
-            drawable,
-            null
+            null, null, drawable, null
         )
 
-        editText.compoundDrawablePadding =
-            TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                paddingDp.toFloat(),
-                editText.resources.displayMetrics
-            ).toInt()
+        editText.compoundDrawablePadding = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, paddingDp.toFloat(), editText.resources.displayMetrics
+        ).toInt()
     }
 
     private fun isValidGoogleEmail(email: String): Boolean {

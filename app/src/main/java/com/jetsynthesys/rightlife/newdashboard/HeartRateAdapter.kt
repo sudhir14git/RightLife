@@ -172,13 +172,13 @@ class HeartRateAdapter(
     }*/
    private fun getChartColorByType(type: String): Int {
        return when (type) {
-           "BMI_CALC" -> Color.parseColor("#FF9800")     // Orange
-           "BP_RPP" -> Color.parseColor("#9C27B0")       // Purple
-           "BP_SYSTOLIC", "BP_DIASTOLIC" -> Color.parseColor("#F44336") // Red
-           "BP_CVD" -> Color.parseColor("#795548")       // Brown
-           "MSI" -> Color.parseColor("#03A9F4")          // Light Blue
-           "BR_BPM" -> Color.parseColor("#4CAF50")       // Green
-           "HRV_SDNN" -> Color.parseColor("#2196F3")     // Blue
+           "BMI_CALC" -> Color.parseColor("#634848")
+           "BP_RPP" -> Color.parseColor("#994C01")
+           "BP_SYSTOLIC", "BP_DIASTOLIC" -> Color.parseColor("#FB2611")
+           "BP_CVD" -> Color.parseColor("#8B7207")
+           "MSI" -> Color.parseColor("#707070")
+           "BR_BPM" -> Color.parseColor("#1292E5")
+           "HRV_SDNN" -> Color.parseColor("#645F83")
            "HEALTH_SCORE" -> Color.parseColor("#8BC34A") // Light Green
            else -> Color.parseColor("#E91E63")           // Pink (default)
        }

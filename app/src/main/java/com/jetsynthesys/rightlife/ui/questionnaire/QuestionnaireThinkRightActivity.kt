@@ -15,6 +15,8 @@ import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.QuestionnaireThinkRightPagerAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -117,6 +119,7 @@ class QuestionnaireThinkRightActivity : BaseActivity() {
                         "You’re All Set",
                         "Your sleep habits and mental patterns are now part of your wellness path."
                     )
+                    AnalyticsLogger.logEvent(it , AnalyticsEvent.Checklist_TRSR_Completed)
                 }
             }
             val apiService = ApiClient.getClient(instance).create(ApiService::class.java)
