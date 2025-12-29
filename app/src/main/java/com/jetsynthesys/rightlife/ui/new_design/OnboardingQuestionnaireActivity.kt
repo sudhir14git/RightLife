@@ -229,7 +229,7 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                         */
                         AnalyticsLogger.logEvent(
                             this@OnboardingQuestionnaireActivity,
-                            AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE
+                            AnalyticsEvent.Checklist_Profile_Completed
                         )
                     } else {
                         navigateToNextPage()
