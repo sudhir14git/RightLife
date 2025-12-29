@@ -1079,6 +1079,11 @@ class HomeExploreFragment : BaseFragment() {
                 ) {
                     val spm = SharedPreferenceManager.getInstance(requireActivity())
                     (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
+                } else if (item.category.equals("snap_meal", ignoreCase = true)
+                        || item.category.equals("SNAP_MEAL", ignoreCase = true)
+                        || item.category.equals("Snap_Meal", ignoreCase = true)
+                ){
+
                 }
             }
             binding.viewPager.adapter = adapter

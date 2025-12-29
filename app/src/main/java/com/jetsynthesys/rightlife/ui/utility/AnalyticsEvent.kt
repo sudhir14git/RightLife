@@ -135,6 +135,7 @@ object AnalyticsEvent {
     const val ENABLE_NOTIFICATION_CLOSE = "NotificationPage_Close_Tap"
     const val ENABLE_NOTIFICATION_CLICK = "NotificationPage_EnableNotification_Tap"
 
+
     const val SYNC_NOW_VISIT = "sync_now_visit"
     const val SYNC_NOW_CLICK = "sync_now_click"
     const val SKIP_FOR_NOW_CLICK = "skip_for_now_click"
@@ -287,4 +288,12 @@ object AnalyticsEvent {
     const val SR_SleepSound_Player_Opened = "SR_SleepSound_Player_Opened"
 
     // Sleep Sounds and player
+
+
+    //new Events 1b - 16, 18, 19, 20
+    const val GoalSelection_SaveButton_Tap = "GoalSelection_SaveButton_Tap"
+    const val NOTIFICATION_ENABLE_SUCCESS = "Notification_Enable_Success"
+    const val Checklist_FirstTime_Open = "Checklist_FirstTime_Open"
+
+
 }

@@ -83,4 +83,8 @@ object AnalyticsParam {
     const val CURRENCY = "currency"
     const val RECEIPT = "receipt"
 
+    // NEW EVENTS PARAMS const
+    const val SELECTED_GOALS = "selected_goals"
+    const val SELECTED_TOPIC = "selected_topic"
+
 }

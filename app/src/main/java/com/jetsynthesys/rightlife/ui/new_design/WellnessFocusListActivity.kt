@@ -126,6 +126,19 @@ class WellnessFocusListActivity : BaseActivity() {
                 selectedWellnessFocus.forEach {
                     it.id?.let { it1 -> selectedOptions.add(it1) }
                 }
+
+
+                AnalyticsLogger.logEvent(
+                        this@WellnessFocusListActivity,
+                        AnalyticsEvent.GoalSelection_SaveButton_Tap,
+                        mapOf(
+                                AnalyticsParam.GOAL to (sharedPreferenceManager.selectedOnboardingModule ?: "na"),
+                                AnalyticsParam.SELECTED_GOALS to selectedOptions.joinToString(",")
+
+                        )
+                )
+
+
                 updateOnBoardingModule(selectedOptions)
             } else if (selectedWellnessFocus.size < 2) {
                 Utils.showNewDesignToast(this, "Please choose at least 2 goals ", false)

@@ -99,6 +99,16 @@ class EnableNotificationActivity : BaseActivity() {
         if (requestCode == 100) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableNotificationAPICall()
+                AnalyticsLogger.logEvent(
+                        AnalyticsEvent.NOTIFICATION_ENABLE_SUCCESS,
+                        mapOf(
+                                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                                AnalyticsParam.USERNAME to sharedPreferenceManager.userName,
+                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                        )
+                )
             } else {
                 Toast.makeText(
                     this,
