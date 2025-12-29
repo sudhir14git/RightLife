@@ -544,7 +544,7 @@ class HomeDashboardFragment : BaseFragment()
         {
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
-            if (sharedPreferenceManager.getFirstTimeForHomeDashboard())
+            if (sharedPreferenceManager.getFirstTimeCheckListEventLogged())
             {
                 sharedPreferenceManager.firstTimeCheckListEventLogged = false
                 AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.CHECKLIST_COMPLETE, mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true))
@@ -725,6 +725,14 @@ class HomeDashboardFragment : BaseFragment()
                                                                                                                     binding.llDashboardMainData.visibility = View.GONE
                                                                                                                     binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
                                                                                                                     binding.llDiscoverLayout.visibility = View.VISIBLE
+
+                                                                                                                    // first time Check list visit event
+                                                                                                                    if (sharedPreferenceManager.getFirstTimeCheckListVisitLogged())
+                                                                                                                    {
+                                                                                                                        sharedPreferenceManager.setFirstTimeCheckListVisitLogged(false);
+                                                                                                                        AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.Checklist_FirstTime_Open)
+                                                                                                                    }
+
                                                                                                                 }/*(requireActivity() as? HomeNewActivity)?.showSubsribeLayout(
                                                  DashboardChecklistManager.paymentStatus
                                              )*/
