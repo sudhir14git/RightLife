@@ -47,7 +47,7 @@ class FreeTrialServiceActivity : BaseActivity() {
 
         binding.tvPrivacyPolicy.setOnClickListener {
             startActivity(Intent(this, GeneralInformationActivity::class.java).apply {
-                putExtra("INFO", "Policies")
+                putExtra("INFO", "Privacy Policy")
             })
         }
         binding.tvTermsCondition.setOnClickListener {

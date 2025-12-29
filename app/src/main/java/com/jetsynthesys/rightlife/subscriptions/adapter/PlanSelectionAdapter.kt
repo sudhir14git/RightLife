@@ -6,14 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.ProductDetails
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowPlanSelectionBinding
 import com.jetsynthesys.rightlife.subscriptions.pojo.PlanList
 import java.text.NumberFormat
 import java.util.Currency
 
 class PlanSelectionAdapter(
+    private val type: String,
     private val plans: List<PlanList>,
     private val productDetailsMap: HashMap<String, ProductDetails>,
+    private val alreadySelectedPosition: Int,
     private val onPlanSelected: (Int) -> Unit,
 ) : RecyclerView.Adapter<PlanSelectionAdapter.PlanViewHolder>() {
 
@@ -23,7 +26,35 @@ class PlanSelectionAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(plan: PlanList, position: Int) {
-            binding.planTitle.text = plan.title ?: ""
+            //binding.planTitle.text = plan.title ?: ""
+
+            if (type == "FACIAL_SCAN") {
+                val planName = plan.title?.split("-")
+                binding.planTitle.text = planName?.get(0) ?: "Face Scan"
+                binding.tvCancel.text = planName?.get(1) ?: "Pack of 1"
+            } else {
+                binding.planTitle.text = plan.title ?: ""
+                binding.tvCancel.text = "Cancel anytime online"
+            }
+
+            binding.tvBadge.visibility = if (plan.title?.contains(
+                    "Pack of 12",
+                    true
+                ) == true || plan.title?.contains("Yearly", true) == true ||
+                plan.title?.contains("Annual", true) == true
+            )
+                View.VISIBLE
+            else
+                View.GONE
+
+            if (position == alreadySelectedPosition)
+                binding.rlMainLayout.setBackgroundResource(
+                    R.drawable.bg_subscription_plan_selected
+                )
+            else
+                binding.rlMainLayout.setBackgroundResource(
+                    R.drawable.bg_subscription_plan
+                )
 
             // Get product details from Play Store
             val productDetails = plan.googlePlay?.let { productDetailsMap[it] }
@@ -39,7 +70,7 @@ class PlanSelectionAdapter(
             // Show discount percentage if available
             if (plan.discountPercent != null && plan.discountPercent!! > 0) {
                 binding.planOfferDiscount.visibility = View.VISIBLE
-                binding.planOfferDiscount.text = " (${plan.discountPercent}% OFF)"
+                binding.planOfferDiscount.text = " (${plan.discountPercent}% Off)"
             } else {
                 binding.planOfferDiscount.visibility = View.GONE
             }

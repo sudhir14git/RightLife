@@ -124,6 +124,8 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private var homeTab : String = ""
     private var selectedMealDate : String = ""
     private var isSaveClick : Boolean = false
+
+    private var isSaveCheck : Boolean = false
     private var currentToast: Toast? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealScanResultsBinding
@@ -215,12 +217,15 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             isSaveClick = true
             if (isChecked) {
                 save.setTextColor(ContextCompat.getColor(requireContext(), R.color.meal_log_title))
-                if (mealId != "null" && mealId != null) {
-                    updateSnapMealsSave((snapRecipesList))
-                }else{
-                   // currentPhotoPathsecound?.let { getUrlFromURI(it) }
-                    createSnapMealLog(snapRecipesList, true)
-                }
+                isSaveCheck = true
+//                if (mealId != "null" && mealId != null) {
+//                    updateSnapMealsSave((snapRecipesList))
+//                }else{
+//                   // currentPhotoPathsecound?.let { getUrlFromURI(it) }
+//                    createSnapMealLog(snapRecipesList, true)
+//                }
+            }else{
+                isSaveCheck = false
             }
         }
 
@@ -446,7 +451,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     updateSnapMealsSave((snapRecipesList))
                 } else {
                   //  currentPhotoPathsecound?.let { getUrlFromURI(it) }
-                    ratingMealLogDialog(false)
+                    ratingMealLogDialog(isSaveCheck)
                 }
 //                requireActivity().supportFragmentManager.beginTransaction().apply {
 //                    val snapMealFragment = HomeBottomTabFragment()
@@ -468,7 +473,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     updateSnapMealLog(mealId, snapRecipesList)
                 } else {
                    // currentPhotoPathsecound?.let { getUrlFromURI(it) }
-                    ratingMealLogDialog(false)
+                    ratingMealLogDialog(isSaveCheck)
                 }
             }
         }

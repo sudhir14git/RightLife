@@ -139,6 +139,7 @@ class BodyFatSelectionFragment : Fragment() {
                 binding.tvSelectedBodyFat.text = "${binding.edtBodyFat.text}%"
                 binding.llSelectedBodyFat.visibility = VISIBLE
                 binding.cardViewBodyFat.visibility = GONE
+                binding.tvDescription.visibility = GONE
                 binding.btnContinue.disableViewForSeconds()
                 val onboardingQuestionRequest =
                     SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
@@ -250,6 +251,7 @@ class BodyFatSelectionFragment : Fragment() {
         super.onPause()
         binding.llSelectedBodyFat.visibility = GONE
         binding.cardViewBodyFat.visibility = VISIBLE
+        binding.tvDescription.visibility = VISIBLE
     }
 
 }

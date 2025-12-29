@@ -39,6 +39,7 @@ public class SharedPreferenceConstants {
     public static final String CURRENT_QUESTION = "CURRENT_QUESTION";
     public static final String ONBOARDING_QUESTION = "ONBOARDING_QUESTION";
     public static final String FIRST_TIME_AFFIRMATION = "FIRST_TIME_AFFIRMATION";
+    public static final String FIRST_TIME_AFFIRMATION_PLAYLIST = "FIRST_TIME_AFFIRMATION_PLAYLIST";
 
     public static final String FIRST_TIME_SNAP_MEAL_VIDEO = "FIRST_TIME_SNAP_MEAL_VIDEO";
     public static final String FIRST_TIME_SNAP_MEAL_RATING = "FIRST_TIME_SNAP_MEAL_RATING";
@@ -77,6 +78,15 @@ public class SharedPreferenceConstants {
 
 
     public static final String USER_MOBILE = "user_mobile";
+    public static final String FCM_TOKEN = "fcm_token";
+
+    //force update
+    public static final String FORCE_UPDATE_ENABLED = "force_update_enabled";
+    public static final String FORCE_UPDATE_MIN_VERSION = "force_update_min_version";
+    public static final String FORCE_UPDATE_URL = "force_update_url";
+    public static final String FORCE_UPDATE_MESSAGE = "force_update_message";
+    public static final String APP_CONFIG_RESPONSE = "app_config_response";
+
 }
 
 

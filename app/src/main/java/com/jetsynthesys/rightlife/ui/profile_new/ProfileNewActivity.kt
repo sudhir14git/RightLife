@@ -5,9 +5,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -19,6 +22,8 @@ import android.os.Looper
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -26,17 +31,23 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.bumptech.glide.Glide
+import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.common.api.Status
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
@@ -57,9 +68,11 @@ import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpEmailRequest
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpEmailRequest
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -68,8 +81,13 @@ import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
+import com.jetsynthesys.rightlife.ui.utility.isValidIndianMobile
 import com.shawnlin.numberpicker.NumberPicker
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -95,6 +113,9 @@ class ProfileNewActivity : BaseActivity() {
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
     private var preSignedUrlData: PreSignedUrlData? = null
+    private lateinit var colorStateListSelected: ColorStateList
+    private lateinit var colorStateListNonSelected: ColorStateList
+    private lateinit var bindingDialog: DialogOtpVerificationBinding
 
     // Activity Result Launcher to get image
     private val pickImageLauncher =
@@ -129,6 +150,9 @@ class ProfileNewActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileNewBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
+
+        colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)!!
+        colorStateListNonSelected = ContextCompat.getColorStateList(this, R.color.rightlife)!!
 
         userDataResponse = sharedPreferenceManager.userProfile
         userData = userDataResponse.userdata
@@ -185,6 +209,45 @@ class ProfileNewActivity : BaseActivity() {
             showImagePickerDialog()
         }
 
+        binding.etEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (isValidGoogleEmail(p0.toString())) {
+                    binding.tvEmailError.visibility = GONE
+                    binding.btnVerifyEmail.isEnabled = true
+                    binding.btnVerifyEmail.backgroundTintList = colorStateListSelected
+                } else {
+                    binding.btnVerifyEmail.isEnabled = false
+                    binding.btnVerifyEmail.backgroundTintList = colorStateListNonSelected
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
+
+        binding.etMobile.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (isValidIndianMobile(p0.toString())) {
+                    binding.btnVerify.isEnabled = true
+                    binding.btnVerify.backgroundTintList = colorStateListSelected
+                } else {
+                    binding.btnVerify.isEnabled = false
+                    binding.btnVerify.backgroundTintList = colorStateListNonSelected
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
+
         binding.btnVerify.setOnClickListener {
             it.disableViewForSeconds()
             val mobileNumber = binding.etMobile.text.toString()
@@ -196,14 +259,14 @@ class ProfileNewActivity : BaseActivity() {
                 generateOtp("+91$mobileNumber")
             }
         }
-        if ("VERIFIED".equals(userData.newPhoneStatus, ignoreCase = false)) {
-            binding.btnVerify.isEnabled = false
-            binding.btnVerify.text = "Verified"
-            binding.etMobile.isEnabled = false
-        } else {
-            binding.btnVerify.isEnabled = true
-            binding.btnVerify.text = "Verify"
-            binding.etMobile.isEnabled = true
+
+        binding.btnVerifyEmail.setOnClickListener {
+            it.disableViewForSeconds()
+            if (isValidGoogleEmail(binding.etEmail.text.toString())) {
+                generateEmailOTP(binding.etEmail.text.toString())
+            } else {
+                binding.tvEmailError.visibility = VISIBLE
+            }
         }
 
 
@@ -222,16 +285,36 @@ class ProfileNewActivity : BaseActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
-                val c = binding.etFirstName.text.length
-                //"$c/20 Characters".also { tvCharLeft.text = it }
                 if (validateUsername(p0.toString())) {
 
                 } else {
-                    if (p0.toString().isNullOrBlank())
-                    {
+                    if (p0.toString().isNullOrBlank()) {
                         //Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
-                    }else{
-                        Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                    } else {
+                        showCustomToast("Invalid First Name")
+                    }
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
+
+        binding.etLastName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
+                if (validateUsername(p0.toString())) {
+
+                } else {
+                    if (p0.toString().isNullOrBlank()) {
+                        //Toast.makeText(this@ProfileNewActivity, "Invalid username", Toast.LENGTH_SHORT).show()
+                    } else {
+                        showCustomToast("Invalid Last Name")
                     }
                 }
             }
@@ -243,7 +326,7 @@ class ProfileNewActivity : BaseActivity() {
         })
     }
 
-    fun validateUsername(username: String): Boolean {
+    private fun validateUsername(username: String): Boolean {
         if (username.isEmpty()) {
             return false
         }
@@ -277,13 +360,21 @@ class ProfileNewActivity : BaseActivity() {
             binding.etMobile.setText(lastTenDigits)
         }
         if ("VERIFIED".equals(userData.newPhoneStatus, ignoreCase = false)) {
-            binding.btnVerify.isEnabled = false
-            binding.btnVerify.text = "Verified"
             binding.etMobile.isEnabled = false
+            binding.btnVerify.visibility = GONE
+            setEndDrawable(binding.etMobile)
         } else {
-            binding.btnVerify.isEnabled = true
             binding.btnVerify.text = "Verify"
             binding.etMobile.isEnabled = true
+        }
+
+        if ("VERIFIED".equals(userData.newEmailStatus, ignoreCase = false)) {
+            binding.etEmail.isEnabled = false
+            binding.btnVerifyEmail.visibility = GONE
+            setEndDrawable(binding.etEmail)
+        } else {
+            binding.btnVerifyEmail.text = "Verify"
+            binding.etEmail.isEnabled = true
         }
 
         if (userData.age != null)
@@ -294,7 +385,8 @@ class ProfileNewActivity : BaseActivity() {
             binding.tvGender.text = "Female"
 
         if (userData.weight != null)
-            binding.tvWeight.text = "${userData.weight} ${userData.weightUnit.lowercase(Locale.getDefault())}"
+            binding.tvWeight.text =
+                "${userData.weight} ${userData.weightUnit.lowercase(Locale.getDefault())}"
 
         if (userData.profilePicture.isNullOrEmpty()) {
             /*if (userData.firstName.isNotEmpty())
@@ -1014,6 +1106,42 @@ class ProfileNewActivity : BaseActivity() {
         adapterHeight.notifyDataSetChanged()
     }
 
+    private fun generateEmailOTP(email: String) {
+        val call = apiService.generateEmailOtp(
+            sharedPreferenceManager.accessToken,
+            OtpEmailRequest(email)
+        )
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    showCustomToast("OTP sent to your GmailId", true)
+                    if (dialogOtp != null && dialogOtp?.isShowing == true) {
+                        dialogOtp?.dismiss()
+                    }
+                    showOtpDialog(this@ProfileNewActivity, email, false)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+
+                    val message = try {
+                        val json = JSONObject(errorBody ?: "")
+                        json.optString(
+                            "displayMessage",
+                            json.optString("errorMessage", "Something went wrong")
+                        )
+                    } catch (e: Exception) {
+                        "Something went wrong"
+                    }
+                    showCustomToast(message)
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
     private fun generateOtp(mobileNumber: String) {
         val call = apiService.generateOtpForPhoneNumber(
             sharedPreferenceManager.accessToken,
@@ -1029,7 +1157,18 @@ class ProfileNewActivity : BaseActivity() {
                     }
                     showOtpDialog(this@ProfileNewActivity, mobileNumber)
                 } else {
-                    showCustomToast("Retry too early")
+                    val errorBody = response.errorBody()?.string()
+
+                    val message = try {
+                        val json = JSONObject(errorBody ?: "")
+                        json.optString(
+                            "displayMessage",
+                            json.optString("errorMessage", "Something went wrong")
+                        )
+                    } catch (e: Exception) {
+                        "Something went wrong"
+                    }
+                    showCustomToast(message)
                 }
             }
 
@@ -1039,7 +1178,11 @@ class ProfileNewActivity : BaseActivity() {
         })
     }
 
-    private fun showOtpDialog(activity: Activity, mobileNumber: String) {
+    private fun showOtpDialog(
+        activity: Activity,
+        mobileNumberEmail: String,
+        isFromMobile: Boolean = true
+    ) {
         dialogOtp = Dialog(activity)
         val binding = DialogOtpVerificationBinding.inflate(LayoutInflater.from(activity))
         dialogOtp?.setContentView(binding.root)
@@ -1051,6 +1194,10 @@ class ProfileNewActivity : BaseActivity() {
             binding.etOtp4, binding.etOtp5, binding.etOtp6
         )
 
+        bindingDialog = binding
+
+        startSmsListener()
+
         // Move focus automatically
         otpFields.forEachIndexed { index, editText ->
             editText.addTextChangedListener(object : TextWatcher {
@@ -1059,6 +1206,14 @@ class ProfileNewActivity : BaseActivity() {
                         otpFields[index + 1].requestFocus()
                     } else if (s?.length == 0 && index > 0) {
                         otpFields[index - 1].requestFocus()
+                    }
+                    val otp = otpFields.joinToString("") { it.text.toString().trim() }
+                    if (otp.length == 6) {
+                        bindingDialog.btnVerify.isEnabled = true
+                        binding.btnVerify.backgroundTintList = colorStateListSelected
+                    } else {
+                        bindingDialog.btnVerify.isEnabled = false
+                        binding.btnVerify.backgroundTintList = colorStateListNonSelected
                     }
                 }
 
@@ -1075,13 +1230,17 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         // Countdown Timer
-        val timer = object : CountDownTimer(30000, 1000) {
+        val timer = object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 binding.tvCountdown.text = "${millisUntilFinished / 1000}"
+                binding.tvResendCounter.text = "${millisUntilFinished / 1000}s"
             }
 
             override fun onFinish() {
                 binding.tvCountdown.visibility = GONE
+                binding.tvResendCounter.visibility = GONE
+                binding.tvResend.setTextColor(colorStateListSelected)
+                binding.tvResend.isEnabled = true
             }
         }
         timer.start()
@@ -1099,22 +1258,80 @@ class ProfileNewActivity : BaseActivity() {
 
         binding.tvResend.setOnClickListener {
             timer.cancel()
-            generateOtp(mobileNumber)
+            binding.tvResend.setTextColor(colorStateListNonSelected)
+            binding.tvResend.isEnabled = false
+            if (isFromMobile)
+                generateOtp(mobileNumberEmail)
+            else
+                generateEmailOTP(mobileNumberEmail)
         }
 
-        binding.tvPhone.text = mobileNumber
+        binding.tvPhone.text = mobileNumberEmail
 
         // Verify Button
         binding.btnVerify.setOnClickListener {
             val otp = otpFields.joinToString("") { it.text.toString().trim() }
             if (otp.length == 6) {
-                verifyOtp(mobileNumber, otp, binding, timer)
+                if (isFromMobile)
+                    verifyOtp(mobileNumberEmail, otp, binding, timer)
+                else
+                    verifyEmailOtp(mobileNumberEmail, otp, binding, timer)
             } else {
                 showCustomToast("Enter all 6 digits")
             }
         }
 
         dialogOtp?.show()
+
+        lifecycleScope.launch {
+            delay(2000)
+            otpFields.forEachIndexed { index, editText ->
+                editText.setText(""+index)
+            }
+        }
+    }
+
+    private fun verifyEmailOtp(
+        email: String,
+        otp: String,
+        bindingDialog: DialogOtpVerificationBinding,
+        timer: CountDownTimer
+    ) {
+        val call = apiService.verifyOtpForEmail(
+            sharedPreferenceManager.accessToken,
+            VerifyOtpEmailRequest(
+                email = email,
+                otp = otp
+            )
+        )
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    timer.cancel()
+                    bindingDialog.tvResult.visibility = GONE
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        dialogOtp?.dismiss()
+                    }, 500)
+
+                    userData.newEmailStatus = "VERIFIED"
+
+                    binding.etEmail.isEnabled = false
+                    binding.btnVerifyEmail.visibility = GONE
+                    setEndDrawable(binding.etEmail)
+
+                } else {
+                    bindingDialog.tvResult.text = "Incorrect OTP"
+                    bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                handleNoInternetView(t)
+                bindingDialog.tvResult.text = "Incorrect OTP"
+                bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
+            }
+
+        })
     }
 
     private fun verifyOtp(
@@ -1134,29 +1351,26 @@ class ProfileNewActivity : BaseActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
                     timer.cancel()
-                    bindingDialog.tvResult.text = "(Verification Success)"
-                    bindingDialog.tvResult.setTextColor(getColor(R.color.color_green))
-                    binding.btnVerify.text = "Verified"
-                    binding.btnVerify.isEnabled = false
+                    bindingDialog.tvResult.visibility = GONE
                     Handler(Looper.getMainLooper()).postDelayed({
                         dialogOtp?.dismiss()
-                    }, 1000)
+                    }, 500)
 
                     userData.newPhoneStatus = "VERIFIED"
 
-                    binding.btnVerify.isEnabled = false
-                    binding.btnVerify.text = "Verified"
                     binding.etMobile.isEnabled = false
+                    binding.btnVerify.visibility = GONE
+                    setEndDrawable(binding.etMobile)
 
                 } else {
-                    bindingDialog.tvResult.text = "(Verification Failed-Incorrect OTP)"
+                    bindingDialog.tvResult.text = "Incorrect OTP"
                     bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 handleNoInternetView(t)
-                bindingDialog.tvResult.text = "(Verification Failed-Incorrect OTP)"
+                bindingDialog.tvResult.text = "Incorrect OTP"
                 bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
             }
 
@@ -1194,7 +1408,6 @@ class ProfileNewActivity : BaseActivity() {
     }
 
 
-
     private fun saveData() {
         val firstName = binding.etFirstName.text.toString()
         val lastName = binding.etLastName.text.toString()
@@ -1208,6 +1421,10 @@ class ProfileNewActivity : BaseActivity() {
             || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty()
         ) {
             showCustomToast("Please fill all required fields before proceeding.")
+        } else if (!validateUsername(firstName)) {
+            showCustomToast("Please enter valid First Name")
+        } else if (!validateUsername(firstName)) {
+            showCustomToast("Please enter valid Last Name")
         } else if (!email.matches(Utils.emailPattern.toRegex())) {
             showCustomToast("Invalid Email format")
         } else if (age.split(" ")[0].toInt() !in 13..80)
@@ -1388,5 +1605,104 @@ class ProfileNewActivity : BaseActivity() {
                 handleNoInternetView(t)
             }
         })
+    }
+
+    private fun setEndDrawable(
+        editText: EditText,
+        @DrawableRes drawableRes: Int? = R.drawable.icon_verified,
+        paddingDp: Int = 8
+    ) {
+        val drawable = drawableRes?.let {
+            ContextCompat.getDrawable(editText.context, it)
+        }
+
+        editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            null,
+            null,
+            drawable,
+            null
+        )
+
+        editText.compoundDrawablePadding =
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                paddingDp.toFloat(),
+                editText.resources.displayMetrics
+            ).toInt()
+    }
+
+    private fun isValidGoogleEmail(email: String): Boolean {
+        val trimmed = email.trim()
+        //only email validation
+        // return Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()
+
+
+        //for gmail validation
+        val regex = Regex("^[A-Za-z0-9._%+-]+@(gmail\\.com|googlemail\\.com)$")
+        return regex.matches(trimmed)
+    }
+
+    private fun startSmsListener() {
+        val client = SmsRetriever.getClient(this)
+        client.startSmsUserConsent(null)
+
+        ContextCompat.registerReceiver(
+            this,
+            smsReceiver,
+            IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
+            ContextCompat.RECEIVER_EXPORTED
+        )
+    }
+
+    private val smsReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d("TAG", "onReceive called with action=${intent?.action}")
+            if (SmsRetriever.SMS_RETRIEVED_ACTION != intent?.action) return
+
+            val extras = intent.extras ?: return
+            val status = extras.get(SmsRetriever.EXTRA_STATUS) as? Status ?: return
+            Log.d("TAG", "SmsRetriever status: ${status.statusCode}")
+
+            when (status.statusCode) {
+                CommonStatusCodes.SUCCESS -> {
+                    val consentIntent =
+                        extras.getParcelable<Intent>(SmsRetriever.EXTRA_CONSENT_INTENT)
+                    try {
+                        consentIntent?.let { smsConsentLauncher.launch(it) }
+                    } catch (e: Exception) {
+                        Log.e("TAG", "Error starting SMS consent activity", e)
+                    }
+                }
+
+                CommonStatusCodes.TIMEOUT -> {
+                    Log.e("TAG", "SMS Retriever timeout")
+                }
+            }
+        }
+    }
+
+    private val smsConsentLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val message = result.data?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
+            message?.let {
+                val otp = Regex("\\b(\\d{6})\\b").find(it)?.value
+                if (!otp.isNullOrEmpty()) {
+                    fillOtpFromSms(otp)
+                }
+            }
+        }
+    }
+
+    private fun fillOtpFromSms(otp: String) {
+        if (otp.length == 6) {
+            bindingDialog.etOtp1.setText(otp[0].toString())
+            bindingDialog.etOtp2.setText(otp[1].toString())
+            bindingDialog.etOtp3.setText(otp[2].toString())
+            bindingDialog.etOtp4.setText(otp[3].toString())
+            bindingDialog.etOtp5.setText(otp[4].toString())
+            bindingDialog.etOtp6.setText(otp[5].toString())
+        }
     }
 }

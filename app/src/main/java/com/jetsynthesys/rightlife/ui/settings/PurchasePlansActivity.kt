@@ -28,10 +28,12 @@ class PurchasePlansActivity : BaseActivity() {
     private fun setupPurchasePlansRecyclerView() {
         val settingsItems = listOf(
             SettingItem("Subscription Plans"),
-            SettingItem("Booster Plans")
+            SettingItem("Booster Packs")
         )
 
-        settingsAdapter = SettingsAdapter(settingsItems) { item ->
+        val listDesc = listOf("RightLife Pro Plans", "Face Scan Cards")
+
+        settingsAdapter = SettingsAdapter(settingsItems,listDesc) { item ->
             when (item.title) {
                 "Subscription Plans" -> {
                     startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
@@ -39,7 +41,7 @@ class PurchasePlansActivity : BaseActivity() {
                     })
                 }
 
-                "Booster Plans" -> {
+                "Booster Packs" -> {
                     startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
                         putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
                     })

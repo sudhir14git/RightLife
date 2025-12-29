@@ -292,7 +292,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         dialogBinding.tvDialogAffirmations.text =
             watchedResponse?.data?.get(position)?.readAffirmation.toString()
         dialogBinding.tvDialogDuration.text =
-            watchedResponse?.data?.get(position)?.duration.toString()
+            formatSeconds(watchedResponse?.data?.get(position)?.duration ?: 0)
         dialogBinding.tvDialogTotalSessions.text =
             watchedResponse?.data?.get(position)?.totalSession.toString()
         if (!(this.isFinishing || this.isDestroyed)) {
@@ -309,6 +309,13 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
             )
         )
     }
+
+    private fun formatSeconds(seconds: Int): String {
+        val minutes = seconds / 60
+        val remainingSeconds = seconds % 60
+        return String.format("%02d:%02d", minutes, remainingSeconds)
+    }
+
 
     private fun setupReminderBottomSheet() {
         // Create and configure BottomSheetDialog
@@ -430,7 +437,8 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         if (!checkPermission()) {
             return
         }
-        NotificationHelper.setReminder(this, "PRACTICE_ALARM_TRIGGERED", time)
+        val requestCode = System.currentTimeMillis().toInt()
+        NotificationHelper.setReminder(this, "PRACTICE_ALARM_TRIGGERED", time, requestCode)
     }
 
     private fun setupReminderSetBottomSheet() {

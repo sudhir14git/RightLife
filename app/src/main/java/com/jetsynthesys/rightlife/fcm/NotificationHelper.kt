@@ -76,7 +76,7 @@ class NotificationHelper(private val context: Context) {
         )
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.logo_rightlife)
+            .setSmallIcon(R.drawable.app_icon_notification)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)

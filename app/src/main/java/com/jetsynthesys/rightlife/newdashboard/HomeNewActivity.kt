@@ -53,7 +53,9 @@ import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.queryProductDetails
 import com.bumptech.glide.Glide
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
@@ -79,7 +81,6 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
-import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
@@ -91,7 +92,9 @@ import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
+import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
 import com.jetsynthesys.rightlife.ui.ActivityUtils
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
@@ -111,6 +114,7 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
@@ -130,6 +134,7 @@ import java.time.format.DateTimeParseException
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlin.collections.set
 import kotlin.reflect.KClass
 
 class HomeNewActivity : BaseActivity() {
@@ -145,6 +150,7 @@ class HomeNewActivity : BaseActivity() {
 
         const val TARGET_PROFILE = "profile"
         const val TARGET_SLEEP_SOUNDS = "sleepsounds"
+
         // add more as needed…
         const val TARGET_CATEGORY_LIST = "categorylist"
         const val TARGET_AI_REPORT = "ai-report"
@@ -157,8 +163,8 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_MOVE_EXPLORE = "moveright-explore"
         const val TARGET_MOVERIGHT_HOME = "moveright-home"
         const val TARGET_WORKOUT_LOG_DEEP = "workoutlog-deep"
-        const val TARGET_EATRIGHT_HOME      = "eatright-home"
-        const val TARGET_SLEEPRIGHT_HOME    = "sleepright-home"
+        const val TARGET_EATRIGHT_HOME = "eatright-home"
+        const val TARGET_SLEEPRIGHT_HOME = "sleepright-home"
         const val TARGET_WEIGHT_LOG_DEEP = "weight-log-deep"
         const val TARGET_WATER_LOG_DEEP = "water-log-deep"
         const val TARGET_SNAP_MEAL_DEEP = "snap-meal-deep"
@@ -166,7 +172,7 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_SLEEP_LOG_DEEP = "sleep-log-deep"
         const val TARGET_THINKRIGHT_HOME = "thinkright-home"
 
-// Quick link section
+        // Quick link section
         const val TARGET_FACE_SCAN = "face-scan"
         const val TARGET_SNAP_MEAL = "snap-meal"
         const val TARGET_SLEEP_SOUND = "sleep-sound"
@@ -186,13 +192,12 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_SAVED_ITEMS = "saved-content"
 
 
-
     }
 
     // 🔹 Deeplink readiness flags
     private var pendingDeepLinkTarget: String? = null
     private var isUserProfileLoaded = false
-     var isCategoryModuleLoaded = false
+    var isCategoryModuleLoaded = false
     private var isChecklistLoaded = false
 
     private fun isInitialDataReadyFor(target: String): Boolean {
@@ -209,6 +214,7 @@ class HomeNewActivity : BaseActivity() {
             TARGET_PROFILE -> {
                 isUserProfileLoaded && isChecklistLoaded
             }
+
             TARGET_CATEGORY_LIST -> {
                 isCategoryModuleLoaded
             }
@@ -244,8 +250,8 @@ class HomeNewActivity : BaseActivity() {
 
             TARGET_HOME -> {
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, HomeExploreFragment())
-                        .commit()
+                    .replace(R.id.fragmentContainer, HomeExploreFragment())
+                    .commit()
                 updateMenuSelection(R.id.menu_home)
             }
 
@@ -253,11 +259,11 @@ class HomeNewActivity : BaseActivity() {
                 myHealthFragmentSelected()
             }
 
-         /*   TARGET_JOURNAL -> {
-                if (checkTrailEndedAndShowDialog()) {
-                    ActivityUtils.startJournalListActivity(this)
-                }
-            }*/
+            /*   TARGET_JOURNAL -> {
+                   if (checkTrailEndedAndShowDialog()) {
+                       ActivityUtils.startJournalListActivity(this)
+                   }
+               }*/
 
             TARGET_MEAL_LOG -> {
                 AnalyticsLogger.logEvent(this, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
@@ -276,28 +282,33 @@ class HomeNewActivity : BaseActivity() {
                     ActivityUtils.startBreathWorkActivity(this)
                 }
             }
-            TARGET_SLEEP_SOUNDS ->
-            {
+
+            TARGET_SLEEP_SOUNDS -> {
                 startActivity(Intent(this, NewSleepSoundActivity::class.java))
             }
 
             TARGET_PROFILE -> {
                 startActivity(Intent(this, ProfileSettingsActivity::class.java))
             }
+
             TARGET_CATEGORY_LIST -> {
                 val intent = Intent(this, NewCategoryListActivity::class.java)
                 intent.putExtra("moduleId", "ThinkRight")
                 startActivity(intent)
             }
+
             TARGET_AI_REPORT -> {
                 callAIReportCardClick()
             }
+
             TARGET_MIND_AUDIT -> {
                 callMindAuditClick()
             }
+
             TARGET_FACE_SCAN -> {
                 callFaceScanClick()
             }
+
             TARGET_EATRIGHT_HOME -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -315,6 +326,7 @@ class HomeNewActivity : BaseActivity() {
                     })
                 }
             }
+
             TARGET_MOVERIGHT_HOME -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -332,6 +344,7 @@ class HomeNewActivity : BaseActivity() {
                     })
                 }
             }
+
             TARGET_WEIGHT_LOG_DEEP -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -340,6 +353,7 @@ class HomeNewActivity : BaseActivity() {
                     })
                 }
             }
+
             TARGET_WATER_LOG_DEEP -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -348,6 +362,7 @@ class HomeNewActivity : BaseActivity() {
                     })
                 }
             }
+
             TARGET_SNAP_MEAL_DEEP -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -356,6 +371,7 @@ class HomeNewActivity : BaseActivity() {
                     })
                 }
             }
+
             TARGET_FOOD_LOG_DEEP -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -364,14 +380,19 @@ class HomeNewActivity : BaseActivity() {
                     })
                 }
             }
+
             TARGET_SLEEP_LOG_DEEP -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
                         putExtra("ModuleName", "SleepRight")
-                        putExtra("BottomSeatName", "LogLastNightSleep")  // Ye hi Sleep Log kholta hai
+                        putExtra(
+                            "BottomSeatName",
+                            "LogLastNightSleep"
+                        )  // Ye hi Sleep Log kholta hai
                     })
                 }
             }
+
             TARGET_THINKRIGHT_HOME -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -380,24 +401,29 @@ class HomeNewActivity : BaseActivity() {
                     })
                 }
             }
+
             TARGET_SNAP_MEAL -> {
                 callSnapMealClick()
             }
+
             TARGET_JOURNAL -> {
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startJournalListActivity(this)
                 }
             }
+
             TARGET_SLEEP_SOUND -> {
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
                 }
             }
+
             TARGET_AFFIRMATION -> {
                 if (checkTrailEndedAndShowDialog()) {
-                        ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
-                    }
+                    ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
+                }
             }
+
             TARGET_BREATHING -> {
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startBreathWorkActivity(this)
@@ -408,21 +434,27 @@ class HomeNewActivity : BaseActivity() {
             TARGET_ACTIVITY_LOG -> {
                 callLogActivitylick()
             }
+
             TARGET_WEIGHT_LOG -> {
                 callLogWeightClick()
             }
+
             TARGET_WATER_LOG -> {
                 callLogWaterClick()
             }
+
             TARGET_SLEEP_LOG -> {
                 callLogSleepClick()
             }
+
             TARGET_FOOD_LOG -> {
                 callLogFoodClick()
             }
+
             TARGET_JUMPBACK -> {
                 callJumpBackIn()
             }
+
             TARGET_SAVED_ITEMS -> {
                 startActivity(Intent(this, SavedItemListActivity::class.java))
             }
@@ -432,16 +464,19 @@ class HomeNewActivity : BaseActivity() {
                 intent.putExtra("moduleId", "THINK_RIGHT")
                 startActivity(intent)
             }
+
             TARGET_EAT_EXPLORE -> {
                 val intent = Intent(this, NewCategoryListActivity::class.java)
                 intent.putExtra("moduleId", "EAT_RIGHT")
                 startActivity(intent)
             }
+
             TARGET_SLEEP_EXPLORE -> {
                 val intent = Intent(this, NewCategoryListActivity::class.java)
                 intent.putExtra("moduleId", "SLEEP_RIGHT")
                 startActivity(intent)
             }
+
             TARGET_MOVE_EXPLORE -> {
                 val intent = Intent(this, NewCategoryListActivity::class.java)
                 intent.putExtra("moduleId", "MOVE_RIGHT")
@@ -454,7 +489,6 @@ class HomeNewActivity : BaseActivity() {
             }
         }
     }
-
 
 
     private var snapMealId = ""
@@ -523,7 +557,6 @@ class HomeNewActivity : BaseActivity() {
                 healthConnectClient = HealthConnectClient.getOrCreate(it)
             }
         }
-
         // Load default fragment only on first launch
         val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
         if (savedInstanceState == null) {
@@ -987,16 +1020,26 @@ class HomeNewActivity : BaseActivity() {
         val deepLinkTarget = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
         handleDeepLinkTarget(deepLinkTarget)
 
+        sendTokenToServer("")
+
+        lifecycleScope.launch {
+            delay(2000)
+            AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
+        }
     }
 
 
     override fun onResume() {
         super.onResume()
-        checkForUpdate()
+        //checkForUpdate()
+        //new force update check below
+        //checkForceUpdate()
         getUserDetails()
         initBillingAndRecover()
         getDashboardChecklistStatus()
         getDashboardChecklist()
+        getSubscriptionList()
+        //getSubscriptionProducts(binding.tvStriketroughPrice);
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -1183,23 +1226,23 @@ class HomeNewActivity : BaseActivity() {
     }
 
     fun checkTrailEndedAndShowDialog(): Boolean {
-      /*  binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
-        binding.includedhomebottomsheet.bottomSheetParent.apply {
-            isClickable = false
-            isFocusable = false
-            visibility = View.GONE
-        }
-        binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
-        binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
-        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-            this@HomeNewActivity, R.color.white
-        )
-        binding.fab.imageTintList = ColorStateList.valueOf(
-            resources.getColor(
-                R.color.rightlife
-            )
-        )
-        isAdd = !isAdd // Toggle the state*/
+        /*  binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+          binding.includedhomebottomsheet.bottomSheetParent.apply {
+              isClickable = false
+              isFocusable = false
+              visibility = View.GONE
+          }
+          binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+          binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+          binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+              this@HomeNewActivity, R.color.white
+          )
+          binding.fab.imageTintList = ColorStateList.valueOf(
+              resources.getColor(
+                  R.color.rightlife
+              )
+          )
+          isAdd = !isAdd // Toggle the state*/
         // commented above code as now as per product it should be kept open while going to next screen
 
         return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
@@ -1226,6 +1269,39 @@ class HomeNewActivity : BaseActivity() {
 
     }
 
+    private fun checkForceUpdate() {
+        if (!sharedPreferenceManager.isForceUpdateEnabled()) return
+
+        val minRequired = sharedPreferenceManager.forceUpdateMinVersion
+        val currentVersion = BuildConfig.VERSION_NAME ?: "0"
+
+        if (isVersionLower(currentVersion, minRequired)) {
+            showForceUpdateDialog(
+                sharedPreferenceManager.forceUpdateMessage,
+                sharedPreferenceManager.forceUpdateUrl
+            )
+        }
+    }
+
+    private fun isVersionLower(current: String?, required: String?): Boolean {
+        if (current.isNullOrBlank() || required.isNullOrBlank()) return false
+
+        val currentParts = current.split(".").map { it.toIntOrNull() ?: 0 }
+        val requiredParts = required.split(".").map { it.toIntOrNull() ?: 0 }
+
+        val maxLength = maxOf(currentParts.size, requiredParts.size)
+
+        for (i in 0 until maxLength) {
+            val currentValue = currentParts.getOrElse(i) { 0 }
+            val requiredValue = requiredParts.getOrElse(i) { 0 }
+
+            if (currentValue < requiredValue) return true
+            if (currentValue > requiredValue) return false
+        }
+        return false
+    }
+
+
     private fun checkForUpdate() {
         val remoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
@@ -1249,7 +1325,10 @@ class HomeNewActivity : BaseActivity() {
                 val currentVersion = BuildConfig.VERSION_NAME
 
                 if (isForceUpdate && isVersionOutdated(currentVersion, latestVersion)) {
-                    showForceUpdateDialog()
+                    showForceUpdateDialog(
+                        sharedPreferenceManager.forceUpdateMessage,
+                        sharedPreferenceManager.forceUpdateUrl
+                    )
                 }
             }
         }
@@ -1267,7 +1346,7 @@ class HomeNewActivity : BaseActivity() {
         return diffInDays.toInt()
     }
 
-    private fun showForceUpdateDialog() {
+    private fun showForceUpdateDialog(forceUpdateMessage: String, forceUpdateUrl: String) {
 
         // Create the dialog
         val dialog = Dialog(this)
@@ -1327,7 +1406,8 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun showTrailEndedBottomSheet() {
-        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+        DialogUtils.showFreeTrailRelatedBottomSheet(
+            this,
             "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
             "Free Trial Ended",
             "See Plans",
@@ -1346,7 +1426,8 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun showSubsciptionEndedBottomSheet() {
-        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+        DialogUtils.showFreeTrailRelatedBottomSheet(
+            this,
             "Reactivate now to continue tracking and improving your health.",
             "No Active Plan",
             "Explore Plans",
@@ -1358,6 +1439,7 @@ class HomeNewActivity : BaseActivity() {
                     startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
                         putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
                     })
+                    AnalyticsLogger.logEvent(this, AnalyticsEvent.ManageSubs_Explore)
                 } else {
                     showInternetError()
                 }
@@ -1470,7 +1552,7 @@ class HomeNewActivity : BaseActivity() {
                     // Query subscriptions
 
                     recoverSubscriptions()
-
+                    //getSubscriptionProducts(binding.tvStriketroughPrice);
                 }
 
             }
@@ -1816,7 +1898,8 @@ class HomeNewActivity : BaseActivity() {
             val grantedPermissions =
                 healthConnectClient.permissionController.getGrantedPermissions()
             val now = Instant.now()
-            val syncTime = SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime.orEmpty()
+            val syncTime =
+                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime.orEmpty()
             val startTime: Instant = if (syncTime.isBlank()) {
                 // First-time sync: pull last 30 days
                 now.minus(Duration.ofDays(30))
@@ -1864,7 +1947,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     totalCaloriesBurnedRecord = totalCaloroieResponse
-                }else{
+                } else {
                     val caloriesResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = TotalCaloriesBurnedRecord::class,
@@ -1880,7 +1963,10 @@ class HomeNewActivity : BaseActivity() {
                     val end = record.endTime
                     recordsFound = true
                     updateLastSync(record)
-                    Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
+                    Log.d(
+                        "HealthData",
+                        "Total Calories Burned: $burnedCalories kcal | From: $start To: $end"
+                    )
                 }
             } else {
                 totalCaloriesBurnedRecord = emptyList()
@@ -1905,7 +1991,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     stepsRecord = stepsResponse
-                }else{
+                } else {
                     val stepsResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = StepsRecord::class,
@@ -1941,7 +2027,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     heartRateRecord = results
-                }else{
+                } else {
                     val response = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = HeartRateRecord::class,
@@ -1955,7 +2041,7 @@ class HomeNewActivity : BaseActivity() {
                     recordsFound = true
                     updateLastSync(record)
                 }
-            }else {
+            } else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1970,9 +2056,12 @@ class HomeNewActivity : BaseActivity() {
                 restingHeartRecord?.forEach { record ->
                     recordsFound = true
                     updateLastSync(record)
-                    Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}"
+                    )
                 }
-            }else {
+            } else {
                 restingHeartRecord = emptyList()
                 Log.d("HealthData", "Resting Heart rate permission denied")
             }
@@ -1987,9 +2076,12 @@ class HomeNewActivity : BaseActivity() {
                 activeCalorieBurnedRecord?.forEach { record ->
                     recordsFound = true
                     updateLastSync(record)
-                    Log.d("HealthData", "Active Calories Burn Rate: ${record.energy} kCal, Time: ${record.startTime}")
+                    Log.d(
+                        "HealthData",
+                        "Active Calories Burn Rate: ${record.energy} kCal, Time: ${record.startTime}"
+                    )
                 }
-            }else {
+            } else {
                 activeCalorieBurnedRecord = emptyList()
                 Log.d("HealthData", "Active Calories burn permission denied")
             }
@@ -2002,9 +2094,12 @@ class HomeNewActivity : BaseActivity() {
                 )
                 basalMetabolicRateRecord = basalMetabolic.records
                 basalMetabolicRateRecord?.forEach { record ->
-                    Log.d("HealthData", "Basal Metabolic Rate: ${record.basalMetabolicRate}, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Basal Metabolic Rate: ${record.basalMetabolicRate}, Time: ${record.time}"
+                    )
                 }
-            }else {
+            } else {
                 basalMetabolicRateRecord = emptyList()
                 Log.d("HealthData", "Basal Metabolic permission denied")
             }
@@ -2019,7 +2114,7 @@ class HomeNewActivity : BaseActivity() {
                 bloodPressureRecord?.forEach { record ->
                     Log.d("HealthData", "Blood Pressure: ${record.systolic}, Time: ${record.time}")
                 }
-            }else {
+            } else {
                 bloodPressureRecord = emptyList()
                 Log.d("HealthData", "Blood Pressure  permission denied")
             }
@@ -2034,9 +2129,12 @@ class HomeNewActivity : BaseActivity() {
                 heartRateVariability?.forEach { record ->
                     recordsFound = true
                     updateLastSync(record)
-                    Log.d("HealthData", "Heart Rate Variability: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Heart Rate Variability: ${record.heartRateVariabilityMillis}, Time: ${record.time}"
+                    )
                 }
-            }else {
+            } else {
                 heartRateVariability = emptyList()
                 Log.d("HealthData", "Heart rate Variability permission denied")
             }
@@ -2051,7 +2149,10 @@ class HomeNewActivity : BaseActivity() {
                 sleepSessionRecord?.forEach { record ->
                     recordsFound = true
                     updateLastSync(record)
-                    Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
+                    Log.d(
+                        "HealthData",
+                        "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}"
+                    )
                 }
             } else {
                 sleepSessionRecord = emptyList()
@@ -2068,7 +2169,10 @@ class HomeNewActivity : BaseActivity() {
                 exerciseSessionRecord?.forEach { record ->
                     recordsFound = true
                     updateLastSync(record)
-                    Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
+                    Log.d(
+                        "HealthData",
+                        "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}"
+                    )
                 }
             } else {
                 exerciseSessionRecord = emptyList()
@@ -2083,7 +2187,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 weightRecord = weightResponse.records
                 weightRecord?.forEach { record ->
-                    Log.d("HealthData", "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}"
+                    )
                 }
             } else {
                 weightRecord = emptyList()
@@ -2098,7 +2205,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 bodyFatRecord = bodyFatResponse.records
                 bodyFatRecord?.forEach { record ->
-                    Log.d("HealthData", "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}"
+                    )
                 }
             } else {
                 bodyFatRecord = emptyList()
@@ -2127,7 +2237,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 oxygenSaturationRecord = oxygenSaturationResponse.records
                 oxygenSaturationRecord?.forEach { record ->
-                    Log.d("HealthData", "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}"
+                    )
                 }
             } else {
                 oxygenSaturationRecord = emptyList()
@@ -2144,7 +2257,10 @@ class HomeNewActivity : BaseActivity() {
                 respiratoryRateRecord?.forEach { record ->
                     recordsFound = true
                     updateLastSync(record)
-                    Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}"
+                    )
                 }
             } else {
                 respiratoryRateRecord = emptyList()
@@ -2165,10 +2281,12 @@ class HomeNewActivity : BaseActivity() {
                         if (deviceInfo.manufacturer != "") {
                             SharedPreferenceManager.getInstance(this@HomeNewActivity)
                                 .saveDeviceName(dataOrigin)
-                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                            Log.d(
+                                "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
+                            )
                             break
-                        }else{
+                        } else {
                             SharedPreferenceManager.getInstance(this@HomeNewActivity)
                                 .saveDeviceName(dataOrigin)
                             break
@@ -2188,13 +2306,13 @@ class HomeNewActivity : BaseActivity() {
             } else {
                 Log.d("HealthSync", "⚠ No new data found → NOT updating last sync time")
             }
-            if (dataOrigin.equals("com.google.android.apps.fitness")){
+            if (dataOrigin.equals("com.google.android.apps.fitness")) {
                 storeHealthData()
-            }else if(dataOrigin.equals("com.sec.android.app.shealth")){
+            } else if (dataOrigin.equals("com.sec.android.app.shealth")) {
                 storeSamsungHealthData()
-            }else if(dataOrigin.equals("com.samsung.android.wear.shealth")){
+            } else if (dataOrigin.equals("com.samsung.android.wear.shealth")) {
                 storeSamsungHealthData()
-            }else{
+            } else {
                 storeHealthData()
             }
         } catch (e: Exception) {
@@ -2217,7 +2335,8 @@ class HomeNewActivity : BaseActivity() {
             // ------------------------------
             // 1) Load last sync time
             // ------------------------------
-            val savedSync = SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime.orEmpty()
+            val savedSync =
+                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime.orEmpty()
             val isFirstSync = savedSync.isBlank()
             // FIRST SYNC → last 30 days
             val defaultStart = now.minus(Duration.ofDays(30))
@@ -2240,6 +2359,7 @@ class HomeNewActivity : BaseActivity() {
                     else
                         lastSyncInstant
                 }
+
                 else -> defaultStart
             }
             val endTime = now
@@ -2255,6 +2375,7 @@ class HomeNewActivity : BaseActivity() {
                 if (latestModified == null || modified.isAfter(latestModified))
                     latestModified = modified
             }
+
             // ------------------------------
             // 3) Chunked reading for first sync
             // ------------------------------
@@ -2269,11 +2390,13 @@ class HomeNewActivity : BaseActivity() {
                         )
                     ).records
             }
+
             // ------------------------------
             // 4) Permission check
             // ------------------------------
             fun <T : Record> hasPermission(type: KClass<T>) =
                 HealthPermission.getReadPermission(type) in granted
+
             // ------------------------------
             // 5) Loader & assignment helper
             // ------------------------------
@@ -2315,12 +2438,14 @@ class HomeNewActivity : BaseActivity() {
                 stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName ?: "unknown"
             val deviceManufacturer =
                 stepsRecord?.firstOrNull()?.metadata?.device?.manufacturer ?: devicePackage
-            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(deviceManufacturer)
+            SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                .saveDeviceName(deviceManufacturer)
             // ------------------------------
             // 8) Save updated sync time
             // ------------------------------
             if (foundNewData && latestModified != null) {
-                SharedPreferenceManager.getInstance(this@HomeNewActivity).saveMoveRightSyncTime(latestModified.toString())
+                SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                    .saveMoveRightSyncTime(latestModified.toString())
                 Log.d("HealthSync", "Updated lastSync = $latestModified")
             } else {
                 Log.d("HealthSync", "No new data. Sync time unchanged")
@@ -2332,6 +2457,7 @@ class HomeNewActivity : BaseActivity() {
                 "com.google.android.apps.fitness" -> storeHealthData()
                 "com.sec.android.app.shealth",
                 "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
+
                 else -> storeHealthData()
             }
 
@@ -3506,7 +3632,7 @@ class HomeNewActivity : BaseActivity() {
     private fun myHealthFragmentSelected() {
         // Get the current fragment
         val currentFragment =
-                supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            supportFragmentManager.findFragmentById(R.id.fragmentContainer)
 
         if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
             binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
@@ -3545,8 +3671,8 @@ class HomeNewActivity : BaseActivity() {
                     isAdd = !isAdd // Toggle the state
                 }.start()
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                    .commit()
+                .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                .commit()
             updateMenuSelection(R.id.menu_explore)
         } else {
             supportFragmentManager.beginTransaction()
@@ -3615,24 +3741,23 @@ class HomeNewActivity : BaseActivity() {
             val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService
                 ?: false
 
-                if (DashboardChecklistManager.facialScanStatus) {
-                    startActivity(
-                        Intent(
-                            this@HomeNewActivity, NewHealthCamReportActivity::class.java
-                        )
+            if (DashboardChecklistManager.facialScanStatus) {
+                startActivity(
+                    Intent(
+                        this@HomeNewActivity, NewHealthCamReportActivity::class.java
                     )
+                )
+            } else {
+                if (isFacialScanService) {
+                    ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
                 } else {
-                    if (isFacialScanService)
-                    {
-                        ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
-                    }else{
-                        showSwitchAccountDialog(this@HomeNewActivity, "", "")
-                    }
+                    showSwitchAccountDialog(this@HomeNewActivity, "", "")
                 }
+            }
         }
     }
 
-    fun callMindAuditClick(){
+    fun callMindAuditClick() {
         if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
         } else {
@@ -3640,8 +3765,7 @@ class HomeNewActivity : BaseActivity() {
                 //startActivity(Intent(this@HomeNewActivity, NewHealthCamReportActivity::class.java))
                 ActivityUtils.startMindAuditActivity(this)
             } else {
-                if (checkTrailEndedAndShowDialog())
-                {
+                if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startMindAuditActivity(this)
                 }
             }
@@ -3651,12 +3775,13 @@ class HomeNewActivity : BaseActivity() {
 
     fun callLogWaterClick() {
         if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startEatRightReportsActivity(
-                        this@HomeNewActivity,
-                        "LogWaterIntakeEat"
-                )
-            }
+            ActivityUtils.startEatRightReportsActivity(
+                this@HomeNewActivity,
+                "LogWaterIntakeEat"
+            )
+        }
     }
+
     fun callLogWeightClick() {
         if (checkTrailEndedAndShowDialog()) {
             ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "LogWeightEat")
@@ -3666,8 +3791,8 @@ class HomeNewActivity : BaseActivity() {
     fun callLogSleepClick() {
         if (checkTrailEndedAndShowDialog()) {
             ActivityUtils.startMoveRightReportsActivity(
-                    this@HomeNewActivity,
-                    "SearchActivityLogMove"
+                this@HomeNewActivity,
+                "SearchActivityLogMove"
             )
         }
     }
@@ -3686,14 +3811,13 @@ class HomeNewActivity : BaseActivity() {
     fun callLogActivitylick() {
         if (checkTrailEndedAndShowDialog()) {
             ActivityUtils.startMoveRightReportsActivity(
-                    this@HomeNewActivity,
-                    "SearchActivityLogMove"
+                this@HomeNewActivity,
+                "SearchActivityLogMove"
             )
         }
     }
 
-    fun callAIReportCardClick()
-    {
+    fun callAIReportCardClick() {
         var dynamicReportId = "" // This Is User ID
         dynamicReportId = SharedPreferenceManager.getInstance(this).userId
         if (dynamicReportId.isEmpty()) {
@@ -3707,14 +3831,14 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    fun callJumpBackIn(){
+    fun callJumpBackIn() {
         startActivity(Intent(this, JumpInBackActivity::class.java))
     }
-   /* fun callExploreModuleClick(){
-        val intent = Intent(this, NewCategoryListActivity::class.java)
-            intent.putExtra("moduleId",)
-            startActivity(intent)
-    }*/
+    /* fun callExploreModuleClick(){
+         val intent = Intent(this, NewCategoryListActivity::class.java)
+             intent.putExtra("moduleId",)
+             startActivity(intent)
+     }*/
 
     private fun logAndOpenMeal(snapId: String) {
         AnalyticsLogger.logEvent(
@@ -3780,21 +3904,19 @@ class HomeNewActivity : BaseActivity() {
     }
 
 
-    private fun HandleQuicklinkmenu(){
+    private fun HandleQuicklinkmenu() {
 
-            // Get the current fragment
-            val currentFragment =
-                    supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        // Get the current fragment
+        val currentFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainer)
 
         // Check if it's HomeExploreFragment
         if (currentFragment is HomeDashboardFragment) {
 
-        } else
-        {
+        } else {
 
 
-            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE)
-            {
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
                 binding.includedhomebottomsheet.bottomSheetParent.apply {
                     isClickable = false
@@ -3805,46 +3927,164 @@ class HomeNewActivity : BaseActivity() {
                 binding.includedhomebottomsheet.bottomSheetParent.visibility = View.GONE
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 binding.fab.animate().rotationBy(180f).setDuration(60)
-                        .setInterpolator(DecelerateInterpolator()).withEndAction {
-                            // Change icon after rotation
-                            if (isAdd)
-                            {
-                                binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
-                                binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-                                        this, R.color.rightlife
+                    .setInterpolator(DecelerateInterpolator()).withEndAction {
+                        // Change icon after rotation
+                        if (isAdd) {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.rightlife
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.black
                                 )
-                                binding.fab.imageTintList = ColorStateList.valueOf(
-                                        resources.getColor(
-                                                R.color.black
-                                        )
+                            )
+                        } else {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.white
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.rightlife
                                 )
-                            } else
-                            {
-                                binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
-                                binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-                                        this, R.color.white
-                                )
-                                binding.fab.imageTintList = ColorStateList.valueOf(
-                                        resources.getColor(
-                                                R.color.rightlife
-                                        )
-                                )
-                            }
-                            isAdd = !isAdd // Toggle the state
-                        }.start()
+                            )
+                        }
+                        isAdd = !isAdd // Toggle the state
+                    }.start()
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                        .commit()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
                 updateMenuSelection(R.id.menu_explore)
-            } else
-            {
+            } else {
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                        .commit()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
                 updateMenuSelection(R.id.menu_explore)
             }
         }
     }
+
+    // save FCM TOken
+    private fun sendTokenToServer(token: String) {
+        // Implement API call to send token to your backend
+        Log.d("FCM_TOKEN", "Token should be sent to server: $token")
+        //sharedPreferenceManager.getString(SharedPreferenceConstants.FCM_TOKEN,token)
+
+        CommonAPICall.sendTokenToServer(
+            applicationContext,
+            sharedPreferenceManager.getString(SharedPreferenceConstants.FCM_TOKEN, token)
+        )
+    }
+
+    private fun getSubscriptionList() {
+        val call = apiService.getSubscriptionPlanList(
+            sharedPreferenceManager.accessToken,
+            "SUBSCRIPTION_PLAN"
+        )
+        call.enqueue(object : Callback<SubscriptionPlansResponse> {
+            override fun onResponse(
+                call: Call<SubscriptionPlansResponse>,
+                response: Response<SubscriptionPlansResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.result?.list?.let {
+                        it.forEach { plan ->
+                            if (plan.title.equals("Annual", true)) {
+                                if (sharedPreferenceManager.userProfile.userdata.country.equals("IN")) {
+                                    binding.tvStriketroughPrice.text = "₹ ${plan.price?.inr}"
+                                    binding.tvZero.text = "₹0"
+                                }
+                                else {
+                                    binding.tvStriketroughPrice.text = "\$ ${plan.price?.usd}"
+                                    binding.tvZero.text = "\$0"
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(this@HomeNewActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<SubscriptionPlansResponse>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+// Query subscription products
+    /*private fun getSubscriptionProducts(priceTextView: TextView) {
+        // 1. Safety check for BillingClient readiness
+        if (!billingClient.isReady) {
+            Log.e("Billing", "BillingClient is not ready yet.")
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val productList = listOf(
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId("test_sub_yearly")
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build()
+                )
+
+                val params = QueryProductDetailsParams.newBuilder()
+                    .setProductList(productList)
+                    .build()
+
+                // 2. Query the products
+                val subsResult = billingClient.queryProductDetails(params)
+                val billingResult = subsResult.billingResult
+                val productDetailsList = subsResult.productDetailsList
+
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
+
+                    if (productDetailsList.isEmpty()) {
+                        Log.w("Billing", "No products found. Check Console ID.")
+                        return@launch
+                    }
+
+                    for (productDetails in productDetailsList) {
+                        // 3. Extract the Offer Details (Base plans and offers)
+                        val offerDetails = productDetails.subscriptionOfferDetails
+
+                        if (!offerDetails.isNullOrEmpty()) {
+                            // For a simple setup, we take the first available offer/base plan
+                            val subOffer = offerDetails[0]
+
+                            // 4. Extract Pricing Phases (where the formatted price lives)
+                            val pricingPhases = subOffer.pricingPhases.pricingPhaseList
+
+                            if (pricingPhases.isNotEmpty()) {
+                                // formattedPrice will be "₹7.00" based on your JSON
+                                val price = pricingPhases[0].formattedPrice
+
+                                Log.d("Billing", "Success! Found price: $price")
+
+                                // 5. Update UI on the Main Thread
+                                withContext(Dispatchers.Main) {
+                                    priceTextView.text = price
+                                }
+                            }
+                        } else {
+                            Log.e(
+                                "Billing",
+                                "No subscription offer details found for this product."
+                            )
+                        }
+                    }
+                } else {
+                    Log.e(
+                        "Billing",
+                        "Error: ${billingResult.debugMessage} Code: ${billingResult.responseCode}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("Billing", "Exception during query: ${e.message}")
+            }
+        }
+    }*/
 }
-
-

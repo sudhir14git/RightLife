@@ -15,6 +15,7 @@ object AnalyticsParam {
     const val SUB_GOAL = "subgoal"
     const val USER_PLAN = "user_plan"
     const val TIMESTAMP = "timestamp"
+    const val DAY_FROM_LOGIN = "Day_from_login"
     const val TIME_TO_COMPLETE = "time_to_complete"
     const val PROFILE_SKIPPED = "profile_skipped"
     const val CHECKLIST_COMPLETE = "checklist_complete"
@@ -61,6 +62,8 @@ object AnalyticsParam {
     const val CONTENT_TITLE = "content_title"
     const val CONTENT_CATEGORY = "content_category"
     const val SERIES_TYPE = "series_type"
+
+    const val PHONE_NUMBER = "Phone Number"
 
 
     // new defaults

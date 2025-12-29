@@ -25,6 +25,13 @@ class NewCategoryListAdapter(
     inner class CategoryListViewHolder(val binding: RowCategoryListNewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: CategoryListItem, position: Int) {
+
+            binding.imgSave.visibility = if ("SERIES".equals(
+                    item.contentType,
+                    ignoreCase = true
+                )
+            ) View.GONE else View.VISIBLE
+
             // Load image using Glide
             Glide.with(binding.root.context)
                 .load(ApiClient.CDN_URL_QA + (item.thumbnail?.url ?: ""))
@@ -35,9 +42,28 @@ class NewCategoryListAdapter(
             binding.itemText.text = item.contentType ?: "Untitled"
             binding.tvTitle.text = item.title
             if ("TEXT".equals(item.contentType, ignoreCase = true))
-                binding.tvLeftTime.text = item.readingTime +" m"
-            else
+                binding.tvLeftTime.text = item.readingTime + " m"
+            else if ("VIDEO".equals(item.contentType, ignoreCase = true))
+            {
+                if (item.isWatched)
+                {
+                    binding.tvLeftTime.text = item.leftDuration + ""
+                }else{
+                    binding.tvLeftTime.text = item.leftDuration + " left"
+                }
+            } else if ("AUDIO".equals(item.contentType, ignoreCase = true)){
+
+                if (item.isWatched)
+                {
+                    binding.tvLeftTime.text = item.leftDuration + ""
+                }else{
+                    binding.tvLeftTime.text = item.leftDuration + " left"
+                }
+            }else if ("SERIES".equals(item.contentType, ignoreCase = true)){
                 binding.tvLeftTime.text = item.leftDuration
+            }else{
+                binding.tvLeftTime.text = item.leftDuration
+            }
             binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.createdAt)
             binding.tvName.text = item.categoryName
 
@@ -57,7 +83,7 @@ class NewCategoryListAdapter(
             // Calculate progress
             if ("TEXT".equals(item.contentType, ignoreCase = true)) {
                 binding.imgCompleteTick.visibility =
-                        if (item.isWatched) View.VISIBLE else View.GONE
+                    if (item.isWatched) View.VISIBLE else View.GONE
             } else if ("SERIES".equals(item.contentType, ignoreCase = true)) {
                 val progress = item.leftDuration?.let { calculateProgress(it) } ?: 0
                 binding.progressBar.progress = progress

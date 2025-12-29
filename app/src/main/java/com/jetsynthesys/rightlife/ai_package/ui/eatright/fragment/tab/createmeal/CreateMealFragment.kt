@@ -238,14 +238,18 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
                 saveMealLayout.setBackgroundResource(R.drawable.light_green_bg)
             }
         }else{
-            addMealNameLayout.visibility = View.VISIBLE
-            continueLayout.visibility = View.VISIBLE
-            addedMealListLayout.visibility = View.GONE
-            saveMealLayout.visibility = View.GONE
             if (mealName != "null"){
                 addedNameTv.text = mealName
+                addMealNameLayout.visibility = View.GONE
+                continueLayout.visibility = View.GONE
+                addedMealListLayout.visibility = View.VISIBLE
+                saveMealLayout.visibility = View.VISIBLE
             }else{
                 addedNameTv.text = etAddName.text
+                addMealNameLayout.visibility = View.VISIBLE
+                continueLayout.visibility = View.VISIBLE
+                addedMealListLayout.visibility = View.GONE
+                saveMealLayout.visibility = View.GONE
             }
 //            if (serving > 0.0){
 //                servingTv.text = serving.toString()

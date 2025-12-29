@@ -216,6 +216,8 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
             startActivity(intent);
         });
         bottomSheetDialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
+        bottomSheetDialog.getBehavior().setDraggable(false);
+        bottomSheetDialog.getBehavior().setSkipCollapsed(true);
 // Handle slide-down dismiss (when user swipes down the bottom sheet)
         bottomSheetDialog.getBehavior().addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override

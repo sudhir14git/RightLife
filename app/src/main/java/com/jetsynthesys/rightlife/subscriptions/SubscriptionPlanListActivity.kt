@@ -8,12 +8,12 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
-import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.PendingPurchasesParams
@@ -21,11 +21,14 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.acknowledgePurchase
 import com.android.billingclient.api.consumePurchase
 import com.android.billingclient.api.queryProductDetails
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionPlanListBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.adapter.SubscriptionPlanAdapter
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentIntentResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
@@ -33,9 +36,11 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.PlanList
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
+import com.jetsynthesys.rightlife.ui.settings.GeneralInformationActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.Utils.showCustomToast
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -46,7 +51,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
     private lateinit var billingClient: BillingClient
     private lateinit var binding: ActivitySubscriptionPlanListBinding
     private lateinit var adapter: SubscriptionPlanAdapter
-    private var type: String = "FACIAL_SCAN"
+    private var planType: String = "FACIAL_SCAN"
     private val planList = ArrayList<PlanList>()
     private var selectedPlan: PlanList? = null
     private var receivedProductId: String? = null
@@ -62,17 +67,20 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
         super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionPlanListBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
-        type = intent.getStringExtra("SUBSCRIPTION_TYPE").toString()
+        planType = intent.getStringExtra("SUBSCRIPTION_TYPE").toString()
 
-        if (type == "FACIAL_SCAN") {
-            binding.tvHeader.text = "Booster Plan"
-        }
+        if (planType == "FACIAL_SCAN") {
+            binding.tvHeader.text = "Booster Packs"
+        } else
+            binding.tvHeader.text = "Subscription Plans"
 
         // Initialize billing client first
         initializeBillingClient()
 
         // Then get subscription list
-        getSubscriptionList(type)
+        getSubscriptionList(planType)
+
+        binding.continueButton.backgroundTintList = ContextCompat.getColorStateList(this, R.color.menuselected)
 
         binding.iconBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -87,70 +95,39 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             finish()
         }
 
+        binding.tvPrivacyPolicy.setOnClickListener {
+            startActivity(Intent(this, GeneralInformationActivity::class.java).apply {
+                putExtra("INFO", "Privacy Policy")
+            })
+        }
+        binding.tvTermsCondition.setOnClickListener {
+            startActivity(Intent(this, GeneralInformationActivity::class.java).apply {
+                putExtra("INFO", "Terms & Conditions")
+            })
+        }
+
         binding.iconInfo.setOnClickListener {
             startActivity(Intent(this, PlanInfoActivity::class.java))
         }
 
-        /*adapter = SubscriptionPlanAdapter(planList, productDetailsMap) { plan ->
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime < CLICK_DEBOUNCE_TIME) {
-                showToast("Please wait before making another purchase")
-                return@SubscriptionPlanAdapter
-            }
-            lastClickTime = currentTime
-
-            selectedPlan = plan
-            receivedProductId = plan.googlePlay
-
-            if (type == "FACIAL_SCAN") {
-                receivedProductType = "BOOSTER"
-                if (plan.title?.contains("Pack of 12", true) ?: false)
-                    logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan12_Tap)
-                else
-                    logPurchaseTapEvent(AnalyticsEvent.Booster_FaceScan1_Tap)
-
-                plan.googlePlay?.let { launchPurchaseFlow(it, BillingClient.ProductType.INAPP) }
-            } else {
-                if (plan.status.equals("ACTIVE", ignoreCase = true)) {
-                    showToast("This plan is currently active.")
-                    return@SubscriptionPlanAdapter
-                }
-
-                var hasActiveSubscription = false
-                planList.forEach {
-                    if (it.status.equals("ACTIVE", ignoreCase = true)) {
-                        hasActiveSubscription = true
-                        return@forEach
-                    }
-                }
-
-                if (hasActiveSubscription) {
-                    showToast("You have currently one Active Subscription!!")
-                } else {
-                    receivedProductType = "SUBSCRIPTION"
-                    if (plan.title.equals("MONTHLY", true))
-                        logPurchaseTapEvent(AnalyticsEvent.Subscription_Monthly_Tap)
-                    else
-                        logPurchaseTapEvent(AnalyticsEvent.Subscription_Annual_Tap)
-
-                    plan.googlePlay?.let { launchPurchaseFlow(it, BillingClient.ProductType.SUBS) }
-                }
-            }
-        }*/
-
         adapter = SubscriptionPlanAdapter(
+            planType,
             plans = planList,
             productDetailsMap = productDetailsMap,
 
-            onPlanSelected = { selectedPlan ->
-
+            onPlanSelected = { selectedPlan, position ->
+                startActivity(Intent(this, SubscriptionCheckoutActivity::class.java).apply {
+                    putExtra("PLAN_LIST", planList)
+                    putExtra("POSITION", position)
+                    putExtra("SUBSCRIPTION_TYPE", planType)
+                })
             },
 
             onBuyClick = { position ->
                 startActivity(Intent(this, SubscriptionCheckoutActivity::class.java).apply {
                     putExtra("PLAN_LIST", planList)
                     putExtra("POSITION", position)
-                    intent.putExtra("SUBSCRIPTION_TYPE", type)
+                    putExtra("SUBSCRIPTION_TYPE", planType)
                 })
             }
         )
@@ -162,23 +139,34 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             openPlayStoreSubscriptionPage()
             AnalyticsLogger.logEvent(
                 this,
+                AnalyticsEvent.ManageSubs_CancelSubs,
+                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+            )
+
+            AnalyticsLogger.logEvent(
+                this,
                 AnalyticsEvent.Subscription_CancelSubscription_Tap,
                 mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
             )
         }
 
         binding.continueButton.setOnClickListener {
-            openPlayStoreSubscriptionPage()
+            restorePurchases()
         }
 
-        if (type == "FACIAL_SCAN") {
+        if (planType == "FACIAL_SCAN") {
             binding.cancelButton.visibility = View.GONE
-            binding.continueButton.visibility = View.GONE
+            binding.continueButton.visibility = View.VISIBLE
             binding.iconInfo.visibility = View.GONE
         } else {
-            binding.cancelButton.visibility = View.VISIBLE
             binding.continueButton.visibility = View.GONE
+            binding.continueButton.visibility = View.VISIBLE
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getSubscriptionList(planType)
     }
 
     private fun openPlayStoreSubscriptionPage() {
@@ -269,7 +257,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                         val product = QueryProductDetailsParams.Product.newBuilder()
                             .setProductId(productId)
 
-                        if (type == "FACIAL_SCAN") {
+                        if (planType == "FACIAL_SCAN") {
                             product.setProductType(BillingClient.ProductType.INAPP)
                             inAppProducts.add(product.build())
                         } else {
@@ -484,7 +472,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     showToast(response.message())
-                    getSubscriptionList(type)
+                    getSubscriptionList(planType)
                 } else {
                     showToast(response.message())
                 }
@@ -515,4 +503,105 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             )
         }
     }
+
+    // RESTORE: Safely query existing purchases and route them through existing handlePurchase()
+    private fun restorePurchases() {
+        if (!::billingClient.isInitialized) {
+            initializeBillingClient()
+            Toast.makeText(this, "Please try again in a moment…", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!billingClient.isReady) {
+            Toast.makeText(this, "Billing service not ready. Please try again.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        var anyPurchaseFound = false
+
+        // --- Restore INAPP (boosters) ---
+        val inAppParams = QueryPurchasesParams.newBuilder()
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build()
+
+        billingClient.queryPurchasesAsync(inAppParams) { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !purchases.isNullOrEmpty()) {
+                // Filter only purchases that match our known productIds
+                val matchingPurchases = purchases.filter { purchase ->
+                    purchase.products.any { productId ->
+                        planList.any { plan -> plan.googlePlay == productId }
+                    }
+                }
+
+                if (matchingPurchases.isNotEmpty()) {
+                    anyPurchaseFound = true
+                    // BOOSTER purchases
+                    receivedProductType = "BOOSTER"
+                    matchingPurchases.forEach { purchase ->
+                        handlePurchase(purchase)
+                    }
+                }
+            } else {
+                Log.d("Billing-Restore", "No INAPP purchases to restore: ${billingResult.debugMessage}")
+            }
+
+            // We only show "nothing to restore" once both INAPP and SUBS queries are done.
+            // So we don't show toast here yet.
+        }
+
+        // --- Restore SUBSCRIPTIONS ---
+        val subsParams = QueryPurchasesParams.newBuilder()
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build()
+
+        billingClient.queryPurchasesAsync(subsParams) { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !purchases.isNullOrEmpty()) {
+                val matchingPurchases = purchases.filter { purchase ->
+                    purchase.products.any { productId ->
+                        planList.any { plan -> plan.googlePlay == productId }
+                    }
+                }
+
+                if (matchingPurchases.isNotEmpty()) {
+                    anyPurchaseFound = true
+                    // SUBSCRIPTION purchases
+                    receivedProductType = "SUBSCRIPTION"
+                    matchingPurchases.forEach { purchase ->
+                        handlePurchase(purchase)
+                    }
+
+                    // For subscriptions, this will usually just call showSubscriptionStatus()
+                    // if already acknowledged, which is safe.
+                }
+            } else {
+                Log.d("Billing-Restore", "No SUBS purchases to restore: ${billingResult.debugMessage}")
+            }
+
+            // After SUBS query completes, if nothing at all was restored, tell the user.
+            // After SUBS query completes, if nothing at all was restored, tell the user.
+            if (!anyPurchaseFound) {
+                showToastOnUiThread("No purchases found to restore for this account.")
+                Log.d("Billing-Restore2", "No purchases found to restore for this account.")
+            } else {
+                showToastOnUiThread("Checking and restoring your purchases…")
+                Log.d("Billing-Restore2", "purchases found to restore for this account.")
+            }
+
+        }
+    }
+    private fun showToastOnUiThread(message: String) {
+        if (isFinishing || isDestroyed) {
+            Log.w("Billing-Restore", "Activity finishing/destroyed, skipping toast: $message")
+            return
+        }
+
+        runOnUiThread {
+            Toast.makeText(
+                    applicationContext,   // use applicationContext to be extra safe
+                    message,
+                    Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
 }

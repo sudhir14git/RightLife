@@ -302,6 +302,10 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                         binding.tvIndicatorValueBg.text =
                             "${firstReport.lowerRange}-${firstReport.upperRange} ${firstReport.unit}"
 
+                        binding.tvAverageUnit.text = firstReport.unit
+                        binding.tvMaximumUnit.text = firstReport.unit
+                        binding.tvMinimumUnit.text = firstReport.unit
+
                         val colorHexString =
                             "#" + firstReport.colour // Construct the correct hex string
                         val colorInt = Color.parseColor(colorHexString)

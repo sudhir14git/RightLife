@@ -19,11 +19,7 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -53,11 +49,13 @@ import com.jetsynthesys.rightlife.ui.utility.AppSignatureHelper
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.isValidIndianMobile
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.view.isVisible
 
 class MobileLoginActivity : BaseActivity() {
 
@@ -116,11 +114,12 @@ class MobileLoginActivity : BaseActivity() {
         binding.etPhone.setHintSize("Enter your mobile number here", 14)
 
         binding.layoutOtpScreen.visibility = View.GONE
-        //btnGetOtp.isEnabled = false
-        //btnVerifyOtp.isEnabled = false
+        binding.btnGetOtp.isEnabled = false
+        binding.btnGetOtp.backgroundTintList = colorStateListNonSelected
+        binding.btnVerifyOtp.isEnabled = false
+        binding.btnVerifyOtp.backgroundTintList = colorStateListNonSelected
         binding.tvValidationError.visibility = View.INVISIBLE
         binding.tvOtpError.visibility = View.GONE
-        binding.tvValidationError.visibility = View.GONE
 
         AnalyticsLogger.logEvent(
             AnalyticsEvent.LOGIN_SCREEN_VISIT,
@@ -136,17 +135,20 @@ class MobileLoginActivity : BaseActivity() {
         binding.etPhone.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val valid = isValidIndianMobile(s.toString())
-                //btnGetOtp.isEnabled = valid
+                binding.btnGetOtp.isEnabled = valid
                 if (valid) {
-                    binding.tvValidationError.visibility = View.GONE
+                    binding.tvValidationError.visibility = View.INVISIBLE
                     binding.btnGetOtp.isEnabled = true
 
                     binding.btnGetOtp.backgroundTintList =
                         if (valid) colorStateListSelected else colorStateListNonSelected
                 } else {
-                    /*binding.tvValidationError.visibility = View.VISIBLE
+                    if (s?.length == 10)
+                        binding.tvValidationError.visibility = View.VISIBLE
+                    else
+                        binding.tvValidationError.visibility = View.INVISIBLE
                     binding.tvValidationError.text = "Enter a valid phone number."
-                    btnGetOtp.isEnabled = false*/
+                    binding.btnGetOtp.isEnabled = false
                 }
                 binding.btnGetOtp.backgroundTintList =
                     if (valid) colorStateListSelected else colorStateListNonSelected
@@ -159,7 +161,7 @@ class MobileLoginActivity : BaseActivity() {
 
     private fun setupListeners() {
         binding.ivBack.setOnClickListener {
-            if (binding.layoutOtpScreen.visibility == View.VISIBLE) {
+            if (binding.layoutOtpScreen.isVisible) {
                 showPhoneEntry()
             } else {
                 finish()
@@ -175,13 +177,14 @@ class MobileLoginActivity : BaseActivity() {
                 return@setOnClickListener
             }
 
-            /*  AnalyticsLogger.logEvent(
-                      AnalyticsEvent.MOBILE_LOGIN_INITIATED,
-                      mapOf(
-                              AnalyticsParam.PHONE_NUMBER to phoneNumber,
-                              AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
-                      )
-              )*/
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.GET_OTP_TAP,
+                mapOf(
+                    AnalyticsParam.PHONE_NUMBER to phoneNumber,
+                    AnalyticsParam.DEVICE_NAME to "Android",
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                )
+            )
 
             //requestOtp(phoneNumber)
             fetchDeviceInfo(phoneNumber)
@@ -197,14 +200,29 @@ class MobileLoginActivity : BaseActivity() {
             if (otp.length == otpLength) {
                 verifyOtp(phoneNumber, otp)
             }
+
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.VERIFY_OTP_TAP,
+                mapOf(
+                    AnalyticsParam.PHONE_NUMBER to phoneNumber,
+                    AnalyticsParam.DEVICE_NAME to "Android",
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                )
+            )
         }
 
         binding.tvResend.setOnClickListener {
-            if (binding.tvResend.isClickable && binding.tvResend.text.toString().startsWith("Resend")) {
-                /* AnalyticsLogger.logEvent(
-                         AnalyticsEvent.RESEND_OTP_CLICK,
-                         mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
-                 )*/
+            if (binding.tvResend.isClickable && binding.tvResend.text.toString()
+                    .startsWith("Resend")
+            ) {
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.RESEND_OTP_TAP,
+                    mapOf(
+                        AnalyticsParam.PHONE_NUMBER to phoneNumber,
+                        AnalyticsParam.DEVICE_NAME to "Android",
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                    )
+                )
                 requestOtp(phoneNumber)
             }
         }
@@ -221,6 +239,7 @@ class MobileLoginActivity : BaseActivity() {
         clearOtpBoxes()
         timer?.cancel()
         binding.tvResendCounter.visibility = View.GONE
+        binding.tvValidationError.visibility = View.GONE
     }
 
     // -------------------------------------------------------------------
@@ -228,7 +247,14 @@ class MobileLoginActivity : BaseActivity() {
     // -------------------------------------------------------------------
 
     private fun setupOtpInputs() {
-        val boxes = listOf(binding.etOtp1, binding.etOtp2, binding.etOtp3, binding.etOtp4, binding.etOtp5, binding.etOtp6)
+        val boxes = listOf(
+            binding.etOtp1,
+            binding.etOtp2,
+            binding.etOtp3,
+            binding.etOtp4,
+            binding.etOtp5,
+            binding.etOtp6
+        )
 
         boxes.forEachIndexed { index, editText ->
             editText.addTextChangedListener(object : TextWatcher {
@@ -468,13 +494,15 @@ class MobileLoginActivity : BaseActivity() {
                     // Check if new user (adjust based on actual response field)
                     isNewUser = apiResponse.isNewUser ?: false
 
-                    /*   AnalyticsLogger.logEvent(
-                               AnalyticsEvent.OTP_VERIFY_SUCCESS,
-                               mapOf(
-                                       AnalyticsParam.USER_TYPE to if (isNewUser) "New User" else "Returning User",
-                                       AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
-                               )
-                       )*/
+                    AnalyticsLogger.logEvent(
+                        AnalyticsEvent.OTP_SUCCESS,
+                        mapOf(
+                            AnalyticsParam.USER_TYPE to if (isNewUser) "New User" else "Returning User",
+                            AnalyticsParam.PHONE_NUMBER to phoneNumber,
+                            AnalyticsParam.DEVICE_NAME to "Android",
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                        )
+                    )
 
                     handleSuccessfulVerification(phone)
                 } else {
@@ -486,6 +514,15 @@ class MobileLoginActivity : BaseActivity() {
                         lockedUntil = System.currentTimeMillis() + (15 * 60 * 1000)
                         tvOtpError.text = "Too many attempts. Try again later."
                     }*/
+
+                    AnalyticsLogger.logEvent(
+                        AnalyticsEvent.OTP_FAILED,
+                        mapOf(
+                            AnalyticsParam.PHONE_NUMBER to phoneNumber,
+                            AnalyticsParam.DEVICE_NAME to "Android",
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                        )
+                    )
 
                     Utils.showNewDesignToast(this@MobileLoginActivity, "Incorrect OTP", false)
                 }
@@ -522,7 +559,6 @@ class MobileLoginActivity : BaseActivity() {
                 // New user - go to username creation
                 val intent =
                     Intent(this@MobileLoginActivity, CreateUsernameActivity::class.java).apply {
-                        putExtra("USERNAME_KEY", phone)
                         putExtra("EMAIL", "")
                     }
 
@@ -592,6 +628,7 @@ class MobileLoginActivity : BaseActivity() {
 
     private fun startTimer() {
         timer?.cancel()
+        binding.tvOtpError.visibility = View.GONE
         binding.tvResendCounter.visibility = View.VISIBLE
 
         timer = object : CountDownTimer(60_000, 1_000) {
@@ -619,6 +656,7 @@ class MobileLoginActivity : BaseActivity() {
                 )
                 binding.tvResend.isClickable = true
                 binding.tvResendCounter.visibility = View.INVISIBLE
+                binding.tvOtpSent.visibility = View.GONE
             }
         }.start()
     }
@@ -826,7 +864,7 @@ class MobileLoginActivity : BaseActivity() {
             bottomSheetLayout.animation = slideUpAnimation
         }
 
-        dialogBinding.tvTitle.text = "You're Logged In with a Different Account"
+        dialogBinding.tvTitle.text = "You’re Logged In With Different Account"
         dialogBinding.tvDescription.text =
             "This device is already logged in with a different account. As a result, free services are not available. \n\nPlease log out and sign in with your original account to access free features."
 
@@ -851,20 +889,6 @@ class MobileLoginActivity : BaseActivity() {
         }
 
         bottomSheetDialog.show()
-    }
-
-    private fun isValidIndianMobile(number: String): Boolean {
-        val trimmed = number.trim()
-
-        // Must be exactly 10 digits
-        if (trimmed.length != 10) return false
-
-        // Reject all same digits like 0000000000, 1111111111
-        if (trimmed.all { it == trimmed[0] }) return false
-
-        // Must start with 6–9
-        val regex = Regex("^[6-9]\\d{9}$")
-        return regex.matches(trimmed)
     }
 
 

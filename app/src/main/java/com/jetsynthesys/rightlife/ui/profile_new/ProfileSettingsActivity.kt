@@ -73,6 +73,7 @@ class ProfileSettingsActivity : BaseActivity() {
             } else {
                 activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
             }
+            //activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
         }
         binding.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsNewActivity::class.java))

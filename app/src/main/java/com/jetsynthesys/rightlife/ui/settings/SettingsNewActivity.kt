@@ -19,7 +19,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.LogoutUserRequest
 import com.jetsynthesys.rightlife.databinding.ActivitySettingsNewBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteSettingBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
@@ -27,7 +26,6 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -142,7 +140,7 @@ class SettingsNewActivity : BaseActivity() {
             bottomSheetLayout.animation = slideUpAnimation
         }
 
-        dialogBinding.tvTitle.text = "Logout?"
+        dialogBinding.tvTitle.text = "Log Out?"
         dialogBinding.tvDescription.text = "Are you sure you want to Logout?"
 
         dialogBinding.ivDialogClose.setImageResource(R.drawable.close_breathwork)

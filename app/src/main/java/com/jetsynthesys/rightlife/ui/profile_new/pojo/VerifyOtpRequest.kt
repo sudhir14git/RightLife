@@ -4,3 +4,8 @@ data class VerifyOtpRequest(
     val phoneNumber: String,
     val otp: String
 )
+
+data class VerifyOtpEmailRequest(
+    val email: String,
+    val otp: String
+)

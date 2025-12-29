@@ -8,17 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.ProductDetails
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowSubscriptionBinding
 import com.jetsynthesys.rightlife.subscriptions.pojo.PlanList
 import java.text.NumberFormat
 import java.util.Currency
 
 class SubscriptionPlanAdapter(
+    private val type: String,
     private val plans: List<PlanList>,
     private val productDetailsMap: HashMap<String, ProductDetails>,
-    private val onPlanSelected: (PlanList) -> Unit,
+    private val onPlanSelected: (PlanList, Int) -> Unit,
     private val onBuyClick: (Int) -> Unit
 ) : RecyclerView.Adapter<SubscriptionPlanAdapter.PlanViewHolder>() {
 
@@ -31,8 +35,38 @@ class SubscriptionPlanAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(plan: PlanList, position: Int) {
-            binding.planTitle.text = plan.title ?: ""
+            if (type == "FACIAL_SCAN") {
+                val planName = plan.title?.split("-")
+                binding.planTitle.text = planName?.get(0) ?: "Face Scan"
+                binding.tvCancel.text = planName?.get(1) ?: "Pack of 1"
+                binding.tvCancel.visibility = View.VISIBLE
+                binding.tvBadge.visibility = if (plan.title?.contains("Pack of 12", true) == true)
+                    View.VISIBLE
+                else
+                    View.GONE
+            } else {
+                binding.planTitle.text = plan.title ?: ""
+                binding.tvCancel.visibility = View.GONE
+            }
             binding.planName.text = plan.desc ?: ""
+
+            if (plan.status.equals("ACTIVE", ignoreCase = true)) {
+                binding.tvBuy.backgroundTintList =
+                    ContextCompat.getColorStateList(itemView.context, R.color.color_green)
+                binding.tvBuy.text = "Active"
+            } else {
+                binding.tvBuy.backgroundTintList =
+                    ContextCompat.getColorStateList(itemView.context, R.color.menuselected)
+                binding.tvBuy.text = "Buy"
+            }
+
+            binding.tvBadge.visibility = if (plan.title?.contains("Pack of 12", true) == true
+                || plan.title?.contains("Yearly", true) == true
+                || plan.title?.contains("Annual", true) == true
+            )
+                View.VISIBLE
+            else
+                View.GONE
 
             // Get product details from Play Store
             val productDetails = plan.googlePlay?.let { productDetailsMap[it] }
@@ -48,30 +82,71 @@ class SubscriptionPlanAdapter(
             // Show discount percentage if available
             if (plan.discountPercent != null && plan.discountPercent!! > 0) {
                 binding.planOfferDiscount.visibility = View.VISIBLE
-                binding.planOfferDiscount.text = " (${plan.discountPercent}% OFF)"
+                binding.planOfferDiscount.text = " (${plan.discountPercent}% Off)"
             } else {
                 binding.planOfferDiscount.visibility = View.GONE
             }
 
             binding.root.setOnClickListener {
-                selectedPosition = bindingAdapterPosition
-                onPlanSelected(plan)
-                notifyDataSetChanged()
+                /*selectedPosition = bindingAdapterPosition
+                onPlanSelected(plan, bindingAdapterPosition)
+                notifyDataSetChanged()*/
             }
 
             binding.tvBuy.setOnClickListener {
-                onBuyClick(bindingAdapterPosition)
+                if (!plan.status.equals("ACTIVE", ignoreCase = true)) {
+                    if (isAnyPackPurchased()) {
+                        Toast.makeText(
+                            binding.tvBuy.context, "You already have an active subscription",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        selectedPosition = bindingAdapterPosition
+                        onBuyClick(bindingAdapterPosition)
+                        notifyDataSetChanged()
+                    }
+                }
             }
 
-            val bulletPoints = listOf(
-                "RightLife Premium, monthly",
-                "Everything unlocked, all tools and content",
-                "Unlimited Meal Snap, scan any meal, get calories and macros in seconds",
-                "4 Face Scans every month, HR, HRV, stress, breathing rate, CVD risk",
-                "Auto renews; cancel anytime"
+            val bulletPoints = if (plan.title?.contains("monthly", true) == true)
+                listOf(
+                    "RightLife Premium, monthly",
+                    "Everything unlocked, all tools and content",
+                    "Unlimited Meal Snap, scan any meal, get calories and macros in seconds",
+                    "4 Face Scans every month, HR, HRV, stress, breathing rate, CVD risk",
+                    "Auto renews; cancel anytime"
+                )
+            else if (plan.title?.contains("yearly", true) == true
+                || plan.title?.contains("Annual", true) == true
             )
+                listOf(
+                    "RightLife Premium, yearly",
+                    "Everything unlocked, all tools and content",
+                    "Unlimited Meal Snap, scan any meal, get calories and macros in seconds",
+                    "4 Face Scans every month, HR, HRV, stress, breathing rate, CVD risk",
+                    "Auto renews; cancel anytime"
+                )
+            else if (plan.title?.contains("Pack of 12", true) == true)
+                listOf(
+                    "12 Face Scans - continuous clarity!",
+                    "Good all year - use as you please within 12 months."
+                )
+            else
+                listOf(
+                    "Face Scan reveals heart rate, HRV, stress, breathing, and CVD risk - instant clarity!",
+                    "Use anytime within 30 days."
+                )
 
             addBulletPoints(binding.llBulletPoints, bulletPoints)
+        }
+
+        private fun isAnyPackPurchased(): Boolean {
+            plans.forEach {
+                if (it.status.equals("ACTIVE", ignoreCase = true)) {
+                    return true
+                }
+            }
+            return false
         }
 
         private fun displayPlayStorePricing(productDetails: ProductDetails, plan: PlanList) {

@@ -31,6 +31,7 @@ class EnableNotificationActivity : BaseActivity() {
                 AnalyticsEvent.ENABLE_NOTIFICATION_CLOSE,
                 mapOf(
                     AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.USERNAME to sharedPreferenceManager.userName,
                     AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                     AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
@@ -47,6 +48,7 @@ class EnableNotificationActivity : BaseActivity() {
                     AnalyticsEvent.ENABLE_NOTIFICATION_CLICK,
                     mapOf(
                         AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.USERNAME to sharedPreferenceManager.userName,
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                         AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                         AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
@@ -110,7 +112,7 @@ class EnableNotificationActivity : BaseActivity() {
         }
     }
 
-    private fun enableNotificationAPICall(){
+    private fun enableNotificationAPICall() {
         val requestBody = mapOf("pushNotification" to true)
         CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
             showToast(message)

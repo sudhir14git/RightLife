@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
 
@@ -12,6 +13,7 @@ import com.facebook.LoggingBehavior
 import com.facebook.appevents.AppEventsLogger
 
 import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jetsynthesys.rightlife.ui.affirmation.ReminderReceiver
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -26,6 +28,7 @@ class MainApplication : Application() {
         if (FirebaseApp.getApps(this).isEmpty()) {
             FirebaseApp.initializeApp(this)
         }
+        FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(true);
 // --- THIS IS THE CONDITIONAL LOGIC ---
         // Use the build config flag to enable or disable Crashlytics data collection.
         // For 'release' builds, BuildConfig.ENABLE_CRASHLYTICS will be true.
@@ -48,6 +51,47 @@ class MainApplication : Application() {
         // Initialize Meta SDK for install tracking
         initializeMetaSDK()
         ReminderReceiver.ringtone?.stop()
+
+
+        // debug mode firebase
+
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
+// Check if the current build is a debug/QA build
+        if (true) {
+            // 1. Log the property setting for confirmation
+            Log.d("FirebaseSetup", "Setting Firebase Analytics Debug Mode.")
+
+            // 2. The key step: set the debug mode property on the app
+            // Setting this property enables DebugView for this app instance.
+            val params = Bundle()
+            params.putString(FirebaseAnalytics.Param.SOURCE, "debug_build")
+            firebaseAnalytics.logEvent("app_debug_mode_enabled", params)
+
+            // Although the previous logEvent often works, this is the explicit
+            // way to set the user property that triggers DebugView.
+            // However, the previous method usually suffices for simple enabling.
+
+            // You can use a more reliable method by setting the user property:
+            firebaseAnalytics.setUserProperty("google_debug", "1")
+            // Toggle collection to "wake up" the debug stream
+            firebaseAnalytics.setAnalyticsCollectionEnabled(false)
+            firebaseAnalytics.setAnalyticsCollectionEnabled(true)
+
+            // Log a specific event to 'ping' the console
+            val bundle = Bundle().apply {
+                putString("debug_mode", "active")
+                putString("tester_name", "QA_Internal")
+            }
+            firebaseAnalytics.logEvent("debug_ping", bundle)
+
+            Log.d("FirebaseDebug", "Debug mode forced for build.")
+        }
+        val params = Bundle()
+        params.putLong(FirebaseAnalytics.Param.VALUE, 1)
+        FirebaseAnalytics.getInstance(this).logEvent("enable_debug_view", params)
+
+        //Toast.makeText(this, "Ping sent to Firebase. Check DebugView!", Toast.LENGTH_SHORT).show()
     }
 
     /**

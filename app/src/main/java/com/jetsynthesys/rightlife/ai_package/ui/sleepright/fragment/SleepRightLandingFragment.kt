@@ -38,6 +38,7 @@ import androidx.annotation.RequiresPermission
 import androidx.cardview.widget.CardView
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.widget.NestedScrollView
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
@@ -63,6 +64,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -261,6 +263,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private var mEditWakeTime = ""
     private lateinit var rightLifeReportCard : FrameLayout
     private lateinit var recomendationRecyclerView: RecyclerView
+    private lateinit var swipeRefreshLayout : SwipeRefreshLayout
+    private lateinit var nestedScrollView : NestedScrollView
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
     private var isRepeat : Boolean = false
@@ -373,6 +377,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageAwakeTimeMin = view.findViewById(R.id.tv_stage_awake_time_min)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
         rightLifeReportCard = view.findViewById(R.id.rightLifeReportCard)
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
+        nestedScrollView = view.findViewById(R.id.nestedScrollView)
+
+        swipeRefreshLayout.setOnRefreshListener {
+            // Call your API or refresh function
+            fetchDataFromApi()
+        }
+
+// Optional: Scroll to top to enable swipe-to-refresh again (when loading more at bottom)
+        nestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            swipeRefreshLayout.isEnabled = scrollY == 0
+        }
 
         fetchThinkRecomendedData()
 
@@ -1212,7 +1229,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun storeHealthData() {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -1567,7 +1584,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         // Capture context safely
         val ctx = context ?: return
         val activity = activity ?: return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -2420,7 +2437,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
         }
-
     }
 
     private fun setIdealGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
@@ -2553,10 +2569,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             granularity = 1f
             textSize = 12f
         }
-
         // Y Axis Right
         lineChart.axisRight.isEnabled = false
-
         // Chart Settings
         lineChart.description.isEnabled = false
         lineChart.legend.textSize = 12f
@@ -2612,7 +2626,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     Log.d("TouchEvent", "Entry or Highlight is null")
                 }
             }
-
             override fun onNothingSelected() {
               //  tvActualTime.text = ""
                // tvIdealTime.text = ""
@@ -2620,7 +2633,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 Log.d("TouchEvent", "Nothing selected, cleared TextViews")
             }
         })
-
         lineChart.invalidate()
     }
     // Helper function to convert float (hours) to hours and minutes
@@ -2752,7 +2764,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val remMinutes = minRegex.find(timeRem)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
             tvStageRemTimeHr.text = remHours.toString()
             tvStageRemTimeMin.text = remMinutes.toString()
-
             setStageGraph(sleepStageResponse)
         }else{
             stageNoDataCardView.visibility = View.VISIBLE
@@ -2827,7 +2838,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             sleepData.add(SleepSegmentModel(start, end, color, 110f))
             currentPosition += duration
         }
-
         sleepStagesView.setSleepData(sleepData)
     }
 
@@ -3121,7 +3131,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // Try next format
             }
         }
-
         return "" // Unable to parse
     }
 
@@ -3315,6 +3324,29 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    private fun fetchDataFromApi() {
+        swipeRefreshLayout.isRefreshing = true
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val ctx = context ?: return@launch
+
+                val availabilityStatus = HealthConnectClient.getSdkStatus(ctx)
+                if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                    healthConnectClient = HealthConnectClient.getOrCreate(ctx)
+                    requestPermissionsAndReadAllData()
+                } else {
+                    Toast.makeText(ctx,"Please install or update Health Connect", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                // ❗ STOP refresh ONLY AFTER ALL WORK IS DONE
+                swipeRefreshLayout.isRefreshing = false
+            }
+        }
     }
 
     companion object{

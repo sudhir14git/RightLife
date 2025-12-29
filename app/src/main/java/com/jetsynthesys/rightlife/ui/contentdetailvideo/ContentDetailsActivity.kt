@@ -900,7 +900,13 @@ class ContentDetailsActivity : BaseActivity() {
         try {
             // Release video player
             if (::player.isInitialized) {
-                callTrackAPI(player.currentPosition.toDouble() / 1000)
+                if (player.duration.toDouble()-player.currentPosition.toDouble()<2){
+                    val contentData = contentResponseObj.data
+                    callTrackAPI(contentData.meta.duration.toDouble() / 1000)
+                }else
+                {
+                    callTrackAPI(player.currentPosition.toDouble() / 1000)
+                }
                 player.release()
                 binding.exoPlayerView.player = null
                 PlayerHolder.lastPosition = 0

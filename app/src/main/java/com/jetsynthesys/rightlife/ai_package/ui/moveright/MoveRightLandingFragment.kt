@@ -65,7 +65,6 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -460,13 +459,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             recyclerView.layoutManager = GridLayoutManager(it, 2)
             recyclerView.adapter = adapter
         }
-        if (!isRepeat){
+       // if (!isRepeat){
             fetchMoveLanding(recyclerView, adapter)
-        }
+       // }
     }
 
     private fun fetchMoveLanding(recyclerView: RecyclerView, adapter: GridAdapter) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 if (isAdded  && view != null){
                    // requireActivity().runOnUiThread {
@@ -968,7 +967,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             Toast.makeText(it, "No data received from API", Toast.LENGTH_SHORT).show()
                         }
                     }
-                    if (!isRepeat){
+                  //  if (!isRepeat){
                         val availabilityStatus = context?.let { it }
                             ?.let { HealthConnectClient.getSdkStatus(it) }
                         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
@@ -979,7 +978,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         } else {
                             Toast.makeText(context?.let { it }, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
                         }
-                    }
+                  //  }
                 } else {
                     withContext(Dispatchers.Main) {
                         if (isAdded  && view != null){
@@ -988,7 +987,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             }
                         }
                         Toast.makeText(context?.let { it }, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
-                        if (!isRepeat){
+                      //  if (!isRepeat){
                             val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
                             if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                                 healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
@@ -999,7 +998,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 Toast.makeText(context?.let { it }, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
                             }
                         }
-                    }
+                 //   }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -1008,18 +1007,534 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             dismissLoader(requireView())
                         }
                     }
-                /*    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                    if (!isRepeat){
-                        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
-                        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-                            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
-                            lifecycleScope.launch {
-                                requestPermissionsAndReadAllData()
-                            }
-                        } else {
-                            Toast.makeText(requireContext(), "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun fetchMoveLandingAfterRefresh(recyclerView: RecyclerView, adapter: GridAdapter) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+               // if (isAdded  && view != null){
+                    // requireActivity().runOnUiThread {
+                   // showLoader(view.r)
+                    //  }
+            //    }
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val currentDateTime = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val selectedDate = currentDateTime.format(formatter)
+                val response = ApiClient.apiServiceFastApi.getMoveLanding(
+                    userId = userId,
+                    date = selectedDate
+                )
+                if (response.isSuccessful) {
+                    val fitnessData = response.body()
+                    fitnessData?.let {
+                        val rhrData = padData(it.data.restingHeartRate.last7Days.map { day -> day.bpm }, 7)
+                        val avgHrData = padData(it.data.averageHeartRate.last7Days.map { day -> day.heartRate }, 7)
+                        val hrvData = padData(it.data.heartRateVariability.last7Days.map { day -> day.hrv }, 7)
+                        val burnData = padData(it.data.caloriesBurned.last7Days.map { day -> day.caloriesBurned }, 7)
+                        val activityFactorData = padData(it.data.activityFactor.last7Days.map { day -> day.activityFactor }, 7)
+                        val todayStepCount = it.data.steps.todayTotal
+                        val averageStepCount = it.data.steps.averageSteps
+                        val goalStepCount = it.data.steps.goalSteps
+                        val todayStepsData = it.data.steps.todayCumulativeSteps?.takeIf { it.isNotEmpty() }?.let { data ->
+                            data.map { it.cumulativeSteps.toFloat() }.toFloatArray()
+                        } ?: FloatArray(24) { 0f }.also {
+                            //errorMessages.add("Today Steps")
                         }
-                    }*/
+                        val averageStepsData = it.data.steps.averageCumulativeSteps?.takeIf { it.isNotEmpty() }?.let { data ->
+                            data.map { it.cumulativeSteps.toFloat() }.toFloatArray()
+                        } ?: FloatArray(24) { 0f }.also {
+                            //  errorMessages.add("Average Steps")
+                        }
+                        val goalStepsData = it.data.steps.goalSteps.let { goal ->
+                            FloatArray(24) { goal.toFloat() }
+                        } ?: FloatArray(24) { 0f }.also {
+                            //errorMessages.add("Goal Steps")
+                        }
+                        val items = listOf(
+                            GridItem(
+                                name = "RHR",
+                                imageRes = R.drawable.rhr_icon,
+                                additionalInfo = it.data.restingHeartRate.unit,
+                                fourthParameter = it.data.restingHeartRate.today.toInt().toString(),
+                                dataPoints = rhrData
+                            ),
+                            GridItem(
+                                name = "Avg HR",
+                                imageRes = R.drawable.rhr_icon,
+                                additionalInfo = it.data.averageHeartRate.unit,
+                                fourthParameter = it.data.averageHeartRate.today.toInt().toString(),
+                                dataPoints = avgHrData
+                            ),
+                            GridItem(
+                                name = "HRV",
+                                imageRes = R.drawable.hrv_icon,
+                                additionalInfo = it.data.heartRateVariability.unit,
+                                fourthParameter = it.data.heartRateVariability.today.toInt().toString(),
+                                dataPoints = hrvData
+                            ),
+                            GridItem(
+                                name = "Burn",
+                                imageRes = R.drawable.burn_icon,
+                                additionalInfo = it.data.caloriesBurned.unit,
+                                fourthParameter = it.data.caloriesBurned.today.toInt().toString(),
+                                dataPoints = burnData
+                            )
+                        )
+                        // Heart rate zone checks and UI updates
+                        withContext(Dispatchers.Main) {
+                            text_activity.text = it.data.activityFactor.today.toString() ?: "0"
+                            val allInvalid = (/*it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0f) &&
+                                    (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0f) &&*/
+                                    it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0.0)
+                            // Always set layout to VISIBLE
+                            calorie_no_data_filled_layout.visibility = View.GONE
+                            calorie_layout_data_filled.visibility = View.VISIBLE
+
+                            if (allInvalid) {
+                                // No data state
+                                calorie_no_data_filled_layout.visibility = View.GONE
+                                calorie_layout_data_filled.visibility = View.VISIBLE
+                                val calorieIntake = it.data.calorieBalance.calorieIntake
+                                val calorieRange = it.data.calorieBalance.calorieRange // or an array [start, end]
+                                val colorRes = if (calorieIntake in calorieRange[0]..calorieRange[1]) {
+                                    R.color.color_eat_right   // ✅ green
+                                } else {
+                                    R.color.red              // ❌ red
+                                }
+                                context?.let {
+                                    calorieCountText.setTextColor(ContextCompat.getColor(it, colorRes))
+                                }
+//                                val color = when (it.data.calorieBalance.goal) {
+//                                    "weight_loss" -> {
+//                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
+//                                    }
+//                                    "weight_gain" -> {
+//                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.red else R.color.color_eat_right
+//                                    }
+//                                    else -> {
+//                                        R.color.color_eat_right
+//                                    }
+//                                }
+//                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), color))
+                                calorie_no_data_filled_layout.visibility = View.GONE
+                                calorie_layout_data_filled.visibility = View.VISIBLE
+                                tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
+                                calorieCountText.text = if (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0.0) "0" else it.data.calorieBalance.difference.toInt().toString()
+                                totalIntakeCalorieText.text = if (it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0.0) "0" else it.data.calorieBalance.calorieIntake.toInt().toString()
+                                calorieBalanceMessageTitle.text = it.data.calorieBalance.heading
+                                calorieBalanceDescription.text = it.data.calorieBalance.message
+                                progressBarCalorieBalance.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                                    override fun onGlobalLayout() {
+                                        progressBarCalorieBalance.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                                        val progressBarWidth = progressBarCalorieBalance.width.toFloat()
+                                        val burnedTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                        var rangeEnd : Double = 0.0
+                                        val rangeStart = it.data.calorieBalance.calorieRange.getOrNull(0) ?: 0.0
+                                        if (it.data.calorieBalance.calorieRange.size > 1){
+                                            rangeEnd = it.data.calorieBalance.calorieRange.getOrNull(1) ?: 0.0
+                                        }
+                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() + rangeEnd.toInt()
+                                        val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
+                                        //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
+                                        val value = (percentage / 10)
+                                        //val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                                        val overlayPositionPercentage = if (value.isFinite() && !value.isNaN()) value else 0f
+                                        progressBarCalorieBalance.max = totalCalorie
+                                        val max = progressBarCalorieBalance.max
+                                        progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
+                                        val progress = progressBarCalorieBalance.progress
+                                        val progressPercentage = progress.toFloat() / max
+                                        val constraintSet = ConstraintSet()
+                                        constraintSet.clone(progressBarLayout)
+                                        constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
+                                        constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
+                                        constraintSet.applyTo(progressBarLayout)
+                                        // D) Text Zone Label
+                                        val zoneText = when {
+                                            burnedTarget < rangeStart -> "Weight Gain Zone"
+                                            burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
+                                            else -> "Weight Loss Zone"
+                                        }
+                                        weightLossZoneText.text = zoneText
+                                        progressBarCalorieBalance.post {
+                                            val max = progressBarCalorieBalance.max.toFloat()
+                                            if (max <= 0f) return@post
+                                            val barWidth = progressBarCalorieBalance.width -
+                                                    progressBarCalorieBalance.paddingStart -
+                                                    progressBarCalorieBalance.paddingEnd
+                                            // Fractions (relative positions inside progress bar)
+                                            val startFrac = rangeStart / max
+                                            val endFrac = rangeEnd / max
+                                            // X coordinates
+                                            val startX = (barWidth * startFrac).toInt() + progressBarCalorieBalance.paddingStart
+                                            val endX = (barWidth * endFrac).toInt() + progressBarCalorieBalance.paddingStart
+                                            // Overlay width
+                                            val context = context ?: return@post
+                                            val minWidthPx = TypedValue.applyDimension(
+                                                TypedValue.COMPLEX_UNIT_DIP,
+                                                5f,
+                                                context.resources.displayMetrics
+                                            ).toInt()
+                                            val overlayWidth = (endX - startX).coerceAtLeast(minWidthPx)
+                                            // Apply layout params
+                                            val lp = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
+                                            lp.width = overlayWidth
+                                            lp.marginStart = startX
+                                            transparentOverlay.layoutParams = lp
+                                            transparentOverlay.visibility = View.VISIBLE
+                                        }
+                                    }
+                                })
+                            } else {
+                                // Data state
+                                val calorieIntake = it.data.calorieBalance.calorieIntake
+                                val calorieRange = it.data.calorieBalance.calorieRange // or an array [start, end]
+                                val colorRes = if (calorieIntake in calorieRange[0]..calorieRange[1]) {
+                                    R.color.color_eat_right   // ✅ green
+                                } else {
+                                    R.color.red              // ❌ red
+                                }
+                                context?.let {
+                                    calorieCountText.setTextColor(ContextCompat.getColor(it, colorRes))
+                                }
+//                                val color = when (it.data.calorieBalance.goal) {
+//                                    "weight_loss" -> {
+//                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
+//                                    }
+//                                    "weight_gain" -> {
+//                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.red else R.color.color_eat_right
+//                                    }
+//                                    else -> {
+//                                        R.color.color_eat_right
+//                                    }
+//                                }
+//                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), color))
+                                calorie_no_data_filled_layout.visibility = View.GONE
+                                calorie_layout_data_filled.visibility = View.VISIBLE
+                                tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
+                                calorieCountText.text = if (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0.0) "0" else it.data.calorieBalance.difference.toInt().toString()
+                                totalIntakeCalorieText.text = if (it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0.0) "0" else it.data.calorieBalance.calorieIntake.toInt().toString()
+                                calorieBalanceMessageTitle.text = it.data.calorieBalance.heading
+                                calorieBalanceDescription.text = it.data.calorieBalance.message
+                                progressBarCalorieBalance.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                                    override fun onGlobalLayout() {
+                                        progressBarCalorieBalance.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                                        val progressBarWidth = progressBarCalorieBalance.width.toFloat()
+                                        val burnedTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                        var rangeEnd : Double = 0.0
+                                        val rangeStart = it.data.calorieBalance.calorieRange.getOrNull(0) ?: 0.0
+                                        if (it.data.calorieBalance.calorieRange.size > 1){
+                                            rangeEnd = it.data.calorieBalance.calorieRange.getOrNull(1) ?: 0.0
+                                        }
+                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() + rangeEnd.toInt()
+                                        //val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
+                                        //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
+                                        val denominator = (rangeEnd - rangeStart)
+                                        val percentage = if (denominator != 0.0) {
+                                            ((burnedTarget - rangeStart) / denominator).toFloat()
+                                        } else 0f
+
+                                        val value = (percentage / 10)
+                                        // val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                                        val cleanValue = if (value.isFinite() && !value.isNaN()) {
+                                            value
+                                        } else {
+                                            context?.let { it1 ->
+                                                AnalyticsLogger.logEvent(
+                                                    it1, AnalyticsEvent.MR_Number_Format_Exception,
+                                                    mapOf(
+                                                        AnalyticsParam.MR_Crash_Msg to 0f,
+                                                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                                                    )
+                                                )
+                                            }
+                                            0f
+                                        }
+                                        val overlayPositionPercentage = cleanValue
+
+                                        progressBarCalorieBalance.max = totalCalorie
+                                        val max = progressBarCalorieBalance.max
+                                        progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
+                                        val progress = progressBarCalorieBalance.progress
+                                        val progressPercentage = progress.toFloat() / max
+                                        val constraintSet = ConstraintSet()
+                                        constraintSet.clone(progressBarLayout)
+                                        constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
+                                        constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
+                                        constraintSet.applyTo(progressBarLayout)
+                                        // D) Text Zone Label
+                                        val zoneText = when {
+                                            burnedTarget < rangeStart -> "Weight Gain Zone"
+                                            burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
+                                            else -> "Weight Loss Zone"
+                                        }
+                                        weightLossZoneText.text = zoneText
+                                        progressBarCalorieBalance.post {
+                                            val max = progressBarCalorieBalance.max.toFloat()
+                                            if (max <= 0f) return@post
+                                            val barWidth = progressBarCalorieBalance.width -
+                                                    progressBarCalorieBalance.paddingStart -
+                                                    progressBarCalorieBalance.paddingEnd
+                                            // Fractions (relative positions inside progress bar)
+                                            val startFrac = rangeStart / max
+                                            val endFrac = rangeEnd / max
+                                            // X coordinates
+                                            val startX = (barWidth * startFrac).toInt() + progressBarCalorieBalance.paddingStart
+                                            val endX = (barWidth * endFrac).toInt() + progressBarCalorieBalance.paddingStart
+                                            // Overlay width
+                                            val ctx = context ?: return@post  // stop if fragment not attached
+                                            val minWidthPx = TypedValue.applyDimension(
+                                                TypedValue.COMPLEX_UNIT_DIP,
+                                                5f,
+                                                ctx.resources.displayMetrics
+                                            ).toInt()
+
+                                            val overlayWidth = (endX - startX).coerceAtLeast(minWidthPx)
+                                            // Apply layout params
+                                            val lp = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
+                                            lp.width = overlayWidth
+                                            lp.marginStart = startX
+                                            transparentOverlay.layoutParams = lp
+                                            transparentOverlay.visibility = View.VISIBLE
+                                        }
+//                                        progressBarLayout.post {
+//                                            val total = burnedTarget + rangeEnd
+//                                            val startFrac = if (total > 0) (rangeStart / total).toFloat() else 0f
+//                                            val endFrac = if (total > 0) (rangeEnd / total).toFloat() else 0f
+//                                            val barWidth = progressBarLayout.width
+//                                            // Convert 5dp → pixels
+//                                            val minWidthPx = TypedValue.applyDimension(
+//                                                TypedValue.COMPLEX_UNIT_DIP,
+//                                                5f,
+//                                                resources.displayMetrics
+//                                            ).toInt()
+//                                            val startX = (barWidth * startFrac).toInt()
+//                                            val endX = (barWidth * endFrac).toInt()
+//                                            val overlayWidth = (endX - startX).coerceAtLeast(minWidthPx)
+//                                            val lp = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
+//                                            lp.width = overlayWidth
+//                                            lp.marginStart = startX
+//                                            transparentOverlay.layoutParams = lp
+//                                            transparentOverlay.visibility = View.VISIBLE
+//                                        }
+                                    }
+                                })
+                            }
+                            val heartRateZones = it.data.heartRateZones
+                            val errorMessages = mutableListOf<String>()
+                            if (activityFactorData.isEmpty() || activityFactorData.all { it == 0f }) {
+                                text_no_data_activity_factor.visibility = View.VISIBLE
+                                line_graph.visibility = View.GONE
+                                //line_graph.setDataPoints(emptyList())
+                            } else {
+                                text_no_data_activity_factor.visibility = View.GONE
+                                line_graph.visibility = View.VISIBLE
+                                line_graph.setDataPoints(activityFactorData)
+                            }
+                            // line_graph.setDataPoints(activityFactorData)
+                            withContext(Dispatchers.Main) {
+                                if (it.data.steps.todayTotal > 0 || it.data.steps.averageSteps > 0 || it.data.steps.goalSteps > 0){
+                                    stepNoDataLayout.visibility = View.GONE
+                                    stepWithDataCardLayout.visibility = View.VISIBLE
+
+                                    stepLineGraphView.clear()
+                                    stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
+                                    stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
+                                    stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt()) // Green (dotted)
+                                    val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
+                                    stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
+                                    stepLineGraphView.invalidate()
+                                    if (goalStepCount <= 0) {
+                                        horizontalStepsSection.visibility = View.VISIBLE
+                                        stepsBottomSection.visibility = View.GONE
+                                    } else {
+                                        horizontalStepsSection.visibility = View.GONE
+                                        stepsBottomSection.visibility = View.VISIBLE
+                                    }
+                                    todayStepsTv.text = todayStepCount.toString()
+                                    today_steps_count.text = todayStepCount.toString()
+                                    averageStepsTv.text = averageStepCount.toString()
+                                    yesterday_steps_count.text = averageStepCount.toString()
+                                    goalStepsTv.text = goalStepCount.toString()
+                                }else{
+                                    if(it.data.caloriesBurned.today.toDouble() == 0.0){
+                                        val result = hasAnyValueGreaterThanZero(avgHrData)
+                                        if (result){
+                                            step_forward_icon.visibility = View.VISIBLE
+                                            stepNoDataLayout.visibility = View.GONE
+                                            stepWithDataCardLayout.visibility = View.VISIBLE
+                                            stepLineGraphView.clear()
+                                            stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
+                                            stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
+                                            stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt())
+                                            val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
+                                            stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
+                                            stepLineGraphView.invalidate()
+                                            if (goalStepCount <= 0) {
+                                                horizontalStepsSection.visibility = View.VISIBLE
+                                                stepsBottomSection.visibility = View.GONE
+                                            } else {
+                                                horizontalStepsSection.visibility = View.GONE
+                                                stepsBottomSection.visibility = View.VISIBLE
+                                            }
+                                            todayStepsTv.text = todayStepCount.toString()
+                                            today_steps_count.text = todayStepCount.toString()
+                                            averageStepsTv.text = averageStepCount.toString()
+                                            yesterday_steps_count.text = averageStepCount.toString()
+                                            goalStepsTv.text = goalStepCount.toString()
+                                        }else{
+                                            step_forward_icon.visibility = View.INVISIBLE
+                                            stepNoDataLayout.visibility = View.VISIBLE
+                                            stepWithDataCardLayout.visibility = View.GONE
+                                        }
+                                    }else{
+                                        step_forward_icon.visibility = View.VISIBLE
+                                        stepNoDataLayout.visibility = View.GONE
+                                        stepWithDataCardLayout.visibility = View.VISIBLE
+                                        stepLineGraphView.clear()
+                                        stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
+                                        stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
+                                        stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt())
+                                        val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
+                                        stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
+                                        stepLineGraphView.invalidate()
+                                        if (goalStepCount <= 0) {
+                                            horizontalStepsSection.visibility = View.VISIBLE
+                                            stepsBottomSection.visibility = View.GONE
+                                        } else {
+                                            horizontalStepsSection.visibility = View.GONE
+                                            stepsBottomSection.visibility = View.VISIBLE
+                                        }
+                                        todayStepsTv.text = todayStepCount.toString()
+                                        today_steps_count.text = todayStepCount.toString()
+                                        averageStepsTv.text = averageStepCount.toString()
+                                        yesterday_steps_count.text = averageStepCount.toString()
+                                        goalStepsTv.text = goalStepCount.toString()
+                                    }
+                                }
+                            }
+                            if (heartRateZones != null) {
+                                // Check Light Zone
+                                heartRateZoneNoDataTv.visibility = View.GONE
+                                lightZoneBelow.visibility = View.VISIBLE
+                                lightZoneHighl.visibility = View.VISIBLE
+                                fatLossHighl.visibility = View.VISIBLE
+                                cardioHighl.visibility = View.VISIBLE
+                                peakHighl.visibility = View.VISIBLE
+                                verticalLineStartLightBpmTv.visibility = View.VISIBLE
+                                verticalLineFatLossBpmTv.visibility = View.VISIBLE
+                                verticalLineCardioBpmTv.visibility = View.VISIBLE
+                                verticalLinePeakBpmTv.visibility = View.VISIBLE
+                                verticalLinePeakEndBpmTv.visibility = View.VISIBLE
+                                if (heartRateZones.heartRateZones.lightZone?.size?.let { it >= 2 } == true) {
+                                    lightZoneBelow.text = heartRateZones.heartRateZones.lightZone[0].toString()
+                                    lightZoneHighl.text = heartRateZones.heartRateZones.lightZone[1].toString()
+                                } else {
+                                    lightZoneBelow.text = "N/A"
+                                    lightZoneHighl.text = "N/A"
+                                    errorMessages.add("Light Zone")
+                                }
+
+                                // Check Fat Burn Zone
+                                if (heartRateZones.heartRateZones.fatBurnZone?.size?.let { it >= 2 } == true) {
+                                    fatLossHighl.text = heartRateZones.heartRateZones.fatBurnZone[1].toString()
+                                } else {
+                                    fatLossHighl.text = "N/A"
+                                    errorMessages.add("Fat Burn Zone")
+                                }
+
+                                // Check Cardio Zone
+                                if (heartRateZones.heartRateZones.cardioZone?.size?.let { it >= 2 } == true) {
+                                    cardioHighl.text = heartRateZones.heartRateZones.cardioZone[1].toString()
+                                } else {
+                                    cardioHighl.text = "N/A"
+                                    errorMessages.add("Cardio Zone")
+                                }
+
+                                // Check Peak Zone
+                                if (heartRateZones.heartRateZones.peakZone?.size?.let { it >= 2 } == true) {
+                                    peakHighl.text = heartRateZones.heartRateZones.peakZone[1].toString()
+                                } else {
+                                    peakHighl.text = "N/A"
+                                    errorMessages.add("Peak Zone")
+                                }
+
+                                // Show a single Toast for all errors
+                                if (errorMessages.isNotEmpty()) {
+                                    val message = "Incomplete data for: ${errorMessages.joinToString(", ")}"
+                                    context?.let {
+                                        Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            } else {
+                                if (isAdded  && view != null){
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
+                                heartRateZoneNoDataTv.visibility = View.VISIBLE
+                                lightZoneBelow.visibility = View.GONE
+                                lightZoneHighl.visibility = View.GONE
+                                fatLossHighl.visibility = View.GONE
+                                cardioHighl.visibility = View.GONE
+                                peakHighl.visibility = View.GONE
+                                verticalLineStartLightBpmTv.visibility = View.GONE
+                                verticalLineFatLossBpmTv.visibility = View.GONE
+                                verticalLineCardioBpmTv.visibility = View.GONE
+                                verticalLinePeakBpmTv.visibility = View.GONE
+                                verticalLinePeakEndBpmTv.visibility = View.GONE
+                                lightZoneBelow.text = "N/A"
+                                lightZoneHighl.text = "N/A"
+                                fatLossHighl.text = "N/A"
+                                cardioHighl.text = "N/A"
+                                peakHighl.text = "N/A"
+                                context?.let {
+                                    Toast.makeText(it, "Heart Rate Zones data missing", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            // Update RecyclerView
+                            adapter.updateItems(items)
+                            recyclerView.adapter = adapter
+                            // recyclerView.setHasFixedSize(true)
+
+                            // Add ItemDecoration for spacing
+//                            val spacingInPixels = resources.getDimensionPixelSize(R.dimen.grid_spacing) // Define in res/values/dimens.xml
+//                            recyclerView.addItemDecoration(GridSpacingItemDecoration(spanCount = 2, spacing = spacingInPixels, includeEdge = true))
+                            swipeRefreshLayout.isRefreshing = false
+                        }
+                    } ?: withContext(Dispatchers.Main) {
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
+                        context?.let {
+                            Toast.makeText(it, "No data received from API", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
+                        Toast.makeText(context?.let { it }, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                            e.message?.let { Log.d("REFRESH", it) }
+                            swipeRefreshLayout.isRefreshing = false
+                        }
+                    }
                 }
             }
         }
@@ -1810,7 +2325,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 }
                             }
                         }
-
                         withContext(Dispatchers.Main) {
                             if (allCardItems.isNotEmpty()) {
                                 val hasValidHeartRate = syncedCardItems.any { item ->
@@ -1848,7 +2362,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     val offset = abs(position)
                                     page.scaleY = 1 - (offset * 0.1f)
                                 }
-
                                 // Set click listener for workoutImageIcon to navigate to WorkoutAnalyticsFragment with current CardItem
                                 workoutImageIcon.setOnClickListener {
                                     val currentPosition = carouselViewPager.currentItem
@@ -1910,7 +2423,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     private fun storeHealthData() {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -2250,7 +2763,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 //                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
 //                    }
                     isRepeat = true
-                    fetchMoveLanding(recyclerView, adapter)
+                    fetchMoveLandingAfterRefresh(recyclerView, adapter)
                     fetchUserWorkouts()
                 }
             } catch (e: Exception) {
@@ -2266,7 +2779,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     private fun storeSamsungHealthData() {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -2606,7 +3119,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 //                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
 //                    }
                     isRepeat = true
-                    fetchMoveLanding(recyclerView, adapter)
+                    fetchMoveLandingAfterRefresh(recyclerView, adapter)
                     fetchUserWorkouts()
                 }
             } catch (e: Exception) {
@@ -2614,7 +3127,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     context?.let {
                         Toast.makeText(it, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
-                    isRepeat = true
+                   isRepeat = true
                     if (isAdded && view != null) dismissLoader(requireView())
                 }
             }
@@ -2842,22 +3355,24 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchDataFromApi() {
         swipeRefreshLayout.isRefreshing = true
 
-        // Simulate API call
-        Handler(Looper.getMainLooper()).postDelayed({
-            // Update UI after API response
-            swipeRefreshLayout.isRefreshing = false
-            context?.let {
-              //  Toast.makeText(it, "Data refreshed", Toast.LENGTH_SHORT).show()
-                val availabilityStatus = HealthConnectClient.getSdkStatus(it)
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val ctx = context ?: return@launch
+
+                val availabilityStatus = HealthConnectClient.getSdkStatus(ctx)
                 if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-                    healthConnectClient = HealthConnectClient.getOrCreate(it)
-                    lifecycleScope.launch {
-                        requestPermissionsAndReadAllData()
-                    }
+                    healthConnectClient = HealthConnectClient.getOrCreate(ctx)
+                    requestPermissionsAndReadAllData()
                 } else {
-                    Toast.makeText(it, "Please install or update health connect from the Play Store.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx,"Please install or update Health Connect", Toast.LENGTH_LONG).show()
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                // ❗ STOP refresh ONLY AFTER ALL WORK IS DONE
+                swipeRefreshLayout.isRefreshing = false
             }
-        }, 2000)
+        }
     }
+
 }

@@ -35,6 +35,7 @@ class NewCategoryListActivity : BaseActivity() {
     private lateinit var adapter: NewCategoryListAdapter
     private var selectedModuleId = ""
     private var selectedCategoryId = ""
+    private var selectedPosition = 0
     private var isLoading = false
     private var skip = 0
     private val limit = 10
@@ -206,10 +207,10 @@ class NewCategoryListActivity : BaseActivity() {
             chipStrokeWidth = 0f
             /*chipStrokeColor =
                 Utils.getModuleColorStateList(this@NewCategoryListActivity, selectedModuleId)*/
-            textSize = 12f
+            textSize = 14f
 
             typeface =
-                ResourcesCompat.getFont(this@NewCategoryListActivity, R.font.merriweather_regular)
+                ResourcesCompat.getFont(this@NewCategoryListActivity, R.font.dmsans_semibold)
 
             // Background color states
             chipBackgroundColor = ColorStateList(
@@ -466,4 +467,9 @@ class NewCategoryListActivity : BaseActivity() {
         else -> module
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        fetchContent(skip, selectedContentType, selectedCategoryId)
+    }
 }

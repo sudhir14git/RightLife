@@ -3,7 +3,6 @@ package com.jetsynthesys.rightlife.ui.settings
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityNotificationsNewBinding
@@ -15,6 +14,7 @@ class NotificationsNewActivity : BaseActivity() {
 
     private lateinit var binding: ActivityNotificationsNewBinding
     private lateinit var settingsAdapter: SettingsAdapter
+    private var count = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,15 +26,16 @@ class NotificationsNewActivity : BaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        CommonAPICall.getNotificationSettings(this){
-            data ->
+        CommonAPICall.getNotificationSettings(this) { data ->
             binding.pushNotificationsSwitch.isChecked = data.pushNotification == true
         }
 
         binding.pushNotificationsSwitch.setOnCheckedChangeListener { _, isChecked ->
             val requestBody = mapOf("pushNotification" to isChecked)
             CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
-                showToast(message)
+                if (count > 0)
+                    showToast(message)
+                count++
                 if (!result) binding.pushNotificationsSwitch.isChecked = !isChecked
             }
         }

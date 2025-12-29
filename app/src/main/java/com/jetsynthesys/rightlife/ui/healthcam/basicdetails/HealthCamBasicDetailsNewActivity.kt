@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -458,6 +460,18 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             binding.edtAge.setText(selectedAge)
         }
 
+        // 👇 ADD THIS BLOCK TO FORCE EXPANDED STATE
+        bottomSheetDialog.setOnShowListener { dialog ->
+            val d = dialog as BottomSheetDialog
+            // Get the bottom sheet internal view
+            val bottomSheet = d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as? FrameLayout
+
+            if (bottomSheet != null) {
+                val behavior = BottomSheetBehavior.from(bottomSheet)
+                // Force the sheet to expand to its full WRAP_CONTENT height
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
         bottomSheetDialog.show()
     }
 
@@ -995,7 +1009,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 }
 
 
-                "age" -> {
+             /*   "age" -> {
                     binding.edtAge.setText(userdata.age.toString() + " years")
                 }
 
@@ -1007,6 +1021,24 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                         )
                     ) binding.edtGender.setText("Male")
                     else binding.edtGender.setText("Female")
+                }*/
+                "age" -> {
+                    // Check if age is NOT null and NOT zero before setting
+                    if (userdata.age != null && userdata.age != 0) {
+                        binding.edtAge.setText(userdata.age.toString() + " years")
+                    } else {
+                        binding.edtAge.setText("") // Set empty if null or zero
+                    }
+                }
+
+                "gender" -> {
+                    genderOptions.addAll(question.options)
+                    val genderText = when (userdata.gender?.uppercase(Locale.getDefault())) {
+                        "M", "MALE" -> "Male"
+                        "F", "FEMALE" -> "Female"
+                        else -> "" // Set to empty string if the value is null or neither Male nor Female
+                    }
+                    binding.edtGender.setText(genderText)
                 }
 
                 "smoking" -> {

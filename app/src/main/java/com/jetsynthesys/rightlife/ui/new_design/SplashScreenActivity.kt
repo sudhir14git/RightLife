@@ -14,6 +14,7 @@ import android.widget.VideoView
 import com.google.firebase.messaging.FirebaseMessaging
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -26,6 +27,8 @@ class SplashScreenActivity : BaseActivity() {
     private lateinit var rlview1: RelativeLayout
     private lateinit var imgview2: ImageView
     private val SPLASH_DELAY: Long = 3000 // 3 seconds
+    private var appConfig: AppConfigResponse? = null
+    private var configCallDone: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +36,7 @@ class SplashScreenActivity : BaseActivity() {
         videoView = findViewById(R.id.videoView)
         rlview1 = findViewById(R.id.rlview1)
         imgview2 = findViewById(R.id.imgview2)
-
+        fetchAppConfig()
         // Need this Dark Mode selection logic for next phase
         /*val appMode = sharedPreferenceManager.appMode
         if (appMode.equals("System", ignoreCase = true)) {
@@ -133,6 +136,53 @@ class SplashScreenActivity : BaseActivity() {
         logCurrentFCMToken()
     }
 
+    private fun fetchAppConfig() {
+        // apiService is available from BaseActivity in your project (as you already use elsewhere)
+        val call = apiService.getAppConfig()
+        call.enqueue(object : retrofit2.Callback<okhttp3.ResponseBody?> {
+
+            override fun onResponse(
+                    call: retrofit2.Call<okhttp3.ResponseBody?>,
+                    response: retrofit2.Response<okhttp3.ResponseBody?>
+            ) {
+                configCallDone = true
+
+                if (response.isSuccessful && response.body() != null) {
+                    try {
+                        val json = response.body()!!.string()
+                        appConfig = com.google.gson.Gson().fromJson(json, AppConfigResponse::class.java)
+
+                        // OPTIONAL: store raw json if you want (only if you already have a pref method)
+                         sharedPreferenceManager.saveAppConfigJson(json)
+                        appConfig?.data?.forceUpdate?.let { fu ->
+                            sharedPreferenceManager.saveForceUpdateConfig(
+                                    fu.enabled == true,
+                                    fu.minAndroidVersion ?: "",
+                                    fu.updateAndroidUrl ?: "",
+                                    fu.message ?: ""
+                            )
+                        }
+
+
+                    } catch (e: Exception) {
+                        appConfig = null
+                    }
+                } else {
+                    appConfig = null
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<okhttp3.ResponseBody?>, t: Throwable) {
+                configCallDone = true
+                appConfig = null
+                // Don't block splash just because config failed
+                // If you want, log it:
+                Log.e("SplashConfig", "Config API failed: ${t.message}")
+            }
+        })
+    }
+
+
     private fun logCurrentFCMToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -167,4 +217,8 @@ class SplashScreenActivity : BaseActivity() {
                 }
             })
     }
+
+
+    // get app config
+
 }

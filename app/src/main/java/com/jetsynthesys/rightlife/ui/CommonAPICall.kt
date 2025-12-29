@@ -18,6 +18,7 @@ import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils.getDeviceId
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -442,5 +443,46 @@ object CommonAPICall {
         })
     }
 
+//
+ fun sendTokenToServer(context: Context,token: String) {
+    try {
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val authToken = sharedPreferenceManager.accessToken
+        if (authToken.isNullOrEmpty()) {
+            Log.w("FCM_TOKEN", "No auth token available")
+            return
+        }
 
+        val deviceId = getDeviceId(context)
+        val requestBody = hashMapOf(
+                "deviceId" to deviceId,
+                "deviceToken" to token
+        )
+
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        apiService.updateDeviceToken(authToken, requestBody)
+                .enqueue(object : Callback<CommonResponse> {
+                    override fun onResponse(
+                            call: Call<CommonResponse>,
+                            response: Response<CommonResponse>
+                    ) {
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            Log.d("FCM_TOKEN", "Token updated successfully: ${response.body()?.successMessage}")
+                            // Clear retry count on success
+//                            sharedPreferenceManager.setInt("token_retry_count", 0)
+                        } else {
+                            Log.e("FCM_TOKEN", "Failed to update token: ${response.code()}")
+
+                        }
+                    }
+
+                    override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
+                        Log.e("FCM_TOKEN", "Network error updating token: ${t.message}", t)
+
+                    }
+                })
+    } catch (e: Exception) {
+        Log.e("FCM_TOKEN", "Error sending token to server", e)
+    }
+}
 }

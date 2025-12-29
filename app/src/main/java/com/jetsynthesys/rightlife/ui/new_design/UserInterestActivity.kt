@@ -198,6 +198,20 @@ class UserInterestActivity : BaseActivity() {
                     textSize = 12f
                     setEnsureMinTouchTargetSize(false)
 
+
+                    try {
+                        // 1. Load the Typeface from the resource
+                        // Replace R.font.my_custom_font with the actual resource ID of your font file (e.g., R.font.roboto_bold)
+                        val customTypeface = ResourcesCompat.getFont(context, R.font.dmsans_semibold)
+
+                        // 2. Apply the Typeface to the Chip (which inherits from TextView)
+                        this.typeface = customTypeface
+
+                    } catch (e: Exception) {
+                        // It's good practice to log an error if the font resource is not found
+                        Log.e("ChipCreation", "Error loading custom font: ${e.message}")
+                    }
+
                     val heightInDp = 35 // or whatever height you want
                     val heightInPx = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
