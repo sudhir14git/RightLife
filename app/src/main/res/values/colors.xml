@@ -16,6 +16,7 @@
 
     <color name="border">#DDDDDD</color>
     <color name="menuselected">#FD6967</color>
+    <color name="new_background">#FFECEB</color>
 
 
     <color name="buttoncolorvc">#E5B62D</color>

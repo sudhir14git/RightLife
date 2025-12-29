@@ -229,6 +229,10 @@ class ImageSliderActivity : BaseActivity() {
         }
         val btnMobile = findViewById<TextView>(R.id.btn_mobile)
         btnMobile.setOnClickListener {
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.CONTINUE_WITH_PHONE_NUMBER,
+                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+            )
             startActivity(Intent(this, MobileLoginActivity::class.java))
         }
 

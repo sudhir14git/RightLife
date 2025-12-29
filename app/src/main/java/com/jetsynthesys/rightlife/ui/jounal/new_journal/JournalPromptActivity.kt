@@ -78,8 +78,8 @@ class JournalPromptActivity : BaseActivity() {
         // write a code here to show subtext according to journal item
         val subtext = when
         {
-            journalItem.title.equals("Gratitude", ignoreCase = true) -> "Quick prompts to help you track, organize, and reflect with clarity."
-            journalItem.title.equals("Bullet", ignoreCase = true) -> "Reflect on small joys and big wins to build a thankful mindset."
+            journalItem.title.equals("Gratitude", ignoreCase = true) -> "Reflect on small joys and big wins to build a thankful mindset."
+            journalItem.title.equals("Bullet", ignoreCase = true) -> "Quick prompts to help you track, organize, and reflect with clarity."
             journalItem.title.equals("Grief", ignoreCase = true) -> "Each question is here to help you process, remember, and heal—one step at a time."
             else -> "" // Default empty text for any other case
         }

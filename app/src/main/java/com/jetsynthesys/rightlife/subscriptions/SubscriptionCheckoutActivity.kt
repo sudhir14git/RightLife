@@ -189,11 +189,13 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                 startRazorPayPayment()
             else
                 startGooglePay()
+            AnalyticsLogger.logEvent(this, AnalyticsEvent.ManageSubs_Explore)
         }
 
     }
 
     private fun startGooglePay() {
+        AnalyticsLogger.logEvent(this, AnalyticsEvent.Checkout_GooglePlay_Continue)
         val plan = planList[position]
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastClickTime < CLICK_DEBOUNCE_TIME) {
@@ -281,7 +283,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
 
                 setPadding(1.dp, 1.dp, 1.dp, 1.dp)
 
-               // background = ContextCompat.getDrawable(context, R.drawable.bg_icon_border)
+                // background = ContextCompat.getDrawable(context, R.drawable.bg_icon_border)
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
                 setImageResource(iconRes)
             }
@@ -860,6 +862,8 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
     }
 
     private fun startRazorPayPayment() {
+
+        AnalyticsLogger.logEvent(this, AnalyticsEvent.Checkout_Razorpay_Continue)
         val plan = planList[position]
 
         // Show loading indicator
