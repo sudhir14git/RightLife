@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.base.BaseActivity
@@ -21,12 +22,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainAIActivity : BaseActivity() {
 
     lateinit var bi: ActivityMainAiBinding
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bi = ActivityMainAiBinding.inflate(layoutInflater)
         setContentView(bi.root)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         val moduleName = intent.getStringExtra("ModuleName")
         val bottomSeatName = intent.getStringExtra("BottomSeatName")
