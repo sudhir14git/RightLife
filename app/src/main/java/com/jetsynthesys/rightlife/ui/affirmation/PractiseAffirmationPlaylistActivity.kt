@@ -39,6 +39,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityPratciseAffirmationPlaylis
 import com.jetsynthesys.rightlife.databinding.BottmsheetReminderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetReminserSetBinding
 import com.jetsynthesys.rightlife.databinding.DialogPraticeTimeAffirmationBinding
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.AffirmationCardPagerAdapter
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.WeekDayAdapter
@@ -85,6 +86,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
     private var position = 0
     private var startDate = ""
     private var startTime: Long = 0
+    private var isFromNotification = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,10 +99,11 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         startTime = System.currentTimeMillis()
 
         setCardPlaylistAdapter(affirmationList)
+        isFromNotification = intent.getBooleanExtra("From_Notification", false)
 
         onBackPressedDispatcher.addCallback(this) {
             callPostMindFullDataAPI()
-            finish()
+            finishActivity()
         }
 
         binding.ivDownload.setOnClickListener {
@@ -302,7 +305,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
             this,
-            AnalyticsEvent.TR_AffirmationPlaylist_Completion_PageOpen,
+            AnalyticsEvent.TR_AffirmationPlaylist_Completion,
             mapOf(
                 AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                 AnalyticsParam.TOTAL_DURATION to duration
@@ -349,7 +352,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
         dialogBinding.ivDialogClose.setOnClickListener {
             callPostMindFullDataAPI()
-            finish()
+            finishActivity()
         }
 
         dialogBinding.llMorningTime.isClickable = false
@@ -462,7 +465,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
         dialogBinding.ivDialogClose.setOnClickListener {
             callPostMindFullDataAPI()
-            finish()
+            finishActivity()
         }
 
         if (selectedMorningTime.isNullOrEmpty()) {
@@ -693,6 +696,12 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
     private fun callPostMindFullDataAPI() {
         val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         CommonAPICall.postMindFullData(this, "Affirmation", startDate, endDate)
+    }
+
+    private fun finishActivity() {
+        if (isFromNotification)
+            startActivity(Intent(this, HomeNewActivity::class.java))
+        finish()
     }
 
 }

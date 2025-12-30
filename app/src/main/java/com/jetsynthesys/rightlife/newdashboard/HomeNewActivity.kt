@@ -1020,9 +1020,12 @@ class HomeNewActivity : BaseActivity() {
 
         sendTokenToServer("")
 
-        lifecycleScope.launch {
-            delay(2000)
-            AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
+        if (!sharedPreferenceManager.isHomeFirstVisited) {
+            sharedPreferenceManager.isHomeFirstVisited = true
+            lifecycleScope.launch {
+                delay(2000)
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
+            }
         }
     }
 

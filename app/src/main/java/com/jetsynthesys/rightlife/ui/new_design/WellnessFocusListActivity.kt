@@ -127,17 +127,21 @@ class WellnessFocusListActivity : BaseActivity() {
                     it.id?.let { it1 -> selectedOptions.add(it1) }
                 }
 
+                val selectedIds = selectedWellnessFocus.mapNotNull { it.id } // <-- this replaces selectedOptions
+
+
+                val params = mutableMapOf<String, Any>(
+                        AnalyticsParam.GOAL1 to (selectedWellnessFocus.getOrNull(0)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL2 to (selectedWellnessFocus.getOrNull(1)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL3 to (selectedWellnessFocus.getOrNull(2)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL4 to (selectedWellnessFocus.getOrNull(3)?.moduleTopic ?: "null")
+                )
 
                 AnalyticsLogger.logEvent(
                         this@WellnessFocusListActivity,
                         AnalyticsEvent.GoalSelection_SaveButton_Tap,
-                        mapOf(
-                                AnalyticsParam.GOAL to (sharedPreferenceManager.selectedOnboardingModule ?: "na"),
-                                AnalyticsParam.SELECTED_GOALS to selectedOptions.joinToString(",")
-
-                        )
+                        params
                 )
-
 
                 updateOnBoardingModule(selectedOptions)
             } else if (selectedWellnessFocus.size < 2) {

@@ -285,7 +285,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
         }
 
-        logVideoOpenEvent(this, contentResponseObj, episodeId, AnalyticsEvent.VIDEO_OPENED)
+        logVideoOpenEvent(this, contentResponseObj, episodeId, AnalyticsEvent.SeriesEpisode_Open)
     }
 
     private fun setReadMoreView(desc: String?) {
