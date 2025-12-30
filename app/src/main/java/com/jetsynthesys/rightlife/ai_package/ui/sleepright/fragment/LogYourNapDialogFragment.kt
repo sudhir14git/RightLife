@@ -155,7 +155,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
             context?.let { it1 ->
                 AnalyticsLogger.logEvent(
-                    it1, AnalyticsEvent.SR_ReportPage_LogYourSleep_Save
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
                 )
                 AnalyticsLogger.logEvent(
                     it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
