@@ -717,7 +717,7 @@ public class SharedPreferenceManager {
 
     // Method to retrieve the access token
     public boolean isHomeFirstVisited() {
-        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_SYNC, false);
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_HOME_VISIT, false);
     }
 }
 
