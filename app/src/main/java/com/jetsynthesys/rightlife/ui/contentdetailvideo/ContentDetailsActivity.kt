@@ -397,6 +397,9 @@ class ContentDetailsActivity : BaseActivity() {
         // resume video
         player.seekTo(PlayerHolder.lastPosition)
         player.playWhenReady = true
+
+        //logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.VIDEO_OPENED)
+        logContentOpenedEvent()
     }
 
 
@@ -727,7 +730,7 @@ class ContentDetailsActivity : BaseActivity() {
             )
         )
 
-        logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.VIDEO_OPENED)
+        logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.Video_Open)
     }
 
     private fun logContentWatchedEvent() {

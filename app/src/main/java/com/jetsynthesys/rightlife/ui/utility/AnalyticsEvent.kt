@@ -259,6 +259,8 @@ object AnalyticsEvent {
     const val TR_AffirmationPlaylist_PageOpen = "TR_AffirmationPlaylist_PageOpen"
     const val TR_AffirmationPlaylist_Completion_PageOpen =
         "TR_AffirmationPlaylist_Completion_PageOpen"
+    const val TR_AffirmationPlaylist_Completion =
+            "TR_AffirmationPlaylist_Completion"
 
     const val TR_Report_PageOpen = "TR_Report_PageOpen"
     const val TR_AffirmationPageGen_Open = "TR_AffirmationPageGen_Open"

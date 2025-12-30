@@ -67,7 +67,12 @@ object AnalyticsLogger {
         val subGoal = sp.selectedOnboardingSubModule?.trim()
         val loginType =sp.userProfile?.userdata?.loginType?.trim()?.lowercase() ?: "google" // if you store it
         val userId = sp.userId
-        val userDaysCount = sp.userProfile?.daysCount?:"NA"
+        //val userDaysCount = sp.userProfile?.userdata?.createdAt
+        val userDaysCount = getUserDayCount(
+                sp.userProfile?.userdata?.createdAt
+        )
+
+
 
 
         // Device name
@@ -103,6 +108,17 @@ object AnalyticsLogger {
         return out
     }
 
+    fun getUserDayCount(createdAtMillis: Long?): Int {
+        if (createdAtMillis == null || createdAtMillis <= 0L) return 0
+
+        val millisInDay = 24 * 60 * 60 * 1000L
+        val nowMillis = System.currentTimeMillis()
+
+        val diffMillis = nowMillis - createdAtMillis
+        if (diffMillis < 0) return 1   // device clock issue safety
+
+        return (diffMillis / millisInDay).toInt() + 1
+    }
 
 
 

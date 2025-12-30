@@ -302,7 +302,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
             this,
-            AnalyticsEvent.TR_AffirmationPlaylist_Completion_PageOpen,
+            AnalyticsEvent.TR_AffirmationPlaylist_Completion,
             mapOf(
                 AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                 AnalyticsParam.TOTAL_DURATION to duration
