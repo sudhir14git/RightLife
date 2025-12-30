@@ -704,8 +704,20 @@ public class SharedPreferenceManager {
         editor.putString(SharedPreferenceConstants.APP_CONFIG_RESPONSE, json);
         editor.apply();
     }
+
     public String getAppConfigJson() {
         return sharedPreferences.getString(SharedPreferenceConstants.APP_CONFIG_RESPONSE, "");
+    }
+
+    public void setHomeFirstVisited(boolean visit) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_HOME_VISIT, visit);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public boolean isHomeFirstVisited() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_SYNC, false);
     }
 }
 
