@@ -131,10 +131,10 @@ class WellnessFocusListActivity : BaseActivity() {
 
 
                 val params = mutableMapOf<String, Any>(
-                        AnalyticsParam.GOAL1 to (selectedIds.getOrNull(0) ?: "null"),
-                        AnalyticsParam.GOAL2 to (selectedIds.getOrNull(1) ?: "null"),
-                        AnalyticsParam.GOAL3 to (selectedIds.getOrNull(2) ?: "null"),
-                        AnalyticsParam.GOAL4 to (selectedIds.getOrNull(3) ?: "null")
+                        AnalyticsParam.GOAL1 to (selectedWellnessFocus.getOrNull(0)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL2 to (selectedWellnessFocus.getOrNull(1)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL3 to (selectedWellnessFocus.getOrNull(2)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL4 to (selectedWellnessFocus.getOrNull(3)?.moduleTopic ?: "null")
                 )
 
                 AnalyticsLogger.logEvent(
