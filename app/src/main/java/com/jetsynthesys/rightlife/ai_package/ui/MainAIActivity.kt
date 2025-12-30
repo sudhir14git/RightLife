@@ -16,6 +16,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.SearchWorkoutFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.YourActivityFragment
 import com.jetsynthesys.rightlife.databinding.ActivityMainAiBinding
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,6 +30,7 @@ class MainAIActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         bi = ActivityMainAiBinding.inflate(layoutInflater)
         setContentView(bi.root)
+        AnalyticsLogger.init(this)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         val moduleName = intent.getStringExtra("ModuleName")
