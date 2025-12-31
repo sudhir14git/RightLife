@@ -14,16 +14,11 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -212,17 +207,21 @@ class ContentDetailsActivity : BaseActivity() {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
                     contentResponseObj.data.like = false
                     postContentLike(contentResponseObj.data.id, false)
+                    val newCount: Int = getCurrentCount() - 1
+                    binding.txtLikeCount.text = getLikeText(newCount)
                 } else {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
                     contentResponseObj.data.like = true
                     postContentLike(contentResponseObj.data.id, true)
+                    val newCount: Int = getCurrentCount() + 1
+                    binding.txtLikeCount.text = getLikeText(newCount)
                 }
             }
             if (contentResponseObj.data.like) {
                 binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
             }
             binding.imageShareArticle.setOnClickListener { shareIntent() }
-            binding.txtLikeCount.text = contentResponseObj.data.likeCount.toString()
+            binding.txtLikeCount.text = getLikeText(contentResponseObj.data.likeCount)
         }
         binding.icBookmark.setOnClickListener {
             if (contentResponseObj != null) {
@@ -247,6 +246,22 @@ class ContentDetailsActivity : BaseActivity() {
         }
         if (contentResponseObj?.data?.bookmarked == true) {
             binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
+        }
+    }
+
+    private fun getLikeText(count: Int): String = when (count) {
+        0 -> "0 like"
+        1 -> "1 like"
+        else -> "$count likes"
+    }
+
+    private fun getCurrentCount(): Int {
+        try {
+            val countText = binding.txtLikeCount.text.toString()
+            val numbersOnly = countText.replace("[^0-9]".toRegex(), "")
+            return if (numbersOnly.isEmpty()) 0 else numbersOnly.toInt()
+        } catch (e: java.lang.Exception) {
+            return 0
         }
     }
 
@@ -401,7 +416,6 @@ class ContentDetailsActivity : BaseActivity() {
         //logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.VIDEO_OPENED)
         logContentOpenedEvent()
     }
-
 
 
     fun setModuleColor(moduleId: String) {
@@ -596,7 +610,7 @@ class ContentDetailsActivity : BaseActivity() {
                     Log.d("API Response", "Article response: $articleLikeResponse")
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
-                    Utils.showCustomToast(this@ContentDetailsActivity, response.message())
+                    //Utils.showCustomToast(this@ContentDetailsActivity, response.message())
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -686,7 +700,6 @@ class ContentDetailsActivity : BaseActivity() {
             PlayerHolder.player?.playWhenReady = true
         }
     }
-
 
 
     private fun releasePlayer() {
@@ -883,7 +896,6 @@ class ContentDetailsActivity : BaseActivity() {
     }
 
 
-
     override fun onStop() {
         super.onStop()
         try {
@@ -903,11 +915,10 @@ class ContentDetailsActivity : BaseActivity() {
         try {
             // Release video player
             if (::player.isInitialized) {
-                if (player.duration.toDouble()-player.currentPosition.toDouble()<2){
+                if (player.duration.toDouble() - player.currentPosition.toDouble() < 2) {
                     val contentData = contentResponseObj.data
                     callTrackAPI(contentData.meta.duration.toDouble() / 1000)
-                }else
-                {
+                } else {
                     callTrackAPI(player.currentPosition.toDouble() / 1000)
                 }
                 player.release()
