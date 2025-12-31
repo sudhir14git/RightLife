@@ -98,7 +98,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         btn_confirm.setOnClickListener {
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            logUserWaterIntake(userId = userId, source = "apple", waterMl = waterIntake.toInt(), date = currentDate)
+            logUserWaterIntake(userId = userId, source = "android", waterMl = waterIntake.toInt(), date = currentDate)
         }
 
         if (previousWaterIntake > 0){
