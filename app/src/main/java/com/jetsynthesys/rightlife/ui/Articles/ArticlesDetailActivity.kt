@@ -1,675 +1,573 @@
-package com.jetsynthesys.rightlife.ui.Articles;
+package com.jetsynthesys.rightlife.ui.Articles
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.text.Html
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.util.Log
+import android.view.View
+import android.widget.ImageView
+import android.widget.ProgressBar
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.ui.PlayerControlView
+import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse
+import com.jetsynthesys.rightlife.databinding.ActivityArticledetailBinding
+import com.jetsynthesys.rightlife.shortVibrate
+import com.jetsynthesys.rightlife.showCustomToast
+import com.jetsynthesys.rightlife.ui.Articles.models.Article
+import com.jetsynthesys.rightlife.ui.Articles.models.ArticleDetailsResponse
+import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
+import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
+import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
+import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter
+import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
+import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.Utils
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
+class ArticlesDetailActivity : BaseActivity() {
+    private lateinit var binding: ActivityArticledetailBinding
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.ui.StyledPlayerView;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.jetsynthesys.rightlife.BaseActivity;
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.ShortVibrateKt;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
-import com.jetsynthesys.rightlife.databinding.ActivityArticledetailBinding;
-import com.jetsynthesys.rightlife.ui.Articles.models.Article;
-import com.jetsynthesys.rightlife.ui.Articles.models.ArticleDetailsResponse;
-import com.jetsynthesys.rightlife.ui.Articles.models.Artist;
-import com.jetsynthesys.rightlife.ui.Articles.models.Data;
-import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
-import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
-import com.jetsynthesys.rightlife.ui.CommonAPICall;
-import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter;
-import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
-import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent;
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger;
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam;
-import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.jetsynthesys.rightlife.ShowCustomToastKt.showCustomToast;
-
-public class ArticlesDetailActivity extends BaseActivity {
-    private static final String VIDEO_URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"; // Free content URL
-    private final boolean isFullscreen = false;
-    // views
-    ImageView ic_back_dialog, ic_save_article, iconArrow, image_like_article, image_share_article;
-    TextView txt_inthisarticle, txt_inthisarticle_list, txt_article_content;
-    ActivityArticledetailBinding binding;
     // video views
-    private StyledPlayerView playerView;
-    private PlayerControlView controlView;
-    private ExoPlayer player;
-    private ProgressBar progressBar;
-    private ImageView fullscreenButton;
-    private String contentId;
-    private ArticleDetailsResponse articleDetailsResponse;
-    private long startTime = 0;
+    private var playerView: StyledPlayerView? = null
+    private var controlView: PlayerControlView? = null
+    private var player: ExoPlayer? = null
+    private var progressBar: ProgressBar? = null
+    private var fullscreenButton: ImageView? = null
+    private var contentId: String? = null
+    private var articleDetailsResponse: ArticleDetailsResponse? = null
+    private var startTime: Long = 0
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setChildContentView(R.layout.activity_articledetail);
+    protected override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setChildContentView(R.layout.activity_articledetail)
 
-        binding = ActivityArticledetailBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        startTime = System.currentTimeMillis();
+        binding = ActivityArticledetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        startTime = System.currentTimeMillis()
 
-        ic_back_dialog = findViewById(R.id.ic_back_dialog);
-        ic_save_article = findViewById(R.id.ic_save_article);
-        txt_inthisarticle = findViewById(R.id.txt_inthisarticle);
-        txt_inthisarticle_list = findViewById(R.id.txt_inthisarticle_list);
-
-        iconArrow = findViewById(R.id.icon_arrow_article);
-
-        iconArrow.setOnClickListener(v -> {
-            if (txt_inthisarticle_list.getVisibility() == View.VISIBLE) {
-                txt_inthisarticle_list.setVisibility(View.GONE);
-                iconArrow.setRotation(360f); // Rotate by 180 degrees
+        binding.iconArrowArticle.setOnClickListener { v: View? ->
+            if (binding.txtInthisarticleList.visibility == View.VISIBLE) {
+                binding.txtInthisarticleList.visibility = View.GONE
+                binding.iconArrowArticle.rotation = 360f // Rotate by 180 degrees
             } else {
-                txt_inthisarticle_list.setVisibility(View.VISIBLE);
-                iconArrow.setRotation(180f); // Rotate by 180 degrees
+                binding.txtInthisarticleList.visibility = View.VISIBLE
+                binding.iconArrowArticle.rotation = 180f// Rotate by 180 degrees
             }
-        });
-        txt_inthisarticle.setOnClickListener(v -> {
-            if (txt_inthisarticle_list.getVisibility() == View.VISIBLE) {
-                txt_inthisarticle_list.setVisibility(View.GONE);
-                iconArrow.setRotation(360f); // Rotate by 180 degrees
+        }
+        binding.txtInthisarticle.setOnClickListener { v: View? ->
+            if (binding.txtInthisarticleList.visibility == View.VISIBLE) {
+                binding.txtInthisarticleList.visibility = View.GONE
+                binding.iconArrowArticle.rotation = 360f
             } else {
-                txt_inthisarticle_list.setVisibility(View.VISIBLE);
-                iconArrow.setRotation(180f); // Rotate by 180 degrees
+                binding.txtInthisarticleList.visibility = View.VISIBLE
+                binding.iconArrowArticle.rotation = 180f
             }
-        });
-        ic_back_dialog.setOnClickListener(view -> finish());
+        }
+
+        binding.icBackDialog.setOnClickListener { finish() }
 
 
-        ic_save_article.setOnClickListener(view -> {
-            ic_save_article.setImageResource(R.drawable.ic_save_article_active);
+        binding.icSaveArticle.setOnClickListener {
+            binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active)
             // Call Save article api
-
-            if (articleDetailsResponse.getData().getBookmarked()) {
-                binding.icSaveArticle.setImageResource(R.drawable.ic_save_article);
-                articleDetailsResponse.getData().setBookmarked(false);
-                postArticleBookMark(articleDetailsResponse.getData().getId(), false, articleDetailsResponse.getData().getContentType());
+            if (articleDetailsResponse!!.data.bookmarked) {
+                binding.icSaveArticle.setImageResource(R.drawable.ic_save_article)
+                articleDetailsResponse!!.data.bookmarked = false
+                postArticleBookMark(
+                    articleDetailsResponse!!.data.id,
+                    false,
+                    articleDetailsResponse!!.data.contentType
+                )
             } else {
-                binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active);
-                articleDetailsResponse.getData().setBookmarked(true);
-                postArticleBookMark(articleDetailsResponse.getData().getId(), true, articleDetailsResponse.getData().getContentType());
+                binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active)
+                articleDetailsResponse!!.data.bookmarked = true
+                postArticleBookMark(
+                    articleDetailsResponse!!.data.id,
+                    true,
+                    articleDetailsResponse!!.data.contentType
+                )
             }
+        }
 
-
-        });
-
-        binding.imageLikeArticle.setOnClickListener(v -> {
-            ShortVibrateKt.shortVibrate(v, 100);
-            binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
-            int currentCount = getCurrentCount();
-            if (articleDetailsResponse.getData().getIsLike()) {
-                binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive);
-                articleDetailsResponse.getData().setIsLike(false);
-                postArticleLike(articleDetailsResponse.getData().getId(), false);
-                int newCount = currentCount - 1;
-                binding.txtLikeCount.setText(String.valueOf(Math.max(0, newCount)));
+        binding.imageLikeArticle.setOnClickListener { v: View? ->
+            v!!.shortVibrate(100)
+            binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
+            val currentCount = this.currentCount
+            if (articleDetailsResponse!!.data.isLike) {
+                binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
+                articleDetailsResponse!!.data.isLike = false
+                postArticleLike(articleDetailsResponse!!.data.id, false)
+                val newCount = currentCount - 1
+                binding.txtLikeCount.text = getLikeText(newCount)
             } else {
-                binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
-                articleDetailsResponse.getData().setIsLike(true);
-                postArticleLike(articleDetailsResponse.getData().getId(), true);
-                int newCount = currentCount + 1;
-                binding.txtLikeCount.setText(String.valueOf(Math.max(0, newCount)));
+                binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
+                articleDetailsResponse!!.data.isLike = true
+                postArticleLike(articleDetailsResponse!!.data.id, true)
+                val newCount = currentCount + 1
+                binding.txtLikeCount.text = getLikeText(newCount)
             }
-        });
+        }
 
 
-        binding.imageShareArticle.setOnClickListener(v -> shareIntent());
-        binding.txtTopic1.setOnClickListener(v -> shareIntent());
+        binding.imageShareArticle.setOnClickListener { shareIntent() }
+        binding.txtTopic1.setOnClickListener { shareIntent() }
 
-        txt_inthisarticle_list.setText("• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion");
+        binding.txtInthisarticleList.text =
+            "• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion"
 
-        contentId = getIntent().getStringExtra("contentId");
-        //setVideoPlayerView();
-        getArticleDetails(contentId);
-        //getArticleDetails("681c77f13cb497116bfe09db");
-        getRecommendedContent(contentId);
+        contentId = intent.getStringExtra("contentId")
+        getArticleDetails(contentId)
+        getRecommendedContent(contentId)
 
-        binding.tvViewAll.setOnClickListener(view -> {
-            Intent intent1 = new Intent(ArticlesDetailActivity.this, ViewAllActivity.class);
-            intent1.putExtra("ContentId", contentId);
-            startActivity(intent1);
-        });
+        binding.tvViewAll.setOnClickListener {
+            val intent1 = Intent(this@ArticlesDetailActivity, ViewAllActivity::class.java)
+            intent1.putExtra("ContentId", contentId)
+            startActivity(intent1)
+        }
         // Log the event article opened
-        logArticleOpenedEvent();
+        logArticleOpenedEvent()
     }
 
-    private int getCurrentCount() {
-        try {
-            String countText = binding.txtLikeCount.getText().toString();
-            String numbersOnly = countText.replaceAll("[^0-9]", "");
-            return numbersOnly.isEmpty() ? 0 : Integer.parseInt(numbersOnly);
-        } catch (Exception e) {
-            return 0;
+    private fun getLikeText(count: Int): String {
+        return when (count) {
+            0 -> "0 like"
+            1 -> "1 like"
+            else -> "$count likes"
         }
     }
 
+    private val currentCount: Int
+        get() {
+            try {
+                val countText = binding.txtLikeCount.text.toString()
+                val numbersOnly = countText.replace("[^0-9]".toRegex(), "")
+                return if (numbersOnly.isEmpty()) 0 else numbersOnly.toInt()
+            } catch (e: Exception) {
+                return 0
+            }
+        }
+
     // API call to get article details
-    private void getArticleDetails(String contentId) {
+    private fun getArticleDetails(contentId: String?) {
         //-----------
-        Utils.showLoader(this);
-
-        // contentId = "679b1e6d4199ddf6752fdb20";
-        //contentId = "67a9aeed7864652954596ecb";
-
+        Utils.showLoader(this)
         // Make the API call
-        Call<JsonElement> call = apiService.getArticleDetails(sharedPreferenceManager.getAccessToken(), contentId);
-        call.enqueue(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    JsonElement articleResponse = response.body();
-                    Log.d("API Response", "Article response: " + articleResponse);
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
+        val call = apiService.getArticleDetails(sharedPreferenceManager.accessToken, contentId)
+        call.enqueue(object : Callback<JsonElement?> {
+            override fun onResponse(
+                call: Call<JsonElement?>,
+                response: Response<JsonElement?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val articleResponse: JsonElement = response.body()!!
+                    Log.d("API Response", "Article response: $articleResponse")
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
 
-                    articleDetailsResponse = gson.fromJson(jsonResponse, ArticleDetailsResponse.class);
+                    articleDetailsResponse =
+                        gson.fromJson(jsonResponse, ArticleDetailsResponse::class.java)
 
-                    Log.d("API Response body", "Article Title" + articleDetailsResponse.getData().getTitle());
-                    if (articleDetailsResponse != null && articleDetailsResponse.getData() != null) {
-                        handleArticleResponseData(articleDetailsResponse);
+                    Log.d(
+                        "API Response body",
+                        "Article Title" + articleDetailsResponse!!.data.title
+                    )
+                    if (articleDetailsResponse != null && articleDetailsResponse!!.data != null) {
+                        handleArticleResponseData(articleDetailsResponse!!)
                     }
-                    binding.scrollviewarticle.setVisibility(View.VISIBLE);
+                    binding.scrollviewarticle.visibility = View.VISIBLE
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
-                Utils.dismissLoader(ArticlesDetailActivity.this);
+                Utils.dismissLoader(this@ArticlesDetailActivity)
             }
 
-            @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
-                handleNoInternetView(t);
-                Utils.dismissLoader(ArticlesDetailActivity.this);
+            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                handleNoInternetView(t)
+                Utils.dismissLoader(this@ArticlesDetailActivity)
             }
-        });
-
+        })
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        logArticleOpenEvent(ArticlesDetailActivity.this, articleDetailsResponse, contentId);
+    override fun onStop() {
+        super.onStop()
+        logArticleOpenEvent(this@ArticlesDetailActivity, articleDetailsResponse, contentId)
     }
 
-    private void handleArticleResponseData(ArticleDetailsResponse articleDetailsResponse) {
+    private fun handleArticleResponseData(articleDetailsResponse: ArticleDetailsResponse) {
+        binding.tvHeaderArticle.text = articleDetailsResponse.data.title
+        if (!articleDetailsResponse.data.artist.isEmpty()) {
+            val artist = articleDetailsResponse.data.artist[0]
+            binding.tvAuthorName.text = String.format("%s %s", artist.firstName, artist.lastName)
+            binding.tvAuthorName.setOnClickListener {
+                val intent = Intent(this, ArticlesDetailActivity::class.java)
+                intent.putExtra("ArtistId", artist.id)
+                startActivity(intent)
+            }
 
-        binding.tvHeaderArticle.setText(articleDetailsResponse.getData().getTitle());
-        if (!articleDetailsResponse.getData().getArtist().isEmpty()) {
-            Artist artist = articleDetailsResponse.getData().getArtist().get(0);
-            binding.tvAuthorName.setText(String.format("%s %s", artist.getFirstName(), artist.getLastName()));
-            binding.tvAuthorName.setOnClickListener(view -> {
-                Intent intent = new Intent(this, ArticlesDetailActivity.class);
-                intent.putExtra("ArtistId", artist.getId());
-                startActivity(intent);
-            });
-
-            if (!this.isFinishing() && !this.isDestroyed())
-                Glide.with(this).load(ApiClient.CDN_URL_QA + artist.getProfilePicture())
-                        .transform(new RoundedCorners(25))
-                        .placeholder(R.drawable.rl_profile)
-                        .error(R.drawable.rl_profile)
-                        .into(binding.authorImage);
+            if (!this.isFinishing && !this.isDestroyed) Glide.with(this)
+                .load(ApiClient.CDN_URL_QA + artist.profilePicture)
+                .transform(RoundedCorners(25))
+                .placeholder(R.drawable.rl_profile)
+                .error(R.drawable.rl_profile)
+                .into(binding.authorImage)
         }
-        binding.txtArticleDate.setText(DateTimeUtils.convertAPIDateMonthFormat(articleDetailsResponse.getData().getCreatedAt()));
-        binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getCategoryName());//getTags().get(0).getName());
-        setModuleColor(binding.imageTag, articleDetailsResponse.getData().getModuleId());
-        binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime() + " min read");
-        if (!isFinishing() && !isDestroyed()) {
-            Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.getData().getUrl())
-                    .transform(new RoundedCorners(1))
-                    .placeholder(R.drawable.rl_placeholder)
-                    .error(R.drawable.rl_placeholder)
-                    .into(binding.articleImageMain);
+        binding.txtArticleDate.text = DateTimeUtils.convertAPIDateMonthFormat(
+            articleDetailsResponse.data.createdAt
+        )
+        binding.txtCategoryArticle.text =
+            articleDetailsResponse.data.categoryName //getTags().get(0).getName());
+        setModuleColor(binding.imageTag, articleDetailsResponse.data.moduleId)
+        binding.txtReadtime.text = articleDetailsResponse.data.readingTime + " min read"
+        if (!isFinishing && !isDestroyed) {
+            Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.data.url)
+                .transform(RoundedCorners(1))
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
+                .into(binding.articleImageMain)
         }
-        //setInThisArticleList(articleDetailsResponse.getData().getArticle());
-        HandleArticleListView(articleDetailsResponse.getData().getArticle());
-        if (articleDetailsResponse.getData().getTableOfContents() != null) {
-            binding.llInthisarticle.setVisibility(View.VISIBLE);
-            handleInThisArticle(articleDetailsResponse.getData().getTableOfContents());
+        HandleArticleListView(articleDetailsResponse.data.article)
+        if (articleDetailsResponse.data.tableOfContents != null) {
+            binding.llInthisarticle.visibility = View.VISIBLE
+            handleInThisArticle(articleDetailsResponse.data.tableOfContents)
         }
         // handle save icon
-        if (articleDetailsResponse.getData().getBookmarked()) {
-            binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active);
+        if (articleDetailsResponse.data.bookmarked) {
+            binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active)
         } else {
-            binding.icSaveArticle.setImageResource(R.drawable.ic_save_article);
+            binding.icSaveArticle.setImageResource(R.drawable.ic_save_article)
         }
 
-        if (articleDetailsResponse.getData().getIsLike()) {
-            binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
+        if (articleDetailsResponse.data.isLike) {
+            binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
         } else {
-            binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive);
+            binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
         }
-        if (articleDetailsResponse.getData().getLikeCount() != null) {
-            binding.txtLikeCount.setText(articleDetailsResponse.getData().getLikeCount().toString());
-        }
-
-       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            binding.txtKeytakeawayDesc.setText(Html.fromHtml(articleDetailsResponse.getData().getSummary(), Html.FROM_HTML_MODE_COMPACT));
-        } else {
-            binding.txtKeytakeawayDesc.setText(Html.fromHtml(articleDetailsResponse.getData().getSummary()));
-        }*/
-        Spanned spanned;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            spanned = Html.fromHtml(articleDetailsResponse.getData().getSummary(), Html.FROM_HTML_MODE_LEGACY);
-        } else {
-            spanned = Html.fromHtml(articleDetailsResponse.getData().getSummary());
+        if (articleDetailsResponse.data.likeCount != null) {
+            binding.txtLikeCount.text = getLikeText(articleDetailsResponse.data.likeCount)
         }
 
-        binding.txtKeytakeawayDesc.setText(spanned);
+        val spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(
+                articleDetailsResponse.data.summary,
+                Html.FROM_HTML_MODE_LEGACY
+            )
+        } else {
+            Html.fromHtml(articleDetailsResponse.data.summary)
+        }
+
+        binding.txtKeytakeawayDesc.text = spanned
 
         // article consumed
-        EpisodeTrackRequest episodeTrackRequest = new EpisodeTrackRequest(sharedPreferenceManager.getUserId(), articleDetailsResponse.getData().getModuleId(),
-                articleDetailsResponse.getData().getId(), "1.0", "1.0", "TEXT");
-        CommonAPICall.INSTANCE.trackEpisodeOrContent(this, episodeTrackRequest);
+        val episodeTrackRequest = EpisodeTrackRequest(
+            sharedPreferenceManager.userId, articleDetailsResponse.data.moduleId,
+            articleDetailsResponse.data.id, "1.0", "1.0", "TEXT"
+        )
+        trackEpisodeOrContent(this, episodeTrackRequest)
     }
 
-    private void handleInThisArticle(List<String> tocItems) {
-        SpannableStringBuilder builder = new SpannableStringBuilder();
+    private fun handleInThisArticle(tocItems: MutableList<String?>) {
+        val builder = SpannableStringBuilder()
 
-        for (int i = 0; i < tocItems.size(); i++) {
-            String item = tocItems.get(i);
+        for (i in tocItems.indices) {
+            val item = tocItems[i]
 
             // Add bullet point
-            builder.append("• ");
+            builder.append("• ")
 
             // Remember start position of the item text
-            int itemStart = builder.length();
+            val itemStart = builder.length
 
             // Add the item text
-            builder.append(item);
-            int itemEnd = builder.length();
+            builder.append(item)
+            val itemEnd = builder.length
 
             // Create and apply ClickableSpan
-            final int position = i;
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    View targetView = binding.recyclerViewArticle.getLayoutManager().findViewByPosition(position);
+            val position = i
+            val clickableSpan: ClickableSpan = object : ClickableSpan() {
+                override fun onClick(p0: View) {
+                    val targetView = binding.recyclerViewArticle.layoutManager!!
+                        .findViewByPosition(position)
                     if (targetView != null) {
-                        binding.scrollviewarticle.smoothScrollTo(0, targetView.getTop());
+                        binding.scrollviewarticle.smoothScrollTo(0, targetView.top)
                     }
                 }
 
-                @Override
-                public void updateDrawState(android.text.TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setColor(ContextCompat.getColor(ArticlesDetailActivity.this, R.color.color_in_this_article));
-                    ds.setUnderlineText(false);
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.color = ContextCompat.getColor(
+                        this@ArticlesDetailActivity,
+                        R.color.color_in_this_article
+                    )
+                    ds.isUnderlineText = false
                 }
-            };
+            }
 
-            builder.setSpan(clickableSpan, itemStart, itemEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builder.setSpan(clickableSpan, itemStart, itemEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
             // Add spacing (newlines) except after the last item
-            if (i < tocItems.size() - 1) {
-                builder.append("\n\n");
+            if (i < tocItems.size - 1) {
+                builder.append("\n\n")
             }
         }
 
-        builder.append("\n"); // Final newline
+        builder.append("\n") // Final newline
 
-        binding.txtInthisarticleList.setText(builder);
-        binding.txtInthisarticleList.setMovementMethod(LinkMovementMethod.getInstance());
+        binding.txtInthisarticleList.text = builder
+        binding.txtInthisarticleList.movementMethod = LinkMovementMethod.getInstance()
     }
 
-    /*private void handleInThisArticle(List<String> tocItems) {
-        // Create a StringBuilder to build the text with bullet points
-        StringBuilder textBuilder = new StringBuilder();
-
-        // Add bullet points (•) before each item
-        for (int i = 0; i < tocItems.size(); i++) {
-            textBuilder.append("• ").append(tocItems.get(i));
-            if (i < tocItems.size() - 1) { // Don't add newline after the last item
-                textBuilder.append("\n\n");
-            }
-        }
-        textBuilder.append("\n"); // Add final newline
-
-        // Create a SpannableString to handle multiple spans
-        SpannableString spannableString = new SpannableString(textBuilder.toString());
-
-        //SpannableString spannableString = new SpannableString(String.join("\n\n", tocItems) + "\n");
-
-        // Calculate the start and end indices for each item
-        int start = 0;
-        for (int i = 0; i < tocItems.size(); i++) {
-            String item = tocItems.get(i);
-            int end = start + item.length();
-
-            // Create a ClickableSpan for each item
-            final int position = i; // Capture the current index
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    // Handle the click event and get the position
-                    //Toast.makeText(ArticlesDetailActivity.this, "Clicked: " + tocItems.get(position) + " at position: " + position, Toast.LENGTH_SHORT).show();
-                    // Handle the click event and get the position
-                    View targetView = binding.recyclerViewArticle.getLayoutManager().findViewByPosition(position);
-                    if (targetView != null) {
-                        binding.scrollviewarticle.smoothScrollTo(0, targetView.getTop());
-                    }
-                }
-
-                @Override
-                public void updateDrawState(android.text.TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setColor(ContextCompat.getColor(ArticlesDetailActivity.this, R.color.color_in_this_article)); // Set your desired color
-                    ds.setUnderlineText(false); // Remove underline if you don't want it
-                }
-
-            };
-
-            // Set the ClickableSpan on the specific range
-            spannableString.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            start = end + 1; // Move to the next item (including the newline character)
-        }
-
-        // Set the SpannableString to the TextView
-        binding.txtInthisarticleList.setText(spannableString);
-        binding.txtInthisarticleList.setMovementMethod(LinkMovementMethod.getInstance()); // Enable link clicks
-    }*/
-
-
-    private void HandleArticleListView(List<Article> articleList) {
-        ArticleListAdapter adapter = new ArticleListAdapter(this, articleList);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        binding.recyclerViewArticle.setLayoutManager(horizontalLayoutManager);
-        binding.recyclerViewArticle.setAdapter(adapter);
+    private fun HandleArticleListView(articleList: MutableList<Article?>?) {
+        val adapter = ArticleListAdapter(this, articleList)
+        val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerViewArticle.setLayoutManager(horizontalLayoutManager)
+        binding.recyclerViewArticle.setAdapter(adapter)
         //binding.bottomcardview.setVisibility(View.VISIBLE);
     }
 
-    public void setModuleColor(ImageView imgtag, String moduleId) {
-        if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
-            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.eatright);
-            binding.imageTag.setImageTintList(colorStateList);
-
-        } else if (moduleId.equalsIgnoreCase("THINK_RIGHT")) {
-            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.thinkright);
-            binding.imageTag.setImageTintList(colorStateList);
-
-        } else if (moduleId.equalsIgnoreCase("SLEEP_RIGHT")) {
-            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.sleepright);
-            binding.imageTag.setImageTintList(colorStateList);
-
-        } else if (moduleId.equalsIgnoreCase("MOVE_RIGHT")) {
-            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.moveright);
-            binding.imageTag.setImageTintList(colorStateList);
-
+    fun setModuleColor(imgTag: ImageView?, moduleId: String) {
+        if (moduleId.equals("EAT_RIGHT", ignoreCase = true)) {
+            val colorStateList = ContextCompat.getColorStateList(this, R.color.eatright)
+            binding.imageTag.imageTintList = colorStateList
+        } else if (moduleId.equals("THINK_RIGHT", ignoreCase = true)) {
+            val colorStateList = ContextCompat.getColorStateList(this, R.color.thinkright)
+            binding.imageTag.imageTintList = colorStateList
+        } else if (moduleId.equals("SLEEP_RIGHT", ignoreCase = true)) {
+            val colorStateList = ContextCompat.getColorStateList(this, R.color.sleepright)
+            binding.imageTag.imageTintList = colorStateList
+        } else if (moduleId.equals("MOVE_RIGHT", ignoreCase = true)) {
+            val colorStateList = ContextCompat.getColorStateList(this, R.color.moveright)
+            binding.imageTag.imageTintList = colorStateList
         }
     }
 
-
-    // set exoplayer videoview
-    private void setVideoPlayerView() {
-        playerView = findViewById(R.id.player_view);
-        controlView = findViewById(R.id.control_view); // Initialize controlView
-        progressBar = findViewById(R.id.progress_bar);
-        fullscreenButton = findViewById(R.id.fullscreen_button);
-
-
-        player = new ExoPlayer.Builder(this).build(); // Correct way to initialize
-
-        playerView.setPlayer(player);
-        controlView.setPlayer(player); // Set the player to the controlView
-
-        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(VIDEO_URL));
-        player.setMediaItem(mediaItem);
-
-        player.prepare();
-        player.play(); // Autoplay
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+    override fun onResume() {
+        super.onResume()
         if (player != null) { // Check if player is initialized
-            player.play(); // Resume playback when the activity is resumed
+            player!!.play() // Resume playback when the activity is resumed
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    override fun onPause() {
+        super.onPause()
         if (player != null) {
-            player.pause(); // Pause playback when the activity is paused
+            player!!.pause() // Pause playback when the activity is paused
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    override fun onDestroy() {
+        super.onDestroy()
         if (player != null) {
-            player.release(); // Release the player resources
-            player = null; // Important: Set player to null to avoid memory leaks
+            player!!.release() // Release the player resources
+            player = null // Important: Set player to null to avoid memory leaks
         }
         // Log the event article finished
-        logArticleFinishedEvent();
+        logArticleFinishedEvent()
     }
 
 
-    private void postArticleLike(String contentId, boolean isLike) {
-        ArticleLikeRequest request = new ArticleLikeRequest(contentId, isLike);
+    private fun postArticleLike(contentId: String?, isLike: Boolean) {
+        val request = ArticleLikeRequest(contentId, isLike)
         // Make the API call
-        Call<ResponseBody> call = apiService.ArticleLikeRequest(sharedPreferenceManager.getAccessToken(), request);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ResponseBody articleLikeResponse = response.body();
-                    Log.d("API Response", "Article response: " + articleLikeResponse);
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
-
-
+        val call = apiService.ArticleLikeRequest(sharedPreferenceManager.accessToken, request)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val articleLikeResponse: ResponseBody = response.body()!!
+                    Log.d("API Response", "Article response: $articleLikeResponse")
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                handleNoInternetView(t);
-
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
             }
-        });
-
+        })
     }
 
-    private void postArticleBookMark(String contentId, boolean isBookmark, String contentType) {
-        ArticleBookmarkRequest request = new ArticleBookmarkRequest(contentId, isBookmark, "", contentType);
+    private fun postArticleBookMark(contentId: String, isBookmark: Boolean, contentType: String) {
+        val request = ArticleBookmarkRequest(contentId, isBookmark, "", contentType)
         // Make the API call
-        Call<ResponseBody> call = apiService.ArticleBookmarkRequest(sharedPreferenceManager.getAccessToken(), request);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ResponseBody articleLikeResponse = response.body();
-                    Log.d("API Response", "Article Bookmark response: " + articleLikeResponse);
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
-                    String message = "";
-                    if (isBookmark) {
-                        message = "Added To Your Saved Items";
+        val call =
+            apiService.ArticleBookmarkRequest(sharedPreferenceManager.accessToken, request)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val articleLikeResponse: ResponseBody = response.body()!!
+                    Log.d("API Response", "Article Bookmark response: $articleLikeResponse")
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+                    var message = ""
+                    message = if (isBookmark) {
+                        "Added To Your Saved Items"
                     } else {
-                        message = "Removed From Saved Items";
+                        "Removed From Saved Items"
                     }
-                    showCustomToast(ArticlesDetailActivity.this, message, isBookmark);
-
-
+                    this@ArticlesDetailActivity.showCustomToast(message, isBookmark)
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                handleNoInternetView(t);
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
             }
-        });
-
+        })
     }
 
-    private void shareIntent() {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
+    private fun shareIntent() {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        val shareText =
+            ("Saw this on RightLife and thought of you, it’s got health tips that actually make sense. Check it out here."
+                    + "\nPlay Store Link  https://play.google.com/store/apps/details?id=" + packageName +
+                    "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850")
 
-        /*String shareText = "“Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.\n" +
-                "                     Try it and get 7 days for free. Here’s the link:\n " + "Play Store Link  https://play.google.com/store/apps/details?id=${packageName} \n" +
-                "App Store Link https://apps.apple.com/app/rightlife/id6444228850";*/
+        intent.putExtra(Intent.EXTRA_TEXT, shareText)
 
-        String shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. Check it out here."
-                + "\nPlay Store Link  https://play.google.com/store/apps/details?id=" + getPackageName() +
-                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850";
-
-        intent.putExtra(Intent.EXTRA_TEXT, shareText);
-
-        startActivity(Intent.createChooser(intent, "Share"));
+        startActivity(Intent.createChooser(intent, "Share"))
     }
 
-    private void getRecommendedContent(String contentId) {
+    private fun getRecommendedContent(contentId: String?) {
         // Make the API call
-        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentId, 0, 5);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
+        val call =
+            apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentId, 0, 5)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
                     try {
-                        String jsonString = response.body().string();
-                        Gson gson = new Gson();
-                        MoreLikeContentResponse responseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
+                        val jsonString = response.body()!!.string()
+                        val gson = Gson()
+                        val responseObj = gson.fromJson(
+                            jsonString,
+                            MoreLikeContentResponse::class.java
+                        )
 
-                        if (responseObj != null &&
-                                responseObj.getData() != null &&
-                                responseObj.getData().getLikeList() != null) {
-
-                            List<Like> likeList = responseObj.getData().getLikeList();
+                        if (responseObj != null && responseObj.data != null && responseObj.data
+                                .likeList != null
+                        ) {
+                            val likeList = responseObj.data.likeList
 
                             if (!likeList.isEmpty()) {
-                                setupListData(likeList);
+                                setupListData(likeList)
 
-                                if (likeList.size() < 5) {
-                                    binding.tvViewAll.setVisibility(View.GONE);
+                                if (likeList.size < 5) {
+                                    binding.tvViewAll.visibility = View.GONE
                                 } else {
-                                    binding.tvViewAll.setVisibility(View.VISIBLE);
+                                    binding.tvViewAll.visibility = View.VISIBLE
                                 }
                             } else {
-                                binding.txtAlsolikeHeader.setVisibility(View.GONE);
+                                binding.txtAlsolikeHeader.visibility = View.GONE
                             }
                         }
-                    } catch (Exception e) {
-                        Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
+                    } catch (e: Exception) {
+                        Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.message)
                     }
-
-
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                handleNoInternetView(t);
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
             }
-        });
-
+        })
     }
 
-    private void setupListData(List<Like> contentList) {
-        binding.txtAlsolikeHeader.setVisibility(View.VISIBLE);
+    private fun setupListData(contentList: MutableList<Like?>) {
+        binding.txtAlsolikeHeader.visibility = View.VISIBLE
 
-        YouMayAlsoLikeAdapter adapter = new YouMayAlsoLikeAdapter(this, contentList);
-        LinearLayoutManager horizontalLayoutManager =
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        val adapter = YouMayAlsoLikeAdapter(this, contentList as List<Like>)
+        val horizontalLayoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        binding.recyclerViewAlsolike.setLayoutManager(horizontalLayoutManager);
-        binding.recyclerViewAlsolike.setAdapter(adapter);
+        binding.recyclerViewAlsolike.setLayoutManager(horizontalLayoutManager)
+        binding.recyclerViewAlsolike.setAdapter(adapter)
     }
 
 
-    private void logArticleOpenedEvent() {
-        Map<String, Object> params = new HashMap<>();
-        params.put(AnalyticsParam.ARTICLE_ID, contentId != null ? contentId : "");
-        AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.ARTICLE_OPENED, params);
+    private fun logArticleOpenedEvent() {
+        val params: MutableMap<String?, Any?> = HashMap<String?, Any?>()
+        params[AnalyticsParam.ARTICLE_ID] = if (contentId != null) contentId else ""
+        AnalyticsLogger.logEvent(this, AnalyticsEvent.ARTICLE_OPENED, params as Map<String, Any>?)
     }
 
-    private void logArticleFinishedEvent() {
-        Map<String, Object> params = new HashMap<>();
-        params.put(AnalyticsParam.ARTICLE_ID, contentId != null ? contentId : "");
+    private fun logArticleFinishedEvent() {
+        val params: MutableMap<String?, Any?> = HashMap<String?, Any?>()
+        params[AnalyticsParam.ARTICLE_ID] = if (contentId != null) contentId else ""
 
-        AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.ARTICLE_FINISHED, params);
+        AnalyticsLogger.logEvent(this, AnalyticsEvent.ARTICLE_FINISHED, params as Map<String, Any>?)
     }
 
-    private void logArticleOpenEvent(Context context,
-                                     ArticleDetailsResponse contentResponseObj,
-                                     String contentId) {
+    private fun logArticleOpenEvent(
+        context: Context,
+        contentResponseObj: ArticleDetailsResponse?,
+        contentId: String?
+    ) {
         try {
-            Map<String, Object> params = new HashMap<>();
+            val params: MutableMap<String?, Any?> = HashMap()
 
             // Safely extract nested data once
-            Data data =
-                    contentResponseObj != null ? contentResponseObj.getData() : null;
+            val data = contentResponseObj?.data
 
-            String id = contentId != null ? contentId.trim() : "";
-            String type = (data != null && data.getContentType() != null)
-                    ? data.getContentType().trim() : "";
-            String module = (data != null && data.getModuleId() != null)
-                    ? data.getModuleId().trim() : "";
+            val id = contentId?.trim { it <= ' ' } ?: ""
+            val type = if (data != null && data.contentType != null) data.contentType
+                .trim { it <= ' ' } else ""
+            val module = if (data != null && data.moduleId != null) data.moduleId
+                .trim { it <= ' ' } else ""
 
-            params.put(AnalyticsParam.CONTENT_ID, id);
-            params.put(AnalyticsParam.CONTENT_TYPE, type);
-            params.put(AnalyticsParam.CONTENT_MODULE, module);
-            long duration = System.currentTimeMillis() - startTime;
-            params.put(AnalyticsParam.TOTAL_DURATION, duration);
+            params[AnalyticsParam.CONTENT_ID] = id
+            params[AnalyticsParam.CONTENT_TYPE] = type
+            params[AnalyticsParam.CONTENT_MODULE] = module
+            val duration = System.currentTimeMillis() - startTime
+            params[AnalyticsParam.TOTAL_DURATION] = duration
 
             if (!params.isEmpty()) {
-                AnalyticsLogger.INSTANCE.logEvent(context, AnalyticsEvent.Article_Open, params);
+                AnalyticsLogger.logEvent(
+                    context, AnalyticsEvent.Article_Open, params as Map<String, Any>?
+                )
             }
-        } catch (Exception e) {
-            Log.e("AnalyticsLogger", "Video_Open event failed: " + e.getLocalizedMessage(), e);
+        } catch (e: Exception) {
+            Log.e("AnalyticsLogger", "Video_Open event failed: " + e.localizedMessage, e)
         }
     }
 
 
+    companion object {
+        private const val VIDEO_URL =
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" // Free content URL
+    }
 }

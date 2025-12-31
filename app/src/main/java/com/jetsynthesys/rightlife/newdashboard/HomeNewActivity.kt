@@ -669,6 +669,12 @@ class HomeNewActivity : BaseActivity() {
             binding.swipeRefreshLayout.isEnabled = scrollY <= 5
         }
 
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+            showTrailEndedBottomSheet()
+        } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+            showSubsciptionEndedBottomSheet()
+        }
+
         onBackPressedDispatcher.addCallback {
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
@@ -1406,7 +1412,7 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    private fun showTrailEndedBottomSheet() {
+    fun showTrailEndedBottomSheet() {
         DialogUtils.showFreeTrailRelatedBottomSheet(
             this,
             "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
@@ -1426,12 +1432,12 @@ class HomeNewActivity : BaseActivity() {
             })
     }
 
-    private fun showSubsciptionEndedBottomSheet() {
+    fun showSubsciptionEndedBottomSheet() {
         DialogUtils.showFreeTrailRelatedBottomSheet(
             this,
             "Reactivate now to continue tracking and improving your health.",
             "No Active Plan",
-            "Explore Plans",
+            "See Plans",
             false,
             R.drawable.ft_ended,
             R.drawable.ft_warning,

@@ -893,60 +893,28 @@ class HomeDashboardFragment : BaseFragment()
 
     private fun checkTrailEndedAndShowDialog(): Boolean
     {
-        return if (!DashboardChecklistManager.paymentStatus)
-        {
-            showTrailEndedBottomSheet()
+        return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity()
             false // Return false if condition is true and dialog is shown
-        } else
-        {
-            if (!DashboardChecklistManager.checklistStatus)
-            {
+        } else {
+            if (!DashboardChecklistManager.checklistStatus) {
                 AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.FINISH_TO_UNLOCK_CLICK)
                 DialogUtils.showCheckListQuestionCommonDialog(requireContext())
                 false
-            } else
-            {
-                true // Return true if condition is false
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+                (requireActivity() as HomeNewActivity).showTrailEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+                (requireActivity() as HomeNewActivity).showSubsciptionEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else {
+                true
             }
         }
         return true
     }
 
-    private fun showTrailEndedBottomSheet()
-    {
-        // Create and configure BottomSheetDialog
-        val bottomSheetDialog = BottomSheetDialog(requireContext())
 
-        // Inflate the BottomSheet layout
-        val dialogBinding = BottomsheetTrialEndedBinding.inflate(layoutInflater)
-        val bottomSheetView = dialogBinding.root
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-
-        // Set up the animation
-        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
-        if (bottomSheetLayout != null)
-        {
-            val slideUpAnimation: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.bottom_sheet_slide_up)
-            bottomSheetLayout.animation = slideUpAnimation
-        }
-
-        dialogBinding.ivDialogClose.setOnClickListener {
-            bottomSheetDialog.dismiss()
-        }
-
-        dialogBinding.btnExplorePlan.setOnClickListener {
-            it.disableViewForSeconds()
-            bottomSheetDialog.dismiss()
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SUBSCRIBE_RIGHT_LIFE_CLICK)
-            startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
-                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
-            })
-            //finish()
-        }
-
-        bottomSheetDialog.show()
-    }
 
     private fun installHealthConnect(context: Context)
     {

@@ -166,17 +166,21 @@ class SeriesListActivity : BaseActivity() {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
                     contentResponseObj.data.like = false
                     postContentLike(contentResponseObj.data.id, false)
+                    val newCount: Int = getCurrentCount() - 1
+                    binding.txtLikeCount.text = getLikeText(newCount)
                 } else {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
                     contentResponseObj.data.like = true
                     postContentLike(contentResponseObj.data.id, true)
+                    val newCount: Int = getCurrentCount() - 1
+                    binding.txtLikeCount.text = getLikeText(newCount)
                 }
             }
             if (contentResponseObj.data.like) {
                 binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
             }
             binding.imageShareArticle.setOnClickListener { shareIntent() }
-            binding.txtLikeCount.text = contentResponseObj.data.likeCount.toString()
+            binding.txtLikeCount.text = getLikeText(contentResponseObj.data.likeCount)
 
 
             binding.icBookmark.setOnClickListener {
@@ -189,6 +193,8 @@ class SeriesListActivity : BaseActivity() {
                             false,
                             contentResponseObj.data.contentType
                         )
+                        val newCount: Int = getCurrentCount() - 1
+                        binding.txtLikeCount.text = getLikeText(newCount)
                     } else {
                         contentResponseObj.data.bookmarked = true
                         binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
@@ -197,6 +203,8 @@ class SeriesListActivity : BaseActivity() {
                             true,
                             contentResponseObj.data.contentType
                         )
+                        val newCount: Int = getCurrentCount() + 1
+                        binding.txtLikeCount.text = getLikeText(newCount)
                     }
                 }
             }
@@ -205,6 +213,22 @@ class SeriesListActivity : BaseActivity() {
             }
         }
 
+    }
+
+    private fun getLikeText(count: Int): String = when (count) {
+        0 -> "0 like"
+        1 -> "1 like"
+        else -> "$count likes"
+    }
+
+    private fun getCurrentCount(): Int {
+        try {
+            val countText = binding.txtLikeCount.text.toString()
+            val numbersOnly = countText.replace("[^0-9]".toRegex(), "")
+            return if (numbersOnly.isEmpty()) 0 else numbersOnly.toInt()
+        } catch (e: java.lang.Exception) {
+            return 0
+        }
     }
 
 
@@ -367,7 +391,10 @@ class SeriesListActivity : BaseActivity() {
                     //Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
                     setupEpisodeListData(
-                        seriesResponseModel.data.episodes, seriesResponseModel.data.categoryName, seriesResponseModel.data.moduleId)
+                        seriesResponseModel.data.episodes,
+                        seriesResponseModel.data.categoryName,
+                        seriesResponseModel.data.moduleId
+                    )
                     setupArtistList(seriesResponseModel)
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -394,7 +421,11 @@ class SeriesListActivity : BaseActivity() {
         binding.recyclerArtists.adapter = adapter
     }
 
-    private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String, moduleId: String) {
+    private fun setupEpisodeListData(
+        contentList: ArrayList<Episode>,
+        categoryName: String,
+        moduleId: String
+    ) {
         val adapter = SeriesListAdapter(this, contentList, categoryName, moduleId)
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerViewSerieslist.setLayoutManager(horizontalLayoutManager)
