@@ -49,20 +49,16 @@ class YourMovementSummaryInfoBottomSheet : BottomSheetDialogFragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val title = view.findViewById<TextView>(R.id.title)
         val viewN = view.findViewById<View>(R.id.view)
         val close = view.findViewById<ImageView>(R.id.close)
         val summary = view.findViewById<TextView>(R.id.tvMealSummary)
         val image = view.findViewById<ImageView>(R.id.image)
-
         image.visibility = View.GONE
         viewN.visibility = View.GONE
-
-        close.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.close_journal))
+        close.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.close_breathwork))
         title.text = "Your Movement Summary"
         close.setOnClickListener { dismiss() }
-
         // HTML Content
         val htmlContentPart1 = """
         <h2>What is Your Movement Summary?</h2>
@@ -73,11 +69,11 @@ class YourMovementSummaryInfoBottomSheet : BottomSheetDialogFragment() {
 
         <p><i>'What are MET Values?' [Recommended Article]</i></p>
 
-        <ul>
-          <li><b>Workout Type</b> – Displays the type of workout you logged.</li>
-          <li><b>Total Duration</b> – The total time you spent exercising.</li>
-          <li><b>Calories Burned</b> – Estimated based on your workout and intensity.</li>
-          <li><b>Heart Rate Load (Wearable Users Only)</b> – Your heart rate data during the session, giving insights into workout intensity and effectiveness.</li>
+        <ul style="padding-left: 20px;">
+          <li style="margin-bottom: 8px; padding-left: 8px;"><b>Workout Type</b> – Displays the type of workout you logged.</li>
+          <li style="margin-bottom: 8px; padding-left: 8px;"><b>Total Duration</b> – The total time you spent exercising.</li>
+          <li style="margin-bottom: 8px; padding-left: 8px;"><b>Calories Burned</b> – Estimated based on your workout and intensity.</li>
+          <li style="margin-bottom: 8px; padding-left: 8px;"><b>Heart Rate Load (Wearable Users Only)</b> – Your heart rate data during the session, giving insights into workout intensity and effectiveness.</li>
         </ul>
 
         <p>Tap the card to view more details about your session, including trends over time and heart rate zones (for wearable users).</p>
@@ -88,11 +84,11 @@ class YourMovementSummaryInfoBottomSheet : BottomSheetDialogFragment() {
         val htmlContentStepsBody = """
         <p>This card tracks your steps throughout the day by syncing data from your phone. It helps you understand your activity levels and compare them to your average and goal.</p>
 
-        <ul>
-          <li><b>Today's Steps</b> – The number of steps you've taken so far.</li>
-          <li><b>Average Steps</b> – Your typical step count, based on past data.</li>
-          <li><b>Goal Steps</b> – A customizable target to keep you motivated.</li>
-          <li><b>Trend Line</b> – Shows how your steps compare to your usual activity levels.</li>
+        <ul style="padding-left: 20px;">
+          <li style="margin-bottom: 8px; padding-left: 8px;"><b>Today's Steps</b> – The number of steps you've taken so far.</li>
+          <li style="margin-bottom: 8px; padding-left: 8px;"><b>Average Steps</b> – Your typical step count, based on past data.</li>
+          <li style="margin-bottom: 8px; padding-left: 8px;"><b>Goal Steps</b> – A customizable target to keep you motivated.</li>
+          <li style="margin-bottom: 8px; padding-left: 8px;"><b>Trend Line</b> – Shows how your steps compare to your usual activity levels.</li>
         </ul>
 
         <p>Tap the card for a more detailed breakdown, including step trends, hourly movement, and progress over time.</p>
@@ -124,18 +120,73 @@ class YourMovementSummaryInfoBottomSheet : BottomSheetDialogFragment() {
                 layoutParams = summary.layoutParams
             }
 
-            // FIRST SECTION - Simple text with 24dp top/bottom padding
+            // FIRST SECTION - White background with 24dp top/bottom padding
+            val firstSectionContainer = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL
+                background = GradientDrawable().apply {
+                    setColor(Color.WHITE)
+                    cornerRadius = 12f
+                }
+                val padding16dp = (16 * resources.displayMetrics.density).toInt()
+                setPadding(padding16dp, padding16dp, padding16dp, padding16dp)
+
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin = (8 * resources.displayMetrics.density).toInt()
+                }
+            }
+
+            // Split content to insert image after "Workouts" heading
+            val workoutsHeadingIndex = spannableString1.indexOf("Workouts")
+            val workoutsHeadingEndIndex = spannableString1.indexOf("\n", workoutsHeadingIndex)
+
+            val beforeWorkoutsImage = spannableString1.subSequence(0, workoutsHeadingEndIndex + 1)
+            val afterWorkoutsImage = spannableString1.subSequence(workoutsHeadingEndIndex + 1, spannableString1.length)
+
+            // Text before image
             val textView1 = TextView(requireContext()).apply {
-                text = spannableString1
+                text = beforeWorkoutsImage
                 textSize = summary.textSize / resources.displayMetrics.scaledDensity
                 setTextColor(summary.currentTextColor)
                 typeface = summary.typeface
                 setIncludeFontPadding(false)
 
                 val padding24dp = (24 * resources.displayMetrics.density).toInt()
-                setPadding(0, padding24dp, 0, padding24dp)
+                setPadding(0, padding24dp, 0, 0)
             }
-            containerLayout.addView(textView1)
+            firstSectionContainer.addView(textView1)
+
+            // Workouts Image
+            val workoutsImage = ImageView(requireContext()).apply {
+                setImageResource(R.drawable.workout_pic) // Apna workout image yahan change kar dena
+                adjustViewBounds = true
+                scaleType = ImageView.ScaleType.FIT_CENTER
+
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = (16 * resources.displayMetrics.density).toInt()
+                    bottomMargin = (20 * resources.displayMetrics.density).toInt()
+                }
+            }
+            firstSectionContainer.addView(workoutsImage)
+
+            // Text after image
+            val textView2 = TextView(requireContext()).apply {
+                text = afterWorkoutsImage
+                textSize = summary.textSize / resources.displayMetrics.scaledDensity
+                setTextColor(summary.currentTextColor)
+                typeface = summary.typeface
+                setIncludeFontPadding(false)
+
+                val padding24dp = (24 * resources.displayMetrics.density).toInt()
+                setPadding(0, 0, 0, padding24dp)
+            }
+            firstSectionContainer.addView(textView2)
+            containerLayout.addView(firstSectionContainer)
 
             // STEPS SECTION - Pink background
             val stepsAndClosingContainer = LinearLayout(requireContext()).apply {
@@ -167,7 +218,7 @@ class YourMovementSummaryInfoBottomSheet : BottomSheetDialogFragment() {
 
             // 2. Image - DIRECTLY UNDER "Steps" HEADING
             val stepsImage = ImageView(requireContext()).apply {
-                setImageResource(R.drawable.active_heart_rate_zones)  // ← Apna actual steps graph/image yahan change kar dena
+                setImageResource(R.drawable.step_pic)
                 adjustViewBounds = true
                 scaleType = ImageView.ScaleType.FIT_CENTER
 
@@ -175,8 +226,8 @@ class YourMovementSummaryInfoBottomSheet : BottomSheetDialogFragment() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    topMargin = (16 * resources.displayMetrics.density).toInt()    // heading se space
-                    bottomMargin = (20 * resources.displayMetrics.density).toInt() // description se pehle space
+                    topMargin = (16 * resources.displayMetrics.density).toInt()
+                    bottomMargin = (20 * resources.displayMetrics.density).toInt()
                 }
             }
             stepsAndClosingContainer.addView(stepsImage)
