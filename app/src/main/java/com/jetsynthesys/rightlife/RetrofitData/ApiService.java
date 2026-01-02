@@ -1365,8 +1365,16 @@ public interface ApiService {
     @GET("config")
     Call<ResponseBody> getAppConfig();
 
-}
+    @GET("challengeStart")
+    Call<ResponseBody> getChallengeStart(
+            @Header("Authorization") String authToken
+    );
 
+    @POST("challengeStart")
+    Call<CommonResponse> postChallengeStart(
+            @Header("Authorization") String authToken
+    );
+}
 
 
 //private static final String BASE_URL = "https://qa.rightlife.com/api/app/api/"; // Your API URL

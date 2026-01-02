@@ -157,11 +157,11 @@ class SettingsNewActivity : BaseActivity() {
             logoutUser()
             bottomSheetDialog.dismiss()
             AnalyticsLogger.logEvent(
-                    this,
-                    AnalyticsEvent.Settings_Logout_Confirm,
-                    mapOf(
-                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    )
+                this,
+                AnalyticsEvent.Settings_Logout_Confirm,
+                mapOf(
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                )
             )
         }
         bottomSheetDialog.show()
@@ -210,23 +210,23 @@ class SettingsNewActivity : BaseActivity() {
         })
     }
 
- /*   private fun clearUserDataAndFinish() {
-        AnalyticsLogger.logEvent(
-            this,
-            AnalyticsEvent.USER_SIGN_OUT
-        )
-        val sharedPreferences =
-            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.clear()
-        editor.apply()
-        SharedPreferenceManager.getInstance(this).clearData()
+    /*   private fun clearUserDataAndFinish() {
+           AnalyticsLogger.logEvent(
+               this,
+               AnalyticsEvent.USER_SIGN_OUT
+           )
+           val sharedPreferences =
+               getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
+           val editor = sharedPreferences.edit()
+           editor.clear()
+           editor.apply()
+           SharedPreferenceManager.getInstance(this).clearData()
 
-        val intent = Intent(this, DataControlActivity::class.java)
-        startActivity(intent)
+           val intent = Intent(this, DataControlActivity::class.java)
+           startActivity(intent)
 
-        finishAffinity()
-    }*/
+           finishAffinity()
+       }*/
 
     /*private fun clearUserDataAndFinish() {
         val keysToKeep = setOf(
@@ -281,26 +281,27 @@ class SettingsNewActivity : BaseActivity() {
 
     private fun clearUserDataAndFinish() {
         val keysToKeep = setOf(
-                SharedPreferenceConstants.ALL_IN_ONE_PLACE,
-                SharedPreferenceConstants.AFFIRMATION_CONTEXT_SCREEN,
-                SharedPreferenceConstants.BREATH_WORK_CONTEXT_SCREEN,
-                SharedPreferenceConstants.FACE_SCAN_CONTEXT_SCREEN,
-                SharedPreferenceConstants.JOURNAL_CONTEXT_SCREEN,
-                SharedPreferenceConstants.MEAL_SCAN_CONTEXT_SCREEN,
-                SharedPreferenceConstants.MIND_AUDIT_CONTEXT_SCREEN,
-                SharedPreferenceConstants.MRER_CONTEXT_SCREEN,
-                SharedPreferenceConstants.SLEEP_SOUND_CONTEXT_SCREEN,
-                SharedPreferenceConstants.TRSR_CONTEXT_SCREEN,
-                SharedPreferenceConstants.EAT_RIGHT_CONTEXT_SCREEN,
-                SharedPreferenceConstants.MOVE_RIGHT_CONTEXT_SCREEN,
-                SharedPreferenceConstants.SLEEP_RIGHT_CONTEXT_SCREEN,
-                SharedPreferenceConstants.THINK_RIGHT_CONTEXT_SCREEN,
-                SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN
+            SharedPreferenceConstants.ALL_IN_ONE_PLACE,
+            SharedPreferenceConstants.AFFIRMATION_CONTEXT_SCREEN,
+            SharedPreferenceConstants.BREATH_WORK_CONTEXT_SCREEN,
+            SharedPreferenceConstants.FACE_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.JOURNAL_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MEAL_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MIND_AUDIT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MRER_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_SOUND_CONTEXT_SCREEN,
+            SharedPreferenceConstants.TRSR_CONTEXT_SCREEN,
+            SharedPreferenceConstants.EAT_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MOVE_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.THINK_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN,
+            SharedPreferenceConstants.APP_CONFIG_RESPONSE
         )
 
         AnalyticsLogger.logEvent(
-                this,
-                AnalyticsEvent.USER_SIGN_OUT
+            this,
+            AnalyticsEvent.USER_SIGN_OUT
         )
 
         // FIXED: Use the correct SharedPreferences file name
@@ -313,7 +314,10 @@ class SettingsNewActivity : BaseActivity() {
         finishAffinity()
     }
 
-    private fun removeKeysNotInKeepList(sharedPreferences: SharedPreferences, keysToKeep: Set<String>) {
+    private fun removeKeysNotInKeepList(
+        sharedPreferences: SharedPreferences,
+        keysToKeep: Set<String>
+    ) {
         val editor = sharedPreferences.edit()
 
         // Get all current preference keys

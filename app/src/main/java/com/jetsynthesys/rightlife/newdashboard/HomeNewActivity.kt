@@ -18,6 +18,7 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import android.widget.TextView
 import android.widget.Toast
@@ -55,6 +56,8 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryPurchasesParams
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
@@ -79,20 +82,26 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
+import com.jetsynthesys.rightlife.databinding.BottomSheetChallengeBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
+import com.jetsynthesys.rightlife.newdashboard.model.ChallengeDateResponse
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
 import com.jetsynthesys.rightlife.ui.ActivityUtils
+import com.jetsynthesys.rightlife.ui.AppLoader
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
@@ -554,6 +563,7 @@ class HomeNewActivity : BaseActivity() {
                 healthConnectClient = HealthConnectClient.getOrCreate(it)
             }
         }
+
         // Load default fragment only on first launch
         val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
         if (savedInstanceState == null) {
@@ -1033,6 +1043,23 @@ class HomeNewActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
             }
         }
+
+        binding.layoutRegisterChallenge.imgInfoChallege.setOnClickListener {
+            showChallengeBottomSheet()
+        }
+
+        binding.layoutUnlockChallenge.imgInfoChallege.setOnClickListener {
+            showChallengeBottomSheet()
+        }
+
+        binding.layoutRegisterChallenge.btnJoin.setOnClickListener {
+            lifecycleScope.launch { joinChallenge() }
+        }
+
+        val appConfig =
+            Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
+        if (appConfig.data?.isChallengeStart == true)
+            getChallengeStatus()
     }
 
 
@@ -4093,4 +4120,135 @@ class HomeNewActivity : BaseActivity() {
             }
         }
     }*/
+
+    private fun joinChallenge() {
+        AppLoader.show(this)
+        apiService.postChallengeStart(sharedPreferenceManager.accessToken)
+            .enqueue(object : Callback<CommonResponse> {
+                override fun onResponse(
+                    call: Call<CommonResponse?>,
+                    response: Response<CommonResponse?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful) {
+                        getChallengeStatus()
+                        showCustomToast(response.body()?.successMessage ?: "", true)
+                    } else {
+                        showCustomToast("Something went wrong!", false)
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<CommonResponse?>,
+                    t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
+    private fun getChallengeStatus() {
+        AppLoader.show(this)
+        apiService.getChallengeStart(sharedPreferenceManager.accessToken)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>,
+                    response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful && response.body() != null) {
+                        val gson = Gson()
+                        val jsonResponse = response.body()?.string()
+                        val responseObj =
+                            gson.fromJson(jsonResponse, ChallengeDateResponse::class.java)
+
+                        val dates = responseObj.data
+                        if (dates.participateDate.isNotEmpty()) {
+                            binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
+                                View.VISIBLE
+                            binding.layoutRegisterChallenge.registerChallengeCard.visibility =
+                                View.GONE
+                            binding.layoutUnlockChallenge.tvStartEndDate.text =
+                                getChallengeDateRange(
+                                    dates.challengeStartDate,
+                                    dates.challengeEndDate
+                                )
+                        } else {
+                            binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
+                            binding.layoutRegisterChallenge.registerChallengeCard.visibility =
+                                View.VISIBLE
+                            binding.layoutRegisterChallenge.tvStartEndDate.text =
+                                getChallengeDateRange(
+                                    dates.challengeStartDate,
+                                    dates.challengeEndDate
+                                )
+                        }
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>,
+                    t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
+    private fun showChallengeBottomSheet() {
+
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val binding = BottomSheetChallengeBinding.inflate(layoutInflater)
+        bottomSheetDialog.setContentView(binding.root)
+
+        bottomSheetDialog.setOnShowListener { dialog ->
+
+            val bottomSheet =
+                (dialog as BottomSheetDialog)
+                    .findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.isHideable = false
+                behavior.skipCollapsed = true
+                //behavior.isDraggable = false   // 🔥 prevents swipe down
+            }
+        }
+
+        // Dim background
+        bottomSheetDialog.window?.apply {
+            setDimAmount(0.7f)
+            addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        binding.btnClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun getChallengeDateRange(start: String, end: String): String {
+        val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        val outputFormat = SimpleDateFormat("MMM d", Locale.ENGLISH)
+        val yearFormat = SimpleDateFormat("yyyy", Locale.ENGLISH)
+
+        val startDate = inputFormat.parse(start)
+        val endDate = inputFormat.parse(end)
+
+        return "${outputFormat.format(startDate)} - ${outputFormat.format(endDate)}, ${
+            yearFormat.format(
+                endDate
+            )
+        }"
+    }
+
+
 }
