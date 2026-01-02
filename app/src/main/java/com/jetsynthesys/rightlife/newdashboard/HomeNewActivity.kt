@@ -1056,10 +1056,23 @@ class HomeNewActivity : BaseActivity() {
             lifecycleScope.launch { joinChallenge() }
         }
 
-        val appConfig =
+      /*  val appConfig =
             Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
         if (appConfig.data?.isChallengeStart == true)
-            getChallengeStatus()
+            getChallengeStatus()*/
+
+        try {
+
+            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
+                val appConfig =
+                    Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
+                if (appConfig?.data?.isChallengeStart == true) {
+                    getChallengeStatus()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("AppConfig", "Failed to parse app config from SharedPreferences", e)
+        }
     }
 
 
