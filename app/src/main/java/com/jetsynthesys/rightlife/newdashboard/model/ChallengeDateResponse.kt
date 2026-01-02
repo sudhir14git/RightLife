@@ -9,5 +9,6 @@ data class ChallengeDateResponse(
 data class ChallengeDateData(
     val challengeStartDate: String,
     val challengeEndDate: String,
-    val participateDate: String
+    val participateDate: String,
+    val challengeLiveDate: String
 )
