@@ -296,6 +296,7 @@ object AnalyticsEvent {
     const val GoalSelection_SaveButton_Tap = "GoalSelection_SaveButton_Tap"
     const val NOTIFICATION_ENABLE_SUCCESS = "Notification_Enable_Success"
     const val Checklist_FirstTime_Open = "Checklist_FirstTime_Open"
+    const val Checklist_SyncHealthConnect_Tap = "Checklist_SyncHealthConnect_Tap"
 
 
 }

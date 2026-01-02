@@ -223,6 +223,8 @@ class HomeDashboardFragment : BaseFragment()
                     installHealthConnect(requireContext())
                 }
             }
+
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.Checklist_SyncHealthConnect_Tap)
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
             it.disableViewForSeconds()

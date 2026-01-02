@@ -144,6 +144,13 @@ class NewHealthCamReportActivity : BaseActivity() {
                 AnalyticsParam.FACE_SCAN_COMPLETE to true
             )
         )
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.FACE_SCAN_COMPLETE,
+            mapOf(
+                AnalyticsParam.FACE_SCAN_COMPLETE to true
+            )
+        )
 
         binding!!.btnSyncNow.setOnClickListener {
             downloadReport(
