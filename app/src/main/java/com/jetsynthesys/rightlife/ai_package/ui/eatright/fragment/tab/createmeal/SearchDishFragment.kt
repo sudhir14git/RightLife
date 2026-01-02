@@ -403,7 +403,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                   // Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
@@ -483,7 +483,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                  //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
@@ -563,7 +563,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
