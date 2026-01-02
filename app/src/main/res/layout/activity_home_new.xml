@@ -230,6 +230,14 @@
                     android:background="#F7F7F7"
                     android:orientation="vertical">
 
+                    <include
+                        android:id="@+id/layoutRegisterChallenge"
+                        layout="@layout/layout_register_challenge" />
+
+                    <include
+                        android:id="@+id/layoutUnlockChallenge"
+                        layout="@layout/layout_unlock_challenge" />
+
                     <FrameLayout
                         android:id="@+id/rightLifeReportCard"
                         android:layout_width="match_parent"
@@ -393,11 +401,12 @@
                             </LinearLayout>
                         </LinearLayout>
                     </FrameLayout>
-                    <!-- Fragment Container -->
+
                     <include
                         android:id="@id/trialExpiredLayout"
                         layout="@layout/layout_subscription_dashboard" />
 
+                    <!-- Fragment Container -->
                     <FrameLayout
                         android:id="@+id/fragmentContainer"
                         android:layout_width="match_parent"

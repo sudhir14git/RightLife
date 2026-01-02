@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/registerChallengeCard"
+    android:layout_width="match_parent"
+    android:layout_height="270dp"
+    android:layout_margin="16dp"
+    android:background="#F7F7F7"
+    android:visibility="visible">
+
+    <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
+        android:id="@+id/gradientBorder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+
+            <ImageView
+                android:id="@+id/imgChallenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/challenge_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_toEndOf="@id/imgChallenge"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Coming Soon"
+                android:textColor="@color/menuselected"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/imgInfoChallege"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/info_challenge" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="RightLife Health\nHabits Challenge"
+            android:textColor="@color/txt_color_header"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvStartEndDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/dmsans_medium"
+            android:text="Feb 1 - Feb 28, 2026"
+            android:textColor="@color/txt_color_header"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_corner_small_radious_think_right"
+            android:backgroundTint="#FDE5CD"
+            android:fontFamily="@font/dmsans_regular"
+            android:padding="10dp"
+            android:text="A 4-week habit-stacking competition designed to help you build health routines that last beyond January motivation."
+            android:textColor="@color/txt_color_header"
+            android:textSize="11sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnJoin"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_rounded_button"
+            android:backgroundTint="@null"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Join"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</FrameLayout>
