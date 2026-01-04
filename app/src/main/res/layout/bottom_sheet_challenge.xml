@@ -299,7 +299,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_regular"
-                android:gravity="center_horizontal"
+                android:gravity="start"
                 android:text="Stay consistent, climb the leaderboard, and unlock rewards!"
                 android:textColor="@color/txt_color_header"
                 android:textSize="12sp" />
@@ -318,7 +318,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_regular"
-                android:gravity="center_horizontal"
+                android:gravity="start"
                 android:text="Join the RightLife community. No pressure, just progress."
                 android:textColor="@color/txt_color_header"
                 android:textSize="12sp" />
