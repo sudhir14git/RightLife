@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.ProductDetails
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowSubscriptionBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.pojo.PlanList
 import java.text.NumberFormat
 import java.util.Currency
@@ -96,10 +97,7 @@ class SubscriptionPlanAdapter(
             binding.tvBuy.setOnClickListener {
                 if (!plan.status.equals("ACTIVE", ignoreCase = true)) {
                     if (isAnyPackPurchased()) {
-                        Toast.makeText(
-                            binding.tvBuy.context, "You already have an active subscription",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        binding.tvBuy.context.showCustomToast("You already have an active subscription",false)
                     } else {
                         selectedPosition = bindingAdapterPosition
                         onBuyClick(bindingAdapterPosition)
