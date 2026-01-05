@@ -1,5 +1,5 @@
 package com.jetsynthesys.rightlife.subscriptions
-
+import com.jetsynthesys.rightlife.BuildConfig
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Color
@@ -927,7 +927,7 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
 
     private fun initiateRazorpayCheckout(orderData: OrderDataRazorpay) {
         val co = Checkout()
-        co.setKeyID(getString(R.string.razorpay_key))
+        co.setKeyID(BuildConfig.RAZORPAY_KEY_ID)
 
         try {
             val plan = planList[position]

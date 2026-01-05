@@ -684,9 +684,7 @@
                 android:resource="@xml/paths" />
         </provider>
 
-        <meta-data
-            android:name="com.razorpay.ApiKey"
-            android:value="@string/razorpay_key"/>
+
 
         <receiver
             android:name=".ui.affirmation.ReminderReceiver"
