@@ -405,6 +405,8 @@ class HomeExploreFragment : BaseFragment() {
         Handler(Looper.getMainLooper()).postDelayed({
             getJumpBackInData()
         }, 2000)
+
+        (requireActivity() as? HomeNewActivity)?.showChallengeCard()
     }
 
     private fun callAPIS() {
