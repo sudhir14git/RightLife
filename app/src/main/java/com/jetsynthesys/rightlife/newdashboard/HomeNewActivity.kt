@@ -1072,6 +1072,9 @@ class HomeNewActivity : BaseActivity() {
                     )
                 if (appConfig?.data?.isChallengeStart == true) {
                     getChallengeStatus()
+                } else {
+                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
+                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
                 }
             }
         } catch (e: Exception) {
@@ -4196,6 +4199,10 @@ class HomeNewActivity : BaseActivity() {
                                     dates.challengeStartDate,
                                     dates.challengeEndDate
                                 )
+                            dates.challengeLiveDate.let {
+                                binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
+                                    formatWithOrdinal(it)
+                            }
                         } else {
                             binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
                             binding.layoutRegisterChallenge.registerChallengeCard.visibility =
@@ -4205,10 +4212,6 @@ class HomeNewActivity : BaseActivity() {
                                     dates.challengeStartDate,
                                     dates.challengeEndDate
                                 )
-                            dates.challengeLiveDate.let {
-                                binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
-                                    formatWithOrdinal(it)
-                            }
                         }
                     }
                 }
