@@ -4150,6 +4150,10 @@ class HomeNewActivity : BaseActivity() {
                     if (response.isSuccessful) {
                         getChallengeStatus()
                         showCustomToast(response.body()?.successMessage ?: "", true)
+                        AnalyticsLogger.logEvent(
+                            this@HomeNewActivity,
+                            AnalyticsEvent.ChallengeCard_Join_Tap
+                        )
                     } else {
                         showCustomToast("Something went wrong!", false)
                     }
@@ -4221,6 +4225,11 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun showChallengeBottomSheet() {
+
+        AnalyticsLogger.logEvent(
+            this@HomeNewActivity,
+            AnalyticsEvent.Challenge_info_open
+        )
 
         val bottomSheetDialog = BottomSheetDialog(this)
         val binding = BottomSheetChallengeBinding.inflate(layoutInflater)

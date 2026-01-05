@@ -649,7 +649,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
         AnalyticsLogger.logEvent(
             this,
-            AnalyticsEvent.AFFIRMATION_PLAYLIST_PRACTISE,
+            AnalyticsEvent.TR_AffirmationPlaylist_Completion_PageOpen,
             mapOf(
                 AnalyticsParam.TIME_TO_COMPLETE to binding.tvTimer.text.toString(),
                 AnalyticsParam.AFFIRMATION_PLAYLIST_ID to sharedPreferenceManager.userId,
