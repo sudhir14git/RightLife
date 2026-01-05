@@ -38,9 +38,10 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginVertical="12dp"
+        android:layout_gravity="center"
         android:fontFamily="@font/dmsans_regular"
         android:gravity="center_horizontal"
-        android:text="Track daily habits across sleep, movement, food, and mindfulness. Earn points. Build routines. Feel better"
+        android:text="Track your Sleep, Move, Think, and Eat habits\n daily. Earn points. Build consistency. Win prizes."
         android:textColor="@color/txt_color_header"
         android:textSize="14sp" />
 
@@ -77,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_bold"
-                    android:text="SleepRight"
+                    android:text="Sleep"
                     android:textColor="@color/color_sleep_right"
                     android:textSize="16sp" />
 
@@ -85,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_regular"
-                    android:text="Support better energy and recovery"
+                    android:text="Track your rest quality"
                     android:textColor="@color/txt_color_header"
                     android:textSize="12sp" />
 
@@ -133,7 +134,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_bold"
-                    android:text="MoveRight"
+                    android:text="Move"
                     android:textColor="@color/color_move_right"
                     android:textSize="16sp" />
 
@@ -141,7 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_regular"
-                    android:text="Stay active in ways that fit your life"
+                    android:text="Log workouts &amp; steps"
                     android:textColor="@color/txt_color_header"
                     android:textSize="12sp" />
 
@@ -189,7 +190,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_bold"
-                    android:text="EatRight"
+                    android:text="Eat"
                     android:textColor="@color/color_eat_right"
                     android:textSize="16sp" />
 
@@ -197,7 +198,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_regular"
-                    android:text="Build awareness, one meal at a time"
+                    android:text="Snap your meals"
                     android:textColor="@color/txt_color_header"
                     android:textSize="12sp" />
 
@@ -245,7 +246,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_bold"
-                    android:text="ThinkRight"
+                    android:text="Think"
                     android:textColor="@color/color_think_right"
                     android:textSize="16sp" />
 
@@ -253,7 +254,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_regular"
-                    android:text="Create space for mental wellbeing"
+                    android:text="Practice mindfulness"
                     android:textColor="@color/txt_color_header"
                     android:textSize="12sp" />
 
@@ -298,7 +299,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_regular"
-                android:gravity="center_horizontal"
+                android:gravity="start"
                 android:text="Stay consistent, climb the leaderboard, and unlock rewards!"
                 android:textColor="@color/txt_color_header"
                 android:textSize="12sp" />
@@ -317,8 +318,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_regular"
-                android:gravity="center_horizontal"
-                android:text="You don’t need a team, experience, or perfect routine."
+                android:gravity="start"
+                android:text="Join the RightLife community. No pressure, just progress."
                 android:textColor="@color/txt_color_header"
                 android:textSize="12sp" />
 

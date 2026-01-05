@@ -138,6 +138,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
@@ -1056,16 +1057,19 @@ class HomeNewActivity : BaseActivity() {
             lifecycleScope.launch { joinChallenge() }
         }
 
-      /*  val appConfig =
-            Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
-        if (appConfig.data?.isChallengeStart == true)
-            getChallengeStatus()*/
+        /*  val appConfig =
+              Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
+          if (appConfig.data?.isChallengeStart == true)
+              getChallengeStatus()*/
 
         try {
 
             if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
                 val appConfig =
-                    Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
+                    Gson().fromJson(
+                        sharedPreferenceManager.appConfigJson,
+                        AppConfigResponse::class.java
+                    )
                 if (appConfig?.data?.isChallengeStart == true) {
                     getChallengeStatus()
                 }
@@ -4197,6 +4201,10 @@ class HomeNewActivity : BaseActivity() {
                                     dates.challengeStartDate,
                                     dates.challengeEndDate
                                 )
+                            dates.challengeLiveDate.let {
+                                binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
+                                    formatWithOrdinal(it)
+                            }
                         }
                     }
                 }
@@ -4261,6 +4269,30 @@ class HomeNewActivity : BaseActivity() {
                 endDate
             )
         }"
+    }
+
+    private fun formatWithOrdinal(dateStr: String): String {
+        val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        val date = inputFormat.parse(dateStr)
+
+        val calendar = Calendar.getInstance()
+        calendar.time = date!!
+
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val month = SimpleDateFormat("MMM", Locale.ENGLISH).format(date)
+        val year = SimpleDateFormat("yyyy", Locale.ENGLISH).format(date)
+
+        return "$day${getDaySuffix(day)} $month $year"
+    }
+
+    private fun getDaySuffix(day: Int): String {
+        return when {
+            day in 11..13 -> "th"
+            day % 10 == 1 -> "st"
+            day % 10 == 2 -> "nd"
+            day % 10 == 3 -> "rd"
+            else -> "th"
+        }
     }
 
 

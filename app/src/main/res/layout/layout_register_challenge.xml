@@ -3,8 +3,8 @@
     android:id="@+id/registerChallengeCard"
     android:layout_width="match_parent"
     android:layout_height="270dp"
-    android:layout_margin="16dp"
-    android:background="#F7F7F7"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
     android:visibility="visible">
 
     <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
@@ -15,7 +15,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@drawable/bg_challenge"
         android:clipToPadding="false"
         android:orientation="vertical">
 

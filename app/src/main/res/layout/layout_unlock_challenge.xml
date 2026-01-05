@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/unlockChallengeCard"
     android:layout_width="match_parent"
-    android:layout_height="270dp"
-    android:layout_margin="16dp"
-    android:background="#F7F7F7"
-    android:visibility="gone">
+    android:layout_height="260dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    android:visibility="visible">
 
     <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
         android:id="@+id/gradientBorder"
@@ -16,7 +16,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@drawable/bg_challenge"
         android:clipToPadding="false"
         android:orientation="vertical">
 
@@ -99,13 +99,26 @@
                 android:src="@drawable/icon_challenge_timer" />
 
             <TextView
+                android:id="@+id/tvLiveText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_toEndOf="@id/imgChallengeBottom"
                 android:fontFamily="@font/dmsans_medium"
                 android:layout_centerVertical="true"
-                android:text="Challenge Section goes live on 19th Jan 2026"
+                android:text="Challenge Section goes live on"
+                android:textColor="@color/txt_color_header"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvChallengeLiveDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="4dp"
+                android:layout_toEndOf="@id/tvLiveText"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_centerVertical="true"
+                android:text="19th Jan 2026"
                 android:textColor="@color/txt_color_header"
                 android:textSize="12sp" />
 
