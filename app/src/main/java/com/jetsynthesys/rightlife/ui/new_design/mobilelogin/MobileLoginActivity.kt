@@ -56,6 +56,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.core.view.isVisible
+import com.jetsynthesys.rightlife.ui.utility.MetaEventLogger
 
 class MobileLoginActivity : BaseActivity() {
 
@@ -612,6 +613,17 @@ class MobileLoginActivity : BaseActivity() {
                             AnalyticsParam.USER_PLAN to productId,
                             AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
                         )
+                    )
+                    // ✅ Meta
+                    MetaEventLogger.log(
+                            this@MobileLoginActivity,
+                            AnalyticsEvent.USER_LOGIN,
+                            mapOf(
+                                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                                    AnalyticsParam.USER_TYPE to if (isNewUser) "New User" else "Returning User",
+                                    AnalyticsParam.USER_PLAN to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Premium" else "free User",
+                                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                            )
                     )
                 }
             }

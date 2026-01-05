@@ -53,6 +53,7 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.MetaEventLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -495,21 +496,32 @@ class ImageSliderActivity : BaseActivity() {
                         .setAIReportGeneratedView(ResponseObj.reportView)
                 }
 
-                AnalyticsLogger.logEvent(this@ImageSliderActivity, AnalyticsEvent.USER_LOGIN)
+                //AnalyticsLogger.logEvent(this@ImageSliderActivity, AnalyticsEvent.USER_LOGIN)
                 var productId = ""
                 sharedPreferenceManager.userProfile?.subscription?.forEach { subscription ->
                     if (subscription.status) {
                         productId = subscription.productId
                     }
                 }
+                //AnalyticsParam.USER_PLAN to productId,  no need to pass it now
                 AnalyticsLogger.logEvent(
                     AnalyticsEvent.USER_LOGIN, mapOf(
                         AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
                         AnalyticsParam.USER_TYPE to if (isNewUser) "New User" else "Returning User",
-                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "free User",
-                        AnalyticsParam.USER_PLAN to productId,
+                        AnalyticsParam.USER_PLAN to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Premium" else "free User",
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     )
+                )
+                // ✅ Meta
+                MetaEventLogger.log(
+                        this@ImageSliderActivity,
+                        AnalyticsEvent.USER_LOGIN,
+                        mapOf(
+                                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                                AnalyticsParam.USER_TYPE to if (isNewUser) "New User" else "Returning User",
+                                AnalyticsParam.USER_PLAN to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Premium" else "free User",
+                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        )
                 )
             }
 

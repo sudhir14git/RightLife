@@ -51,6 +51,7 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.MetaEventLogger
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import kotlinx.coroutines.delay
@@ -736,11 +737,24 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                 AnalyticsEvent.FACE_SCAN_PURCHASE_COMPLETED,
                 mapOf(AnalyticsParam.PRODUCT_ID to "${planList[position].googlePlay}")
             )
+
+            //Meta
+            MetaEventLogger.log(
+                    this,
+                    AnalyticsEvent.FACE_SCAN_PURCHASE_COMPLETED,
+                    mapOf(AnalyticsParam.PRODUCT_ID to "${planList[position].googlePlay}")
+            )
         } else {
             AnalyticsLogger.logEvent(
                 this,
                 AnalyticsEvent.SUBSCRIPTION_PURCHASE_COMPLETED,
                 mapOf(AnalyticsParam.PRODUCT_ID to "${planList[position].googlePlay}")
+            )
+            // Meta
+            MetaEventLogger.log(
+                    this,
+                    AnalyticsEvent.SUBSCRIPTION_PURCHASE_COMPLETED,
+                    mapOf(AnalyticsParam.PRODUCT_ID to "${planList[position].googlePlay}")
             )
         }
     }
