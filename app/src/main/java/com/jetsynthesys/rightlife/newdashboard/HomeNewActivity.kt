@@ -1072,6 +1072,9 @@ class HomeNewActivity : BaseActivity() {
                     )
                 if (appConfig?.data?.isChallengeStart == true) {
                     getChallengeStatus()
+                } else {
+                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
+                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
                 }
             }
         } catch (e: Exception) {
