@@ -1056,30 +1056,6 @@ class HomeNewActivity : BaseActivity() {
         binding.layoutRegisterChallenge.btnJoin.setOnClickListener {
             lifecycleScope.launch { joinChallenge() }
         }
-
-        /*  val appConfig =
-              Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
-          if (appConfig.data?.isChallengeStart == true)
-              getChallengeStatus()*/
-
-        try {
-
-            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
-                val appConfig =
-                    Gson().fromJson(
-                        sharedPreferenceManager.appConfigJson,
-                        AppConfigResponse::class.java
-                    )
-                if (appConfig?.data?.isChallengeStart == true) {
-                    getChallengeStatus()
-                } else {
-                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
-                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("AppConfig", "Failed to parse app config from SharedPreferences", e)
-        }
     }
 
 
@@ -1094,6 +1070,25 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
         getSubscriptionList()
         //getSubscriptionProducts(binding.tvStriketroughPrice);
+    }
+
+    fun showChallengeCard(){
+        try {
+            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
+                val appConfig =
+                    Gson().fromJson(
+                        sharedPreferenceManager.appConfigJson,
+                        AppConfigResponse::class.java
+                    )
+                if (appConfig?.data?.isChallengeStart == true) {
+                    getChallengeStatus()
+                } else {
+                    hideChallengeLayout()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("AppConfig", "Failed to parse app config from SharedPreferences", e)
+        }
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -4308,4 +4303,8 @@ class HomeNewActivity : BaseActivity() {
     }
 
 
+    fun hideChallengeLayout(){
+        binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
+        binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
+    }
 }
