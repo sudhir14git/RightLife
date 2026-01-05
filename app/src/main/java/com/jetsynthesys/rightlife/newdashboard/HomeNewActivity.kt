@@ -4196,6 +4196,10 @@ class HomeNewActivity : BaseActivity() {
                                     dates.challengeStartDate,
                                     dates.challengeEndDate
                                 )
+                            dates.challengeLiveDate.let {
+                                binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
+                                    formatWithOrdinal(it)
+                            }
                         } else {
                             binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
                             binding.layoutRegisterChallenge.registerChallengeCard.visibility =
@@ -4205,10 +4209,6 @@ class HomeNewActivity : BaseActivity() {
                                     dates.challengeStartDate,
                                     dates.challengeEndDate
                                 )
-                            dates.challengeLiveDate.let {
-                                binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
-                                    formatWithOrdinal(it)
-                            }
                         }
                     }
                 }
