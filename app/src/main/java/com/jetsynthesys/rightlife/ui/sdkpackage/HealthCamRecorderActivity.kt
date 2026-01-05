@@ -379,6 +379,12 @@ class HealthCamRecorderActivity : BaseActivity() {
                         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         putExtra("FROM", "RECORDER")
                     }
+
+                    AnalyticsLogger.logEvent(
+                        this@HealthCamRecorderActivity,
+                        AnalyticsEvent.Checklist_FaceScan_Completed
+                    )
+
                     startActivity(intent)
                     finish()
                 } else {

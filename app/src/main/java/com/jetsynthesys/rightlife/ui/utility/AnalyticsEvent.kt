@@ -298,5 +298,12 @@ object AnalyticsEvent {
     const val Checklist_FirstTime_Open = "Checklist_FirstTime_Open"
     const val Checklist_SyncHealthConnect_Tap = "Checklist_SyncHealthConnect_Tap"
 
+    const val ChallengeCard_Join_Tap = "ChallengeCard_Join_Tap"
+
+    const val Challenge_info_open = "Challenge_info_open"
+
+    const val Checklist_FaceScan_Completed = "Checklist_FaceScan_Completed"
+    const val HealthSync_Success = "HealthSync_Success"
+
 
 }
