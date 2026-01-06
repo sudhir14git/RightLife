@@ -1063,7 +1063,7 @@ class HomeNewActivity : BaseActivity() {
         super.onResume()
         //checkForUpdate()
         //new force update check below
-        //checkForceUpdate()
+        checkForceUpdate()
         getUserDetails()
         initBillingAndRecover()
         getDashboardChecklistStatus()

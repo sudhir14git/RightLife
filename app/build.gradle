@@ -21,8 +21,8 @@ android {
         applicationId "com.jetsynthesys.rightlife"
         minSdk 26
         targetSdk 35
-        versionCode 351
-        versionName "150"
+        versionCode 305
+        versionName "1.1.14"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
