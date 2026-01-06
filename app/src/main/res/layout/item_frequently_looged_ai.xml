@@ -26,7 +26,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:visibility="visible"
             android:scaleType="fitXY"
-            android:src="@drawable/poha_image" />
+            android:src="@drawable/ic_view_meal_place" />
 
         <TextView
             android:id="@+id/mealNameTv"
