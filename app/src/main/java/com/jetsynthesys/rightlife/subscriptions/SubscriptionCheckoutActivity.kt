@@ -85,8 +85,6 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("Billing--", "Activity.onCreate: d")
-        Log.e("Billing--", "Activity.onCreate: e")
         binding = ActivitySubscriptionCheckoutBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
 
