@@ -93,7 +93,7 @@ class NewCategoryListAdapter(
 
                 val duration = item.meta?.duration ?: 0 // total duration in seconds
                 val left = item.leftDurationINT ?: 0
-                val progress = if (left == duration) 100
+                val progress = if (left == duration) 0
                 else if (duration > 0) {
                     val completed = (duration - left).coerceAtLeast(0)
                     ((completed.toFloat() / duration) * 100).toInt().coerceIn(0, 100)
@@ -101,7 +101,7 @@ class NewCategoryListAdapter(
                     0
                 binding.progressBar.progress = progress
                 binding.imgCompleteTick.visibility =
-                    if (left == duration) View.VISIBLE else View.GONE
+                    if (item.isWatched) View.VISIBLE else View.GONE
             }
 
             binding.imgSave.setOnClickListener {
