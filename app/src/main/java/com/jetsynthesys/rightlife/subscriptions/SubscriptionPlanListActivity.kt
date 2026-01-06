@@ -121,6 +121,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                     putExtra("POSITION", position)
                     putExtra("SUBSCRIPTION_TYPE", planType)
                 })
+                finish()
             },
 
             onBuyClick = { position ->
@@ -129,6 +130,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                     putExtra("POSITION", position)
                     putExtra("SUBSCRIPTION_TYPE", planType)
                 })
+                finish()
             }
         )
 
@@ -604,4 +606,10 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
         }
     }
 
+    override fun onStop()
+    {
+        super.onStop()
+        billingClient.endConnection()
+
+    }
 }

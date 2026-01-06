@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.subscriptions
-import com.jetsynthesys.rightlife.BuildConfig
+
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Color
@@ -34,6 +35,7 @@ import com.android.billingclient.api.consumePurchase
 import com.android.billingclient.api.queryProductDetails
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionCheckoutBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetPaymentStatusResultBinding
@@ -83,16 +85,14 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("Billing--", "Activity.onCreate: d")
+        Log.e("Billing--", "Activity.onCreate: e")
         binding = ActivitySubscriptionCheckoutBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
 
         position = intent.getIntExtra("POSITION", 0)
         planList = intent.getSerializableExtra("PLAN_LIST") as? ArrayList<PlanList>
             ?: arrayListOf()
-
-        binding.iconBack.setOnClickListener {
-            finish()
-        }
 
         type = intent.getStringExtra("SUBSCRIPTION_TYPE").toString()
 
@@ -598,11 +598,11 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                             val result = billingClient.consumePurchase(consumeParams)
 
                             if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                                Toast.makeText(
+                                /*Toast.makeText(
                                     this@SubscriptionCheckoutActivity,
                                     "Consumable purchase successful",
                                     Toast.LENGTH_SHORT
-                                ).show()
+                                ).show()*/
                                 Log.d("Billing--", "Consumable purchase successful")
                                 updateBackendForPurchase(purchase)
                                 isSubscriptionTaken = true
@@ -636,11 +636,11 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                                 val result = billingClient.acknowledgePurchase(acknowledgeParams)
 
                                 if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                                    Toast.makeText(
+                                    /*Toast.makeText(
                                         this@SubscriptionCheckoutActivity,
                                         "Subscription acknowledged",
                                         Toast.LENGTH_SHORT
-                                    ).show()
+                                    ).show()*/
                                     showSubscriptionStatus(purchase)
                                     updateBackendForPurchase(purchase)
                                     isSubscriptionTaken = true
@@ -1087,9 +1087,17 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
             if (bottomSheetDialog.isShowing) {
                 bottomSheetDialog.dismiss()
             }
-            finish()
+            closeActivity(type)
         }
 
         bottomSheetDialog.show()
+    }
+
+    private fun closeActivity(selectedType: String)
+    {
+        startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+            putExtra("SUBSCRIPTION_TYPE", selectedType)
+        })
+        finish()
     }
 }
