@@ -1396,6 +1396,19 @@ public interface ApiService {
 
 
 
+
+    @GET("challengeStart/leaderboard")
+    Call<ResponseBody> getLeaderboard(
+            @Header("Authorization") String authToken,
+            @Query("type") String type
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("challengeStart/streak")
+    Call<ResponseBody> getChallengeStreak(
+            @Header("Authorization") String authToken
+    );
+
 }
 
 

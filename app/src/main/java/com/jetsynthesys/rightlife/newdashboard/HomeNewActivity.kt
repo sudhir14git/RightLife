@@ -110,9 +110,11 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showChallengeInfoBottomSheet
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeEmptyActivity
+import com.jetsynthesys.rightlife.ui.challenge.DailyStreakActivity
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getChallengeDateRange
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaysFromToday
+import com.jetsynthesys.rightlife.ui.challenge.LeaderboardActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
@@ -4328,7 +4330,10 @@ class HomeNewActivity : BaseActivity() {
     private fun setChallengeLayout(dates: ChallengeDateData) {
         //Register Challenge
         binding.layoutRegisterChallenge.imgInfoChallege.setOnClickListener {
-            showChallengeInfoBottomSheet(this@HomeNewActivity)
+            //showChallengeInfoBottomSheet(this@HomeNewActivity)
+            startActivity(Intent(this@HomeNewActivity, DailyStreakActivity ::class.java).apply {
+
+            })
         }
         binding.layoutRegisterChallenge.btnJoin.setOnClickListener {
             lifecycleScope.launch { joinChallenge() }
