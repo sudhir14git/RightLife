@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="com.android.vending.BILLING" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
     <uses-feature
@@ -25,8 +25,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<!--    <uses-permission android:name="com.samsung.android.health.permission.READ_HEALTH_DATA" />-->
-<!--    <uses-permission android:name="com.samsung.android.health.permission.WRITE_HEALTH_DATA" />-->
+    <!--    <uses-permission android:name="com.samsung.android.health.permission.READ_HEALTH_DATA" />-->
+    <!--    <uses-permission android:name="com.samsung.android.health.permission.WRITE_HEALTH_DATA" />-->
 
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
@@ -93,15 +93,15 @@
 
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
-            android:value="@string/facebook_client_token"/>
+            android:value="@string/facebook_client_token" />
 
         <meta-data
             android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
-            android:value="true"/>
+            android:value="true" />
 
         <meta-data
             android:name="com.facebook.sdk.AdvertiserIDCollectionEnabled"
-            android:value="true"/>
+            android:value="true" />
 
         <activity
             android:name=".ui.aireport.AIReportWebViewActivity"
@@ -266,8 +266,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- base domain -->
-                <data android:scheme="https" android:host="${deeplinkHost}"
-                    android:pathPattern="/.*" />
+                <data
+                    android:host="${deeplinkHost}"
+                    android:pathPattern="/.*"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
 
@@ -558,8 +560,8 @@
         <activity
             android:name=".ai_package.ui.MainAIActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize|stateHidden"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
@@ -674,6 +676,12 @@
         <activity android:name="com.jetsynthesys.rightlife.ui.sdkpackage.RlAnuraMeasurementActivity" />
         <activity android:name="com.jetsynthesys.rightlife.ui.new_design.MobileLoginActivity" />
 
+        <activity
+            android:name="com.jetsynthesys.rightlife.ui.challenge.ChallengeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -683,7 +691,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
         </provider>
-
 
 
         <receiver
