@@ -1374,6 +1374,28 @@ public interface ApiService {
     Call<CommonResponse> postChallengeStart(
             @Header("Authorization") String authToken
     );
+
+    @GET("challengeStart/dailyScore")
+    Call<ResponseBody> dailyScore(
+            @Header("Authorization") String authToken,
+            @Query("date") String date
+    );
+
+    @GET("challengeStart/dailyTask")
+    Call<ResponseBody> dailyTask(
+            @Header("Authorization") String authToken,
+            @Query("date") String date
+    );
+
+    @GET("challengeStart/dailyChallengeData")
+    Call<ResponseBody> dailyChallengeData(
+            @Header("Authorization") String authToken,
+            @Query("date") String date
+    );
+
+
+
+
 }
 
 

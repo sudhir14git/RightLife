@@ -13,7 +13,6 @@ import com.jetsynthesys.rightlife.ui.jounal.new_journal.CalendarDay
 
 class CalendarChallengeAdapter(
     private var daysList: List<CalendarDay>,
-    private var selectedDaysList: List<CalendarDay> = emptyList(),
     private val onItemClick: (CalendarDay) -> Unit
 ) : RecyclerView.Adapter<CalendarChallengeAdapter.CalendarViewHolder>() {
 
@@ -30,7 +29,7 @@ class CalendarChallengeAdapter(
 
     override fun onBindViewHolder(holder: CalendarViewHolder, position: Int) {
         val day = daysList[position]
-        holder.bind(day, selectedDaysList)
+        holder.bind(day)
 
         holder.itemView.setOnClickListener {
             // Clear previous selection
@@ -51,7 +50,7 @@ class CalendarChallengeAdapter(
         private val ivCheckMark: ImageView = itemView.findViewById(R.id.ivCheckMark)
         private val cardView: CardView = itemView.findViewById(R.id.dayContainer)
 
-        fun bind(day: CalendarDay, selectedDaysList: List<CalendarDay>) {
+        fun bind(day: CalendarDay) {
             tvDay.text = day.day
             tvDate.text = day.date.toString()
 
@@ -74,7 +73,7 @@ class CalendarChallengeAdapter(
             }
 
             ivCheckMark.visibility = View.VISIBLE
-            ivCheckMark.setImageResource(if (selectedDaysList.contains(day)) R.drawable.cal_selected else R.drawable.cal_not_selected)
+            ivCheckMark.setImageResource(if (day.isChecked) R.drawable.cal_selected else R.drawable.cal_not_selected)
         }
     }
 }

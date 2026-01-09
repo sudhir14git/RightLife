@@ -163,6 +163,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tvMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -214,6 +215,7 @@
                         android:textSize="32sp" />
 
                     <TextView
+                        android:id="@+id/tvDailyToatal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="2dp"
@@ -272,11 +274,12 @@
                         android:textSize="32sp" />
 
                     <TextView
+                        android:id="@+id/tvBonusTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="2dp"
                         android:fontFamily="@font/dmsans_regular"
-                        android:text="/6"
+                        android:text="/5"
                         android:textColor="#747474"
                         android:textSize="14sp" />
 

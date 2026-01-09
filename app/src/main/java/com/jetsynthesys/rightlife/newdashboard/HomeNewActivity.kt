@@ -109,6 +109,10 @@ import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showChallengeInfoBottomSheet
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeEmptyActivity
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getChallengeDateRange
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaysFromToday
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
@@ -1057,9 +1061,6 @@ class HomeNewActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
             }
         }
-
-        // challenge related stuff
-        setChallengeLayout()
     }
 
 
@@ -4198,6 +4199,8 @@ class HomeNewActivity : BaseActivity() {
                         val dates = responseObj.data
                         hideChallengeLayout()
                         handleChallengeStatusResponse(dates)
+                        // challenge related stuff
+                        setChallengeLayout(dates)
                     }
                 }
 
@@ -4212,7 +4215,7 @@ class HomeNewActivity : BaseActivity() {
             })
     }
 
-    private fun handleChallengeStatusResponse(dates: ChallengeDateData){
+    private fun handleChallengeStatusResponse(dates: ChallengeDateData) {
         if (getDaysFromToday(dates.challengeEndDate) < 0) {
             // challenge end here
             if (dates.participateDate.isNotEmpty()) {
@@ -4278,21 +4281,6 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    private fun getChallengeDateRange(start: String, end: String): String {
-        val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
-        val outputFormat = SimpleDateFormat("MMM d", Locale.ENGLISH)
-        val yearFormat = SimpleDateFormat("yyyy", Locale.ENGLISH)
-
-        val startDate = inputFormat.parse(start)
-        val endDate = inputFormat.parse(end)
-
-        return "${outputFormat.format(startDate)} - ${outputFormat.format(endDate)}, ${
-            yearFormat.format(
-                endDate
-            )
-        }"
-    }
-
     private fun formatWithOrdinal(dateStr: String): String {
         val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
         val date = inputFormat.parse(dateStr)
@@ -4305,48 +4293,6 @@ class HomeNewActivity : BaseActivity() {
         val year = SimpleDateFormat("yyyy", Locale.ENGLISH).format(date)
 
         return "$day${getDaySuffix(day)} $month $year"
-    }
-
-    private fun getDaysFromToday(dateString: String): Int {
-        val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
-        inputFormat.isLenient = false
-
-        return try {
-            val targetDate = inputFormat.parse(dateString) ?: return 0
-
-            // Clear time part for accurate day calculation
-            val todayCal = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-
-            val targetCal = Calendar.getInstance().apply {
-                time = targetDate
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-
-            val diffMillis = targetCal.timeInMillis - todayCal.timeInMillis
-            (diffMillis / (1000 * 60 * 60 * 24)).toInt()
-
-        } catch (e: Exception) {
-            0
-        }
-    }
-
-
-    private fun getDaySuffix(day: Int): String {
-        return when {
-            day in 11..13 -> "th"
-            day % 10 == 1 -> "st"
-            day % 10 == 2 -> "nd"
-            day % 10 == 3 -> "rd"
-            else -> "th"
-        }
     }
 
 
@@ -4379,7 +4325,7 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    private fun setChallengeLayout() {
+    private fun setChallengeLayout(dates: ChallengeDateData) {
         //Register Challenge
         binding.layoutRegisterChallenge.imgInfoChallege.setOnClickListener {
             showChallengeInfoBottomSheet(this@HomeNewActivity)
@@ -4404,6 +4350,11 @@ class HomeNewActivity : BaseActivity() {
         //Challenge CountDownDays
         binding.layoutChallengeCountDownDays.imgChallenge.setOnClickListener {
             showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+        binding.layoutChallengeCountDownDays.btnViewChallenge.setOnClickListener {
+            startActivity(Intent(this@HomeNewActivity, ChallengeEmptyActivity::class.java).apply {
+                putExtra("CHALLENGE_START_DATE", dates.challengeStartDate)
+            })
         }
 
         //Challenge Daily Score

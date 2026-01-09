@@ -47,6 +47,7 @@
                 android:id="@+id/tvStreakSmallCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:fontFamily="@font/dmsans_semibold"
                 android:text="5"
                 android:textColor="@color/txt_color_header"
@@ -115,6 +116,14 @@
             <include
                 android:id="@+id/logItems"
                 layout="@layout/layout_challenge_log_items" />
+
+            <include
+                android:id="@+id/rankingCard"
+                layout="@layout/layout_rank_challenge" />
+
+            <include
+                android:id="@+id/sharingCard"
+                layout="@layout/layout_share_challenge" />
 
             <include
                 android:id="@+id/challengeTasks"

@@ -689,7 +689,12 @@
         <activity
             android:name="com.jetsynthesys.rightlife.ui.challenge.ChallengeActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/> >
+
+        <activity
+            android:name="com.jetsynthesys.rightlife.ui.challenge.ChallengeEmptyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
 
 
         <provider

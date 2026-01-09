@@ -1,16 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlRanking"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="240dp"
+    android:layout_marginTop="12dp">
 
     <ImageView
+        android:id="@+id/imgRankBg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/rank1"
-        android:scaleType="centerCrop"/>
+        android:layout_height="240dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/rank1" />
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:id="@+id/imgChallenge"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/challenge_icon"
+            app:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/tvRanking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@id/imgChallenge"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Rankings"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="100dp"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvRankNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@id/imgChallenge"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="top"
+            android:text="1"
+            android:textColor="#FFFFFF"
+            android:textSize="48sp" />
+
+        <TextView
+            android:id="@+id/tvRankSuffix"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/imgChallenge"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="top"
+            android:text="st"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnViewLeaderBoard"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="34dp"
+        android:layout_marginVertical="24dp"
+        android:background="@drawable/bg_rounded_button"
+        android:backgroundTint="@null"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="View The Leaderboard"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
 
 
 </RelativeLayout>
