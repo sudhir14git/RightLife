@@ -238,6 +238,22 @@
                         android:id="@+id/layoutUnlockChallenge"
                         layout="@layout/layout_unlock_challenge" />
 
+                    <include
+                        android:id="@+id/layoutChallengeToCompleteChecklist"
+                        layout="@layout/layout_challenge_to_complete_checklist" />
+
+                    <include
+                        android:id="@+id/layoutChallengeCountDownDays"
+                        layout="@layout/layout_challenge_countdown_timer" />
+
+                    <include
+                        android:id="@+id/layoutChallengeDailyScore"
+                        layout="@layout/layout_challenge_daily_score" />
+
+                    <include
+                        android:id="@+id/layoutChallengeCompleted"
+                        layout="@layout/layout_challenge_completed" />
+
                     <FrameLayout
                         android:id="@+id/rightLifeReportCard"
                         android:layout_width="match_parent"

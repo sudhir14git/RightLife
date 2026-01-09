@@ -86,8 +86,10 @@ import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.BottomSheetChallengeBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetScoreInfoBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
+import com.jetsynthesys.rightlife.newdashboard.model.ChallengeDateData
 import com.jetsynthesys.rightlife.newdashboard.model.ChallengeDateResponse
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
@@ -106,11 +108,13 @@ import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showChallengeInfoBottomSheet
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.profile_new.SavedItemListActivity
+import com.jetsynthesys.rightlife.ui.settings.PurchasePlansActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
@@ -206,6 +210,8 @@ class HomeNewActivity : BaseActivity() {
     private var isUserProfileLoaded = false
     var isCategoryModuleLoaded = false
     private var isChecklistLoaded = false
+
+    private var checklistCount = 0;
 
     private fun isInitialDataReadyFor(target: String): Boolean {
         // For simple navigation, no need to wait
@@ -589,6 +595,13 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
         }
+
+        binding.layoutChallengeToCompleteChecklist.seekBar.apply {
+            setOnTouchListener { _, _ -> true }
+            splitTrack = false
+            isFocusable = false
+        }
+
 
         /*DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Unlock RightLife Pro to keep your health journey uninterrupted.",
@@ -1045,17 +1058,8 @@ class HomeNewActivity : BaseActivity() {
             }
         }
 
-        binding.layoutRegisterChallenge.imgInfoChallege.setOnClickListener {
-            showChallengeBottomSheet()
-        }
-
-        binding.layoutUnlockChallenge.imgInfoChallege.setOnClickListener {
-            showChallengeBottomSheet()
-        }
-
-        binding.layoutRegisterChallenge.btnJoin.setOnClickListener {
-            lifecycleScope.launch { joinChallenge() }
-        }
+        // challenge related stuff
+        setChallengeLayout()
     }
 
 
@@ -1070,25 +1074,6 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
         getSubscriptionList()
         //getSubscriptionProducts(binding.tvStriketroughPrice);
-    }
-
-    fun showChallengeCard(){
-        try {
-            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
-                val appConfig =
-                    Gson().fromJson(
-                        sharedPreferenceManager.appConfigJson,
-                        AppConfigResponse::class.java
-                    )
-                if (appConfig?.data?.isChallengeStart == true) {
-                    getChallengeStatus()
-                } else {
-                    hideChallengeLayout()
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("AppConfig", "Failed to parse app config from SharedPreferences", e)
-        }
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -3652,7 +3637,33 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
+        checklistCount = 0
         if (checklistResponse != null) {
+            if (checklistResponse.data.profile.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.meal_snap.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.sync_health_data.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.vital_facial_scan.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.unlock_sleep.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.discover_eating.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+
             checklistResponse.data.snap_mealId.let { snapMealId ->
                 if (!snapMealId.isNullOrEmpty()) {
                     sharedPreferenceManager.saveSnapMealId(snapMealId)
@@ -3663,6 +3674,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
         }
+
     }
 
     private fun freeTrialDialogActivity(featureFlag: String = "") {
@@ -4184,30 +4196,8 @@ class HomeNewActivity : BaseActivity() {
                             gson.fromJson(jsonResponse, ChallengeDateResponse::class.java)
 
                         val dates = responseObj.data
-                        if (dates.participateDate.isNotEmpty()) {
-                            binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
-                                View.VISIBLE
-                            binding.layoutRegisterChallenge.registerChallengeCard.visibility =
-                                View.GONE
-                            binding.layoutUnlockChallenge.tvStartEndDate.text =
-                                getChallengeDateRange(
-                                    dates.challengeStartDate,
-                                    dates.challengeEndDate
-                                )
-                            dates.challengeLiveDate.let {
-                                binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
-                                    formatWithOrdinal(it)
-                            }
-                        } else {
-                            binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
-                            binding.layoutRegisterChallenge.registerChallengeCard.visibility =
-                                View.VISIBLE
-                            binding.layoutRegisterChallenge.tvStartEndDate.text =
-                                getChallengeDateRange(
-                                    dates.challengeStartDate,
-                                    dates.challengeEndDate
-                                )
-                        }
+                        hideChallengeLayout()
+                        handleChallengeStatusResponse(dates)
                     }
                 }
 
@@ -4222,45 +4212,70 @@ class HomeNewActivity : BaseActivity() {
             })
     }
 
-    private fun showChallengeBottomSheet() {
-
-        AnalyticsLogger.logEvent(
-            this@HomeNewActivity,
-            AnalyticsEvent.Challenge_info_open
-        )
-
-        val bottomSheetDialog = BottomSheetDialog(this)
-        val binding = BottomSheetChallengeBinding.inflate(layoutInflater)
-        bottomSheetDialog.setContentView(binding.root)
-
-        bottomSheetDialog.setOnShowListener { dialog ->
-
-            val bottomSheet =
-                (dialog as BottomSheetDialog)
-                    .findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-
-            bottomSheet?.let {
-                val behavior = BottomSheetBehavior.from(it)
-
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.isHideable = false
-                behavior.skipCollapsed = true
-                //behavior.isDraggable = false   // 🔥 prevents swipe down
+    private fun handleChallengeStatusResponse(dates: ChallengeDateData){
+        if (getDaysFromToday(dates.challengeEndDate) < 0) {
+            // challenge end here
+            if (dates.participateDate.isNotEmpty()) {
+                // show challenge complete card
+                binding.layoutChallengeCompleted.challengeCompleted.visibility =
+                    View.VISIBLE
+            } else {
+                hideChallengeLayout()
+            }
+        } else {
+            //Challenge is live
+            if (dates.participateDate.isNotEmpty()) {
+                //participated
+                if (getDaysFromToday(dates.challengeLiveDate) < 0) {
+                    //Live date ended
+                    if (!DashboardChecklistManager.checklistStatus) {
+                        //checklist not completed
+                        binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
+                            View.VISIBLE
+                        binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
+                            "$checklistCount/6"
+                    } else {
+                        // checklist completed
+                        if (getDaysFromToday(dates.challengeStartDate) < 0) {
+                            // start date ended
+                            binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+                                View.VISIBLE
+                        } else {
+                            // start date not ended
+                            binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
+                                View.VISIBLE
+                            binding.layoutChallengeCountDownDays.tvCountDownDays.text =
+                                getDaysFromToday(dates.challengeStartDate).toString()
+                        }
+                    }
+                } else {
+                    // live date not ended
+                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
+                        View.VISIBLE
+                    binding.layoutRegisterChallenge.registerChallengeCard.visibility =
+                        View.GONE
+                    binding.layoutUnlockChallenge.tvStartEndDate.text =
+                        getChallengeDateRange(
+                            dates.challengeStartDate,
+                            dates.challengeEndDate
+                        )
+                    dates.challengeLiveDate.let {
+                        binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
+                            formatWithOrdinal(it)
+                    }
+                }
+            } else {
+                // not participated
+                hideChallengeLayout(false)
+                binding.layoutRegisterChallenge.registerChallengeCard.visibility =
+                    View.VISIBLE
+                binding.layoutRegisterChallenge.tvStartEndDate.text =
+                    getChallengeDateRange(
+                        dates.challengeStartDate,
+                        dates.challengeEndDate
+                    )
             }
         }
-
-        // Dim background
-        bottomSheetDialog.window?.apply {
-            setDimAmount(0.7f)
-            addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
-
-        binding.btnClose.setOnClickListener {
-            bottomSheetDialog.dismiss()
-        }
-
-        bottomSheetDialog.show()
     }
 
     private fun getChallengeDateRange(start: String, end: String): String {
@@ -4292,6 +4307,38 @@ class HomeNewActivity : BaseActivity() {
         return "$day${getDaySuffix(day)} $month $year"
     }
 
+    private fun getDaysFromToday(dateString: String): Int {
+        val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        inputFormat.isLenient = false
+
+        return try {
+            val targetDate = inputFormat.parse(dateString) ?: return 0
+
+            // Clear time part for accurate day calculation
+            val todayCal = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            val targetCal = Calendar.getInstance().apply {
+                time = targetDate
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            val diffMillis = targetCal.timeInMillis - todayCal.timeInMillis
+            (diffMillis / (1000 * 60 * 60 * 24)).toInt()
+
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+
     private fun getDaySuffix(day: Int): String {
         return when {
             day in 11..13 -> "th"
@@ -4303,8 +4350,79 @@ class HomeNewActivity : BaseActivity() {
     }
 
 
-    fun hideChallengeLayout(){
+    fun hideChallengeLayout(hideRegisterLayout: Boolean = true) {
+        if (hideRegisterLayout)
+            binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
         binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
-        binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
+        binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility = View.GONE
+        binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility = View.GONE
+        binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility = View.GONE
+        binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility = View.GONE
     }
+
+    fun showChallengeCard() {
+        try {
+            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
+                val appConfig =
+                    Gson().fromJson(
+                        sharedPreferenceManager.appConfigJson,
+                        AppConfigResponse::class.java
+                    )
+                if (appConfig?.data?.isChallengeStart == true) {
+                    getChallengeStatus()
+                } else {
+                    hideChallengeLayout()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("AppConfig", "Failed to parse app config from SharedPreferences", e)
+        }
+    }
+
+    private fun setChallengeLayout() {
+        //Register Challenge
+        binding.layoutRegisterChallenge.imgInfoChallege.setOnClickListener {
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+        binding.layoutRegisterChallenge.btnJoin.setOnClickListener {
+            lifecycleScope.launch { joinChallenge() }
+        }
+
+        //Unlock challenge
+        binding.layoutUnlockChallenge.imgInfoChallege.setOnClickListener {
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+
+        //Challenge Complete Checklist
+        binding.layoutChallengeToCompleteChecklist.imgInfoChallege.setOnClickListener {
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+        binding.layoutChallengeToCompleteChecklist.btnCompleteChecklist.setOnClickListener {
+            myHealthFragmentSelected()
+        }
+
+        //Challenge CountDownDays
+        binding.layoutChallengeCountDownDays.imgChallenge.setOnClickListener {
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+
+        //Challenge Daily Score
+        binding.layoutChallengeDailyScore.imgForwardChallenge.setOnClickListener {
+            //showScoreInfoBottomSheet()
+        }
+
+        //challenge completed
+        binding.layoutChallengeCompleted.imgScoreChallenge.setOnClickListener {
+            // start Challenge Activity here
+        }
+        binding.layoutChallengeCompleted.btnExplorePlans.setOnClickListener {
+            startActivity(
+                Intent(
+                    this@HomeNewActivity,
+                    PurchasePlansActivity::class.java
+                )
+            )
+        }
+    }
+
 }

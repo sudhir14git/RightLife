@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/challengeCompleted"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    android:visibility="gone">
+
+    <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
+        android:id="@+id/gradientBorder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_challenge"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:id="@+id/imgChallenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/challenge_icon"
+                app:tint="#06B27B" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/imgChallenge"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Challenge Complete"
+                android:textColor="#06B27B"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/imgScoreChallenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/forward_icon" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvChecklistNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="You Did It!"
+            android:textColor="@color/txt_color_header"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:padding="4dp"
+            android:text="The challenge has ended. Thank you for participating!"
+            android:textColor="#707070"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnExplorePlans"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_rounded_button"
+            android:backgroundTint="@null"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Explore Plans"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</FrameLayout>
