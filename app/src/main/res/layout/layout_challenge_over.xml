@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/challengeOverCard"
+    android:layout_width="match_parent"
+    android:layout_height="140dp"
+    android:layout_marginTop="16dp"
+    android:visibility="gone">
+
+    <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
+        android:id="@+id/gradientBorder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_challenge"
+        android:clipToPadding="false"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Challenge Over"
+            android:textColor="@color/txt_color_header"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:padding="4dp"
+            android:text="Thanks for taking part! View your final results below."
+            android:textColor="@color/txt_color_header"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</FrameLayout>

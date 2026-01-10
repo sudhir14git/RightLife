@@ -1,4 +1,4 @@
-package com.jetsynthesys.rightlife.ui.challenge
+package com.jetsynthesys.rightlife.ui.challenge.adapters
 
 import android.view.LayoutInflater
 import android.view.View

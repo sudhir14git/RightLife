@@ -18,7 +18,6 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import android.widget.TextView
 import android.widget.Toast
@@ -56,8 +55,6 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryPurchasesParams
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
@@ -85,8 +82,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
-import com.jetsynthesys.rightlife.databinding.BottomSheetChallengeBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetScoreInfoBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.newdashboard.model.ChallengeDateData
@@ -108,13 +103,16 @@ import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeActivity
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showChallengeInfoBottomSheet
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeEmptyActivity
-import com.jetsynthesys.rightlife.ui.challenge.DailyStreakActivity
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getChallengeDateRange
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaysFromToday
-import com.jetsynthesys.rightlife.ui.challenge.LeaderboardActivity
+import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
+import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
+import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
@@ -217,7 +215,7 @@ class HomeNewActivity : BaseActivity() {
     var isCategoryModuleLoaded = false
     private var isChecklistLoaded = false
 
-    private var checklistCount = 0;
+    private var checklistCount = 0
 
     private fun isInitialDataReadyFor(target: String): Boolean {
         // For simple navigation, no need to wait
@@ -1063,6 +1061,8 @@ class HomeNewActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
             }
         }
+
+        showChallengeCard()
     }
 
 
@@ -1217,8 +1217,7 @@ class HomeNewActivity : BaseActivity() {
                             binding.llCountDown.visibility = View.VISIBLE
                         }*/
                         // Get the current fragment
-                        val currentFragment =
-                            supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+                        supportFragmentManager.findFragmentById(R.id.fragmentContainer)
 
                         // Check if it's HomeDashboardFragment
                         /*if (currentFragment is HomeDashboardFragment) {
@@ -1307,7 +1306,7 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun checkForceUpdate() {
-        if (!sharedPreferenceManager.isForceUpdateEnabled()) return
+        if (!sharedPreferenceManager.isForceUpdateEnabled) return
 
         val minRequired = sharedPreferenceManager.forceUpdateMinVersion
         val currentVersion = BuildConfig.VERSION_NAME ?: "0"
@@ -1357,7 +1356,7 @@ class HomeNewActivity : BaseActivity() {
             if (task.isSuccessful) {
                 val latestVersion = remoteConfig.getString("force_update_current_version")
                 val isForceUpdate = remoteConfig.getBoolean("isForceUpdate")
-                val forceUpdateBuildNumber = remoteConfig.getString("force_update_build_number")
+                remoteConfig.getString("force_update_build_number")
 
                 val currentVersion = BuildConfig.VERSION_NAME
 
@@ -2774,7 +2773,7 @@ class HomeNewActivity : BaseActivity() {
                         distance_unit = "km"
                     )
                 } ?: emptyList()
-                val request = StoreHealthDataRequest(
+                StoreHealthDataRequest(
                     user_id = userid,
                     source = "android",
                     active_energy_burned = activeEnergyBurned,
@@ -3146,7 +3145,7 @@ class HomeNewActivity : BaseActivity() {
                         distance_unit = "km"
                     )
                 } ?: emptyList()
-                val request = StoreHealthDataRequest(
+                StoreHealthDataRequest(
                     user_id = userid,
                     source = "android",
                     active_energy_burned = activeEnergyBurned,
@@ -3561,7 +3560,7 @@ class HomeNewActivity : BaseActivity() {
                         val days = millisUntilFinished / (1000 * 60 * 60 * 24)
                         val hours = (millisUntilFinished % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
                         val minutes = (millisUntilFinished % (1000 * 60 * 60)) / (1000 * 60)
-                        val seconds = (millisUntilFinished % (1000 * 60)) / 1000
+                        (millisUntilFinished % (1000 * 60)) / 1000
 
                         // Update your UI
                         binding.tvDays.text = String.format(Locale.getDefault(), "%02d", days)
@@ -3695,8 +3694,7 @@ class HomeNewActivity : BaseActivity() {
 
     private fun myHealthFragmentSelected() {
         // Get the current fragment
-        val currentFragment =
-            supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        supportFragmentManager.findFragmentById(R.id.fragmentContainer)
 
         if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
             binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
@@ -4200,9 +4198,10 @@ class HomeNewActivity : BaseActivity() {
 
                         val dates = responseObj.data
                         hideChallengeLayout()
-                        handleChallengeStatusResponse(dates)
+                        //handleChallengeStatusResponse(dates)
                         // challenge related stuff
                         setChallengeLayout(dates)
+                        handleChallengeUI(dates)
                     }
                 }
 
@@ -4217,7 +4216,86 @@ class HomeNewActivity : BaseActivity() {
             })
     }
 
-    private fun handleChallengeStatusResponse(dates: ChallengeDateData) {
+    private fun handleChallengeUI(dates: ChallengeDateData) {
+
+        // Hide all layouts first to avoid overlapping UI
+        hideChallengeLayout()
+
+        val dateRange = getChallengeDateRange(
+            dates.challengeStartDate,
+            dates.challengeEndDate
+        )
+
+        if (dates.participateDate.isEmpty()) {
+
+            if (dates.challengeStatus != 4) {
+                binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.VISIBLE
+                binding.layoutRegisterChallenge.tvStartEndDate.text = dateRange
+            } else {
+                hideChallengeLayout()
+            }
+
+            return
+        }
+
+        when (dates.challengeStatus) {
+
+            1 -> {
+                if (dates.participateDate.isEmpty()) {
+                    // Join challenge
+                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.VISIBLE
+                    binding.layoutRegisterChallenge.tvStartEndDate.text = dateRange
+                } else {
+                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
+                        View.VISIBLE
+
+                    binding.layoutUnlockChallenge.tvStartEndDate.text =
+                        getChallengeDateRange(
+                            dates.challengeStartDate,
+                            dates.challengeEndDate
+                        )
+                    dates.challengeLiveDate.let {
+                        binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
+                            formatWithOrdinal(it)
+                    }
+                }
+            }
+
+            2 -> {
+                // Waiting for challenge
+                if (!DashboardChecklistManager.checklistStatus) {
+                    // Checklist not completed
+                    binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
+                        View.VISIBLE
+                    binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
+                        "$checklistCount/6"
+                } else {
+                    // Checklist completed → Countdown card
+                    binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
+                        View.VISIBLE
+                    binding.layoutChallengeCountDownDays.tvCountDownDays.text =
+                        getDaysFromToday(dates.challengeStartDate).toString()
+                }
+            }
+
+            3 -> {
+                // Active challenge → Daily score
+                getDailyScore(DateHelper.getTodayDate())
+                binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+                    View.VISIBLE
+            }
+
+            4 -> {
+                // Challenge completed
+                binding.layoutChallengeCompleted.challengeCompleted.visibility =
+                    View.VISIBLE
+            }
+        }
+    }
+
+
+    /*private fun handleChallengeStatusResponse(dates: ChallengeDateData) {
+
         if (getDaysFromToday(dates.challengeEndDate) < 0) {
             // challenge end here
             if (dates.participateDate.isNotEmpty()) {
@@ -4271,7 +4349,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             } else {
                 // not participated
-                hideChallengeLayout(false)
+                hideChallengeLayout()
                 binding.layoutRegisterChallenge.registerChallengeCard.visibility =
                     View.VISIBLE
                 binding.layoutRegisterChallenge.tvStartEndDate.text =
@@ -4281,7 +4359,7 @@ class HomeNewActivity : BaseActivity() {
                     )
             }
         }
-    }
+    }*/
 
     private fun formatWithOrdinal(dateStr: String): String {
         val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
@@ -4298,14 +4376,13 @@ class HomeNewActivity : BaseActivity() {
     }
 
 
-    fun hideChallengeLayout(hideRegisterLayout: Boolean = true) {
-        if (hideRegisterLayout)
-            binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
+    fun hideChallengeLayout() {
+        binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
         binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
         binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility = View.GONE
         binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility = View.GONE
         binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility = View.GONE
-        binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility = View.GONE
+        binding.layoutChallengeCompleted.challengeCompleted.visibility = View.GONE
     }
 
     fun showChallengeCard() {
@@ -4350,7 +4427,7 @@ class HomeNewActivity : BaseActivity() {
         }
 
         //Challenge CountDownDays
-        binding.layoutChallengeCountDownDays.imgChallenge.setOnClickListener {
+        binding.layoutChallengeCountDownDays.imgInfoChallege.setOnClickListener {
             showChallengeInfoBottomSheet(this@HomeNewActivity)
         }
         binding.layoutChallengeCountDownDays.btnViewChallenge.setOnClickListener {
@@ -4361,12 +4438,13 @@ class HomeNewActivity : BaseActivity() {
 
         //Challenge Daily Score
         binding.layoutChallengeDailyScore.imgForwardChallenge.setOnClickListener {
-            //showScoreInfoBottomSheet()
+            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java))
         }
 
         //challenge completed
         binding.layoutChallengeCompleted.imgScoreChallenge.setOnClickListener {
             // start Challenge Activity here
+            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java))
         }
         binding.layoutChallengeCompleted.btnExplorePlans.setOnClickListener {
             startActivity(
@@ -4376,6 +4454,51 @@ class HomeNewActivity : BaseActivity() {
                 )
             )
         }
+    }
+
+    private fun getDailyScore(date: String) {
+        AppLoader.show(this)
+        apiService.dailyScore(sharedPreferenceManager.accessToken, date)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>, response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful && response.body() != null) {
+                        val gson = Gson()
+                        val jsonResponse = response.body()?.string()
+                        val responseObj =
+                            gson.fromJson(jsonResponse, DailyScoreResponse::class.java)
+                        val scoreData = responseObj.data
+                        binding.layoutChallengeDailyScore.apply {
+                            tvPoints.text = scoreData.totalScore.toString()
+                            scoreSeekBar.progress = scoreData.totalScore
+                            setSeekBarProgressColor(
+                                scoreSeekBar, getColorCode(scoreData.performance)
+                            )
+                            imgScoreColor.imageTintList = ColorStateList.valueOf(
+                                Color.parseColor(
+                                    getColorCode(
+                                        scoreData.performance
+                                    )
+                                )
+                            )
+                            tvScoreLabel.text = scoreData.performance
+                            tvMessage.text = scoreData.message
+                        }
+                    } else {
+                        showCustomToast("Something went wrong!", false)
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>, t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
     }
 
 }
