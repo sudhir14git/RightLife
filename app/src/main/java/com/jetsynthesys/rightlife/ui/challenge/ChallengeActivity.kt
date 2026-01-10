@@ -20,6 +20,7 @@ import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getImageBasedOnStatus
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
+import com.jetsynthesys.rightlife.ui.challenge.adapters.CalendarChallengeAdapter
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyChallengeResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyTaskResponse
@@ -60,6 +61,10 @@ class ChallengeActivity : BaseActivity() {
         setupShareListeners()
 
         getDailyChallengeData(DateHelper.getTodayDate())
+
+        binding.llStreak.setOnClickListener {
+            startActivity(Intent(this@ChallengeActivity, DailyStreakActivity::class.java))
+        }
 
     }
 
@@ -233,18 +238,22 @@ class ChallengeActivity : BaseActivity() {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             dateFormat.isLenient = false
 
-            val inputDate = dateFormat.parse(dateString)
-            val today = Calendar.getInstance()
-            today.set(Calendar.HOUR_OF_DAY, 0)
-            today.set(Calendar.MINUTE, 0)
-            today.set(Calendar.SECOND, 0)
-            today.set(Calendar.MILLISECOND, 0)
+            val inputDate = dateFormat.parse(dateString) ?: return false
 
-            inputDate?.after(today.time) ?: false
+            val today = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            // true if date is today OR in future
+            !inputDate.before(today.time)
+
         } catch (e: Exception) {
-            false // return false for invalid date format
+            false
         }
     }
+
 
     private fun getDailyChallengeData(date: String) {
         AppLoader.show(this)
@@ -480,7 +489,7 @@ class ChallengeActivity : BaseActivity() {
     private fun setUpRankCard(rank: Int, suffix: String) {
         binding.rankingCard.apply {
             btnViewLeaderBoard.setOnClickListener {
-
+                startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
             }
             tvRankNumber.text = rank.toString()
             tvRankSuffix.text = suffix

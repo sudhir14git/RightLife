@@ -32,6 +32,7 @@
             android:textSize="@dimen/textsize_large24sp" />
 
         <LinearLayout
+            android:id="@+id/llStreak"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -108,6 +109,11 @@
                 android:layout_marginTop="10dp"
                 android:paddingHorizontal="8dp"
                 android:scrollbars="none" />
+
+            <include
+                android:id="@+id/challengeOverCard"
+                layout="@layout/layout_challenge_over" />
+
 
             <include
                 android:id="@+id/scoreCard"
