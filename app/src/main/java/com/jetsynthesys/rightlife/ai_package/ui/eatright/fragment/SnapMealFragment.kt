@@ -805,7 +805,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetect
                         fm.beginTransaction()
                             .replace(R.id.flFragment, snapMealFragment, "Steps")
                             .addToBackStack(null)
-                            .commit()
+                            .commitAllowingStateLoss() // Changed from commit() to commitAllowingStateLoss()
                     } else {
                         notMealDetectItem()
                     }
@@ -861,8 +861,12 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     ) { uri: Uri? ->
         uri?.let {
             imageSelectedListener?.onImageSelected(it)
-            dismiss()
-            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+            if (isAdded) {
+                dismiss()
+            }
+            if (isAdded && context != null) {
+                Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -878,7 +882,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewFinder = view.findViewById(R.id.viewFinder)
-       // requestPermissionsIfNeeded()
+        // requestPermissionsIfNeeded()
         /*if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -890,8 +894,13 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             if (moduleName.equals("HomeDashboard")){
 //                startActivity(Intent(context, HomeDashboardActivity::class.java))
 //                requireActivity().finish()
-                requireActivity().onBackPressedDispatcher.onBackPressed()
+                if (isAdded) {
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }else if (homeTab.equals("homeTab")){
+                if (!isAdded) return@setOnClickListener
+                val act = activity ?: return@setOnClickListener
+
                 dismiss()
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
@@ -899,22 +908,25 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
                 fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
+                act.supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
                     addToBackStack("landing")
-                    commit()
+                    commitAllowingStateLoss()
                 }
             }else{
-               // val fragment = HomeBottomTabFragment()
+                // val fragment = HomeBottomTabFragment()
+                if (!isAdded) return@setOnClickListener
+                val act = activity ?: return@setOnClickListener
+
                 dismiss()
-                val fragmentManager = requireActivity().supportFragmentManager
+                val fragmentManager = act.supportFragmentManager
                 val snapMealFragment = fragmentManager.findFragmentByTag("SnapMealFragmentTag")
                 snapMealFragment?.let {
                     fragmentManager.beginTransaction()
                         .remove(it)
                         .commitAllowingStateLoss()
                 }
- //               val args = Bundle()
+                //               val args = Bundle()
 //                args.putString("ModuleName", "EatRight")
 //                fragment.arguments = args
 //                requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -957,7 +969,9 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun showCameraSettingsDialog() {
+        if (!isAdded) return
         if (cameraSettingsDialog?.isShowing == true) return
+
         val builder = AlertDialog.Builder(requireContext())
             .setTitle("Camera Access Denied")
             .setMessage("Please enable camera access in Settings to snap your meal.")
@@ -981,6 +995,8 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun openAppSettings() {
+        if (!isAdded) return
+
         try {
             val intent = Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -1003,6 +1019,8 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (!isAdded) return@registerForActivityResult
+
             val allGranted = permissions.all { it.value }
             if (allGranted) {
                 onPermissionsGranted()
@@ -1054,6 +1072,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun isCameraPermissionGranted(): Boolean {
+        if (!isAdded) return false
         return ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.CAMERA
@@ -1061,11 +1080,14 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun closeSnapMealFragment() {
-      //  dismiss() // Close the dialog first
+        if (!isAdded) return
+        val act = activity ?: return
+
+        //  dismiss() // Close the dialog first
         if (moduleName.equals("HomeDashboard")){
 //                startActivity(Intent(context, HomeDashboardActivity::class.java))
 //                requireActivity().finish()
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            act.onBackPressedDispatcher.onBackPressed()
         }else if (homeTab.equals("homeTab")){
             dismiss()
             val fragment = HomeTabMealFragment()
@@ -1074,14 +1096,14 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             args.putString("ModuleName", moduleName)
             args.putString("mealType", mealType)
             fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
+            act.supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
                 addToBackStack("landing")
-                commit()
+                commitAllowingStateLoss()
             }
         }else{
             dismiss()
-            val fragmentManager = requireActivity().supportFragmentManager
+            val fragmentManager = act.supportFragmentManager
             val snapMealFragment = fragmentManager.findFragmentByTag("SnapMealFragmentTag")
             snapMealFragment?.let {
                 fragmentManager.beginTransaction()
@@ -1092,8 +1114,12 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun startCamera() {
+        if (!isAdded) return
+
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
+            if (!isAdded) return@addListener
+
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val aspectRatio = AspectRatio.RATIO_16_9
             val preview = Preview.Builder()
@@ -1143,18 +1169,39 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri
                     Log.d(TAG, "Photo saved: $savedUri")
-                    requireActivity().runOnUiThread {
+
+                    // Check if fragment is still attached before updating UI
+                    if (!isAdded) return
+                    val act = activity ?: return
+
+                    act.runOnUiThread {
+                        if (!isAdded) return@runOnUiThread
+
                         savedUri?.let { uri ->
                             imageSelectedListener?.onImageSelected(uri)
-                            dismiss()
+                            if (isAdded) {
+                                dismiss()
+                            }
                         }
-                        Toast.makeText(requireContext(), "Photo saved successfully!", Toast.LENGTH_SHORT).show()
+                        if (isAdded && context != null) {
+                            Toast.makeText(requireContext(), "Photo saved successfully!", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
+
                 override fun onError(exception: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_LONG).show()
+
+                    // Check if fragment is still attached before updating UI
+                    if (!isAdded) return
+                    val act = activity ?: return
+
+                    act.runOnUiThread {
+                        if (!isAdded) return@runOnUiThread
+
+                        if (isAdded && context != null) {
+                            Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
@@ -1162,6 +1209,8 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun toggleFlash() {
+        if (!isAdded) return
+
         camera?.let {
             val hasFlash = it.cameraInfo.hasFlashUnit()
             if (!hasFlash) {
@@ -1177,9 +1226,11 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 it.cameraControl.enableTorch(isTorchOn)
                 view?.findViewById<ImageView>(R.id.flashToggle)?.setImageResource(R.drawable.flash_icon)
             }
-         //   Toast.makeText(requireContext(), "Flash ${if (isTorchOn) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
+            //   Toast.makeText(requireContext(), "Flash ${if (isTorchOn) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
         } ?: run {
-            Toast.makeText(requireContext(), "Camera not initialized", Toast.LENGTH_SHORT).show()
+            if (isAdded && context != null) {
+                Toast.makeText(requireContext(), "Camera not initialized", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -1190,32 +1241,43 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+        isAdded && ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
+        if (!isAdded) return
+
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(requireContext(), "Permissions not granted", Toast.LENGTH_SHORT).show()
+                if (context != null) {
+                    Toast.makeText(requireContext(), "Permissions not granted", Toast.LENGTH_SHORT).show()
+                }
                 navigateToFragment(MoveRightLandingFragment(), "landingFragment")
             }
         }
     }
 
     private fun navigateToFragment(fragment: Fragment, tag: String) {
-        requireActivity().supportFragmentManager.beginTransaction().apply {
+        if (!isAdded) return
+        val act = activity ?: return
+
+        act.supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)
-            commit()
+            commitAllowingStateLoss()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        imageCapture = null // Clear the reference to prevent memory leaks
+        camera = null
+        cameraSettingsDialog?.dismiss()
+        cameraSettingsDialog = null
         cameraExecutor.shutdown()
     }
 
@@ -1233,7 +1295,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
-
 }
 interface OnImageSelectedListener {
     fun onImageSelected(imageUri: Uri)
