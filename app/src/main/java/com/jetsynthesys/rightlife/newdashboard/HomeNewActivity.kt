@@ -4330,10 +4330,7 @@ class HomeNewActivity : BaseActivity() {
     private fun setChallengeLayout(dates: ChallengeDateData) {
         //Register Challenge
         binding.layoutRegisterChallenge.imgInfoChallege.setOnClickListener {
-            //showChallengeInfoBottomSheet(this@HomeNewActivity)
-            startActivity(Intent(this@HomeNewActivity, DailyStreakActivity ::class.java).apply {
-
-            })
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
         }
         binding.layoutRegisterChallenge.btnJoin.setOnClickListener {
             lifecycleScope.launch { joinChallenge() }
