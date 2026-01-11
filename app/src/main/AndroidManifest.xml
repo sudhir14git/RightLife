@@ -83,16 +83,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="35">
-        <activity
-            android:name=".ui.challenge.LeaderboardActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
-        <!--<intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>-->
-        </activity>
         <!-- xml -->
         <service
             android:name=".fcm.MyFirebaseMessagingService"
@@ -678,16 +668,23 @@
         <activity android:name=".ui.mindaudit.MindAuditDass21DetailResultActivity" />
         <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
         <activity android:name=".ui.new_design.MobileLoginActivity" />
+
         <activity
             android:name=".ui.challenge.ChallengeActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/> >
-
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.jetsynthesys.rightlife.ui.challenge.ChallengeEmptyActivity"
+            android:name=".ui.challenge.ChallengeEmptyActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.jetsynthesys.rightlife.ui.challenge.DailyStreakActivity" />
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.challenge.DailyStreakActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.challenge.LeaderboardActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -1,5 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="160dp"
+    android:layout_width="170dp"
     android:layout_height="180dp">
 
     <LinearLayout
@@ -21,25 +21,28 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="Weekly Prize"
-            android:textColor="#222"
+            android:textColor="@color/txt_color_header"
+            android:fontFamily="@font/dmsans_regular"
             android:textSize="14sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:text="₹2,500"
-            android:textColor="#000"
+            android:textColor="@color/txt_color_header"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/dmsans_bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Every week x 4"
-            android:textColor="#777"
-            android:textSize="12sp" />
+            android:gravity="center"
+            android:text="Split Across\nWeekly Winners"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_header"
+            android:textSize="10sp" />
     </LinearLayout>
 
 </FrameLayout>
