@@ -7,6 +7,7 @@ import android.view.View
 import android.view.WindowManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.databinding.ActivityChallengeRewardBinding
 import com.jetsynthesys.rightlife.databinding.BottomSheetChallengeBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetScoreInfoBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetTaskInfoBinding
@@ -15,7 +16,7 @@ object ChallengeBottomSheetHelper {
     fun showChallengeInfoBottomSheet(activity: Activity) {
 
         val bottomSheetDialog = BottomSheetDialog(activity)
-        val binding = BottomSheetChallengeBinding.inflate(activity.layoutInflater)
+        val binding = ActivityChallengeRewardBinding.inflate(activity.layoutInflater)
         bottomSheetDialog.setContentView(binding.root)
 
         bottomSheetDialog.setOnShowListener { dialog ->
@@ -30,7 +31,7 @@ object ChallengeBottomSheetHelper {
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 behavior.isHideable = false
                 behavior.skipCollapsed = true
-                //behavior.isDraggable = false   // 🔥 prevents swipe down
+                behavior.isDraggable = false   // 🔥 prevents swipe down
             }
         }
 
