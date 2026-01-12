@@ -1030,7 +1030,7 @@ class HomeExploreFragment : BaseFragment() {
     private fun handlePromotionResponseWeekly(promotionResponse: PromotionWeeklyResponse) {
         cardItems.clear()
         promotionResponse.data.promotionList.indices.forEach { i ->
-            val cardItem = CardItem(
+           /* val cardItem = CardItem(
                 promotionResponse.data.promotionList[i]._id,
                 promotionResponse.data.promotionList[i].name,
                 R.drawable.facialconcept,
@@ -1043,7 +1043,25 @@ class HomeExploreFragment : BaseFragment() {
                 promotionResponse.data.promotionList[i].seriesType,
                 promotionResponse.data.promotionList[i].selectedContentType,
                 promotionResponse.data.promotionList[i].titleImage,
-                promotionResponse.data.promotionList[i].buttonImage
+                promotionResponse.data.promotionList[i].buttonImage,
+                promotionResponse.data.promotionList[i].contentId
+            )*/
+            val promo = promotionResponse.data.promotionList[i]
+            val cardItem = CardItem(
+                promo._id,
+                promo.name,
+                R.drawable.facialconcept,
+                promo.desktopImage,
+                promo.content,
+                promo.buttonName,
+                promo.category,
+                promo.views.toString(),
+                promo.seriesId,
+                promo.seriesType,
+                promo.selectedContentType,
+                promo.titleImage,
+                promo.buttonImage,
+                promo.contentId // ✅ NEW
             )
             cardItems.add(i, cardItem)
         }
@@ -1052,7 +1070,12 @@ class HomeExploreFragment : BaseFragment() {
             binding.viewPager.visibility = View.VISIBLE
             adapter = CircularCardAdapter(requireActivity(), cardItems) { item: CardItem ->
 
-                if (item.seriesType.equals("daily", ignoreCase = true) ||
+                if (!NetworkUtils.isInternetAvailable(requireContext())) {
+                    showInternetError()
+                    return@CircularCardAdapter
+                }
+
+            /*    if (item.seriesType.equals("daily", ignoreCase = true) ||
                     item.category.equals("CONTENT", ignoreCase = true) || item.category
                         .equals("Test Category", ignoreCase = true)
                 ) {
@@ -1084,8 +1107,16 @@ class HomeExploreFragment : BaseFragment() {
                         || item.category.equals("Snap_Meal", ignoreCase = true)
                 ){
 
-                }
+                }*/
+
+                handlePromotionBannerTap(item)
+
             }
+
+
+
+
+
             binding.viewPager.adapter = adapter
             adapter?.notifyDataSetChanged()
 
@@ -1133,6 +1164,87 @@ class HomeExploreFragment : BaseFragment() {
             binding.viewPager.visibility = View.GONE
         }
     }
+
+    private fun handlePromotionBannerTap(item: CardItem) {
+        val seriesType = item.seriesType?.trim().orEmpty()
+        val category = item.category?.trim().orEmpty()
+
+        // DAILY => seriesId? else contentId
+        if (seriesType.equals("daily", ignoreCase = true)) {
+            val seriesId = item.seriesId?.trim().orEmpty()
+            if (seriesId.isNotEmpty()) {
+                startActivity(Intent(requireContext(), SeriesListActivity::class.java).apply {
+                    putExtra("contentId", seriesId)
+                })
+            } else {
+                val contentId = item.contentId?.trim().orEmpty()
+                // daily items in your JSON have selectedContentType = VIDEO/TEXT
+                openContentByType(item.selectedContentType, contentId)
+            }
+            return
+        }
+
+        // LIVE
+        if (seriesType.equals("live", ignoreCase = true) || category.equals("live", ignoreCase = true)) {
+            Toast.makeText(requireContext(), "Live Content", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // COMMERCIAL / others => by category (like iOS switch name)
+        when (normalizePromoCategory(category)) {
+            "face_scan" -> (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
+            "mind_audit" -> {
+                if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true) {
+                    ActivityUtils.startMindAuditActivity(requireContext())
+                }
+            }
+            "meal_snap" -> (requireActivity() as? HomeNewActivity)?.callSnapMealClick()
+            "voice_scan" -> startActivity(Intent(requireContext(), VoiceScanActivity::class.java))
+            else -> { /* no-op */ }
+        }
+    }
+
+    private fun openContentByType(contentType: String?, contentId: String) {
+        if (contentId.isBlank()) return
+
+        when {
+            contentType.equals("TEXT", ignoreCase = true) -> {
+                startActivity(Intent(requireContext(), ArticlesDetailActivity::class.java).apply {
+                    putExtra("contentId", contentId)
+                })
+            }
+            contentType.equals("VIDEO", ignoreCase = true) || contentType.equals("AUDIO", ignoreCase = true) -> {
+                startActivity(Intent(requireContext(), ContentDetailsActivity::class.java).apply {
+                    putExtra("contentId", contentId)
+                })
+            }
+            contentType.equals("SERIES", ignoreCase = true) -> {
+                startActivity(Intent(requireContext(), SeriesListActivity::class.java).apply {
+                    putExtra("contentId", contentId)
+                })
+            }
+            else -> {
+                // fallback
+                startActivity(Intent(requireContext(), ContentDetailsActivity::class.java).apply {
+                    putExtra("contentId", contentId)
+                })
+            }
+        }
+    }
+
+    private fun normalizePromoCategory(raw: String): String {
+        val s = raw.trim().lowercase().replace(" ", "_").replace("-", "_")
+        return when (s) {
+            "facial_scan", "face_scan", "health_cam", "healthcam", "facialscan", "facescan" -> "face_scan"
+            "mind_audit", "health_audit", "mindaudit", "healthaudit" -> "mind_audit"
+            "meal_snap", "snap_meal", "mealsnap", "snapmeal" -> "meal_snap"
+            "voice_scan", "voicescan" -> "voice_scan"
+            else -> s
+        }
+    }
+
+
+
 
     private fun handleServicePaneResponse(responseObj: ServicePaneResponse) {
         val adapter = ServicePaneAdapter(
@@ -1486,6 +1598,7 @@ class HomeExploreFragment : BaseFragment() {
             })
         }
     }
+
 
     private fun callRlEditDetailActivity(item: CardItem) {
         // Assuming rightLifeEditResponse is accessible in this class
