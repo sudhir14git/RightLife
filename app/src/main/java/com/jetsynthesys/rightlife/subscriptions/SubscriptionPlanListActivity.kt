@@ -158,10 +158,9 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
 
         if (planType == "FACIAL_SCAN") {
             binding.cancelButton.visibility = View.GONE
-            binding.continueButton.visibility = View.VISIBLE
+            binding.continueButton.visibility = View.GONE
             binding.iconInfo.visibility = View.GONE
         } else {
-            binding.continueButton.visibility = View.GONE
             binding.continueButton.visibility = View.VISIBLE
         }
     }

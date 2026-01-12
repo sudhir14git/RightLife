@@ -1439,9 +1439,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
-        selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
-        selectedMealDate = formattedDate
-        getMealsLogHistory(formattedDate)
+//        selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
+        //selectedMealDate = formattedDate
+        getMealsLogHistory(selectedDate)
         getMealsLogList(selectedDate)
     }
 

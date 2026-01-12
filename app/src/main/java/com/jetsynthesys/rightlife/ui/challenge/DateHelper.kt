@@ -90,4 +90,50 @@ object DateHelper {
         return "$weeks weeks · $startFormatted – $endFormatted"
     }
 
+    fun isToday(dateString: String, format: String = "yyyy-MM-dd"): Boolean {
+        return try {
+            val sdf = SimpleDateFormat(format, Locale.getDefault())
+            sdf.isLenient = false
+
+            val inputDate = sdf.parse(dateString) ?: return false
+
+            val todayCal = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            val inputCal = Calendar.getInstance().apply {
+                time = inputDate
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            inputCal.timeInMillis == todayCal.timeInMillis
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun isOlderThan7Days(dateString: String): Boolean {
+        return try {
+            val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+            sdf.isLenient = false
+
+            val inputDate = sdf.parse(dateString) ?: return false
+
+            val sevenDaysAgo = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_YEAR, -7)
+            }.time
+
+            inputDate.before(sevenDaysAgo)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+
 }
