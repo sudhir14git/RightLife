@@ -1,7 +1,10 @@
 package com.jetsynthesys.rightlife.ui;
 
+import androidx.annotation.NonNull;
+
 public class CardItem {
     private String id;
+    private String contentId;
     private final String title;
     private final int imageResId;
     private final String imageUrl;
@@ -16,12 +19,13 @@ public class CardItem {
     private String seriesType;
     private String selectedContentType;
 
-    public String getSeriesType() {
-        return seriesType;
-    }
+    public String getContentId() { return contentId; }           // NEW
+    public void setContentId(String contentId) { this.contentId = contentId; } // NEW
+
+    public String getSeriesType() { return seriesType; }
 
     public void setSeriesType(String seriesType) {
-        seriesType = seriesType;
+        this.seriesType = seriesType;
     }
 
 
@@ -52,7 +56,7 @@ public class CardItem {
         ButtonImage = buttonImage;
     }
 
-    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount, String seriesId,String seriesType,String selectedContentType, String titleImage, String ButtonImage) {
+    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount, String seriesId,String seriesType,String selectedContentType, String titleImage, String ButtonImage,String contentId) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -66,6 +70,7 @@ public class CardItem {
         this.selectedContentType = selectedContentType;
         this.titleImage = titleImage;
         this.ButtonImage = ButtonImage;
+        this.contentId = contentId;
     }
 
     public String getSeriesId() {
