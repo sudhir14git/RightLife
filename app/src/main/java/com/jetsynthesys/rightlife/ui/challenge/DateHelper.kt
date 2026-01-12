@@ -118,5 +118,22 @@ object DateHelper {
         }
     }
 
+    fun isOlderThan7Days(dateString: String): Boolean {
+        return try {
+            val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+            sdf.isLenient = false
+
+            val inputDate = sdf.parse(dateString) ?: return false
+
+            val sevenDaysAgo = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_YEAR, -7)
+            }.time
+
+            inputDate.before(sevenDaysAgo)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 
 }

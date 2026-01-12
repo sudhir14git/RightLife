@@ -131,6 +131,10 @@
                 layout="@layout/layout_share_challenge" />
 
             <include
+                android:id="@+id/faceScanCard"
+                layout="@layout/layout_facescan_challenge" />
+
+            <include
                 android:id="@+id/challengeTasks"
                 layout="@layout/layout_challenge_tasks" />
 

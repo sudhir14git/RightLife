@@ -20,6 +20,7 @@ import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showCh
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showTaskInfoBottomSheet
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDayFromDate
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isOlderThan7Days
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isToday
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getImageBasedOnStatus
@@ -29,6 +30,7 @@ import com.jetsynthesys.rightlife.ui.challenge.pojo.ChallengeStreakResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyChallengeResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyTaskResponse
+import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.CalendarDay
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.SpacingItemDecoration
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
@@ -66,18 +68,23 @@ class ChallengeActivity : BaseActivity() {
         setupLogListeners()
         setupShareListeners()
 
-        getDailyChallengeData(DateHelper.getTodayDate())
-
         binding.llStreak.setOnClickListener {
             it.disableViewForSeconds()
             startActivity(Intent(this@ChallengeActivity, DailyStreakActivity::class.java))
         }
 
-        loadStreak()
-
         binding.challengeOverCard.challengeOverCard.visibility =
             if (sharedPreferenceManager.challengeState == 4) View.VISIBLE else View.GONE
+        binding.logItems.llLogToolKit.visibility =
+            if (sharedPreferenceManager.challengeState == 4) View.VISIBLE else View.GONE
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val date = selectedDate?.dateString ?: DateHelper.getTodayDate()
+        getDailyChallengeData(date)
+        loadStreak()
     }
 
     private fun setupScoreCardListener() {
@@ -367,7 +374,7 @@ class ChallengeActivity : BaseActivity() {
 
                             //rank code here
                             setUpRankCard(scoreData.rank, getDaySuffix(scoreData.rank))
-
+                            setupFaceScanCard(responseObj.data.lastReportDate)
                         }
 
                     } else {
@@ -552,6 +559,34 @@ class ChallengeActivity : BaseActivity() {
             }
         }
 
+    }
+
+    private fun setupFaceScanCard(lastFaceScandate: String) {
+        if (isOlderThan7Days(lastFaceScandate)) {
+            //show FaceScan Card
+            binding.faceScanCard.rlFaceScanCard.visibility = View.VISIBLE
+            binding.faceScanCard.apply {
+                if (!lastFaceScandate.isNullOrBlank()) {
+                    val parts = lastFaceScandate.split(",")
+
+                    tvLastReportDate.text = parts.getOrNull(0)?.trim() ?: "-"
+                    tvLastReportTime.text = parts.getOrNull(1)?.trim() ?: "-"
+                } else {
+                    tvLastReportDate.text = "-"
+                    tvLastReportTime.text = "-"
+                }
+
+                llNextArrow.setOnClickListener {
+                    startActivity(
+                        Intent(
+                            this@ChallengeActivity, NewHealthCamReportActivity::class.java
+                        )
+                    )
+                }
+            }
+
+        } else
+            binding.faceScanCard.rlFaceScanCard.visibility = View.GONE
     }
 
     private fun loadStreak() {

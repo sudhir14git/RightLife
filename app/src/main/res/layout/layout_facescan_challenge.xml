@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlFaceScanCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_card_16dp"
+        android:layout_marginBottom="@dimen/margin_card_16dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/margin_card_16dp"
+            android:background="@drawable/rounded_image"
+            android:backgroundTint="#FFBFBD"
+            android:padding="12dp"
+            android:src="@drawable/health_cam_iconrl" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_time_to_checkin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_card_16dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Time For A Check-In! It’s Been\nA While Since Your Last\nFace Scan."
+                android:textColor="@color/txt_color_header"
+                android:textSize="@dimen/textsize_large" />
+
+
+            <LinearLayout
+                android:id="@+id/rl_date_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_last_report_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7 Jan, 2024"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="#0B1215" />
+
+                <TextView
+                    android:id="@+id/tv_last_report_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7 Jan, 2024"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end">
+
+                    <LinearLayout
+                        android:id="@+id/llNextArrow"
+                        android:layout_width="50dp"
+                        android:layout_height="26dp"
+                        android:background="@drawable/roundedcornerborderred"
+                        android:backgroundTint="@color/menuselected"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/icon_feather_arrow_right" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
