@@ -1061,8 +1061,6 @@ class HomeNewActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
             }
         }
-
-        showChallengeCard()
     }
 
 
@@ -1077,6 +1075,7 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
         getSubscriptionList()
         //getSubscriptionProducts(binding.tvStriketroughPrice);
+        showChallengeCard()
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -4240,7 +4239,7 @@ class HomeNewActivity : BaseActivity() {
             return
         }
 
-        when (dates.challengeStatus) {
+        when (2) {
 
             1 -> {
                 if (dates.participateDate.isEmpty()) {

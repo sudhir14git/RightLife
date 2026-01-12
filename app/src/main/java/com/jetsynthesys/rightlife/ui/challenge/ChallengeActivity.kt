@@ -123,8 +123,8 @@ class ChallengeActivity : BaseActivity() {
             llLogMeal.setOnClickListener {
                 startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "MealLogTypeEat")
-                    putExtra("snapMealId", sharedPreferenceManager.snapMealId)
+                    putExtra("BottomSeatName", "SnapMealTypeEat")
+                    putExtra("snapMealId", "")
                 })
             }
             llLogSleep.setOnClickListener {
