@@ -1143,16 +1143,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             load(HeartRateRecord::class) { heartRateRecord = it }
             load(RestingHeartRateRecord::class) { restingHeartRecord = it }
             load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
-            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
-            load(BloodPressureRecord::class) { bloodPressureRecord = it }
             load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
             load(SleepSessionRecord::class) { sleepSessionRecord = it }
             load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
             load(WeightRecord::class) { weightRecord = it }
             load(BodyFatRecord::class) { bodyFatRecord = it }
             load(DistanceRecord::class) { distanceRecord = it }
             load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
-            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+            load(BloodPressureRecord::class) { bloodPressureRecord = it }
             // ------------------------------
             // 7) Device origin detection
             // ------------------------------

@@ -202,6 +202,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
     }
 
     private fun onFrequentlyLoggedList (){
+        if (!isAdded) return   // SAFETY
 
         if (frequentRecipeLogList.size > 0){
             frequentlyLoggedRecyclerView.visibility = View.VISIBLE

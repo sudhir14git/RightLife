@@ -37,7 +37,7 @@ class MyRecipeAdapter(private val context: Context, private var dataLists: Array
         holder.mealTitle.text = item.recipe
         holder.servesCount.text = item.servings.toString()
         if (item.servings != null && item.servings > 0){
-            val servingsCount = item.servings
+            val servingsCount = 1.0//item.servings
             holder.calValue.text = item.calories_kcal.times(servingsCount).toInt().toString()
             holder.subtractionValue.text = item.protein_g.times(servingsCount).toInt().toString()
             holder.baguetteValue.text = item.carbs_g.times(servingsCount).toInt().toString()

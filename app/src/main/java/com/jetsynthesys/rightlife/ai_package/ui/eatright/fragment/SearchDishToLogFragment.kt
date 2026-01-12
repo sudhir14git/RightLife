@@ -274,8 +274,6 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
 //            getSnapMealRecipesList()
 //            onSnapSearchDishItemRefresh()
 //        }
-
-        getSearchMealList("")
     }
 
     fun View.listenKeyboardVisibility(onChanged: (Boolean) -> Unit) {
@@ -365,8 +363,9 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
         if (!searchType.contentEquals("HomeTabMeal")){
             dishesViewModel.searchQuery.value?.let {
                 searchEditText.setText(it)
-                filterDishes(it)
             }
+        }else{
+            getSearchMealList("")
         }
     }
 

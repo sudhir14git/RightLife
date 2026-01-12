@@ -436,7 +436,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = YourMealLogsFragment()
                 val args = Bundle()
-                args.putString("ModuleName", "EatRightLandingWithoutPopup")
+               // args.putString("ModuleName", "EatRightLandingWithoutPopup")
+                args.putString("ModuleName", "EatRightLanding")
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
                 addToBackStack(null)
