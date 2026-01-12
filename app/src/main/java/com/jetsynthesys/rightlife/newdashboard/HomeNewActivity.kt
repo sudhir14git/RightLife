@@ -4240,7 +4240,7 @@ class HomeNewActivity : BaseActivity() {
             return
         }
 
-        when (4) {
+        when (dates.challengeStatus) {
 
             1 -> {
                 if (dates.participateDate.isEmpty()) {
