@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -21,6 +23,7 @@ import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getImageBasedOnStatus
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
 import com.jetsynthesys.rightlife.ui.challenge.adapters.CalendarChallengeAdapter
+import com.jetsynthesys.rightlife.ui.challenge.pojo.ChallengeStreakResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyChallengeResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyTaskResponse
@@ -65,6 +68,11 @@ class ChallengeActivity : BaseActivity() {
         binding.llStreak.setOnClickListener {
             startActivity(Intent(this@ChallengeActivity, DailyStreakActivity::class.java))
         }
+
+        loadStreak()
+
+        binding.challengeOverCard.challengeOverCard.visibility =
+            if (sharedPreferenceManager.challengeState == 4) View.VISIBLE else View.GONE
 
     }
 
@@ -528,6 +536,54 @@ class ChallengeActivity : BaseActivity() {
             }
         }
 
+    }
+
+    private fun loadStreak() {
+        val call = apiService.getChallengeStreak(sharedPreferenceManager.accessToken)
+
+        call.enqueue(object : Callback<ResponseBody?> {
+
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+
+                if (response.isSuccessful && response.body() != null) {
+                    try {
+                        val gson = Gson()
+                        val jsonString = response.body()!!.string()
+
+                        val responseObj =
+                            gson.fromJson(jsonString, ChallengeStreakResponse::class.java)
+
+                        if (responseObj.success) {
+                            binding.tvStreakSmallCount.text = responseObj.data.streak.toString()
+                        } else {
+                            Toast.makeText(
+                                this@ChallengeActivity,
+                                "Failed to load streak",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(
+                            this@ChallengeActivity,
+                            "Streak parse error",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@ChallengeActivity,
+                        "Streak API error: ${response.code()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
     }
 
 }

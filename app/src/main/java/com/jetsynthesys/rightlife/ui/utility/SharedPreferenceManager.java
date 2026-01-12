@@ -717,7 +717,18 @@ public class SharedPreferenceManager {
 
     // Method to retrieve the access token
     public boolean isHomeFirstVisited() {
-        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_SYNC, false);
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_HOME_VISIT, false);
+    }
+
+    public void setChallengeState(int state) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.CHALLENGE_STATUS, state);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public int getChallengeState() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.CHALLENGE_STATUS, 1);
     }
 }
 

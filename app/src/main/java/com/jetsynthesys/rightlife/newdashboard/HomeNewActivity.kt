@@ -4226,6 +4226,8 @@ class HomeNewActivity : BaseActivity() {
             dates.challengeEndDate
         )
 
+        sharedPreferenceManager.challengeState = dates.challengeStatus
+
         if (dates.participateDate.isEmpty()) {
 
             if (dates.challengeStatus != 4) {
@@ -4238,7 +4240,7 @@ class HomeNewActivity : BaseActivity() {
             return
         }
 
-        when (dates.challengeStatus) {
+        when (4) {
 
             1 -> {
                 if (dates.participateDate.isEmpty()) {
