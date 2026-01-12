@@ -73,4 +73,21 @@ object DateHelper {
         }
     }
 
+    fun getChallengeDuration(startDate: String, endDate: String): String {
+        val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        val monthDayFormat = SimpleDateFormat("MMM d", Locale.ENGLISH)
+
+        val start = inputFormat.parse(startDate) ?: return ""
+        val end = inputFormat.parse(endDate) ?: return ""
+
+        // Calculate total days (inclusive)
+        val days = ((end.time - start.time) / (1000 * 60 * 60 * 24)).toInt() + 1
+        val weeks = days / 7
+
+        val startFormatted = monthDayFormat.format(start)
+        val endFormatted = monthDayFormat.format(end)
+
+        return "$weeks weeks · $startFormatted – $endFormatted"
+    }
+
 }
