@@ -4162,7 +4162,7 @@ class HomeNewActivity : BaseActivity() {
                         showCustomToast(response.body()?.successMessage ?: "", true)
                         AnalyticsLogger.logEvent(
                             this@HomeNewActivity,
-                            AnalyticsEvent.ChallengeCard_Join_Tap
+                            AnalyticsEvent.ChlCard_Join_Tap
                         )
                     } else {
                         showCustomToast("Something went wrong!", false)
@@ -4425,6 +4425,11 @@ class HomeNewActivity : BaseActivity() {
         }
         binding.layoutChallengeToCompleteChecklist.btnCompleteChecklist.setOnClickListener {
             myHealthFragmentSelected()
+
+            AnalyticsLogger.logEvent(
+                this@HomeNewActivity,
+                AnalyticsEvent.Chl_CompleteChecklist
+            )
         }
 
         //Challenge CountDownDays
@@ -4440,6 +4445,12 @@ class HomeNewActivity : BaseActivity() {
         //Challenge Daily Score
         binding.layoutChallengeDailyScore.imgForwardChallenge.setOnClickListener {
             startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java))
+
+            AnalyticsLogger.logEvent(
+                this@HomeNewActivity,
+                AnalyticsEvent.Chl_DailyScoreCard_Tap
+            )
+
         }
 
         //challenge completed

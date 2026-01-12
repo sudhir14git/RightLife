@@ -29,6 +29,8 @@ import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyTaskResponse
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.CalendarDay
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.SpacingItemDecoration
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -74,6 +76,10 @@ class ChallengeActivity : BaseActivity() {
         binding.challengeOverCard.challengeOverCard.visibility =
             if (sharedPreferenceManager.challengeState == 4) View.VISIBLE else View.GONE
 
+        AnalyticsLogger.logEvent(
+            this@ChallengeActivity,
+            AnalyticsEvent.Chl_PageOpen
+        )
     }
 
     private fun setupScoreCardListener() {
@@ -154,6 +160,11 @@ class ChallengeActivity : BaseActivity() {
                 }
 
                 startActivity(Intent.createChooser(shareIntent, "Refer via"))
+
+                AnalyticsLogger.logEvent(
+                    this@ChallengeActivity,
+                    AnalyticsEvent.Chl_ReferNow_Tap
+                )
             }
         }
     }
@@ -498,6 +509,10 @@ class ChallengeActivity : BaseActivity() {
         binding.rankingCard.apply {
             btnViewLeaderBoard.setOnClickListener {
                 startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
+                AnalyticsLogger.logEvent(
+                    this@ChallengeActivity,
+                    AnalyticsEvent.Chl_ViewLeaderboard_Tap
+                )
             }
             tvRankNumber.text = rank.toString()
             tvRankSuffix.text = suffix

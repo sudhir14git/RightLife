@@ -306,4 +306,31 @@ object AnalyticsEvent {
     const val HealthSync_Success = "HealthSync_Success"
 
 
+
+
+
+    // Challenege Events
+    const val ChlCard_Join_Tap = "ChlCard_Join_Tap"
+    const val Chl_CompleteChecklist = "Chl_CompleteChecklist"
+    const val Chl_DailyScoreCard_Tap = "Chl_DailyScoreCard_Tap"
+    const val Chl_ViewLeaderboard_Tap = "Chl_ViewLeaderboard_Tap"
+    const val Chl_ReferNow_Tap = "Chl_ReferNow_Tap"
+    const val Chl_PageOpen = "Chl_PageOpen"
+    const val Chl_EntersGood = "Chl_EntersGood"
+    const val Chl_EntersExcellent = "Chl_EntersExcellent"
+    const val Chl_EntersChamp = "Chl_EntersChamp"
+    const val FreeTrialEnded = "FreeTrialEnded"
+
+    //Extra Events
+    const val Chl_OpenApp_Claimed = "Chl_OpenApp_Claimed"
+    const val Chl_LogSleep_Claimed = "Chl_LogSleep_Claimed"
+    const val Chl_LogMeal_Claimed = "Chl_LogMeal_Claimed"
+    const val Chl_LogMove_Claimed = "Chl_LogMove_Claimed"
+    const val Chl_Mindful_Claimed = "Chl_Mindful_Claimed"
+    const val Chl_FullDayBonus_Claimed = "Chl_FullDayBonus_Claimed"
+    const val Chl_BT_HQSleep_Claim = "Chl_BT_HQSleep_Claim"
+    const val Chl_BT_BalEat_Claim = "Chl_BT_BalEat_Claim"
+    const val Chl_BT_MoveGoal_Claim = "Chl_BT_MoveGoal_Claim"
+    const val Chl_BT_Mindful_Claim = "Chl_BT_Mindful_Claim"
+    const val Chl_BT_AllBonus_Claim = "Chl_BT_AllBonus_Claim"
 }
