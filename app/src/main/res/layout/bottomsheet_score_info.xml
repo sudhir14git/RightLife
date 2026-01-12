@@ -41,7 +41,6 @@
         android:layout_marginHorizontal="24dp"
         android:layout_marginVertical="12dp"
         android:fontFamily="@font/dmsans_regular"
-        android:gravity="center_horizontal"
         android:text="Track your score, see what’s helping or holding you back, review task progress and log unfinished activities across movement, food, sleep, and mindset."
         android:textColor="@color/txt_color_header"
         android:textSize="14sp" />
@@ -56,37 +55,6 @@
         <androidx.cardview.widget.CardView
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:backgroundTint="@color/light_blue_grey"
-            app:cardCornerRadius="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/imgSleepRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/challenge_sleep_right" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="SleepRight"
-                    android:textColor="@color/color_sleep_right"
-                    android:textSize="10sp" />
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginStart="8dp"
             android:backgroundTint="@color/light_red"
             app:cardCornerRadius="12dp">
 
@@ -115,7 +83,68 @@
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/light_blue_grey"
+            app:cardCornerRadius="12dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imgSleepRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/challenge_sleep_right" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="SleepRight"
+                    android:textColor="@color/color_sleep_right"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#F7E6B7"
+            app:cardCornerRadius="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imgThinkRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/challenge_think_right" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="ThinkRight"
+                    android:textColor="@color/color_think_right"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
             android:layout_width="75dp"
             android:layout_height="75dp"
@@ -149,39 +178,6 @@
 
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginStart="8dp"
-            android:backgroundTint="@color/light_red"
-            app:cardCornerRadius="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/imgThinkRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:src="@drawable/challenge_think_right" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="ThinkRight"
-                    android:textColor="@color/color_think_right"
-                    android:textSize="10sp" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
     </LinearLayout>
 
 
@@ -200,19 +196,19 @@
             android:layout_marginVertical="4dp"
             android:layout_weight="1"
             android:backgroundTint="@color/gray_light_bg"
-            app:cardCornerRadius="12dp">
+            app:cardCornerRadius="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/imgFair"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/circle_background"
                     app:tint="#F64840" />
 
@@ -233,10 +229,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/dmsans_bold"
+                        android:fontFamily="@font/dmsans_regular"
                         android:text="0-30"
                         android:textColor="@color/txt_color_header"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -249,19 +245,19 @@
             android:layout_marginVertical="4dp"
             android:layout_weight="1"
             android:backgroundTint="@color/gray_light_bg"
-            app:cardCornerRadius="12dp">
+            app:cardCornerRadius="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/imgGood"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/circle_background"
                     app:tint="#F1A535" />
 
@@ -282,10 +278,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/dmsans_bold"
+                        android:fontFamily="@font/dmsans_regular"
                         android:text="31-50"
                         android:textColor="@color/txt_color_header"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -307,19 +303,19 @@
             android:layout_marginVertical="4dp"
             android:layout_weight="1"
             android:backgroundTint="@color/gray_light_bg"
-            app:cardCornerRadius="12dp">
+            app:cardCornerRadius="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/imgExcellent"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/circle_background"
                     app:tint="#34C759" />
 
@@ -340,10 +336,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/dmsans_bold"
+                        android:fontFamily="@font/dmsans_regular"
                         android:text="51-75"
                         android:textColor="@color/txt_color_header"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -356,19 +352,19 @@
             android:layout_marginVertical="4dp"
             android:layout_weight="1"
             android:backgroundTint="@color/gray_light_bg"
-            app:cardCornerRadius="12dp">
+            app:cardCornerRadius="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/imgChamp"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/circle_background"
                     app:tint="#1292E5" />
 
@@ -389,10 +385,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/dmsans_bold"
+                        android:fontFamily="@font/dmsans_regular"
                         android:text="76-100"
                         android:textColor="@color/txt_color_header"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 

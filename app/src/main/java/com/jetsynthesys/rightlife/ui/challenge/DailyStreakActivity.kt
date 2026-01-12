@@ -1,7 +1,9 @@
 package com.jetsynthesys.rightlife.ui.challenge
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
@@ -99,6 +101,10 @@ class DailyStreakActivity : BaseActivity() {
     private fun bindStreak(response: ChallengeStreakResponse) {
         // top number
         binding.tvStreakCount.text = response.data.streak.toString()
+
+        binding.ivFlame.imageTintList = if (response.data.streak > 0)
+            ColorStateList.valueOf("#FD6967".toColorInt()) else
+            ColorStateList.valueOf("#B5B5B5".toColorInt())
 
         // list
         val items = response.data.journey.map {

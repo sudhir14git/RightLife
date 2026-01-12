@@ -4,6 +4,7 @@
     android:id="@+id/rlRanking"
     android:layout_width="match_parent"
     android:layout_height="240dp"
+    android:background="@drawable/bg_rounded_corners"
     android:layout_marginTop="12dp">
 
     <ImageView
