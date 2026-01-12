@@ -387,6 +387,27 @@ class ChallengeActivity : BaseActivity() {
                             setUpRankCard(scoreData.rank, getDaySuffix(scoreData.rank))
                             setupFaceScanCard(responseObj.data.lastReportDate)
                         }
+                        // Log an event based on the user's performance tier.
+                     /*   when (responseObj?.data?.performance) {
+                            "Good" -> {
+                                AnalyticsLogger.logEvent(
+                                    this@ChallengeActivity,
+                                    AnalyticsEvent.Chl_EntersGood
+                                )
+                            }
+                            "Excellent" -> {
+                                AnalyticsLogger.logEvent(
+                                    this@ChallengeActivity,
+                                    AnalyticsEvent.Chl_EntersExcellent
+                                )
+                            }
+                            "Champ" -> {
+                                AnalyticsLogger.logEvent(
+                                    this@ChallengeActivity,
+                                    AnalyticsEvent.Chl_EntersChamp
+                                )
+                            }
+                        }*/
 
                     } else {
                         showCustomToast("Something went wrong!", false)
