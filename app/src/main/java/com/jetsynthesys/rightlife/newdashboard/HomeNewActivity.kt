@@ -4239,7 +4239,7 @@ class HomeNewActivity : BaseActivity() {
             return
         }
 
-        when (2) {
+        when (dates.challengeStatus) {
 
             1 -> {
                 if (dates.participateDate.isEmpty()) {
