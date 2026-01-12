@@ -488,8 +488,22 @@ class ChallengeActivity : BaseActivity() {
                                     }
                                 }
                             }
-                        }
 
+                        }
+                        if (responseObj.data.completedDaily==6)
+                        {
+                            AnalyticsLogger.logEvent(
+                                this@ChallengeActivity,
+                                AnalyticsEvent.Chl_FullDayBonus_Claimed
+                            )
+                        }
+                        if (responseObj.data.completedBonus==5)
+                        {
+                            AnalyticsLogger.logEvent(
+                                this@ChallengeActivity,
+                                AnalyticsEvent.Chl_BT_AllBonus_Claim
+                            )
+                        }
                     } else {
                         showCustomToast("Something went wrong!", false)
                     }
