@@ -33,6 +33,8 @@ import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyTaskResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.CalendarDay
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.SpacingItemDecoration
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -78,6 +80,10 @@ class ChallengeActivity : BaseActivity() {
         binding.logItems.llLogToolKit.visibility =
             if (sharedPreferenceManager.challengeState == 4) View.VISIBLE else View.GONE
 
+        AnalyticsLogger.logEvent(
+            this@ChallengeActivity,
+            AnalyticsEvent.Chl_PageOpen
+        )
     }
 
     override fun onResume() {
@@ -173,6 +179,11 @@ class ChallengeActivity : BaseActivity() {
                 }
 
                 startActivity(Intent.createChooser(shareIntent, "Refer via"))
+
+                AnalyticsLogger.logEvent(
+                    this@ChallengeActivity,
+                    AnalyticsEvent.Chl_ReferNow_Tap
+                )
             }
         }
     }
@@ -499,8 +510,22 @@ class ChallengeActivity : BaseActivity() {
                                     }
                                 }
                             }
-                        }
 
+                        }
+                        if (responseObj.data.completedDaily==6)
+                        {
+                            AnalyticsLogger.logEvent(
+                                this@ChallengeActivity,
+                                AnalyticsEvent.Chl_FullDayBonus_Claimed
+                            )
+                        }
+                        if (responseObj.data.completedBonus==5)
+                        {
+                            AnalyticsLogger.logEvent(
+                                this@ChallengeActivity,
+                                AnalyticsEvent.Chl_BT_AllBonus_Claim
+                            )
+                        }
                     } else {
                         showCustomToast("Something went wrong!", false)
                     }
@@ -521,6 +546,10 @@ class ChallengeActivity : BaseActivity() {
             btnViewLeaderBoard.setOnClickListener {
                 it.disableViewForSeconds()
                 startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
+                AnalyticsLogger.logEvent(
+                    this@ChallengeActivity,
+                    AnalyticsEvent.Chl_ViewLeaderboard_Tap
+                )
             }
             tvRankNumber.text = rank.toString()
             tvRankSuffix.text = suffix
