@@ -308,5 +308,8 @@
     <color name="gratitude_color">#0E6047</color>
     <color name="grief_color">#0E3869</color>
 
+    // challenge color
+    <color name="leaderboard_tabcolor_selected">#B2A7F6</color>
+    <color name="streak_completed_bg">#E6F8F2</color>
 
 </resources>

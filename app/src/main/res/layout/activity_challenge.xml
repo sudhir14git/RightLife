@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_vertical_gradient_challenge"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingRight="8dp"
+        android:weightSum="1">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/merriweather_bold"
+            android:gravity="center"
+            android:text="Challenge"
+            android:textColor="@color/txt_color_mind"
+            android:textSize="@dimen/textsize_large24sp" />
+
+        <LinearLayout
+            android:id="@+id/llStreak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgStreakSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/streak_small" />
+
+            <TextView
+                android:id="@+id/tvStreakSmallCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/dmsans_semibold"
+                android:text="5"
+                android:textColor="@color/txt_color_header"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <!-- Date Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:id="@+id/ivPrev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:src="@drawable/left_arrow_journal" />
+
+                <TextView
+                    android:id="@+id/tvSelectedDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Thur, 17 Feb 2025"
+                    android:textAlignment="center"
+                    android:textColor="@color/black_plain"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/ivNext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:src="@drawable/right_arrow_journal_enabled" />
+            </LinearLayout>
+
+            <!-- RecyclerView for Calendar -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="8dp"
+                android:scrollbars="none" />
+
+            <include
+                android:id="@+id/challengeOverCard"
+                layout="@layout/layout_challenge_over" />
+
+
+            <include
+                android:id="@+id/scoreCard"
+                layout="@layout/layout_score_card" />
+
+            <include
+                android:id="@+id/logItems"
+                layout="@layout/layout_challenge_log_items" />
+
+            <include
+                android:id="@+id/rankingCard"
+                layout="@layout/layout_rank_challenge" />
+
+            <include
+                android:id="@+id/sharingCard"
+                layout="@layout/layout_share_challenge" />
+
+            <include
+                android:id="@+id/challengeTasks"
+                layout="@layout/layout_challenge_tasks" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

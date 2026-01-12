@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:layout_marginTop="16dp">
+
+    <LinearLayout
+        android:id="@+id/llLogToolKit"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_margin="2dp"
+        android:background="@drawable/rc_white_border_light_yelow_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/log_toolkit" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Go To Toolkit"
+            android:textColor="#984C01"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llLogMeal"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_margin="2dp"
+        android:background="@drawable/rc_white_border_light_green_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/log_meal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Snap Meal"
+            android:textColor="#3B4A36"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llLogWorkout"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_margin="2dp"
+        android:background="@drawable/rc_white_border_light_red_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/log_move" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Log Workout"
+            android:textColor="#A01618"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llLogSleep"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_margin="2dp"
+        android:background="@drawable/rc_white_border_blue_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/log_sleep" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Log Sleep"
+            android:textColor="#2A3A5E"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+</LinearLayout>
