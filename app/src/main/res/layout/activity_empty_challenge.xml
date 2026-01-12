@@ -53,6 +53,10 @@
                 layout="@layout/layout_score_empty" />
 
             <include
+                android:id="@+id/rankingCard"
+                layout="@layout/layout_rank_empty" />
+
+            <include
                 android:id="@+id/sharingCard"
                 layout="@layout/layout_share_challenge" />
 

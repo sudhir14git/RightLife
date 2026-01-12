@@ -6,7 +6,7 @@
     android:layout_height="270dp"
     android:layout_marginHorizontal="16dp"
     android:layout_marginTop="16dp"
-    android:visibility="visible">
+    android:visibility="gone">
 
     <com.jetsynthesys.rightlife.ui.GlowGradientCardView
         android:id="@+id/gradientBorder"

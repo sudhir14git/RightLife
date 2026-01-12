@@ -340,7 +340,7 @@
                         android:fontFamily="@font/dmsans_bold"
                         android:text="nd"
                         android:textColor="@color/txt_color_header"
-                        android:textSize="22sp" />
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 
