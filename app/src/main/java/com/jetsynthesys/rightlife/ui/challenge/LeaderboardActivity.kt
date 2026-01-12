@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityLeaderboardBinding
 import com.jetsynthesys.rightlife.ui.challenge.adapters.LeaderboardAdapter
 import com.jetsynthesys.rightlife.ui.challenge.pojo.LeaderboardResponse
@@ -23,8 +22,8 @@ class LeaderboardActivity : BaseActivity() {
 
     private lateinit var binding: ActivityLeaderboardBinding
     private lateinit var adapter: LeaderboardAdapter
-private var isLoading = false
-    private var currentType: String = "weekly"
+    private var isLoading = false
+    private var currentType: String = "daily" // this is the landing tab
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +36,7 @@ private var isLoading = false
 
         // default  (Week)
         binding.tabGroupNew.check(R.id.rbWeek)
-        loadLeaderboard("weekly")
+        loadLeaderboard(currentType)
     }
 
     private fun setupToolbar() {
@@ -158,7 +157,7 @@ private var isLoading = false
         val tvScore = card.findViewById<TextView>(R.id.tvScore)
 
         tvRank.text = rank.toString()
-        tvName.text = "You"
+        tvName.text = sharedPreferenceManager.userProfile.userdata.firstName
         tvScore.text = score.toString()
 
         LeaderboardUiStyler.apply(rank, card, circle)

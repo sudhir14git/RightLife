@@ -606,6 +606,12 @@ class HomeNewActivity : BaseActivity() {
             isFocusable = false
         }
 
+        binding.layoutChallengeDailyScore.scoreSeekBar.apply {
+            setOnTouchListener { _, _ -> true }
+            splitTrack = false
+            isFocusable = false
+        }
+
 
         /*DialogUtils.showFreeTrailRelatedBottomSheet(this,
             "Unlock RightLife Pro to keep your health journey uninterrupted.",
@@ -1075,7 +1081,11 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
         getSubscriptionList()
         //getSubscriptionProducts(binding.tvStriketroughPrice);
-        showChallengeCard()
+        lifecycleScope.launch {
+            delay(2000)
+            showChallengeCard()
+        }
+
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -4270,6 +4280,8 @@ class HomeNewActivity : BaseActivity() {
                         View.VISIBLE
                     binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
                         "$checklistCount/6"
+                    binding.layoutChallengeToCompleteChecklist.seekBar.progress =
+                        checklistCount * 10
                 } else {
                     // Checklist completed → Countdown card
                     binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
@@ -4281,9 +4293,19 @@ class HomeNewActivity : BaseActivity() {
 
             3 -> {
                 // Active challenge → Daily score
-                getDailyScore(DateHelper.getTodayDate())
-                binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
-                    View.VISIBLE
+                if (!DashboardChecklistManager.checklistStatus) {
+                    // Checklist not completed
+                    binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
+                        View.VISIBLE
+                    binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
+                        "$checklistCount/6"
+                    binding.layoutChallengeToCompleteChecklist.seekBar.progress =
+                        checklistCount * 10
+                } else {
+                    getDailyScore(DateHelper.getTodayDate())
+                    binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+                        View.VISIBLE
+                }
             }
 
             4 -> {
@@ -4472,8 +4494,8 @@ class HomeNewActivity : BaseActivity() {
                             gson.fromJson(jsonResponse, DailyScoreResponse::class.java)
                         val scoreData = responseObj.data
                         binding.layoutChallengeDailyScore.apply {
-                            tvPoints.text = scoreData.totalScore.toString()
-                            scoreSeekBar.progress = scoreData.totalScore
+                            tvPoints.text = scoreData.dailyScore.toString()
+                            scoreSeekBar.progress = scoreData.dailyScore
                             setSeekBarProgressColor(
                                 scoreSeekBar, getColorCode(scoreData.performance)
                             )

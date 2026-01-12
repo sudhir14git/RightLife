@@ -85,7 +85,6 @@
             android:layout_weight="1"
             android:background="@drawable/tab_background_leaderboard"
             android:button="@null"
-            android:checked="true"
             android:gravity="center"
             android:text="Week"
             android:fontFamily="@font/dmsans_regular"

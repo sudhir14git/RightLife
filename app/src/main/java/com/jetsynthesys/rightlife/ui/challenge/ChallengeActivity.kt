@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
@@ -19,6 +20,7 @@ import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showCh
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showTaskInfoBottomSheet
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDayFromDate
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isToday
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getImageBasedOnStatus
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
@@ -29,6 +31,7 @@ import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyTaskResponse
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.CalendarDay
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.SpacingItemDecoration
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -66,6 +69,7 @@ class ChallengeActivity : BaseActivity() {
         getDailyChallengeData(DateHelper.getTodayDate())
 
         binding.llStreak.setOnClickListener {
+            it.disableViewForSeconds()
             startActivity(Intent(this@ChallengeActivity, DailyStreakActivity::class.java))
         }
 
@@ -79,6 +83,7 @@ class ChallengeActivity : BaseActivity() {
     private fun setupScoreCardListener() {
         binding.scoreCard.apply {
             imgInfo.setOnClickListener {
+                it.disableViewForSeconds()
                 ChallengeBottomSheetHelper.showScoreInfoBottomSheet(this@ChallengeActivity)
             }
             scoreSeekBar.apply {
@@ -95,7 +100,7 @@ class ChallengeActivity : BaseActivity() {
         binding.rvCalendar.addItemDecoration(SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.spacing)))
         calendarAdapter = CalendarChallengeAdapter(calendarDays) { selectedDay ->
             // Toggle selection
-            if (!isFutureDate(selectedDay.dateString)) {
+            if (!isFutureDate(selectedDay.dateString) || isToday(selectedDay.dateString)) {
                 if (selectedDay.dateString != selectedDate?.dateString) {
                     calendarDays.forEach { it.isSelected = false }
                     selectedDay.isSelected = true
@@ -115,12 +120,14 @@ class ChallengeActivity : BaseActivity() {
     private fun setupLogListeners() {
         binding.logItems.apply {
             llLogToolKit.setOnClickListener {
+                it.disableViewForSeconds()
                 startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
                     putExtra("BottomSeatName", "Not")
                 })
             }
             llLogMeal.setOnClickListener {
+                it.disableViewForSeconds()
                 startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
                     putExtra("BottomSeatName", "SnapMealTypeEat")
@@ -128,12 +135,14 @@ class ChallengeActivity : BaseActivity() {
                 })
             }
             llLogSleep.setOnClickListener {
+                it.disableViewForSeconds()
                 startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
                     putExtra("BottomSeatName", "LogLastNightSleep")
                 })
             }
             llLogWorkout.setOnClickListener {
+                it.disableViewForSeconds()
                 startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
                     putExtra("BottomSeatName", "SearchActivityLogMove")
@@ -145,11 +154,14 @@ class ChallengeActivity : BaseActivity() {
     private fun setupShareListeners() {
         binding.sharingCard.apply {
             btnReferNow.setOnClickListener {
+                it.disableViewForSeconds()
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_TEXT,
-                        "Saw this on RightLife and thought of you — it’s got health tips that actually make sense.\n\n" + "👉 Play Store: https://play.google.com/store/apps/details?id=$packageName\n" + "👉 App Store: https://apps.apple.com/app/rightlife/id6444228850"
+                        "Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed. Try it and get 7 days for free without any credit card details.\n" +
+                                "Here’s the link:\n" +
+                                "https://onelink.to/rightlife"
                     )
                 }
 
@@ -161,12 +173,15 @@ class ChallengeActivity : BaseActivity() {
     private fun setupListenerForTasks() {
         binding.challengeTasks.apply {
             rlAboutChallenge.setOnClickListener {
+                it.disableViewForSeconds()
                 showChallengeInfoBottomSheet(this@ChallengeActivity)
             }
             rlWhyTaskComplete.setOnClickListener {
+                it.disableViewForSeconds()
                 showTaskInfoBottomSheet(this@ChallengeActivity)
             }
             imgQuestionChallenge.setOnClickListener {
+                it.disableViewForSeconds()
                 showTaskInfoBottomSheet(this@ChallengeActivity)
             }
         }
@@ -421,10 +436,10 @@ class ChallengeActivity : BaseActivity() {
                                         }
 
                                         "MINDFULNESS" -> {
-                                            imgMindfulMomentsStatus.setImageResource(
+                                            imgPracticeMindfulnessStatus.setImageResource(
                                                 getImageBasedOnStatus(item.status)
                                             )
-                                            rlMindfulMoments.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            rlPractiseMindFullness.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
                                         }
 
                                         "FULL_DAY_BONUS" -> {
@@ -462,10 +477,10 @@ class ChallengeActivity : BaseActivity() {
                                         }
 
                                         "MINDFUL_MOMENTS" -> {
-                                            imgPracticeMindfulnessStatus.setImageResource(
+                                            imgMindfulMomentsStatus.setImageResource(
                                                 getImageBasedOnStatus(item.status)
                                             )
-                                            rlPractiseMindFullness.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            rlMindfulMoments.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
                                         }
 
                                         "ALL_ROUND_WIN" -> {
@@ -497,6 +512,7 @@ class ChallengeActivity : BaseActivity() {
     private fun setUpRankCard(rank: Int, suffix: String) {
         binding.rankingCard.apply {
             btnViewLeaderBoard.setOnClickListener {
+                it.disableViewForSeconds()
                 startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
             }
             tvRankNumber.text = rank.toString()
@@ -555,6 +571,9 @@ class ChallengeActivity : BaseActivity() {
 
                         if (responseObj.success) {
                             binding.tvStreakSmallCount.text = responseObj.data.streak.toString()
+                            binding.imgStreakSmall.imageTintList = if (responseObj.data.streak > 0)
+                                ColorStateList.valueOf("#FD6967".toColorInt()) else
+                                ColorStateList.valueOf("#B5B5B5".toColorInt())
                         } else {
                             Toast.makeText(
                                 this@ChallengeActivity,

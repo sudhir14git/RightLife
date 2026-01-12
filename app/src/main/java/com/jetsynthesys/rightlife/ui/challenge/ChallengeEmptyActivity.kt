@@ -45,9 +45,9 @@ class ChallengeEmptyActivity : BaseActivity() {
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_TEXT,
-                        "Saw this on RightLife and thought of you — it’s got health tips that actually make sense.\n\n" +
-                                "👉 Play Store: https://play.google.com/store/apps/details?id=$packageName\n" +
-                                "👉 App Store: https://apps.apple.com/app/rightlife/id6444228850"
+                        "Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed. Try it and get 7 days for free without any credit card details.\n" +
+                                "Here’s the link:\n" +
+                                "https://onelink.to/rightlife"
                     )
                 }
 
