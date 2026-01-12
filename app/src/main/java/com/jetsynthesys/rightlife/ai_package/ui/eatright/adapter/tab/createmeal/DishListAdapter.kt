@@ -30,7 +30,7 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
       //  holder.mealTitle.text = item.mealType
         val capitalized = item.recipe.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
-        holder.servesCount.text = item.quantity?.toInt().toString()
+        holder.servesCount.text = item.selected_serving?.value?.toInt().toString() + item.selected_serving?.type
         if (item.active_cooking_time_min != null){
             val mealTime = item.active_cooking_time_min.toString()
             holder.mealTime.text = mealTime
@@ -45,11 +45,16 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
         holder.subtractionValue.text = item.protein_g?.times(value)?.toInt().toString()
         holder.baguetteValue.text = item.carbs_g?.times(value)?.toInt().toString()
         holder.dewpointValue.text = item.fat_g?.times(value)?.toInt().toString()
-        val imageUrl = getDriveImageUrl(item.photo_url)
-        Glide.with(context)
+        var imageUrl : String? = ""
+        imageUrl = if (item.photo_url.contains("drive.google.com")) {
+            getDriveImageUrl(item.photo_url)
+        }else{
+            item.photo_url
+        }
+        Glide.with(this.context)
             .load(imageUrl)
-            .placeholder(R.drawable.ic_breakfast)
-            .error(R.drawable.ic_breakfast)
+            .placeholder(R.drawable.ic_view_meal_place)
+            .error(R.drawable.ic_view_meal_place)
             .into(holder.mealImage)
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))

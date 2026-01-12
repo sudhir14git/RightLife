@@ -29,13 +29,17 @@ class IngredientListAdapter(private val context: Context, private var dataLists:
       //  holder.mealTitle.text = item.mealType
         val capitalized = item.food_name.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
-        if (item.quantity.toInt() > 0){
-            holder.servesCount.text = item.quantity.toInt().toString()
+
+        item.selected_serving?.value?.toInt()?.let {
+            if (it > 0){
+                holder.servesCount.text = item.selected_serving?.value?.toInt().toString()
+                holder.serves.text = item.selected_serving?.type
+            }
         }
 
-        if (item.standard_serving_size.isNotEmpty()){
-            holder.serves.text = item.standard_serving_size
-        }
+//        if (item.standard_serving_size.isNotEmpty()){
+//            holder.serves.text = item.standard_serving_size
+//        }
 //        if (item.cooking_time_in_seconds != null){
 //            val mealTime = item.cooking_time_in_seconds.toString()
 //            holder.mealTime.text = mealTime

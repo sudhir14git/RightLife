@@ -497,8 +497,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             //errorMessages.add("Today Steps")
                         }
                         val averageStepsData = it.data.steps.averageCumulativeSteps?.takeIf { it.isNotEmpty() }?.let { data ->
-                            data.map { it.cumulativeSteps.toFloat() }.toFloatArray()
-                        } ?: FloatArray(24) { 0f }.also {
+                            data.map { it.cumulativeSteps.toFloat() }.toFloatArray() } ?: FloatArray(24) { 0f }.also {
                           //  errorMessages.add("Average Steps")
                         }
                         val goalStepsData = it.data.steps.goalSteps.let { goal ->
@@ -2142,16 +2141,16 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             load(HeartRateRecord::class) { heartRateRecord = it }
             load(RestingHeartRateRecord::class) { restingHeartRecord = it }
             load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
-            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
-            load(BloodPressureRecord::class) { bloodPressureRecord = it }
             load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
             load(SleepSessionRecord::class) { sleepSessionRecord = it }
             load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
             load(WeightRecord::class) { weightRecord = it }
             load(BodyFatRecord::class) { bodyFatRecord = it }
             load(DistanceRecord::class) { distanceRecord = it }
             load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
-            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+            load(BloodPressureRecord::class) { bloodPressureRecord = it }
             // ------------------------------
             // 7) Device origin detection
             // ------------------------------
