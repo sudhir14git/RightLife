@@ -360,8 +360,8 @@ class ChallengeActivity : BaseActivity() {
                             gson.fromJson(jsonResponse, DailyScoreResponse::class.java)
                         val scoreData = responseObj.data
                         binding.scoreCard.apply {
-                            tvCountDownDays.text = scoreData.totalScore.toString()
-                            scoreSeekBar.progress = scoreData.totalScore
+                            tvCountDownDays.text = scoreData.dailyScore.toString()
+                            scoreSeekBar.progress = scoreData.dailyScore
                             setSeekBarProgressColor(
                                 scoreSeekBar, getColorCode(scoreData.performance)
                             )
@@ -388,26 +388,26 @@ class ChallengeActivity : BaseActivity() {
                             setupFaceScanCard(responseObj.data.lastReportDate)
                         }
                         // Log an event based on the user's performance tier.
-                     /*   when (responseObj?.data?.performance) {
-                            "Good" -> {
-                                AnalyticsLogger.logEvent(
-                                    this@ChallengeActivity,
-                                    AnalyticsEvent.Chl_EntersGood
-                                )
-                            }
-                            "Excellent" -> {
-                                AnalyticsLogger.logEvent(
-                                    this@ChallengeActivity,
-                                    AnalyticsEvent.Chl_EntersExcellent
-                                )
-                            }
-                            "Champ" -> {
-                                AnalyticsLogger.logEvent(
-                                    this@ChallengeActivity,
-                                    AnalyticsEvent.Chl_EntersChamp
-                                )
-                            }
-                        }*/
+                        /*   when (responseObj?.data?.performance) {
+                               "Good" -> {
+                                   AnalyticsLogger.logEvent(
+                                       this@ChallengeActivity,
+                                       AnalyticsEvent.Chl_EntersGood
+                                   )
+                               }
+                               "Excellent" -> {
+                                   AnalyticsLogger.logEvent(
+                                       this@ChallengeActivity,
+                                       AnalyticsEvent.Chl_EntersExcellent
+                                   )
+                               }
+                               "Champ" -> {
+                                   AnalyticsLogger.logEvent(
+                                       this@ChallengeActivity,
+                                       AnalyticsEvent.Chl_EntersChamp
+                                   )
+                               }
+                           }*/
 
                     } else {
                         showCustomToast("Something went wrong!", false)
@@ -533,15 +533,13 @@ class ChallengeActivity : BaseActivity() {
                             }
 
                         }
-                        if (responseObj.data.completedDaily==6)
-                        {
+                        if (responseObj.data.completedDaily == 6) {
                             AnalyticsLogger.logEvent(
                                 this@ChallengeActivity,
                                 AnalyticsEvent.Chl_FullDayBonus_Claimed
                             )
                         }
-                        if (responseObj.data.completedBonus==5)
-                        {
+                        if (responseObj.data.completedBonus == 5) {
                             AnalyticsLogger.logEvent(
                                 this@ChallengeActivity,
                                 AnalyticsEvent.Chl_BT_AllBonus_Claim
@@ -584,19 +582,19 @@ class ChallengeActivity : BaseActivity() {
                 }
 
                 2 -> {
-                    tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
-                    tvRankNumber.setTextColor(Color.parseColor("#984C01"))
-                    tvRanking.setTextColor(Color.parseColor("#984C01"))
-                    imgRankBg.setImageResource(R.drawable.rank2)
-                    imgChallenge.imageTintList = ColorStateList.valueOf(Color.parseColor("#984C01"))
-                }
-
-                3 -> {
                     tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
                     tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
                     tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
                     imgRankBg.setImageResource(R.drawable.rank3)
                     imgChallenge.imageTintList = ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
+                }
+
+                3 -> {
+                    tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
+                    tvRankNumber.setTextColor(Color.parseColor("#984C01"))
+                    tvRanking.setTextColor(Color.parseColor("#984C01"))
+                    imgRankBg.setImageResource(R.drawable.rank2)
+                    imgChallenge.imageTintList = ColorStateList.valueOf(Color.parseColor("#984C01"))
                 }
 
                 else -> {

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/toproundedcornershape"
     android:orientation="vertical"
-    android:padding="@dimen/margin_card_16dp">
+    android:padding="14dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:fontFamily="@font/merriweather_bold"
             android:text="Make The Score Count"
             android:textColor="@color/txt_color_header"
-            android:textSize="24dp" />
+            android:textSize="22dp" />
 
         <ImageView
             android:id="@+id/btnClose"

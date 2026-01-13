@@ -35,7 +35,7 @@ class LeaderboardActivity : BaseActivity() {
         setupRecycler()
 
         // default  (Week)
-        binding.tabGroupNew.check(R.id.rbWeek)
+        binding.tabGroupNew.check(R.id.rbDay)
         loadLeaderboard(currentType)
     }
 
