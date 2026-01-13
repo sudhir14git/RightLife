@@ -259,7 +259,13 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         dotsLayout = view.findViewById(R.id.customDotsContainer)
         //getBreathingData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
-        tvWellnessDays.text = data.wellnessStreak.toString() + " day"
+        tvWellnessDays.text = if (data.wellnessStreak == 0) {
+            "${data.wellnessStreak} day"
+        }else if(data.wellnessStreak == 1){
+            "${data.wellnessStreak} day"
+        }else{
+            "${data.wellnessStreak} days"
+        }
 
         // add_tools_think_right = view.findViewById(R.id.add_tools_think_right)
         instruction_your_mindfullness_review.setOnClickListener {
@@ -708,10 +714,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     fun formatDuration(totalMinutes: Int): String {
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
+
+        val hrText = if (hours <= 1) "hr" else "hrs"
+        val minText = if (minutes <= 1) "min" else "mins"
+
         return when {
-            hours > 0 && minutes > 0 -> "${hours} hr ${minutes} mins"
-            hours > 0 -> "${hours} hr"
-            else -> "${minutes} mins"
+            hours > 0 && minutes > 0 -> "$hours $hrText $minutes $minText"
+            hours > 0 -> "$hours $hrText"
+            else -> "$minutes $minText"
         }
     }
 
