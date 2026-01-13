@@ -138,6 +138,7 @@ class HomeDashboardFragment : BaseFragment() {
             getDashboardChecklist()
             getDashboardChecklistStatus()
         }, 1000)
+        (requireActivity() as? HomeNewActivity)?.hideChallengeLayout()
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

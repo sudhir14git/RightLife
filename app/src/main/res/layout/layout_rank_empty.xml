@@ -4,15 +4,11 @@
     android:layout_height="270dp"
     android:layout_marginTop="16dp">
 
-    <com.jetsynthesys.rightlife.ui.GlowGradientCardView
-        android:id="@+id/gradientBorder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
+        android:background="@drawable/rounded_corder_border_gray"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -44,7 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/info_challenge" />
+                android:src="@drawable/info_challenge"
+                android:visibility="gone"/>
 
         </RelativeLayout>
 
