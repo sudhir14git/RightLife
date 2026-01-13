@@ -144,7 +144,7 @@ class LeaderboardActivity : BaseActivity() {
         val myRank = data.yourRank?.rank
         val filtered = if (myRank != null) items.filterNot { it.rank == myRank } else items
 
-        adapter.submitList(filtered)
+        adapter.submitList(items)
     }
 
     private fun bindMyPosition(rank: Int, score: Int) {
