@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
@@ -1081,11 +1082,6 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
         getSubscriptionList()
         //getSubscriptionProducts(binding.tvStriketroughPrice);
-        lifecycleScope.launch {
-            delay(2000)
-            showChallengeCard()
-        }
-
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -4276,12 +4272,14 @@ class HomeNewActivity : BaseActivity() {
                 // Waiting for challenge
                 if (!DashboardChecklistManager.checklistStatus) {
                     // Checklist not completed
-                    binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
-                        View.VISIBLE
-                    binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
-                        "$checklistCount/6"
-                    binding.layoutChallengeToCompleteChecklist.seekBar.progress =
-                        checklistCount * 10
+                    binding.layoutChallengeToCompleteChecklist.apply {
+                        completeChallengeChecklist.visibility = View.VISIBLE
+                        tvChecklistNumber.text = "$checklistCount/6"
+                        seekBar.progress = checklistCount * 10
+                        imgChallenge.imageTintList = ColorStateList.valueOf("#F5B829".toColorInt())
+                        tvChallenge.setTextColor("#F5B829".toColorInt())
+                        tvChallenge.text = "Challenge Upcoming"
+                    }
                 } else {
                     // Checklist completed → Countdown card
                     binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
@@ -4295,12 +4293,14 @@ class HomeNewActivity : BaseActivity() {
                 // Active challenge → Daily score
                 if (!DashboardChecklistManager.checklistStatus) {
                     // Checklist not completed
-                    binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
-                        View.VISIBLE
-                    binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
-                        "$checklistCount/6"
-                    binding.layoutChallengeToCompleteChecklist.seekBar.progress =
-                        checklistCount * 10
+                    binding.layoutChallengeToCompleteChecklist.apply {
+                        completeChallengeChecklist.visibility = View.VISIBLE
+                        tvChecklistNumber.text = "$checklistCount/6"
+                        seekBar.progress = checklistCount * 10
+                        imgChallenge.imageTintList = ColorStateList.valueOf("#06B27B".toColorInt())
+                        tvChallenge.setTextColor("#06B27B".toColorInt())
+                        tvChallenge.text = "Challenge Active"
+                    }
                 } else {
                     getDailyScore(DateHelper.getTodayDate())
                     binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
@@ -4505,8 +4505,8 @@ class HomeNewActivity : BaseActivity() {
                             gson.fromJson(jsonResponse, DailyScoreResponse::class.java)
                         val scoreData = responseObj.data
                         binding.layoutChallengeDailyScore.apply {
-                            tvPoints.text = scoreData.dailyScore.toString()
-                            scoreSeekBar.progress = scoreData.dailyScore
+                            tvPoints.text = scoreData.totalScore.toString()
+                            scoreSeekBar.progress = scoreData.totalScore
                             setSeekBarProgressColor(
                                 scoreSeekBar, getColorCode(scoreData.performance)
                             )

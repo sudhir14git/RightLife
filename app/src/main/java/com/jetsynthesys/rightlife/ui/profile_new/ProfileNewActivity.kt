@@ -1212,6 +1212,7 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         binding.tvResend.setOnClickListener {
+            it.disableViewForSeconds()
             timer.cancel()
             binding.tvResend.setTextColor(colorStateListNonSelected)
             binding.tvResend.isEnabled = false

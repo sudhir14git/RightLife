@@ -3,8 +3,9 @@
     android:id="@+id/rlFaceScanCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:visibility="gone">
+    android:layout_marginTop="16dp"
+    android:background="@drawable/rounded_corder_border_gray"
+    android:visibility="visible">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,18 +33,19 @@
                 android:id="@+id/tv_time_to_checkin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_card_16dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Time For A Check-In! It’s Been\nA While Since Your Last\nFace Scan."
                 android:textColor="@color/txt_color_header"
-                android:textSize="@dimen/textsize_large" />
+                android:textSize="15sp" />
 
 
             <LinearLayout
                 android:id="@+id/rl_date_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_marginVertical="5dp"
+                android:layout_marginEnd="4dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -52,12 +54,13 @@
                     android:layout_height="wrap_content"
                     android:text="7 Jan, 2024"
                     android:textColor="@color/txt_color_header"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
 
                 <View
-                    android:layout_width="1dp"
+                    android:layout_width="3dp"
                     android:layout_height="match_parent"
-                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginVertical="2dp"
+                    android:layout_marginHorizontal="10dp"
                     android:background="#0B1215" />
 
                 <TextView
@@ -66,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:text="7 Jan, 2024"
                     android:textColor="@color/txt_color_header"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -75,11 +78,12 @@
 
                     <LinearLayout
                         android:id="@+id/llNextArrow"
-                        android:layout_width="50dp"
+                        android:layout_width="47dp"
                         android:layout_height="26dp"
                         android:background="@drawable/roundedcornerborderred"
                         android:backgroundTint="@color/menuselected"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:layout_marginEnd="8dp">
 
                         <ImageView
                             android:layout_width="wrap_content"

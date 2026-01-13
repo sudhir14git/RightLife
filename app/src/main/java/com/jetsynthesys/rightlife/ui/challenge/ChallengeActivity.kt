@@ -75,10 +75,17 @@ class ChallengeActivity : BaseActivity() {
             startActivity(Intent(this@ChallengeActivity, DailyStreakActivity::class.java))
         }
 
-        binding.challengeOverCard.challengeOverCard.visibility =
-            if (sharedPreferenceManager.challengeState == 4) View.VISIBLE else View.GONE
-        binding.logItems.llLogToolKit.visibility =
-            if (sharedPreferenceManager.challengeState == 4) View.VISIBLE else View.GONE
+        if (sharedPreferenceManager.challengeState == 4) {
+            binding.challengeOverCard.challengeOverCard.visibility = View.VISIBLE
+            binding.logItems.llLogItems.visibility = View.GONE
+            binding.rankingCardTop.rlRanking.visibility = View.VISIBLE
+            binding.rankingCard.rlRanking.visibility = View.GONE
+        } else {
+            binding.challengeOverCard.challengeOverCard.visibility = View.GONE
+            binding.logItems.llLogItems.visibility = View.VISIBLE
+            binding.rankingCardTop.rlRanking.visibility = View.GONE
+            binding.rankingCard.rlRanking.visibility = View.VISIBLE
+        }
 
         AnalyticsLogger.logEvent(
             this@ChallengeActivity,
@@ -172,9 +179,8 @@ class ChallengeActivity : BaseActivity() {
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_TEXT,
-                        "Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed. Try it and get 7 days for free without any credit card details.\n" +
-                                "Here’s the link:\n" +
-                                "https://onelink.to/rightlife"
+                        "Been using this app called RightLife that tracks food, workouts, sleep, and mindfulness. Super simple, no wearable needed. Sign up between 1st Feb - 28th Feb to use the app free for the full period and join the Health Challenge.\n" +
+                                "App Link: https://onelink.to/rightlife"
                     )
                 }
 
@@ -360,8 +366,8 @@ class ChallengeActivity : BaseActivity() {
                             gson.fromJson(jsonResponse, DailyScoreResponse::class.java)
                         val scoreData = responseObj.data
                         binding.scoreCard.apply {
-                            tvCountDownDays.text = scoreData.dailyScore.toString()
-                            scoreSeekBar.progress = scoreData.dailyScore
+                            tvCountDownDays.text = scoreData.totalScore.toString()
+                            scoreSeekBar.progress = scoreData.totalScore
                             setSeekBarProgressColor(
                                 scoreSeekBar, getColorCode(scoreData.performance)
                             )
@@ -561,48 +567,104 @@ class ChallengeActivity : BaseActivity() {
     }
 
     private fun setUpRankCard(rank: Int, suffix: String) {
-        binding.rankingCard.apply {
-            btnViewLeaderBoard.setOnClickListener {
-                it.disableViewForSeconds()
-                startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
-                AnalyticsLogger.logEvent(
-                    this@ChallengeActivity,
-                    AnalyticsEvent.Chl_ViewLeaderboard_Tap
-                )
+        if (sharedPreferenceManager.challengeState == 4){
+            binding.rankingCardTop.apply {
+                btnViewLeaderBoard.setOnClickListener {
+                    it.disableViewForSeconds()
+                    startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
+                    AnalyticsLogger.logEvent(
+                        this@ChallengeActivity,
+                        AnalyticsEvent.Chl_ViewLeaderboard_Tap
+                    )
+                }
+                tvRankNumber.text = rank.toString()
+                tvRankSuffix.text = suffix
+                when (rank) {
+                    1 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#FFFFFF"))
+                        tvRankNumber.setTextColor(Color.parseColor("#FFFFFF"))
+                        tvRanking.setTextColor(Color.parseColor("#FFFFFF"))
+                        imgRankBg.setImageResource(R.drawable.rank1)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
+                    }
+
+                    2 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
+                        imgRankBg.setImageResource(R.drawable.rank3)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
+                    }
+
+                    3 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
+                        tvRankNumber.setTextColor(Color.parseColor("#984C01"))
+                        tvRanking.setTextColor(Color.parseColor("#984C01"))
+                        imgRankBg.setImageResource(R.drawable.rank2)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#984C01"))
+                    }
+
+                    else -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#0B1215"))
+                        tvRankNumber.setTextColor(Color.parseColor("#0B1215"))
+                        tvRanking.setTextColor(Color.parseColor("#F5B829"))
+                        imgRankBg.setImageResource(R.drawable.rank4)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#F5B829"))
+                    }
+                }
             }
-            tvRankNumber.text = rank.toString()
-            tvRankSuffix.text = suffix
-            when (rank) {
-                1 -> {
-                    tvRankSuffix.setTextColor(Color.parseColor("#FFFFFF"))
-                    tvRankNumber.setTextColor(Color.parseColor("#FFFFFF"))
-                    tvRanking.setTextColor(Color.parseColor("#FFFFFF"))
-                    imgRankBg.setImageResource(R.drawable.rank1)
-                    imgChallenge.imageTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
+        }else {
+            binding.rankingCard.apply {
+                btnViewLeaderBoard.setOnClickListener {
+                    it.disableViewForSeconds()
+                    startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
+                    AnalyticsLogger.logEvent(
+                        this@ChallengeActivity,
+                        AnalyticsEvent.Chl_ViewLeaderboard_Tap
+                    )
                 }
+                tvRankNumber.text = rank.toString()
+                tvRankSuffix.text = suffix
+                when (rank) {
+                    1 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#FFFFFF"))
+                        tvRankNumber.setTextColor(Color.parseColor("#FFFFFF"))
+                        tvRanking.setTextColor(Color.parseColor("#FFFFFF"))
+                        imgRankBg.setImageResource(R.drawable.rank1)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
+                    }
 
-                2 -> {
-                    tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
-                    tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
-                    tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
-                    imgRankBg.setImageResource(R.drawable.rank3)
-                    imgChallenge.imageTintList = ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
-                }
+                    2 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
+                        imgRankBg.setImageResource(R.drawable.rank3)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
+                    }
 
-                3 -> {
-                    tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
-                    tvRankNumber.setTextColor(Color.parseColor("#984C01"))
-                    tvRanking.setTextColor(Color.parseColor("#984C01"))
-                    imgRankBg.setImageResource(R.drawable.rank2)
-                    imgChallenge.imageTintList = ColorStateList.valueOf(Color.parseColor("#984C01"))
-                }
+                    3 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
+                        tvRankNumber.setTextColor(Color.parseColor("#984C01"))
+                        tvRanking.setTextColor(Color.parseColor("#984C01"))
+                        imgRankBg.setImageResource(R.drawable.rank2)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#984C01"))
+                    }
 
-                else -> {
-                    tvRankSuffix.setTextColor(Color.parseColor("#0B1215"))
-                    tvRankNumber.setTextColor(Color.parseColor("#0B1215"))
-                    tvRanking.setTextColor(Color.parseColor("#F5B829"))
-                    imgRankBg.setImageResource(R.drawable.rank4)
-                    imgChallenge.imageTintList = ColorStateList.valueOf(Color.parseColor("#F5B829"))
+                    else -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#0B1215"))
+                        tvRankNumber.setTextColor(Color.parseColor("#0B1215"))
+                        tvRanking.setTextColor(Color.parseColor("#F5B829"))
+                        imgRankBg.setImageResource(R.drawable.rank4)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#F5B829"))
+                    }
                 }
             }
         }
