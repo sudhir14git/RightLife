@@ -325,7 +325,7 @@ class ChallengeActivity : BaseActivity() {
                                 dateString = calendar.date,
                                 isChecked = calendar.isCompleted
                             )
-                            isCheckedList.add(true)//calendar.isCompleted)
+                            isCheckedList.add(calendar.isCompleted)
                             calendarDays.add(day)
                         }
 

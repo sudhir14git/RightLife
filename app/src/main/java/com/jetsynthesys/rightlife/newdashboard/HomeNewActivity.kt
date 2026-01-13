@@ -4328,6 +4328,7 @@ class HomeNewActivity : BaseActivity() {
                     binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
                         View.VISIBLE
                 }
+                getDailyScore(DateHelper.getTodayDate())
             }
 
             4 -> {
@@ -4431,6 +4432,7 @@ class HomeNewActivity : BaseActivity() {
     }
 
     fun showChallengeCard() {
+        getDashboardChecklist()
         try {
             if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
                 val appConfig =

@@ -1262,6 +1262,9 @@ class ProfileNewActivity : BaseActivity() {
                     binding.btnVerifyEmail.visibility = GONE
                     setEndDrawable(binding.etEmail)
 
+                    userDataResponse.userdata = userData
+                    sharedPreferenceManager.saveUserProfile(userDataResponse)
+
                 } else {
                     bindingDialog.tvResult.text = "Incorrect OTP"
                     bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
