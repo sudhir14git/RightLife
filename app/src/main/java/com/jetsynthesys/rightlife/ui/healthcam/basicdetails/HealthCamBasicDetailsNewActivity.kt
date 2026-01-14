@@ -40,6 +40,8 @@ import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
+import com.jetsynthesys.rightlife.ui.customviews.HeightPickerBottomSheet
+import com.jetsynthesys.rightlife.ui.customviews.WeightPickerBottomSheet
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Option
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamSubmitResponse
@@ -69,7 +71,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     private val numbers = mutableListOf<Float>()
     private lateinit var adapterHeight: RulerAdapterVertical
     private lateinit var adapterWeight: RulerAdapter
-
+    private var selectedWeight = "60.0 kg"
+    private var selectedHeight = "5'7\""
     private val smokeOptions = ArrayList<Option>()
     private val diabeticsOptions = ArrayList<Option>()
     private val bpMedicationOptions = ArrayList<Option>()
@@ -112,17 +115,22 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
-                    showHeightSelectionBottomSheet(sharedPreferenceManager.userProfile.userdata.gender)
+                    //showHeightSelectionBottomSheet(sharedPreferenceManager.userProfile.userdata.gender)
+                    openHeightPicker()
                 }
             }
+
         }
+
+
 
         binding.edtWeight.setOnClickListener {
             it.disableViewForSeconds()
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
-                    showWeightSelectionBottomSheet(sharedPreferenceManager.userProfile.userdata.gender)
+                    //showWeightSelectionBottomSheet(sharedPreferenceManager.userProfile.userdata.gender)
+                    openWeightPicker()
                 }
             }
         }
@@ -290,7 +298,23 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             }
         }
     }
+    fun openHeightPicker() {
+        val bottomSheet = HeightPickerBottomSheet.newInstance("5'7\"", "ft")
+        bottomSheet.setOnHeightSelectedListener { height, unit ->
+            selectedHeight = height
+            binding.edtHeight.setText("${selectedHeight}")
+        }
+        bottomSheet.show(supportFragmentManager, "HeightPicker")
+    }
 
+    private fun openWeightPicker() {
+        val bottomSheet = WeightPickerBottomSheet.newInstance(60.0, "kg")
+        bottomSheet.setOnWeightSelectedListener { weight, unit ->
+            selectedWeight = String.format("%.1f %s", weight, unit)
+            binding.edtHeight.setText("$selectedWeight")
+        }
+        bottomSheet.show(supportFragmentManager, "WeightPicker")
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun showAgeSelectionBottomSheet() {
