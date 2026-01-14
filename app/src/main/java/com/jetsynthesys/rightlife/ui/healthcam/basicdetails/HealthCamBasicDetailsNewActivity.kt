@@ -311,7 +311,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         val bottomSheet = WeightPickerBottomSheet.newInstance(60.0, "kg")
         bottomSheet.setOnWeightSelectedListener { weight, unit ->
             selectedWeight = String.format("%.1f %s", weight, unit)
-            binding.edtHeight.setText("$selectedWeight")
+            binding.edtWeight.setText("$selectedWeight")
         }
         bottomSheet.show(supportFragmentManager, "WeightPicker")
     }
