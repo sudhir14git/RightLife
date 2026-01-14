@@ -2407,6 +2407,7 @@ class HomeNewActivity : BaseActivity() {
                 lastSyncInstant != null -> {
                     if (lastSyncInstant.isAfter(todayStart)) todayStart else lastSyncInstant
                 }
+
                 else -> defaultStart
             }
 
@@ -2521,6 +2522,7 @@ class HomeNewActivity : BaseActivity() {
                 "com.google.android.apps.fitness" -> storeHealthData()
                 "com.sec.android.app.shealth",
                 "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
+
                 else -> storeHealthData()
             }
 
@@ -4255,7 +4257,7 @@ class HomeNewActivity : BaseActivity() {
 
         sharedPreferenceManager.challengeState = dates.challengeStatus
         sharedPreferenceManager.challengeStartDate = dates.challengeStartDate
-        sharedPreferenceManager.challengeEndDate = dates.challengeEndDate
+        sharedPreferenceManager.challengeEndDate = dates.challengeEndDate //"28 Jan 2026, 09:00 PM"
 
         if (dates.participateDate.isEmpty()) {
 
@@ -4274,12 +4276,9 @@ class HomeNewActivity : BaseActivity() {
             1 -> {
                 if (dates.participateDate.isEmpty()) {
                     // Join challenge
-                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.VISIBLE
                     binding.layoutRegisterChallenge.tvStartEndDate.text = dateRange
+                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.VISIBLE
                 } else {
-                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
-                        View.VISIBLE
-
                     binding.layoutUnlockChallenge.tvStartEndDate.text =
                         getChallengeDateRange(
                             dates.challengeStartDate,
@@ -4289,6 +4288,8 @@ class HomeNewActivity : BaseActivity() {
                         binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
                             formatWithOrdinal(it)
                     }
+                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
+                        View.VISIBLE
                 }
             }
 
@@ -4297,12 +4298,12 @@ class HomeNewActivity : BaseActivity() {
                 if (!DashboardChecklistManager.checklistStatus) {
                     // Checklist not completed
                     binding.layoutChallengeToCompleteChecklist.apply {
-                        completeChallengeChecklist.visibility = View.VISIBLE
                         tvChecklistNumber.text = "$checklistCount/6"
-                        seekBar.progress = checklistCount * 10
+                        seekBar.progress = checklistCount.takeIf { it != 0 }?.times(10) ?: 1
                         imgChallenge.imageTintList = ColorStateList.valueOf("#F5B829".toColorInt())
                         tvChallenge.setTextColor("#F5B829".toColorInt())
                         tvChallenge.text = "Challenge Upcoming"
+                        completeChallengeChecklist.visibility = View.VISIBLE
                     }
                 } else {
                     // Checklist completed → Countdown card
@@ -4318,19 +4319,17 @@ class HomeNewActivity : BaseActivity() {
                 if (!DashboardChecklistManager.checklistStatus) {
                     // Checklist not completed
                     binding.layoutChallengeToCompleteChecklist.apply {
-                        completeChallengeChecklist.visibility = View.VISIBLE
                         tvChecklistNumber.text = "$checklistCount/6"
-                        seekBar.progress = checklistCount * 10
+                        seekBar.progress = checklistCount.takeIf { it != 0 }?.times(10) ?: 1
                         imgChallenge.imageTintList = ColorStateList.valueOf("#06B27B".toColorInt())
                         tvChallenge.setTextColor("#06B27B".toColorInt())
                         tvChallenge.text = "Challenge Active"
+                        completeChallengeChecklist.visibility = View.VISIBLE
                     }
                 } else {
-                    getDailyScore(DateHelper.getTodayDate())
-                    binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
-                        View.VISIBLE
+                    //Show Score Card
+                    getDailyTasks(DateHelper.getTodayDate())
                 }
-                getDailyScore(DateHelper.getTodayDate())
             }
 
             4 -> {
@@ -4516,6 +4515,28 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
+    private fun getDailyTasks(date: String) {
+        AppLoader.show(this)
+        apiService.dailyTask(sharedPreferenceManager.accessToken, date)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>, response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+
+                    getDailyScore(date)
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>, t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
     private fun getDailyScore(date: String) {
         AppLoader.show(this)
         apiService.dailyScore(sharedPreferenceManager.accessToken, date)
@@ -4532,7 +4553,7 @@ class HomeNewActivity : BaseActivity() {
                         val scoreData = responseObj.data
                         binding.layoutChallengeDailyScore.apply {
                             tvPoints.text = scoreData.totalScore.toString()
-                            scoreSeekBar.progress = scoreData.totalScore
+                            scoreSeekBar.progress = scoreData.totalScore.takeIf { it != 0 } ?: 2
                             setSeekBarProgressColor(
                                 scoreSeekBar, getColorCode(scoreData.performance)
                             )
@@ -4545,6 +4566,8 @@ class HomeNewActivity : BaseActivity() {
                             )
                             tvScoreLabel.text = scoreData.performance
                             tvMessage.text = scoreData.message
+                            binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+                                View.VISIBLE
                         }
                     } else {
                         showCustomToast("Something went wrong!", false)

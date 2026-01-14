@@ -153,7 +153,6 @@ class ChallengeActivity : BaseActivity() {
                     calendarAdapter.updateData(calendarDays)
                     selectedDate = selectedDay
                     getDailyTasks(selectedDay.dateString)
-                    getDailyScore(selectedDay.dateString)
                     binding.tvSelectedDate.text =
                         SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault())
                             .format(apiFormat.parse(selectedDay.dateString)!!)
@@ -255,8 +254,6 @@ class ChallengeActivity : BaseActivity() {
 
 
         // Check if provided date falls in this week
-        var isEndDateInWeek = false
-        var isStartDateInWeek = false
         val weekDates = mutableListOf<String>()
 
         // Move to Sunday of the provided date's week
@@ -269,14 +266,26 @@ class ChallengeActivity : BaseActivity() {
             weekDates.add(apiFormat.format(cal.time))
         }
 
-        val endDate = toApiDate(sharedPreferenceManager.challengeStartDate)
-        isEndDateInWeek = weekDates.contains(endDate)
-        val startDate = toApiDate(sharedPreferenceManager.challengeEndDate)
-        isStartDateInWeek = weekDates.contains(startDate)
-        var finalSelectedDate =
-            if (isStartDateInWeek) startDate
-            else if (isEndDateInWeek) endDate
-            else weekDates.first()
+        val startDate = toApiDate(sharedPreferenceManager.challengeStartDate)
+        val endDate = toApiDate(sharedPreferenceManager.challengeEndDate)
+        val today = DateHelper.getTodayDate() // yyyy-MM-dd
+
+        val isStartDateInWeek = weekDates.contains(startDate)
+        val isEndDateInWeek = weekDates.contains(endDate)
+        val isTodayInWeek = weekDates.contains(today)
+
+// today must be between start & end (inclusive)
+        val isTodayBetween =
+            !isFirstDateAfter(startDate, today) &&
+                    !isFirstDateAfter(today, endDate)
+
+        val finalSelectedDate = when {
+            isTodayInWeek && isTodayBetween -> today
+            isStartDateInWeek -> startDate
+            isEndDateInWeek -> endDate
+            else -> weekDates.first() // Sunday fallback
+        }
+
 
         // Build week (Sunday → Saturday)
         for (i in 0..6) {
@@ -423,8 +432,6 @@ class ChallengeActivity : BaseActivity() {
                         calendarAdapter.updateData(calendarDays)
                         updateWeekView(date, isCheckedList)
 
-                        getDailyScore(date)
-
                         getDailyTasks(date)
 
                     } else {
@@ -459,7 +466,7 @@ class ChallengeActivity : BaseActivity() {
                         val scoreData = responseObj.data
                         binding.scoreCard.apply {
                             tvCountDownDays.text = scoreData.totalScore.toString()
-                            scoreSeekBar.progress = scoreData.totalScore
+                            scoreSeekBar.progress = scoreData.totalScore.takeIf { it != 0 } ?: 2
                             setSeekBarProgressColor(
                                 scoreSeekBar, getColorCode(scoreData.performance)
                             )
@@ -646,6 +653,7 @@ class ChallengeActivity : BaseActivity() {
                     } else {
                         showCustomToast("Something went wrong!", false)
                     }
+                    getDailyScore(date)
                 }
 
                 override fun onFailure(
@@ -684,21 +692,21 @@ class ChallengeActivity : BaseActivity() {
                     }
 
                     2 -> {
-                        tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
-                        tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
-                        tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
-                        imgRankBg.setImageResource(R.drawable.rank3)
-                        imgChallenge.imageTintList =
-                            ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
-                    }
-
-                    3 -> {
                         tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
                         tvRankNumber.setTextColor(Color.parseColor("#984C01"))
                         tvRanking.setTextColor(Color.parseColor("#984C01"))
-                        imgRankBg.setImageResource(R.drawable.rank2)
+                        imgRankBg.setImageResource(R.drawable.rank3)
                         imgChallenge.imageTintList =
                             ColorStateList.valueOf(Color.parseColor("#984C01"))
+                    }
+
+                    3 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
+                        imgRankBg.setImageResource(R.drawable.rank2)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
                     }
 
                     else -> {
@@ -736,21 +744,21 @@ class ChallengeActivity : BaseActivity() {
                     }
 
                     2 -> {
-                        tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
-                        tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
-                        tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
-                        imgRankBg.setImageResource(R.drawable.rank3)
-                        imgChallenge.imageTintList =
-                            ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
-                    }
-
-                    3 -> {
                         tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
                         tvRankNumber.setTextColor(Color.parseColor("#984C01"))
                         tvRanking.setTextColor(Color.parseColor("#984C01"))
-                        imgRankBg.setImageResource(R.drawable.rank2)
+                        imgRankBg.setImageResource(R.drawable.rank3)
                         imgChallenge.imageTintList =
                             ColorStateList.valueOf(Color.parseColor("#984C01"))
+                    }
+
+                    3 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
+                        imgRankBg.setImageResource(R.drawable.rank2)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
                     }
 
                     else -> {
