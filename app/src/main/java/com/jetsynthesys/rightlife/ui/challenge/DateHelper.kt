@@ -135,5 +135,47 @@ object DateHelper {
         }
     }
 
+    fun toApiDate(dateString: String): String {
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+
+        val possibleFormats = listOf(
+            SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH),
+            SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH),
+            SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        )
+
+        for (format in possibleFormats) {
+            try {
+                val date = format.parse(dateString)
+                if (date != null) {
+                    return outputFormat.format(date)
+                }
+            } catch (e: Exception) {
+                // try next format
+            }
+        }
+
+        // fallback
+        return getTodayDate()
+    }
+
+    fun isFirstDateAfter(
+        firstDate: String,
+        secondDate: String
+    ): Boolean {
+        return try {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+            formatter.isLenient = false
+
+            val date1 = formatter.parse(firstDate)
+            val date2 = formatter.parse(secondDate)
+
+            date1 != null && date2 != null && date1.after(date2)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+
 
 }
