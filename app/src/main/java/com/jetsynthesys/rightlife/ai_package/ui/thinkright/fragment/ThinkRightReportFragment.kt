@@ -259,8 +259,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         dotsLayout = view.findViewById(R.id.customDotsContainer)
         //getBreathingData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
-        tvWellnessDays.text = data.wellnessStreak.toString() + " day"
-
+        tvWellnessDays.text = if (data.wellnessStreak == 0) {
+            "${data.wellnessStreak} day"
+        }else if(data.wellnessStreak == 1){
+            "${data.wellnessStreak} day"
+        }else{
+            "${data.wellnessStreak} days"
+        }
+        //fetchMindfulData()
         // add_tools_think_right = view.findViewById(R.id.add_tools_think_right)
         instruction_your_mindfullness_review.setOnClickListener {
             val dialog = MindfulnessReviewDialog.newInstance()
@@ -647,60 +653,66 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchMindfulData() {
-        if (isAdded && view != null) {
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
+        if (!isAdded || view == null) return
+
+        requireActivity().runOnUiThread {
+            showLoader(requireView())
         }
+
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val startDate = getYesterdayDate()
         val endDate = getCurrentDate()
-        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+
         val call = ApiClient.apiService.fetchMindFull(token, startDate, endDate)
+
         call.enqueue(object : Callback<MindfullResponse> {
-            override fun onResponse(
-                call: Call<MindfullResponse>,
-                response: Response<MindfullResponse>
-            ) {
-                if (response.isSuccessful) {
-                    mindfullNoDataCard.visibility = View.GONE
-                    mindfullDataCard.visibility = View.VISIBLE
-                    mindfullResponse = response.body()!!
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
+            override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
+                if (!isAdded || view == null) {
+                    // Fragment already destroyed → don't touch UI
+                    return
+                }
+
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (body != null) {
+                            mindfullResponse = body
+
+                            mindfullNoDataCard.visibility = View.GONE
+                            mindfullDataCard.visibility = View.VISIBLE
+
+                            // ── This is the corrected & safe update ──
+                            body.data?.formattedData?.lastOrNull()?.duration?.let { duration ->
+                                tvMindfullMinute.text = formatDuration(duration)
+                            } ?: run {
+                                tvMindfullMinute.text = "0 min"   // ← fallback when no data
+                            }
+                        } else {
+                            showNoDataState()
                         }
-                    }
-                    if (mindfullResponse.data?.formattedData?.isNotEmpty() == true) {
-                        tvMindfullMinute.text = mindfullResponse.data?.formattedData?.getOrNull(mindfullResponse.data?.formattedData?.size!! - 1)?.duration?.let {
-                            formatDuration(
-                                it
-                            )
-                        }
-                    }
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    //               Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    mindfullNoDataCard.visibility = View.VISIBLE
-                    mindfullDataCard.visibility = View.GONE
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
+                    } else {
+                        showNoDataState()
+                        Log.e("Mindful", "API error: ${response.code()} - ${response.errorBody()?.string()}")
                     }
                 }
             }
 
             override fun onFailure(call: Call<MindfullResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                //              Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                if (!isAdded || view == null) return
+
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+                    showNoDataState()
+                    Log.e("Mindful", "API failed", t)
+                }
+            }
+
+            private fun showNoDataState() {
                 mindfullNoDataCard.visibility = View.VISIBLE
                 mindfullDataCard.visibility = View.GONE
-                if (isAdded && view != null) {
-                    requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-                    }
-                }
+                tvMindfullMinute.text = "0 min"   // or "--" or whatever you prefer
             }
         })
     }
@@ -708,10 +720,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     fun formatDuration(totalMinutes: Int): String {
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
+
+        val hrText = if (hours <= 1) "hr" else "hrs"
+        val minText = if (minutes <= 1) "min" else "mins"
+
         return when {
-            hours > 0 && minutes > 0 -> "${hours} hr ${minutes} mins"
-            hours > 0 -> "${hours} hr"
-            else -> "${minutes} mins"
+            hours > 0 && minutes > 0 -> "$hours $hrText $minutes $minText"
+            hours > 0 -> "$hours $hrText"
+            else -> "$minutes $minText"
         }
     }
 
@@ -1068,8 +1084,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchToolList()
         fetchQuoteData()
         fetchAssessmentResult()
-        fetchMindfulData()
         fetchAffirmationsList()
+        fetchMindfulData()
         getBreathingData()
         fetchJournalAnswerData()
         fetchThinkRecomendedData()
