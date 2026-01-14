@@ -7,8 +7,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
         android:background="@drawable/rounded_corder_border_gray"
+        android:backgroundTint="@color/white"
+        android:clipToPadding="false"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -31,7 +32,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_toEndOf="@id/imgChallenge"
                 android:fontFamily="@font/dmsans_bold"
-                android:text="Rankings"
+                android:text="All-Time Rankings"
                 android:textColor="#F5B829"
                 android:textSize="14sp" />
 
@@ -41,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:src="@drawable/info_challenge"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </RelativeLayout>
 

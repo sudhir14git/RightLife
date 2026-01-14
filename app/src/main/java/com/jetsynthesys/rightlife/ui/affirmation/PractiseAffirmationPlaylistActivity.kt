@@ -102,8 +102,8 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         isFromNotification = intent.getBooleanExtra("From_Notification", false)
 
         onBackPressedDispatcher.addCallback(this) {
-            callPostMindFullDataAPI()
-            finishActivity()
+            stopTimer()
+            updateWatchedAffirmationPlaylist()
         }
 
         binding.ivDownload.setOnClickListener {

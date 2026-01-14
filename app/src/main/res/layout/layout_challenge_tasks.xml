@@ -60,7 +60,7 @@
                 android:layout_alignParentStart="true"
                 android:fontFamily="@font/dmsans_bold"
                 android:gravity="center_vertical"
-                android:text="2/6"
+                android:text="0/6"
                 android:textColor="@color/txt_color_header"
                 android:textSize="18sp" />
 
@@ -556,7 +556,7 @@
                 android:layout_alignParentStart="true"
                 android:fontFamily="@font/dmsans_bold"
                 android:gravity="center_vertical"
-                android:text="2/5"
+                android:text="0/5"
                 android:textColor="@color/txt_color_header"
                 android:textSize="18sp" />
 
