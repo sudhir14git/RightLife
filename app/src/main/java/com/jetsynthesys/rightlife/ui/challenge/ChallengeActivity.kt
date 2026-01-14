@@ -20,8 +20,10 @@ import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showCh
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showTaskInfoBottomSheet
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDayFromDate
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isFirstDateAfter
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isOlderThan7Days
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isToday
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.toApiDate
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getImageBasedOnStatus
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
@@ -78,13 +80,9 @@ class ChallengeActivity : BaseActivity() {
         if (sharedPreferenceManager.challengeState == 4) {
             binding.challengeOverCard.challengeOverCard.visibility = View.VISIBLE
             binding.logItems.llLogItems.visibility = View.GONE
-            binding.rankingCardTop.rlRanking.visibility = View.VISIBLE
-            binding.rankingCard.rlRanking.visibility = View.GONE
         } else {
             binding.challengeOverCard.challengeOverCard.visibility = View.GONE
             binding.logItems.llLogItems.visibility = View.VISIBLE
-            binding.rankingCardTop.rlRanking.visibility = View.GONE
-            binding.rankingCard.rlRanking.visibility = View.VISIBLE
         }
 
         AnalyticsLogger.logEvent(
@@ -95,9 +93,25 @@ class ChallengeActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        val date = selectedDate?.dateString ?: DateHelper.getTodayDate()
+        val rawDate = when {
+            sharedPreferenceManager.challengeState == 4 ->
+                sharedPreferenceManager.challengeEndDate
+                    ?.split(",")
+                    ?.firstOrNull()
+                    ?.takeIf { it.isNotBlank() }
+
+            !selectedDate?.dateString.isNullOrBlank() ->
+                selectedDate?.dateString
+
+            else -> null
+        }
+
+        val date = rawDate?.let { toApiDate(it) }
+            ?: DateHelper.getTodayDate()
+
         getDailyChallengeData(date)
         loadStreak()
+
     }
 
     private fun setupScoreCardListener() {
@@ -115,11 +129,22 @@ class ChallengeActivity : BaseActivity() {
     }
 
     private fun setupCalenderView() {
+        val apiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
         binding.rvCalendar.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.rvCalendar.addItemDecoration(SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.spacing)))
         calendarAdapter = CalendarChallengeAdapter(calendarDays) { selectedDay ->
             // Toggle selection
+            if (isFirstDateAfter(
+                    selectedDay.dateString,
+                    toApiDate(sharedPreferenceManager.challengeEndDate)
+                ) || isFirstDateAfter(
+                    toApiDate(sharedPreferenceManager.challengeStartDate), selectedDay.dateString
+                )
+            ) {
+                showCustomToast("Hold up, we haven’t lived that day yet!")
+                return@CalendarChallengeAdapter
+            }
             if (!isFutureDate(selectedDay.dateString) || isToday(selectedDay.dateString)) {
                 if (selectedDay.dateString != selectedDate?.dateString) {
                     calendarDays.forEach { it.isSelected = false }
@@ -127,9 +152,11 @@ class ChallengeActivity : BaseActivity() {
 
                     calendarAdapter.updateData(calendarDays)
                     selectedDate = selectedDay
-                    //getDailyChallengeData(selectedDay.dateString)
                     getDailyTasks(selectedDay.dateString)
                     getDailyScore(selectedDay.dateString)
+                    binding.tvSelectedDate.text =
+                        SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault())
+                            .format(apiFormat.parse(selectedDay.dateString)!!)
                 }
             } else showCustomToast("Hold up, we haven’t lived that day yet!")
         }
@@ -214,71 +241,127 @@ class ChallengeActivity : BaseActivity() {
     private fun updateWeekView(date: String, isChecked: ArrayList<Boolean>) {
 
         var isFutureDatePresent = false
+        var isPreviousDatePresent = false
         calendarDays.clear()
 
-        // Base calendar = selected date
-        val baseCal = Calendar.getInstance()
-        baseCal.time = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(date)!!
+        val apiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
-        // Move to Sunday of the current week
-        baseCal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+        // Base calendar = selected date
+        val baseCal = Calendar.getInstance().apply {
+            time = apiFormat.parse(date)!!
+            firstDayOfWeek = Calendar.SUNDAY
+            set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY) // move to week start
+        }
+
+
+        // Check if provided date falls in this week
+        var isEndDateInWeek = false
+        var isStartDateInWeek = false
+        val weekDates = mutableListOf<String>()
+
+        // Move to Sunday of the provided date's week
+        val weekStartCal = baseCal.clone() as Calendar
+        weekStartCal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
 
         for (i in 0..6) {
+            val cal = weekStartCal.clone() as Calendar
+            cal.add(Calendar.DAY_OF_MONTH, i)
+            weekDates.add(apiFormat.format(cal.time))
+        }
 
+        val endDate = toApiDate(sharedPreferenceManager.challengeStartDate)
+        isEndDateInWeek = weekDates.contains(endDate)
+        val startDate = toApiDate(sharedPreferenceManager.challengeEndDate)
+        isStartDateInWeek = weekDates.contains(startDate)
+        var finalSelectedDate =
+            if (isStartDateInWeek) startDate
+            else if (isEndDateInWeek) endDate
+            else weekDates.first()
+
+        // Build week (Sunday → Saturday)
+        for (i in 0..6) {
             val cal = baseCal.clone() as Calendar
             cal.add(Calendar.DAY_OF_MONTH, i)
 
-            val dayOfMonth = cal.get(Calendar.DAY_OF_MONTH)
-            val dateString = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(cal.time)
-
-            val isSelected = dateString == date
-
-            val dayLetter = cal.getDisplayName(
-                Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.ENGLISH
-            )?.substring(0, 1) ?: ""
+            val dateString = apiFormat.format(cal.time)
 
             val calendarDay = CalendarDay(
-                day = dayLetter,
-                date = dayOfMonth,
-                isSelected = isSelected,
+                day = cal.getDisplayName(
+                    Calendar.DAY_OF_WEEK,
+                    Calendar.SHORT,
+                    Locale.ENGLISH
+                )!!.first().toString(),
+                date = cal.get(Calendar.DAY_OF_MONTH),
+                isSelected = dateString == finalSelectedDate,
                 dateString = dateString,
                 isChecked = isChecked.getOrNull(i) ?: false
             )
 
             calendarDays.add(calendarDay)
 
-            if (isFutureDate(dateString)) {
+            // ---- Future date logic ----
+            if (sharedPreferenceManager.challengeState == 4) {
+                if (isFirstDateAfter(
+                        dateString,
+                        toApiDate(sharedPreferenceManager.challengeEndDate)
+                    )
+                ) {
+                    isFutureDatePresent = true
+                }
+            } else if (isFutureDate(dateString)) {
                 isFutureDatePresent = true
+            }
+
+            // ---- Previous date logic ----
+            if (isFirstDateAfter(
+                    toApiDate(sharedPreferenceManager.challengeStartDate),
+                    dateString
+                )
+            ) {
+                isPreviousDatePresent = true
             }
         }
 
-        // Selected date label
+        // Selected date label (actual selected date, not Sunday)
         binding.tvSelectedDate.text =
-            SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(baseCal.time)
+            SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault())
+                .format(apiFormat.parse(finalSelectedDate)!!)
 
         calendarAdapter.updateData(calendarDays)
 
-        // Next button handling
+        // Arrow enable / disable
         binding.ivNext.isEnabled = !isFutureDatePresent
+        binding.ivPrev.isEnabled = !isPreviousDatePresent
+
         binding.ivNext.setImageResource(
-            if (isFutureDatePresent) R.drawable.right_arrow_journal
-            else R.drawable.right_arrow_journal_enabled
+            if (isFutureDatePresent)
+                R.drawable.right_arrow_journal
+            else
+                R.drawable.right_arrow_journal_enabled
         )
 
-        // Previous week
+        binding.ivPrev.setImageResource(
+            if (isPreviousDatePresent)
+                R.drawable.ic_green_circle_left
+            else
+                R.drawable.left_arrow_journal
+        )
+
+        // 🔙 Previous Week → Sunday
         binding.ivPrev.setOnClickListener {
-            calendar.add(Calendar.WEEK_OF_YEAR, -1)
-            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-            getDailyChallengeData(formatter.format(calendar.time))
+            val cal = baseCal.clone() as Calendar
+            cal.add(Calendar.WEEK_OF_YEAR, -1)
+            getDailyChallengeData(apiFormat.format(cal.time))
         }
 
-        // Next week
+        // 🔜 Next Week → Sunday
         binding.ivNext.setOnClickListener {
-            calendar.add(Calendar.WEEK_OF_YEAR, 1)
-            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-            getDailyChallengeData(formatter.format(calendar.time))
+            val cal = baseCal.clone() as Calendar
+            cal.add(Calendar.WEEK_OF_YEAR, 1)
+            getDailyChallengeData(apiFormat.format(cal.time))
         }
     }
+
 
     private fun isFutureDate(dateString: String): Boolean {
         return try {
@@ -316,7 +399,9 @@ class ChallengeActivity : BaseActivity() {
                         val responseObj =
                             gson.fromJson(jsonResponse, DailyChallengeResponse::class.java)
                         val isCheckedList = ArrayList<Boolean>()
-                        responseObj.data.calendar.forEach { calendar ->
+                        responseObj.data.calendar.forEachIndexed { index, calendar ->
+
+                            val isLast = index == responseObj.data.calendar.lastIndex
 
                             val day = CalendarDay(
                                 day = calendar.day.first().toString(),
@@ -325,9 +410,15 @@ class ChallengeActivity : BaseActivity() {
                                 dateString = calendar.date,
                                 isChecked = calendar.isCompleted
                             )
+
                             isCheckedList.add(calendar.isCompleted)
                             calendarDays.add(day)
+
+                            if (sharedPreferenceManager.challengeState == 4 && isLast) {
+                                selectedDate = day
+                            }
                         }
+
 
                         calendarAdapter.updateData(calendarDays)
                         updateWeekView(date, isCheckedList)
@@ -360,6 +451,7 @@ class ChallengeActivity : BaseActivity() {
                 ) {
                     AppLoader.hide()
                     if (response.isSuccessful && response.body() != null) {
+                        binding.scoreCard.layoutScoreCard.visibility = View.VISIBLE
                         val gson = Gson()
                         val jsonResponse = response.body()?.string()
                         val responseObj =
@@ -567,7 +659,9 @@ class ChallengeActivity : BaseActivity() {
     }
 
     private fun setUpRankCard(rank: Int, suffix: String) {
-        if (sharedPreferenceManager.challengeState == 4){
+        if (sharedPreferenceManager.challengeState == 4) {
+            binding.rankingCardTop.rlRanking.visibility = View.VISIBLE
+            binding.rankingCard.rlRanking.visibility = View.GONE
             binding.rankingCardTop.apply {
                 btnViewLeaderBoard.setOnClickListener {
                     it.disableViewForSeconds()
@@ -617,7 +711,9 @@ class ChallengeActivity : BaseActivity() {
                     }
                 }
             }
-        }else {
+        } else {
+            binding.rankingCardTop.rlRanking.visibility = View.GONE
+            binding.rankingCard.rlRanking.visibility = View.VISIBLE
             binding.rankingCard.apply {
                 btnViewLeaderBoard.setOnClickListener {
                     it.disableViewForSeconds()

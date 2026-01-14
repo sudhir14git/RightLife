@@ -51,14 +51,14 @@ class JournalListActivity : BaseActivity() {
     private lateinit var calendarAdapter: CalendarAdapter
     private val calendar = Calendar.getInstance()
     private var selectedDate: CalendarDay? = null
-    private var startDate = ""
+    //private var startDate = ""
     var isFromThinkRight: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalListBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
-        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        //startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
 
         binding.addEntryButton.setOnClickListener {
@@ -67,7 +67,7 @@ class JournalListActivity : BaseActivity() {
             val formattedDate = sdf.format(Date())
             if (selectedDate == null || formattedDate == selectedDate?.dateString) {
                 startActivity(Intent(this, JournalNewActivity::class.java).apply {
-                    putExtra("StartDate", startDate)
+                    //putExtra("StartDate", startDate)
                     putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                 })
             } else
@@ -276,7 +276,7 @@ class JournalListActivity : BaseActivity() {
                     }
                 startActivity(intent.apply {
                     putExtra("JournalEntry", journalEntry)
-                    putExtra("StartDate", startDate)
+                    //putExtra("StartDate", startDate)
                     putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                 })
             } else {
@@ -401,8 +401,8 @@ class JournalListActivity : BaseActivity() {
     }
 
     private fun callPostMindFullDataAPI() {
-        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
+        /*val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)*/
     }
 
     private fun isFutureDate(dateString: String): Boolean {
