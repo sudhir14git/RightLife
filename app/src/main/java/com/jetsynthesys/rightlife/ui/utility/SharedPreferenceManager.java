@@ -739,7 +739,7 @@ public class SharedPreferenceManager {
 
     // Method to retrieve the access token
     public String getChallengeEndDate() {
-        return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_END_DATE, "28 Feb 2026, 09:00 AM");
+        return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_END_DATE, "28 Feb 2026, 09:00 PM");
     }
 
     public void setChallengeStartDate(String state) {

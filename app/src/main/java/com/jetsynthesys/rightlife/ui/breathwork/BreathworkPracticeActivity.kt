@@ -60,6 +60,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     private var isSoundEnabled = true
     private var isPreparationPhase = true  // Starts as true
     private var isHapticFeedBack = false
+    private var sessionTimer: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -310,7 +311,10 @@ class BreathworkPracticeActivity : BaseActivity() {
 
 
     private fun startSessionTimer() {
-        object : CountDownTimer(sessionDurationSeconds * 1000L, 1000) {
+        // Cancel any existing timer to avoid multiple timers
+        sessionTimer?.cancel()
+
+        sessionTimer = object : CountDownTimer(sessionDurationSeconds * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 updateSessionTimer(millisUntilFinished)
             }
@@ -481,7 +485,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     private fun startCountdownWithNostrilSwitch(duration: Long, onFinish: () -> Unit) {
         var secondsLeft = 0
         val totalSeconds = (duration / 1000).toInt()
-        val originalPhaseText = binding.breathingPhase.text.toString()
+        binding.breathingPhase.text.toString()
 
         binding.circleTimer.text = secondsLeft.toString()
 
@@ -587,6 +591,10 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         dialogBinding.btnYes.setOnClickListener {
             //deleteJournal(journalEntry)
+            countDownTimer?.cancel()
+            countDownTimer = null
+            sessionTimer?.cancel()
+            sessionTimer = null
             bottomSheetDialog.dismiss()
             callPostMindFullDataAPI()
             //finish()
