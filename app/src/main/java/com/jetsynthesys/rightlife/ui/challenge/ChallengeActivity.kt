@@ -390,7 +390,7 @@ class ChallengeActivity : BaseActivity() {
                             tvRankSuffix.text = getDaySuffix(scoreData.rank)
 
                             //rank code here
-                            setUpRankCard(scoreData.rank, getDaySuffix(scoreData.rank))
+                            setUpRankCard(scoreData.allRank, getDaySuffix(scoreData.allRank))
                             setupFaceScanCard(responseObj.data.lastReportDate)
                         }
                         // Log an event based on the user's performance tier.
