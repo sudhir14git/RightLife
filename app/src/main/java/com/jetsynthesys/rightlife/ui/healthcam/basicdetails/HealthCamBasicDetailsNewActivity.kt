@@ -66,7 +66,8 @@ import java.util.Locale
 import kotlin.math.floor
 
 
-class HealthCamBasicDetailsNewActivity : BaseActivity() {
+class HealthCamBasicDetailsNewActivity : BaseActivity()
+{
     private lateinit var binding: ActivityHealthcamBasicDetailsNewBinding
     private val numbers = mutableListOf<Float>()
     private lateinit var adapterHeight: RulerAdapterVertical
@@ -80,7 +81,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
     private var responseObj: QuestionListHealthAudit? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         binding = ActivityHealthcamBasicDetailsNewBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
@@ -179,45 +181,57 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 showCustomToast("Please fill all required fields before proceeding.")
             else if (age.split(" ")[0].toInt() !in 13..80)
                 showCustomToast("Face Scan is available only for users aged 13–80.")
-            else {
+            else
+            {
                 val answerFaceScans = ArrayList<AnswerFaceScan>()
 
                 val heightWithUnit = height.split(" ")
                 val weightWithUnit = weight.split(" ")
 
-                for (question in responseObj!!.questionData.questionList) {
+                for (question in responseObj!!.questionData.questionList)
+                {
                     val answer = AnswerFaceScan()
                     answer.question = question.question
-                    when (question.question) {
+                    when (question.question)
+                    {
                         "first_name" -> answer.answer = name
                         "height" -> answer.answer = heightWithUnit[0].toDouble()
                         "weight" -> answer.answer = weightWithUnit[0].toDouble()
                         "age" -> answer.answer = age
                         "gender" -> answer.answer = gender
-                        "smoking" -> {
+                        "smoking" ->
+                        {
                             var selectedSmoke = "0"
-                            for (sm in smokeOptions) {
-                                if (sm.optionText == smoke) {
+                            for (sm in smokeOptions)
+                            {
+                                if (sm.optionText == smoke)
+                                {
                                     selectedSmoke = sm.optionPosition
                                 }
                             }
                             answer.answer = selectedSmoke
                         }
 
-                        "bloodpressuremedication" -> {
+                        "bloodpressuremedication" ->
+                        {
                             var selectedBP = "0"
-                            for (bp in bpMedicationOptions) {
-                                if (bp.optionText == bpMedication) {
+                            for (bp in bpMedicationOptions)
+                            {
+                                if (bp.optionText == bpMedication)
+                                {
                                     selectedBP = bp.optionPosition
                                 }
                             }
                             answer.answer = selectedBP
                         }
 
-                        "diabetes" -> {
+                        "diabetes" ->
+                        {
                             var selectedDiabetic = "0"
-                            for (dia in diabeticsOptions) {
-                                if (dia.optionText == diabetic) {
+                            for (dia in diabeticsOptions)
+                            {
+                                if (dia.optionText == diabetic)
+                                {
                                     selectedDiabetic = dia.optionPosition
                                 }
                             }
@@ -268,9 +282,11 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     weightWithUnit.getOrNull(2)
                 )
 
-                val weightInKg = if (unit.any { it.equals("kg", true) || it.equals("kgs", true) }) {
+                val weightInKg = if (unit.any { it.equals("kg", true) || it.equals("kgs", true) })
+                {
                     weightWithUnit[0]
-                } else {
+                } else
+                {
                     ConversionUtils.convertKgToLbs(weightWithUnit[0])
                 }
 
@@ -280,8 +296,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
                 binding.btnProceed.isEnabled = false
                 Handler().postDelayed({
-                    binding.btnProceed.isEnabled = true
-                }, 5000)
+                                          binding.btnProceed.isEnabled = true
+                                      }, 5000)
                 submitAnswerRequest(
                     faceScanQuestionRequest,
                     heightInCms,
@@ -289,25 +305,39 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     age.split(" ")[0]
                 )
                 AnalyticsLogger.logEvent(
-                        this,
-                        AnalyticsEvent.FaceScan_ProceedtoScan_Tap,
-                        mapOf(
-                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                        )
+                    this,
+                    AnalyticsEvent.FaceScan_ProceedtoScan_Tap,
+                    mapOf(
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
                 )
             }
         }
     }
-    fun openHeightPicker() {
+
+    fun openHeightPicker()
+    {
         val bottomSheet = HeightPickerBottomSheet.newInstance("5'7\"", "ft")
         bottomSheet.setOnHeightSelectedListener { height, unit ->
             selectedHeight = height
-            binding.edtHeight.setText("${selectedHeight}")
+            if (unit == "ft")
+            {
+                selectedHeight = "$height $unit"
+                val height = height.toString().split(".")
+                binding.edtHeight.setText("${height[0]} ft ${height[1]} in")
+            } else
+            {
+                selectedHeight = "$height $unit"
+                binding.edtHeight.setText("${height}")
+
+            }
+            //binding.edtHeight.setText("${selectedHeight}")
         }
         bottomSheet.show(supportFragmentManager, "HeightPicker")
     }
 
-    private fun openWeightPicker() {
+    private fun openWeightPicker()
+    {
         val bottomSheet = WeightPickerBottomSheet.newInstance(60.0, "kg")
         bottomSheet.setOnWeightSelectedListener { weight, unit ->
             selectedWeight = String.format("%.1f %s", weight, unit)
@@ -317,8 +347,9 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun showAgeSelectionBottomSheet() {
-        var selectedAge =  "27 years"
+    private fun showAgeSelectionBottomSheet()
+    {
+        var selectedAge = "27 years"
         binding.edtAge.setText(selectedAge)
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -332,7 +363,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         // Set up the animation
         val bottomSheetLayout =
             bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
-        if (bottomSheetLayout != null) {
+        if (bottomSheetLayout != null)
+        {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
@@ -407,12 +439,13 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             "78 years",
             "79 years",
             "80 years",
-            )
+        )
 
 
         val selectedAgeArray = binding.edtAge.text.toString().split(" ")
         val selectedAgeFromUi =
-            if (selectedAgeArray.isNotEmpty() && selectedAgeArray[0].toInt() >= 13) {
+            if (selectedAgeArray.isNotEmpty() && selectedAgeArray[0].toInt() >= 13)
+            {
                 binding.edtAge.text.toString()
             } else
                 ""
@@ -428,12 +461,13 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             wheelItemCount = 7
         }
 
-         selectedAge = if (selectedAgeFromUi.isNotEmpty())
+        selectedAge = if (selectedAgeFromUi.isNotEmpty())
             years[years.indexOf(selectedAgeFromUi)]
         else years[14]
 
         dialogBinding.numberPicker.setOnScrollListener { view, scrollState ->
-            if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+            if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE)
+            {
                 selectedAge = years[view.value - 1]
                 binding.edtAge.setText(selectedAge)
             }
@@ -445,21 +479,27 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         dialogBinding.numberPicker.setOnTouchListener { v, event ->
             val picker = v as NumberPicker
 
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
+            when (event.action)
+            {
+                MotionEvent.ACTION_DOWN ->
+                {
                     startY = event.y
                     isScrolling = false
                 }
 
-                MotionEvent.ACTION_MOVE -> {
+                MotionEvent.ACTION_MOVE ->
+                {
                     // If finger moved enough vertically, mark as scrolling
-                    if (Math.abs(event.y - startY) > picker.height / 20) {
+                    if (Math.abs(event.y - startY) > picker.height / 20)
+                    {
                         isScrolling = true
                     }
                 }
 
-                MotionEvent.ACTION_UP -> {
-                    if (!isScrolling) {
+                MotionEvent.ACTION_UP ->
+                {
+                    if (!isScrolling)
+                    {
                         val height = picker.height
                         val visibleItems = 5
                         val rowHeight = height / visibleItems
@@ -467,7 +507,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                         val tolerance = rowHeight / 2
 
                         // Only dismiss if tapped on center row
-                        if (event.y > centerY - tolerance && event.y < centerY + tolerance) {
+                        if (event.y > centerY - tolerance && event.y < centerY + tolerance)
+                        {
                             bottomSheetDialog.dismiss()
                             return@setOnTouchListener true
                         }
@@ -488,9 +529,11 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         bottomSheetDialog.setOnShowListener { dialog ->
             val d = dialog as BottomSheetDialog
             // Get the bottom sheet internal view
-            val bottomSheet = d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as? FrameLayout
+            val bottomSheet =
+                d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as? FrameLayout
 
-            if (bottomSheet != null) {
+            if (bottomSheet != null)
+            {
                 val behavior = BottomSheetBehavior.from(bottomSheet)
                 // Force the sheet to expand to its full WRAP_CONTENT height
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -499,14 +542,17 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun showWeightSelectionBottomSheet(gender: String) {
+    private fun showWeightSelectionBottomSheet(gender: String)
+    {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
         var selectedLabel = " KGS"
         var selectedWeight = binding.edtWeight.text.toString()
-        if (selectedWeight.isEmpty()) {
+        if (selectedWeight.isEmpty())
+        {
             selectedWeight = "50 KGS"
-        } else {
+        } else
+        {
             val w = selectedWeight.split(" ")
             selectedLabel = " ${w[1].lowercase(Locale.getDefault())}"
         }
@@ -520,7 +566,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
         // Set up the animation
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
-        if (bottomSheetLayout != null) {
+        if (bottomSheetLayout != null)
+        {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
@@ -534,7 +581,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
         // Generate numbers with increments of 0.1
 
-        for (i in 0..3000) {
+        for (i in 0..3000)
+        {
             numbers.add(i / 10f) // Increment by 0.1
         }
 
@@ -544,7 +592,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
         dialogBinding.rulerView.adapter = adapterWeight
 
-        if (selectedLabel == " kg" || selectedLabel == " kgs" || selectedLabel == " KGS") {
+        if (selectedLabel == " kg" || selectedLabel == " kgs" || selectedLabel == " KGS")
+        {
             dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.kgOption.setTextColor(Color.WHITE)
 
@@ -553,7 +602,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             setKgsValue()
 
             dialogBinding.selectedNumberText.text = selectedWeight
-        } else {
+        } else
+        {
             dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
             dialogBinding.lbsOption.setTextColor(Color.WHITE)
 
@@ -607,23 +657,42 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         val snapHelper: SnapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(dialogBinding.rulerView)
 
-        dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
+        dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener()
+                                                    {
+                                                        override fun onScrollStateChanged(
+                                                            recyclerView: RecyclerView,
+                                                            newState: Int
+                                                        )
+                                                        {
+                                                            super.onScrollStateChanged(
+                                                                recyclerView,
+                                                                newState
+                                                            )
 
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    // Get the currently snapped position
-                    val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
-                    if (snappedView != null) {
-                        val position = recyclerView.layoutManager!!.getPosition(snappedView)
-                        val snappedNumber = numbers[position]
-                        //selected_number_text.setText("$snappedNumber Kg")
-                        dialogBinding.selectedNumberText.text = "$snappedNumber$selectedLabel"
-                        selectedWeight = dialogBinding.selectedNumberText.text.toString()
-                    }
-                }
-            }
-        })
+                                                            if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                                                            {
+                                                                // Get the currently snapped position
+                                                                val snappedView =
+                                                                    snapHelper.findSnapView(
+                                                                        recyclerView.layoutManager
+                                                                    )
+                                                                if (snappedView != null)
+                                                                {
+                                                                    val position =
+                                                                        recyclerView.layoutManager!!.getPosition(
+                                                                            snappedView
+                                                                        )
+                                                                    val snappedNumber =
+                                                                        numbers[position]
+                                                                    //selected_number_text.setText("$snappedNumber Kg")
+                                                                    dialogBinding.selectedNumberText.text =
+                                                                        "$snappedNumber$selectedLabel"
+                                                                    selectedWeight =
+                                                                        dialogBinding.selectedNumberText.text.toString()
+                                                                }
+                                                            }
+                                                        }
+                                                    })
 
         dialogBinding.rlRulerContainer.post {
             // Get the width of the parent LinearLayout
@@ -655,7 +724,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun showHeightSelectionBottomSheet(gender: String) {
+    private fun showHeightSelectionBottomSheet(gender: String)
+    {
         var selectedHeight = "5 ft 10 in"
         var selectedLabel = " feet"
         // Create and configure BottomSheetDialog
@@ -674,7 +744,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         // Set up the animation
         val bottomSheetLayout =
             bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
-        if (bottomSheetLayout != null) {
+        if (bottomSheetLayout != null)
+        {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
@@ -690,23 +761,31 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.edtHeight.windowToken, 0)
         selectedHeight = binding.edtHeight.text.toString()
-        if (selectedHeight.isEmpty()) {
+        if (selectedHeight.isEmpty())
+        {
             selectedHeight = "5 ft 10 in"
-        } else {
+        } else
+        {
             dialogBinding.selectedNumberText.text = selectedHeight
             val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1].equals("cm", ignoreCase = true) || h[1].equals("cms", ignoreCase = true) ||h[1].equals(" CM", ignoreCase = true))
+            selectedLabel = if (h[1].equals("cm", ignoreCase = true) || h[1].equals(
+                    "cms",
+                    ignoreCase = true
+                ) || h[1].equals(" CM", ignoreCase = true)
+            )
                 " cm"
             else
                 " feet"
-            if (selectedLabel == " feet") {
+            if (selectedLabel == " feet")
+            {
                 dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
                 dialogBinding.feetOption.setTextColor(Color.WHITE)
 
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
                 dialogBinding.cmsOption.setTextColor(Color.BLACK)
                 setFtIn()
-            } else {
+            } else
+            {
                 setCms()
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
                 dialogBinding.cmsOption.setTextColor(Color.WHITE)
@@ -723,9 +802,11 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 setCms()
 
                 dialogBinding.rulerView.post {
-                    if (gender == "Male" || gender == "M") {
+                    if (gender == "Male" || gender == "M")
+                    {
                         dialogBinding.rulerView.scrollToPosition(173 + 8)
-                    } else {
+                    } else
+                    {
                         dialogBinding.rulerView.scrollToPosition(163 + 8)
                     }
                 }
@@ -752,9 +833,11 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             setFtIn()
 
             dialogBinding.rulerView.post {
-                if (gender == "Male" || gender == "M") {
+                if (gender == "Male" || gender == "M")
+                {
                     dialogBinding.rulerView.scrollToPosition(68 + 8)
-                } else {
+                } else
+                {
                     dialogBinding.rulerView.scrollToPosition(64 + 8)
                 }
             }
@@ -778,18 +861,22 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             setCms()
 
             dialogBinding.rulerView.post {
-                if (gender == "Male" || gender == "M") {
+                if (gender == "Male" || gender == "M")
+                {
                     dialogBinding.rulerView.scrollToPosition(173 + 8)
-                } else {
+                } else
+                {
                     dialogBinding.rulerView.scrollToPosition(163 + 8)
                 }
             }
             dialogBinding.selectedNumberText.text = selectedHeight
         }
 
-        if (selectedLabel == " cm") {
+        if (selectedLabel == " cm")
+        {
             setCms()
-        } else {
+        } else
+        {
             setFtIn()
         }
 
@@ -798,34 +885,63 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         snapHelper.attachToRecyclerView(dialogBinding.rulerView)
 
         // Add scroll listener to handle snapping logic
-        dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
+        dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener()
+                                                    {
+                                                        override fun onScrollStateChanged(
+                                                            recyclerView: RecyclerView,
+                                                            newState: Int
+                                                        )
+                                                        {
+                                                            super.onScrollStateChanged(
+                                                                recyclerView,
+                                                                newState
+                                                            )
 
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
-                    if (snappedView != null) {
-                        val position =
-                            recyclerView.layoutManager?.getPosition(snappedView) ?: return
-                        val snappedNumber = numbers[position]
-                        if (dialogBinding.selectedNumberText != null) {
-                            dialogBinding.selectedNumberText.text =
-                                "${decimalFormat.format(snappedNumber)}$selectedLabel"
-                            if (selectedLabel == " feet") {
-                                val feet = decimalFormat.format(snappedNumber / 12)
-                                val remainingInches = snappedNumber.toInt() % 12
-                                val h = (feet).toString().split(".")
-                                val ft = h[0]
-                                dialogBinding.selectedNumberText.text =
-                                    "$ft ft $remainingInches in"
-                            }
-                            selectedHeight = dialogBinding.selectedNumberText.text.toString()
-                        }
+                                                            if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                                                            {
+                                                                val snappedView =
+                                                                    snapHelper.findSnapView(
+                                                                        recyclerView.layoutManager
+                                                                    )
+                                                                if (snappedView != null)
+                                                                {
+                                                                    val position =
+                                                                        recyclerView.layoutManager?.getPosition(
+                                                                            snappedView
+                                                                        ) ?: return
+                                                                    val snappedNumber =
+                                                                        numbers[position]
+                                                                    if (dialogBinding.selectedNumberText != null)
+                                                                    {
+                                                                        dialogBinding.selectedNumberText.text =
+                                                                            "${
+                                                                                decimalFormat.format(
+                                                                                    snappedNumber
+                                                                                )
+                                                                            }$selectedLabel"
+                                                                        if (selectedLabel == " feet")
+                                                                        {
+                                                                            val feet =
+                                                                                decimalFormat.format(
+                                                                                    snappedNumber / 12
+                                                                                )
+                                                                            val remainingInches =
+                                                                                snappedNumber.toInt() % 12
+                                                                            val h =
+                                                                                (feet).toString()
+                                                                                    .split(".")
+                                                                            val ft = h[0]
+                                                                            dialogBinding.selectedNumberText.text =
+                                                                                "$ft ft $remainingInches in"
+                                                                        }
+                                                                        selectedHeight =
+                                                                            dialogBinding.selectedNumberText.text.toString()
+                                                                    }
 
-                    }
-                }
-            }
-        })
+                                                                }
+                                                            }
+                                                        }
+                                                    })
 
         // Set vertical padding for the marker view programmatically
         dialogBinding.rlRulerContainer.post {
@@ -842,34 +958,44 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         dialogBinding.rulerView.post {
 
             selectedHeight = binding.edtHeight.text.toString()
-            if (selectedHeight.isEmpty()) {
+            if (selectedHeight.isEmpty())
+            {
                 selectedHeight = "5 Ft 10 In"
-            } else {
+            } else
+            {
                 val h = selectedHeight.split(" ")
-                selectedLabel = if (h[1].equals("cm", ignoreCase = true) || h[1].equals("cms", ignoreCase = true) ||h[1].equals(" CM", ignoreCase = true))
+                selectedLabel = if (h[1].equals("cm", ignoreCase = true) || h[1].equals(
+                        "cms",
+                        ignoreCase = true
+                    ) || h[1].equals(" CM", ignoreCase = true)
+                )
                     " cm"
                 else
                     " feet"
             }
 
-            if (selectedLabel == " feet") {
+            if (selectedLabel == " feet")
+            {
                 val regex = Regex("(\\d+)\\s*Ft\\s*(\\d+)\\s*In", RegexOption.IGNORE_CASE)
                 val matchResult = regex.find(selectedHeight)
 
-                if (matchResult != null && matchResult.groupValues.size == 3) {
+                if (matchResult != null && matchResult.groupValues.size == 3)
+                {
                     val feet = matchResult.groupValues[1].toInt()
                     val inches = matchResult.groupValues[2].toInt()
                     val index = (feet * 12) + inches
                     dialogBinding.rulerView.scrollToPosition(index + 8)
                 }
-            } else {
+            } else
+            {
                 dialogBinding.rulerView.scrollToPosition(floor(selectedHeight.split(" ")[0].toDouble()).toInt() + 8)
             }
         }
 
         dialogBinding.btnConfirm.setOnClickListener {
             it.disableViewForSeconds()
-            if (validateInput(selectedLabel, selectedHeight)) {
+            if (validateInput(selectedLabel, selectedHeight))
+            {
                 bottomSheetDialog.dismiss()
                 dialogBinding.rulerView.adapter = null
                 binding.edtHeight.setText(selectedHeight)
@@ -879,23 +1005,30 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun validateInput(selectedLabel: String, selectedHeight: String): Boolean {
+    private fun validateInput(selectedLabel: String, selectedHeight: String): Boolean
+    {
         var returnValue: Boolean
-        if (selectedLabel == " feet") {
+        if (selectedLabel == " feet")
+        {
             val h = selectedHeight.split(" ")
             val feet = "${h[0]}.${h[2]}".toDouble()
-            if (feet in 4.0..7.0) {
+            if (feet in 4.0..7.0)
+            {
                 returnValue = true
-            } else {
+            } else
+            {
                 returnValue = false
                 showToast("Height should be in between 4 feet to 7 feet")
             }
-        } else {
+        } else
+        {
             val w = selectedHeight.split(" ")
             val height = w[0].toDouble()
-            if (height in 120.0..220.0) {
+            if (height in 120.0..220.0)
+            {
                 returnValue = true
-            } else {
+            } else
+            {
                 returnValue = false
                 showToast("Height should be in between 120 cm to 220 cm")
             }
@@ -904,39 +1037,48 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         return returnValue
     }
 
-    private fun showToast(message: String) {
+    private fun showToast(message: String)
+    {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun setCms() {
+    private fun setCms()
+    {
         numbers.clear()
-        for (i in 0..250) {
+        for (i in 0..250)
+        {
             numbers.add(i * 1f) // Increment by 0.1  numbers.add(i * 1f)
         }
         adapterHeight.setType("cms")
         adapterHeight.notifyDataSetChanged()
     }
 
-    private fun setFtIn() {
+    private fun setFtIn()
+    {
         numbers.clear()
-        for (i in 0..250) {
+        for (i in 0..250)
+        {
             numbers.add(i * 1f) // Increment by 0.1  numbers.add(i * 1f)
         }
         adapterHeight.setType("feet")
         adapterHeight.notifyDataSetChanged()
     }
 
-    private fun setLbsValue() {
+    private fun setLbsValue()
+    {
         numbers.clear()
-        for (i in 0..6615) {
+        for (i in 0..6615)
+        {
             numbers.add(i / 10f)
         }
         adapterWeight.notifyDataSetChanged()
     }
 
-    private fun setKgsValue() {
+    private fun setKgsValue()
+    {
         numbers.clear()
-        for (i in 0..3000) {
+        for (i in 0..3000)
+        {
             numbers.add(i / 10f) // Increment by 0.1
         }
         adapterWeight.notifyDataSetChanged()
@@ -947,7 +1089,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         options: ArrayList<Option>,
         header: String = "Select An Option",
         onSelected: (Option) -> Unit
-    ) {
+    )
+    {
         val popupView = LayoutInflater.from(this).inflate(R.layout.popup_selector, null)
         val popupWindow = PopupWindow(
             popupView,
@@ -972,92 +1115,116 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         popupWindow.showAsDropDown(anchor, 0, 0)
     }
 
-    private fun getQuestionerList() {
+    private fun getQuestionerList()
+    {
         Utils.showLoader(this)
         val call =
             apiService.getsubmoduletest(sharedPreferenceManager.accessToken, "FACIAL_SCAN")
-        call.enqueue(object : Callback<JsonElement?> {
-            override fun onResponse(
-                call: Call<JsonElement?>,
-                response: Response<JsonElement?>
-            ) {
-                Utils.dismissLoader(this@HealthCamBasicDetailsNewActivity)
-                if (response.isSuccessful && response.body() != null) {
-                    val gson = Gson()
-                    val jsonResponse = gson.toJson(response.body())
-                    responseObj = gson.fromJson(
-                        jsonResponse,
-                        QuestionListHealthAudit::class.java
-                    )
-                    setData()
-                } else {
-                    Toast.makeText(
-                        this@HealthCamBasicDetailsNewActivity,
-                        "Server Error: " + response.code(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
+        call.enqueue(object : Callback<JsonElement?>
+                     {
+                         override fun onResponse(
+                             call: Call<JsonElement?>,
+                             response: Response<JsonElement?>
+                         )
+                         {
+                             Utils.dismissLoader(this@HealthCamBasicDetailsNewActivity)
+                             if (response.isSuccessful && response.body() != null)
+                             {
+                                 val gson = Gson()
+                                 val jsonResponse = gson.toJson(response.body())
+                                 responseObj = gson.fromJson(
+                                     jsonResponse,
+                                     QuestionListHealthAudit::class.java
+                                 )
+                                 setData()
+                             } else
+                             {
+                                 Toast.makeText(
+                                     this@HealthCamBasicDetailsNewActivity,
+                                     "Server Error: " + response.code(),
+                                     Toast.LENGTH_SHORT
+                                 ).show()
+                             }
+                         }
 
-            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
-                Utils.dismissLoader(this@HealthCamBasicDetailsNewActivity)
-                handleNoInternetView(t)
-            }
-        })
+                         override fun onFailure(call: Call<JsonElement?>, t: Throwable)
+                         {
+                             Utils.dismissLoader(this@HealthCamBasicDetailsNewActivity)
+                             handleNoInternetView(t)
+                         }
+                     })
     }
 
-    private fun setData() {
+    private fun setData()
+    {
         val userdata = sharedPreferenceManager.userProfile.userdata ?: return
-        for (question in responseObj!!.questionData.questionList) {
-            when (question.question) {
-                "first_name" -> {
+        for (question in responseObj!!.questionData.questionList)
+        {
+            when (question.question)
+            {
+                "first_name" ->
+                {
                     if (userdata.firstName != null) binding.edtName.setText(userdata.firstName)
                 }
 
-                "height" -> {
+                "height" ->
+                {
                     if (userdata.height != null)
-                        if (userdata.heightUnit == "FT_AND_INCHES") {
+                        if (userdata.heightUnit == "FT_AND_INCHES")
+                        {
                             val height = userdata.height.toString().split(".")
                             binding.edtHeight.setText("${height[0]} ft ${height[1]} in")
-                        } else {
+                        } else
+                        {
                             binding.edtHeight.setText("${userdata.height} cm")
                         }
                 }
 
-                "weight" -> {
-                    if (userdata.weight != null) {
-                        binding.edtWeight.setText("${userdata.weight} ${userdata.weightUnit.lowercase(
-                            Locale.getDefault()
-                        )}")
+                "weight" ->
+                {
+                    if (userdata.weight != null)
+                    {
+                        binding.edtWeight.setText(
+                            "${userdata.weight} ${
+                                userdata.weightUnit.lowercase(
+                                    Locale.getDefault()
+                                )
+                            }"
+                        )
                     }
                 }
 
 
-             /*   "age" -> {
-                    binding.edtAge.setText(userdata.age.toString() + " years")
-                }
+                /*   "age" -> {
+                       binding.edtAge.setText(userdata.age.toString() + " years")
+                   }
 
-                "gender" -> {
-                    genderOptions.addAll(question.options)
-                    if (userdata.gender == "M" || userdata.gender.equals(
-                            "Male",
-                            ignoreCase = true
-                        )
-                    ) binding.edtGender.setText("Male")
-                    else binding.edtGender.setText("Female")
-                }*/
-                "age" -> {
+                   "gender" -> {
+                       genderOptions.addAll(question.options)
+                       if (userdata.gender == "M" || userdata.gender.equals(
+                               "Male",
+                               ignoreCase = true
+                           )
+                       ) binding.edtGender.setText("Male")
+                       else binding.edtGender.setText("Female")
+                   }*/
+                "age" ->
+                {
                     // Check if age is NOT null and NOT zero before setting
-                    if (userdata.age != null && userdata.age != 0) {
+                    if (userdata.age != null && userdata.age != 0)
+                    {
                         binding.edtAge.setText(userdata.age.toString() + " years")
-                    } else {
+                    } else
+                    {
                         binding.edtAge.setText("") // Set empty if null or zero
                     }
                 }
 
-                "gender" -> {
+                "gender" ->
+                {
                     genderOptions.addAll(question.options)
-                    val genderText = when (userdata.gender?.uppercase(Locale.getDefault())) {
+                    val genderText = when (userdata.gender?.uppercase(Locale.getDefault()))
+                    {
                         "M", "MALE" -> "Male"
                         "F", "FEMALE" -> "Female"
                         else -> "" // Set to empty string if the value is null or neither Male nor Female
@@ -1065,15 +1232,18 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     binding.edtGender.setText(genderText)
                 }
 
-                "smoking" -> {
+                "smoking" ->
+                {
                     smokeOptions.addAll(question.options)
                 }
 
-                "bloodpressuremedication" -> {
+                "bloodpressuremedication" ->
+                {
                     bpMedicationOptions.addAll(question.options)
                 }
 
-                "diabetes" -> {
+                "diabetes" ->
+                {
                     diabeticsOptions.addAll(question.options)
                 }
             }
@@ -1085,66 +1255,84 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         heightInCms: String,
         weightInKg: String,
         age: String
-    ) {
+    )
+    {
         Utils.showLoader(this)
         val call = apiService.postAnswerRequest(
             sharedPreferenceManager.accessToken,
             "FACIAL_SCAN",
             requestAnswer
         )
-        call.enqueue(object : Callback<JsonElement?> {
-            override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
-                Utils.dismissLoader(this@HealthCamBasicDetailsNewActivity)
-                if (response.isSuccessful && response.body() != null) {
-                    val gson = Gson()
-                    val jsonResponse = gson.toJson(response.body())
+        call.enqueue(object : Callback<JsonElement?>
+                     {
+                         override fun onResponse(
+                             call: Call<JsonElement?>,
+                             response: Response<JsonElement?>
+                         )
+                         {
+                             Utils.dismissLoader(this@HealthCamBasicDetailsNewActivity)
+                             if (response.isSuccessful && response.body() != null)
+                             {
+                                 val gson = Gson()
+                                 val jsonResponse = gson.toJson(response.body())
 
-                    val healthCamSubmitResponse = gson.fromJson(
-                        jsonResponse,
-                        HealthCamSubmitResponse::class.java
-                    )
-                    if (healthCamSubmitResponse.status.equals(
-                            "PAYMENT_INPROGRESS",
-                            ignoreCase = true
-                        )
-                    ) {
-                        val intent = Intent(
-                            this@HealthCamBasicDetailsNewActivity,
-                            SubscriptionPlanListActivity::class.java
-                        )
-                        intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        val intent = Intent(
-                            this@HealthCamBasicDetailsNewActivity,
-                            HealthCamRecorderActivity::class.java
-                        )
-                        intent.putExtra("reportID", healthCamSubmitResponse.data?.answerId)
-                        intent.putExtra("USER_PROFILE_HEIGHT", heightInCms)
-                        intent.putExtra("USER_PROFILE_WEIGHT", weightInKg)
-                        intent.putExtra("USER_PROFILE_AGE", age)
-                        intent.putExtra("USER_PROFILE_GENDER", binding.edtGender.text.toString())
-                        startActivity(intent)
-                        finish()
-                    }
-                } else {
-                    Toast.makeText(
-                        this@HealthCamBasicDetailsNewActivity,
-                        "Server Error: " + response.code(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
+                                 val healthCamSubmitResponse = gson.fromJson(
+                                     jsonResponse,
+                                     HealthCamSubmitResponse::class.java
+                                 )
+                                 if (healthCamSubmitResponse.status.equals(
+                                         "PAYMENT_INPROGRESS",
+                                         ignoreCase = true
+                                     )
+                                 )
+                                 {
+                                     val intent = Intent(
+                                         this@HealthCamBasicDetailsNewActivity,
+                                         SubscriptionPlanListActivity::class.java
+                                     )
+                                     intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
+                                     startActivity(intent)
+                                     finish()
+                                 } else
+                                 {
+                                     val intent = Intent(
+                                         this@HealthCamBasicDetailsNewActivity,
+                                         HealthCamRecorderActivity::class.java
+                                     )
+                                     intent.putExtra(
+                                         "reportID",
+                                         healthCamSubmitResponse.data?.answerId
+                                     )
+                                     intent.putExtra("USER_PROFILE_HEIGHT", heightInCms)
+                                     intent.putExtra("USER_PROFILE_WEIGHT", weightInKg)
+                                     intent.putExtra("USER_PROFILE_AGE", age)
+                                     intent.putExtra(
+                                         "USER_PROFILE_GENDER",
+                                         binding.edtGender.text.toString()
+                                     )
+                                     startActivity(intent)
+                                     finish()
+                                 }
+                             } else
+                             {
+                                 Toast.makeText(
+                                     this@HealthCamBasicDetailsNewActivity,
+                                     "Server Error: " + response.code(),
+                                     Toast.LENGTH_SHORT
+                                 ).show()
+                             }
+                         }
 
-            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
-                Utils.dismissLoader(this@HealthCamBasicDetailsNewActivity)
-                handleNoInternetView(t)
-            }
-        })
+                         override fun onFailure(call: Call<JsonElement?>, t: Throwable)
+                         {
+                             Utils.dismissLoader(this@HealthCamBasicDetailsNewActivity)
+                             handleNoInternetView(t)
+                         }
+                     })
     }
 
-    private fun hideKeyboard() {
+    private fun hideKeyboard()
+    {
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         currentFocus?.let {
             inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)

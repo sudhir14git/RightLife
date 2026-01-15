@@ -65,6 +65,8 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.DialogOtpVerificationBinding
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.customviews.HeightPickerBottomSheet
+import com.jetsynthesys.rightlife.ui.customviews.WeightPickerBottomSheet
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpEmailRequest
@@ -97,6 +99,8 @@ import kotlin.math.abs
 import kotlin.math.floor
 
 class ProfileNewActivity : BaseActivity() {
+    private var selectedWeight = "60.0 kg"
+    private var selectedHeight = "5.8"
 
     private lateinit var binding: ActivityProfileNewBinding
     private val CAMERA_REQUEST: Int = 100
@@ -141,7 +145,32 @@ class ProfileNewActivity : BaseActivity() {
                 getUrlFromURI(cameraImageUri!!)
             }
         }
+    private fun openWeightPicker() {
+        val bottomSheet = WeightPickerBottomSheet.newInstance(60.0, "kg")
+        bottomSheet.setOnWeightSelectedListener { weight, unit ->
+            selectedWeight = String.format("%.1f %s", weight, unit)
+            binding.tvWeight.setText("$selectedWeight")
+        }
+        bottomSheet.show(supportFragmentManager, "WeightPicker")
+    }
 
+    fun openHeightPicker() {
+        val bottomSheet = HeightPickerBottomSheet.newInstance("5'7\"", "ft")
+        bottomSheet.setOnHeightSelectedListener { height, unit ->
+            selectedHeight = height
+            if (unit == "ft") {
+                selectedHeight = "$height $unit"
+                val height = height.toString().split(".")
+                binding.tvHeight.setText("${height[0]} ft ${height[1]} in")
+            }else{
+                selectedHeight = "$height $unit"
+                binding.tvHeight.setText("${height}")
+
+            }
+            //binding.edtHeight.setText("${selectedHeight}")
+        }
+        bottomSheet.show(supportFragmentManager, "HeightPicker")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileNewBinding.inflate(layoutInflater)
@@ -175,8 +204,11 @@ class ProfileNewActivity : BaseActivity() {
 
         binding.tvHeight.setOnClickListener {
             it.disableViewForSeconds()
-            showHeightSelectionBottomSheet(userData.gender)
+            //showHeightSelectionBottomSheet(userData.gender)
+            openHeightPicker()
         }
+
+
         binding.arrowHeight.setOnClickListener {
             it.disableViewForSeconds()
             showHeightSelectionBottomSheet(userData.gender)
@@ -184,7 +216,8 @@ class ProfileNewActivity : BaseActivity() {
 
         binding.tvWeight.setOnClickListener {
             it.disableViewForSeconds()
-            showWeightSelectionBottomSheet(userData.gender)
+            //showWeightSelectionBottomSheet(userData.gender)
+            openWeightPicker()
         }
         binding.arrowWeight.setOnClickListener {
             it.disableViewForSeconds()

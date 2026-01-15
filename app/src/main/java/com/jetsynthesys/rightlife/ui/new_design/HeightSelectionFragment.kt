@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
@@ -30,6 +33,314 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.text.DecimalFormat
 
+
+import com.jetsynthesys.rightlife.ui.customviews.HeightPickerView
+
+
+class HeightSelectionFragment : Fragment() {
+
+    private lateinit var llSelectedHeight: LinearLayout
+    private lateinit var tvSelectedHeight: TextView
+    private var selectedHeight = "5 Ft 10 In"
+    private var tvDescription: TextView? = null
+    private var selected_number_text: TextView? = null
+    private lateinit var cardViewSelection: CardView
+    private lateinit var scrollView: ScrollView
+    private lateinit var pickerView: HeightPickerView
+    private lateinit var feetOption: TextView
+    private lateinit var cmsOption: TextView
+
+    private enum class HeightUnit { FEET_INCHES, CM }
+    private var currentUnit = HeightUnit.FEET_INCHES
+    private var currentTotalInches = 68
+    private var currentCm = 173
+    private val itemSpacing = 30f
+
+    companion object {
+        fun newInstance(pageIndex: Int): HeightSelectionFragment {
+            val fragment = HeightSelectionFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val gender = SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
+
+        if (gender == "Male" || gender == "M") {
+            currentTotalInches = 68
+            currentCm = 173
+        } else {
+            currentTotalInches = 64
+            currentCm = 163
+        }
+
+        feetOption.setBackgroundResource(R.drawable.bg_left_selected)
+        feetOption.setTextColor(Color.WHITE)
+        cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+        cmsOption.setTextColor(Color.BLACK)
+
+        currentUnit = HeightUnit.FEET_INCHES
+        updateHeightDisplay()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val view: View = inflater.inflate(R.layout.fragment_height_selection, container, false)
+
+        llSelectedHeight = view.findViewById(R.id.ll_selected_height)
+        tvSelectedHeight = view.findViewById(R.id.tv_selected_height)
+        tvDescription = view.findViewById(R.id.tv_description)
+        selected_number_text = view.findViewById(R.id.selected_number_text)
+        cardViewSelection = view.findViewById(R.id.card_view_age_selector)
+        scrollView = view.findViewById(R.id.scrollView)
+        pickerView = view.findViewById(R.id.pickerView)
+        feetOption = view.findViewById(R.id.feetOption)
+        cmsOption = view.findViewById(R.id.cmsOption)
+
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.HEIGHT_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
+
+        val onboardingQuestionRequest = SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+        val gender = onboardingQuestionRequest.gender
+
+        if (gender == "Male" || gender == "M") {
+            currentTotalInches = 68
+            currentCm = 173
+        } else {
+            currentTotalInches = 64
+            currentCm = 163
+        }
+
+        setupUnitButtons()
+        setupPicker()
+        updateHeightDisplay()
+
+        val btnContinue = view.findViewById<Button>(R.id.btn_continue)
+        btnContinue.setOnClickListener {
+            if (validateInput()) {
+                btnContinue.disableViewForSeconds()
+                onboardingQuestionRequest.height = selectedHeight
+                SharedPreferenceManager.getInstance(requireContext()).saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+                cardViewSelection.visibility = GONE
+                llSelectedHeight.visibility = VISIBLE
+                tvSelectedHeight.text = selectedHeight
+
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.HEIGHT_SELECTION,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                        AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                        AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                        AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                        AnalyticsParam.HEIGHT to selectedHeight
+                    )
+                )
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                                                                activity?.let { act ->
+                                                                    if (act is OnboardingQuestionnaireActivity && isAdded) {
+                                                                        act.submitAnswer(onboardingQuestionRequest)
+                                                                    }
+                                                                }
+                                                            }, 500)
+            }
+        }
+
+        return view
+    }
+
+    private fun setupUnitButtons() {
+        feetOption.setOnClickListener {
+            if (currentUnit != HeightUnit.FEET_INCHES) {
+                currentUnit = HeightUnit.FEET_INCHES
+                updateButtonStates()
+                switchToUnit()
+            }
+        }
+
+        cmsOption.setOnClickListener {
+            if (currentUnit != HeightUnit.CM) {
+                currentUnit = HeightUnit.CM
+                updateButtonStates()
+                switchToUnit()
+            }
+        }
+
+        updateButtonStates()
+    }
+
+    private fun updateButtonStates() {
+        if (currentUnit == HeightUnit.FEET_INCHES) {
+            feetOption.setBackgroundResource(R.drawable.bg_left_selected)
+            feetOption.setTextColor(Color.WHITE)
+            cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+            cmsOption.setTextColor(Color.BLACK)
+        } else {
+            cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
+            cmsOption.setTextColor(Color.WHITE)
+            feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
+            feetOption.setTextColor(Color.BLACK)
+        }
+    }
+
+    private fun setupPicker() {
+        scrollView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                scrollView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                val screenHeight = scrollView.height
+                pickerView.sidePadding = screenHeight / 2
+                pickerView.itemSpacing = itemSpacing
+                pickerView.updateForFeetInches()
+                pickerView.requestLayout()
+
+                scrollView.postDelayed({
+                                           scrollToInches(currentTotalInches)
+                                       }, 100)
+            }
+        })
+
+        scrollView.viewTreeObserver.addOnScrollChangedListener {
+            val scrollY = scrollView.scrollY
+            val screenHeight = scrollView.height
+            val centerY = scrollY + screenHeight / 2
+
+            if (currentUnit == HeightUnit.FEET_INCHES) {
+                val minInches = 4 * 12
+                val totalInches = minInches + ((centerY - pickerView.sidePadding) / itemSpacing).toInt()
+
+                if (totalInches in (4 * 12)..(7 * 12) && totalInches != currentTotalInches) {
+                    currentTotalInches = totalInches
+                    updateHeightDisplay()
+                }
+            } else {
+                val minCm = 120
+                val cm = minCm + ((centerY - pickerView.sidePadding) / itemSpacing).toInt()
+
+                if (cm in 120..215 && cm != currentCm) {
+                    currentCm = cm
+                    updateHeightDisplay()
+                }
+            }
+        }
+
+        scrollView.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                snapToNearest()
+            }
+            false
+        }
+    }
+
+    private fun switchToUnit() {
+        if (currentUnit == HeightUnit.FEET_INCHES) {
+            pickerView.updateForFeetInches()
+        } else {
+            pickerView.updateForCm()
+        }
+
+        scrollView.post {
+            val screenHeight = scrollView.height
+            pickerView.sidePadding = screenHeight / 2
+            pickerView.requestLayout()
+
+            pickerView.post {
+                if (currentUnit == HeightUnit.FEET_INCHES) {
+                    scrollToInches(currentTotalInches)
+                } else {
+                    scrollToCm(currentCm)
+                }
+            }
+        }
+
+        updateHeightDisplay()
+    }
+
+    private fun scrollToInches(totalInches: Int) {
+        val minInches = 4 * 12
+        val index = totalInches - minInches
+        val screenHeight = scrollView.height
+        val targetScroll = (pickerView.sidePadding + index * itemSpacing - screenHeight / 2).toInt()
+        scrollView.scrollTo(0, targetScroll)
+    }
+
+    private fun scrollToCm(cm: Int) {
+        val minCm = 120
+        val index = cm - minCm
+        val screenHeight = scrollView.height
+        val targetScroll = (pickerView.sidePadding + index * itemSpacing - screenHeight / 2).toInt()
+        scrollView.scrollTo(0, targetScroll)
+    }
+
+    private fun snapToNearest() {
+        scrollView.post {
+            val scrollY = scrollView.scrollY
+            val screenHeight = scrollView.height
+            val centerY = scrollY + screenHeight / 2
+
+            val index = Math.round((centerY - pickerView.sidePadding) / itemSpacing)
+            val targetScroll = (pickerView.sidePadding + index * itemSpacing - screenHeight / 2).toInt()
+
+            scrollView.smoothScrollTo(0, targetScroll)
+        }
+    }
+
+    private fun updateHeightDisplay() {
+        if (currentUnit == HeightUnit.FEET_INCHES) {
+            val feet = currentTotalInches / 12
+            val inches = currentTotalInches % 12
+            selectedHeight = "$feet ft $inches in"
+        } else {
+            selectedHeight = "$currentCm cm"
+        }
+        selected_number_text?.text = selectedHeight
+    }
+
+    private fun validateInput(): Boolean {
+        return if (currentUnit == HeightUnit.FEET_INCHES) {
+            val feet = currentTotalInches / 12
+            if (feet in 4..7) {
+                true
+            } else {
+                Toast.makeText(requireActivity(), "Height should be between 4 feet to 7 feet", Toast.LENGTH_SHORT).show()
+                false
+            }
+        } else {
+            if (currentCm in 120..220) {
+                true
+            } else {
+                Toast.makeText(requireActivity(), "Height should be between 120 cm to 220 cm", Toast.LENGTH_SHORT).show()
+                false
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cardViewSelection.visibility = VISIBLE
+        llSelectedHeight.visibility = GONE
+    }
+}
+
+
+/*
 class HeightSelectionFragment : Fragment() {
 
     private lateinit var llSelectedHeight: LinearLayout
@@ -88,9 +399,11 @@ class HeightSelectionFragment : Fragment() {
         tvDescription = view.findViewById(R.id.tv_description)
         selected_number_text = view.findViewById(R.id.selected_number_text)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
-        /*if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+        */
+/*if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
-        }*/
+        }*//*
+
 
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
         AnalyticsLogger.logEvent(
@@ -350,4 +663,4 @@ class HeightSelectionFragment : Fragment() {
         llSelectedHeight.visibility = GONE
     }
 
-}
+}*/
