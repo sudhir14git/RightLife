@@ -47,6 +47,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 
 class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
 
@@ -136,7 +137,8 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
     }
 
     private fun postMindfullData() {
-        val mindfullRequest = MindfullRequest(type = "Quote", startDate = mStartDate, endDate = mEndDate)
+        val timeZoneId = TimeZone.getDefault().id
+        val mindfullRequest = MindfullRequest(type = "Quote", startDate = mStartDate, endDate = mEndDate,timeZoneId)
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.postMindFull(token,mindfullRequest)
         call.enqueue(object : Callback<BaseResponse> {
