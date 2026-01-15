@@ -147,11 +147,11 @@
             android:name=".ui.new_design.SplashScreenActivity"
             android:exported="true"
             android:screenOrientation="portrait">
-      <!--      <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.new_design.DataControlActivity"
@@ -193,11 +193,11 @@
             android:name=".ui.new_design.OnboardingQuestionnaireActivity"
             android:exported="true"
             android:screenOrientation="portrait">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".ui.new_design.UserInterestActivity"

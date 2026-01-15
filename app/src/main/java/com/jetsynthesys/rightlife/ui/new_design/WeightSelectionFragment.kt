@@ -43,6 +43,8 @@ class WeightSelectionFragment : Fragment() {
     private var currentUnit = WeightUnit.KG
     private var currentWeightKg = 75.0
     private var currentWeightLbs = 165.0
+    private var initialWeightKg = 75.0
+    private var initialWeightLbs = 165.0
     private val itemSpacing = 20f
 
     companion object {
@@ -61,9 +63,13 @@ class WeightSelectionFragment : Fragment() {
         if (gender == "Male" || gender == "M") {
             currentWeightKg = 75.0
             currentWeightLbs = 165.0
+            initialWeightKg = 75.0
+            initialWeightLbs = 165.0
         } else {
             currentWeightKg = 55.0
             currentWeightLbs = 120.0
+            initialWeightKg = 55.0
+            initialWeightLbs = 120.0
         }
 
         kgOption.setBackgroundResource(R.drawable.bg_left_selected)
@@ -109,9 +115,13 @@ class WeightSelectionFragment : Fragment() {
         if (gender == "Male" || gender == "M") {
             currentWeightKg = 75.0
             currentWeightLbs = 165.0
+            initialWeightKg = 75.0
+            initialWeightLbs = 165.0
         } else {
             currentWeightKg = 55.0
             currentWeightLbs = 120.0
+            initialWeightKg = 55.0
+            initialWeightLbs = 120.0
         }
 
         setupUnitButtons()
@@ -202,7 +212,7 @@ class WeightSelectionFragment : Fragment() {
                 pickerView.requestLayout()
 
                 scrollView.postDelayed({
-                                           val initialWeight = if (currentUnit == WeightUnit.KG) currentWeightKg else currentWeightLbs
+                                           val initialWeight = if (currentUnit == WeightUnit.KG) initialWeightKg else initialWeightLbs
                                            scrollToWeight(initialWeight)
                                        }, 100)
             }
@@ -253,7 +263,7 @@ class WeightSelectionFragment : Fragment() {
             pickerView.requestLayout()
 
             scrollView.post {
-                val weight = if (currentUnit == WeightUnit.KG) currentWeightKg else currentWeightLbs
+                val weight = if (currentUnit == WeightUnit.KG) initialWeightKg else initialWeightLbs
                 scrollToWeight(weight)
             }
         }
