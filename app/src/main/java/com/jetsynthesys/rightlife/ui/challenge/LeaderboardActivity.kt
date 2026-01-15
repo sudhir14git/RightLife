@@ -37,7 +37,7 @@ class LeaderboardActivity : BaseActivity() {
 
         // default  (Week)
         binding.tabGroupNew.check(R.id.rbAllTime)
-        loadLeaderboard(currentType)
+        loadLeaderboard("all")
     }
 
     private fun setupToolbar() {

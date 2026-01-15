@@ -4255,7 +4255,7 @@ class HomeNewActivity : BaseActivity() {
             dates.challengeEndDate
         )
 
-        sharedPreferenceManager.challengeState = 2//dates.challengeStatus //3
+        sharedPreferenceManager.challengeState = dates.challengeStatus //3
         sharedPreferenceManager.challengeStartDate =
             dates.challengeStartDate //"12 Jan 2026, 09:00 PM"
         sharedPreferenceManager.challengeEndDate = dates.challengeEndDate //"28 Jan 2026, 09:00 PM"
