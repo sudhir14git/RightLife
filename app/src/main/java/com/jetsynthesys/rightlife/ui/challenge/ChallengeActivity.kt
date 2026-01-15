@@ -493,7 +493,7 @@ class ChallengeActivity : BaseActivity() {
                             setupFaceScanCard(responseObj.data.lastReportDate)
                         }
                         // Log an event based on the user's performance tier.
-                        /*   when (responseObj?.data?.performance) {
+                           when (responseObj?.data?.performance) {
                                "Good" -> {
                                    AnalyticsLogger.logEvent(
                                        this@ChallengeActivity,
@@ -512,7 +512,7 @@ class ChallengeActivity : BaseActivity() {
                                        AnalyticsEvent.Chl_EntersChamp
                                    )
                                }
-                           }*/
+                           }
 
                     } else {
                         showCustomToast("Something went wrong!", false)
@@ -556,6 +556,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlOpenApp.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_OpenApp_Claimed
+                                                )
+                                            }
                                         }
 
                                         "LOG_SLEEP" -> {
@@ -563,6 +570,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlLogSleep.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_LogSleep_Claimed
+                                                )
+                                            }
                                         }
 
                                         "LOG_MEAL" -> {
@@ -570,6 +584,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlLogMeal.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_LogMeal_Claimed
+                                                )
+                                            }
                                         }
 
                                         "LOG_MOVEMENT" -> {
@@ -577,6 +598,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlLogMovement.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_LogMove_Claimed
+                                                )
+                                            }
                                         }
 
                                         "MINDFULNESS" -> {
@@ -584,6 +612,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlPractiseMindFullness.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_Mindful_Claimed
+                                                )
+                                            }
                                         }
 
                                         "FULL_DAY_BONUS" -> {
@@ -591,6 +626,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlFullDayBonus.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_FullDayBonus_Claimed
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -604,6 +646,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlHighQualitySleep.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_HQSleep_Claim
+                                                )
+                                            }
                                         }
 
                                         "BALANCED_EATING" -> {
@@ -611,6 +660,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlBalancedEating.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_BalEat_Claim
+                                                )
+                                            }
                                         }
 
                                         "DAILY_MOVEMENT_GOAL" -> {
@@ -618,6 +674,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlDailyMovementGoal.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_MoveGoal_Claim
+                                                )
+                                            }
                                         }
 
                                         "MINDFUL_MOMENTS" -> {
@@ -625,6 +688,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlMindfulMoments.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_Mindful_Claim
+                                                )
+                                            }
                                         }
 
                                         "ALL_ROUND_WIN" -> {
@@ -632,6 +702,13 @@ class ChallengeActivity : BaseActivity() {
                                                 getImageBasedOnStatus(item.status)
                                             )
                                             rlAllRoundWin.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_AllBonus_Claim
+                                                )
+                                            }
                                         }
                                     }
                                 }
