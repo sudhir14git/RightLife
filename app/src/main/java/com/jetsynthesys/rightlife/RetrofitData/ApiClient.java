@@ -25,7 +25,7 @@ public class ApiClient {
     public static final String CDN_URL_QA = BuildConfig.CDN_URL;//"https://d1sacaybzizpm5.cloudfront.net/"; // Your API URL
     public static final String VIDEO_CDN_URL = BuildConfig.VIDEO_CDN_URL;//"https://d1sacaybzizpm5.cloudfront.net/"; // Your API URL
 
-    public static final String CDN_URL_PROD = "https://d1uxs9zd0apq85.cloudfront.net/"; // Your API URL
+    //public static final String CDN_URL_PROD = "https://d1uxs9zd0apq85.cloudfront.net/"; // Your API URL
 
     private static Retrofit retrofit = null;
     HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -131,27 +131,5 @@ public class ApiClient {
 
 
     }
-
-
-
-
- /*   baseUrl: 'https://stage.rightlife.com/api',
-    bobaseUrl: 'https://bo-stage.rightlife.com/api',
-    cdnUrl: 'https://d2wde8gz1ymp04.cloudfront.net/',
-
-    env: 'prod',
-    baseUrl: 'https://app.rightlife.com/api',
-    bobaseUrl: 'https://bo.rightlife.com/api',
-    cdnUrl: 'https://d1uxs9zd0apq85.cloudfront.net/',
-
-    env: 'qa',
-    baseUrl: 'https://qa.rightlife.com/api/app/api/',
-    bobaseUrl: 'https://bo-qa.rightlife.com/api',
-    cdnUrl: 'https://d1sacaybzizpm5.cloudfront.net/',
-
-    env: 'dev',
-    baseUrl: 'https://api-dev.rightlife.com',
-    bobaseUrl: 'https://bo-api-dev.rightlife.com/bo/api',
-    cdnUrl: 'https://d3p9402jq4v8pt.cloudfront.net/',*/
 
 }

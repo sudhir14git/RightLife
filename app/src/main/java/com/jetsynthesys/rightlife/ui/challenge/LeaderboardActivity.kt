@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.challenge
 
 import android.os.Bundle
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -127,7 +128,8 @@ class LeaderboardActivity : BaseActivity() {
         val data = response.data
 
         // ----- Your Position pinned -----
-        binding.includeMyPosition.tvName.text = sharedPreferenceManager.userProfile.userdata.firstName
+        binding.includeMyPosition.tvName.text =
+            sharedPreferenceManager.userProfile.userdata.firstName
         data.yourRank?.let { my ->
             bindMyPosition(rank = my.rank, score = my.totalScore)
         }
@@ -143,7 +145,7 @@ class LeaderboardActivity : BaseActivity() {
 
         // Remove duplication of "You" if backend includes it in leaderboard list
         val myRank = data.yourRank?.rank
-        val filtered = if (myRank != null) items.filterNot { it.rank == myRank } else items
+        if (myRank != null) items.filterNot { it.rank == myRank } else items
 
         adapter.submitList(items)
     }
@@ -157,7 +159,12 @@ class LeaderboardActivity : BaseActivity() {
         val tvName = card.findViewById<TextView>(R.id.tvName)
         val tvScore = card.findViewById<TextView>(R.id.tvScore)
 
-        tvRank.text = rank.toString()
+        if (rank <= 3) {
+            tvRank.visibility = View.GONE
+        } else {
+            tvRank.visibility = View.VISIBLE
+            tvRank.text = rank.toString()
+        }
         tvName.text = sharedPreferenceManager.userProfile.userdata.firstName
         tvScore.text = score.toString()
 

@@ -29,6 +29,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import java.util.TimeZone
 import kotlin.math.roundToInt
 
 
@@ -312,8 +313,9 @@ object CommonAPICall {
     }
 
     fun postMindFullData(context: Context, type: String, startDate: String, endDate: String) {
+        val timeZoneId = TimeZone.getDefault().id
         val mindFullRequest =
-            MindfullRequest(type = type, startDate = startDate, endDate = endDate)
+            MindfullRequest(type = type, startDate = startDate, endDate = endDate,timeZoneId)
         val authToken = SharedPreferenceManager.getInstance(context).accessToken
         val apiService = ApiClient.getClient(context).create(ApiService::class.java)
         val call = apiService.postMindFull(authToken, mindFullRequest)
