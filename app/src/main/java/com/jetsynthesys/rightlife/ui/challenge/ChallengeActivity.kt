@@ -351,7 +351,7 @@ class ChallengeActivity : BaseActivity() {
 
         binding.ivPrev.setImageResource(
             if (isPreviousDatePresent)
-                R.drawable.ic_green_circle_left
+                R.drawable.ic_arrow_left_disabled
             else
                 R.drawable.left_arrow_journal
         )
