@@ -106,6 +106,8 @@ class DailyStreakActivity : BaseActivity() {
             ColorStateList.valueOf("#FD6967".toColorInt()) else
             ColorStateList.valueOf("#B5B5B5".toColorInt())
 
+        binding.tvSubtitle.text = if (response.data.streak > 0) "You’re on a great track,\nkeep going!" else "Let’s start on a healthy\nstreak!"
+
         // list
         val items = response.data.journey.map {
             ChallengeStreakAdapter.Item(
