@@ -4255,8 +4255,9 @@ class HomeNewActivity : BaseActivity() {
             dates.challengeEndDate
         )
 
-        sharedPreferenceManager.challengeState = dates.challengeStatus //3
-        sharedPreferenceManager.challengeStartDate = dates.challengeStartDate //"12 Jan 2026, 09:00 PM"
+        sharedPreferenceManager.challengeState = 2//dates.challengeStatus //3
+        sharedPreferenceManager.challengeStartDate =
+            dates.challengeStartDate //"12 Jan 2026, 09:00 PM"
         sharedPreferenceManager.challengeEndDate = dates.challengeEndDate //"28 Jan 2026, 09:00 PM"
 
         if (dates.participateDate.isEmpty()) {
@@ -4309,8 +4310,11 @@ class HomeNewActivity : BaseActivity() {
                     // Checklist completed → Countdown card
                     binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
                         View.VISIBLE
-                    binding.layoutChallengeCountDownDays.tvCountDownDays.text =
-                        getDaysFromToday(dates.challengeStartDate).toString()
+                    val daysMin =
+                        getDaysFromToday(sharedPreferenceManager.challengeStartDate).split(" ")
+                    binding.layoutChallengeCountDownDays.tvCountDownDays.text = daysMin[0]
+                    binding.layoutChallengeCountDownDays.tvDaysToGo.text = "${daysMin[1]} to go"
+
                 }
             }
 
@@ -4484,9 +4488,7 @@ class HomeNewActivity : BaseActivity() {
             showChallengeInfoBottomSheet(this@HomeNewActivity)
         }
         binding.layoutChallengeCountDownDays.btnViewChallenge.setOnClickListener {
-            startActivity(Intent(this@HomeNewActivity, ChallengeEmptyActivity::class.java).apply {
-                putExtra("CHALLENGE_START_DATE", dates.challengeStartDate)
-            })
+            startActivity(Intent(this@HomeNewActivity, ChallengeEmptyActivity::class.java))
         }
 
         //Challenge Daily Score
