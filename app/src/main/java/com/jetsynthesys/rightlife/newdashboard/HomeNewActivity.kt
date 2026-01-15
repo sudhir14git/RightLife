@@ -4255,8 +4255,8 @@ class HomeNewActivity : BaseActivity() {
             dates.challengeEndDate
         )
 
-        sharedPreferenceManager.challengeState = dates.challengeStatus
-        sharedPreferenceManager.challengeStartDate = dates.challengeStartDate
+        sharedPreferenceManager.challengeState = dates.challengeStatus //3
+        sharedPreferenceManager.challengeStartDate = dates.challengeStartDate //"12 Jan 2026, 09:00 PM"
         sharedPreferenceManager.challengeEndDate = dates.challengeEndDate //"28 Jan 2026, 09:00 PM"
 
         if (dates.participateDate.isEmpty()) {
@@ -4271,7 +4271,7 @@ class HomeNewActivity : BaseActivity() {
             return
         }
 
-        when (dates.challengeStatus) {
+        when (sharedPreferenceManager.challengeState) {
 
             1 -> {
                 if (dates.participateDate.isEmpty()) {

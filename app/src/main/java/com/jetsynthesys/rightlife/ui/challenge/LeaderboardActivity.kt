@@ -23,7 +23,7 @@ class LeaderboardActivity : BaseActivity() {
     private lateinit var binding: ActivityLeaderboardBinding
     private lateinit var adapter: LeaderboardAdapter
     private var isLoading = false
-    private var currentType: String = "daily" // this is the landing tab
+    private var currentType: String = "all" // this is the landing tab
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +35,7 @@ class LeaderboardActivity : BaseActivity() {
         setupRecycler()
 
         // default  (Week)
-        binding.tabGroupNew.check(R.id.rbDay)
+        binding.tabGroupNew.check(R.id.rbAllTime)
         loadLeaderboard(currentType)
     }
 
@@ -127,6 +127,7 @@ class LeaderboardActivity : BaseActivity() {
         val data = response.data
 
         // ----- Your Position pinned -----
+        binding.includeMyPosition.tvName.text = sharedPreferenceManager.userProfile.userdata.firstName
         data.yourRank?.let { my ->
             bindMyPosition(rank = my.rank, score = my.totalScore)
         }
