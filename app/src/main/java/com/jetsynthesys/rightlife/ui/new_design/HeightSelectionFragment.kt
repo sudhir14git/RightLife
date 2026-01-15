@@ -13,29 +13,18 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.customviews.HeightPickerView
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
-import java.text.DecimalFormat
-
-
-import com.jetsynthesys.rightlife.ui.customviews.HeightPickerView
-
 
 class HeightSelectionFragment : Fragment() {
 
@@ -54,6 +43,8 @@ class HeightSelectionFragment : Fragment() {
     private var currentUnit = HeightUnit.FEET_INCHES
     private var currentTotalInches = 68
     private var currentCm = 173
+    private var initialTotalInches = 68
+    private var initialCm = 173
     private val itemSpacing = 30f
 
     companion object {
@@ -72,9 +63,13 @@ class HeightSelectionFragment : Fragment() {
         if (gender == "Male" || gender == "M") {
             currentTotalInches = 68
             currentCm = 173
+            initialTotalInches = 68
+            initialCm = 173
         } else {
             currentTotalInches = 64
             currentCm = 163
+            initialTotalInches = 64
+            initialCm = 163
         }
 
         feetOption.setBackgroundResource(R.drawable.bg_left_selected)
@@ -120,9 +115,13 @@ class HeightSelectionFragment : Fragment() {
         if (gender == "Male" || gender == "M") {
             currentTotalInches = 68
             currentCm = 173
+            initialTotalInches = 68
+            initialCm = 173
         } else {
             currentTotalInches = 64
             currentCm = 163
+            initialTotalInches = 64
+            initialCm = 163
         }
 
         setupUnitButtons()
@@ -212,12 +211,12 @@ class HeightSelectionFragment : Fragment() {
                 pickerView.requestLayout()
 
                 scrollView.postDelayed({
-                                           scrollToInches(currentTotalInches)
-                                       }, 100)
+                                           scrollToInches(initialTotalInches)
+                                       }, 500)
             }
         })
 
-        scrollView.viewTreeObserver.addOnScrollChangedListener {
+        /*scrollView.viewTreeObserver.addOnScrollChangedListener {
             val scrollY = scrollView.scrollY
             val screenHeight = scrollView.height
             val centerY = scrollY + screenHeight / 2
@@ -235,6 +234,37 @@ class HeightSelectionFragment : Fragment() {
                 val cm = minCm + ((centerY - pickerView.sidePadding) / itemSpacing).toInt()
 
                 if (cm in 120..215 && cm != currentCm) {
+                    currentCm = cm
+                    updateHeightDisplay()
+                }
+            }
+        }*/
+
+
+        scrollView.viewTreeObserver.addOnScrollChangedListener {
+            val scrollY = scrollView.scrollY
+            val screenHeight = scrollView.height
+            val centerY = scrollY + screenHeight / 2
+
+            if (currentUnit == HeightUnit.FEET_INCHES) {
+                val minInches = 4 * 12
+                val maxInches = 7 * 12
+
+                // REVERSED CALCULATION:
+                val totalInches = maxInches - ((centerY - pickerView.sidePadding) / itemSpacing).toInt()
+
+                if (totalInches in (4 * 12)..(7 * 12) && totalInches != currentTotalInches) {
+                    currentTotalInches = totalInches
+                    updateHeightDisplay()
+                }
+            } else {
+                val minCm = 120
+                val maxCm = 220
+
+                // REVERSED CALCULATION:
+                val cm = maxCm - ((centerY - pickerView.sidePadding) / itemSpacing).toInt()
+
+                if (cm in 120..220 && cm != currentCm) {
                     currentCm = cm
                     updateHeightDisplay()
                 }
@@ -263,31 +293,53 @@ class HeightSelectionFragment : Fragment() {
 
             pickerView.post {
                 if (currentUnit == HeightUnit.FEET_INCHES) {
-                    scrollToInches(currentTotalInches)
+                    scrollToInches(initialTotalInches)
                 } else {
-                    scrollToCm(currentCm)
+                    scrollToCm(initialCm)
                 }
             }
         }
 
         updateHeightDisplay()
     }
-
     private fun scrollToInches(totalInches: Int) {
+        val minInches = 4 * 12
+        val maxInches = 7 * 12
+
+        // REVERSED CALCULATION:
+        val index = maxInches - totalInches
+
+        val screenHeight = scrollView.height
+        val targetScroll = (pickerView.sidePadding + index * itemSpacing - screenHeight / 2).toInt()
+        scrollView.scrollTo(0, targetScroll)
+    }
+/*    private fun scrollToInches(totalInches: Int) {
         val minInches = 4 * 12
         val index = totalInches - minInches
         val screenHeight = scrollView.height
         val targetScroll = (pickerView.sidePadding + index * itemSpacing - screenHeight / 2).toInt()
         scrollView.scrollTo(0, targetScroll)
-    }
+    }*/
+
 
     private fun scrollToCm(cm: Int) {
+        val minCm = 120
+        val maxCm = 220
+
+        // REVERSED CALCULATION:
+        val index = maxCm - cm
+
+        val screenHeight = scrollView.height
+        val targetScroll = (pickerView.sidePadding + index * itemSpacing - screenHeight / 2).toInt()
+        scrollView.scrollTo(0, targetScroll)
+    }
+  /*  private fun scrollToCm(cm: Int) {
         val minCm = 120
         val index = cm - minCm
         val screenHeight = scrollView.height
         val targetScroll = (pickerView.sidePadding + index * itemSpacing - screenHeight / 2).toInt()
         scrollView.scrollTo(0, targetScroll)
-    }
+    }*/
 
     private fun snapToNearest() {
         scrollView.post {
@@ -338,7 +390,6 @@ class HeightSelectionFragment : Fragment() {
         llSelectedHeight.visibility = GONE
     }
 }
-
 
 /*
 class HeightSelectionFragment : Fragment() {
