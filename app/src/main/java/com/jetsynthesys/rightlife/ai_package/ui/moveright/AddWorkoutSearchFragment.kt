@@ -25,6 +25,7 @@ import androidx.core.os.BundleCompat
 import androidx.fragment.app.setFragmentResult
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -333,7 +334,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         // === ICON & NAME ===
         if (workout != null) {
             workoutName.text = workout?.title
-            val imageBaseUrl = "https://d1sacaybzizpm5.cloudfront.net/" + workout?.iconUrl
+            val imageBaseUrl = BuildConfig.CDN_URL + workout?.iconUrl
             moduleIcon = imageBaseUrl
            /* Glide.with(requireContext())
                 .load(imageBaseUrl)

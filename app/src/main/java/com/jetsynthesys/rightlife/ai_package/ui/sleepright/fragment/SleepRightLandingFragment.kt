@@ -86,6 +86,7 @@ import com.github.mikephil.charting.utils.MPPointF
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
 import com.jetsynthesys.rightlife.ai_package.model.BodyFatPercentage
 import com.jetsynthesys.rightlife.ai_package.model.BodyMass
@@ -2148,7 +2149,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 soundPlay2.visibility = View.GONE
                                 soundPlay3.visibility = View.GONE
                                 Glide.with(ctx)
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                    .load(BuildConfig.CDN_URL +sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
                             }else if (sleepSoundResponse.sleepSoundData?.services?.size == 2){
@@ -2156,11 +2157,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 soundPlay2.visibility = View.VISIBLE
                                 soundPlay3.visibility = View.GONE
                                 Glide.with(ctx)
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
                                 Glide.with(ctx)
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay2)
                             }else if (sleepSoundResponse.sleepSoundData?.services?.size == 3){
@@ -2168,15 +2169,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 soundPlay2.visibility = View.VISIBLE
                                 soundPlay3.visibility = View.VISIBLE
                                 Glide.with(ctx)
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
                                 Glide.with(ctx)
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay2)
                                 Glide.with(ctx)
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay3)
                             }
