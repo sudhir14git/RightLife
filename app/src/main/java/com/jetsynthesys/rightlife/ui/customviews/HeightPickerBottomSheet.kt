@@ -108,7 +108,7 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
             val height = if (currentUnit == HeightUnit.FEET_INCHES) {
                 val feet = currentTotalInches / 12
                 val inches = currentTotalInches % 12
-                "$feet'$inches\""
+                "$feet.$inches"
             } else {
                 "$currentCm cm"
             }

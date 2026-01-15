@@ -175,7 +175,11 @@ class WeightPickerBottomSheet : BottomSheetDialogFragment() {
                 val screenWidth = scrollView.width
                 pickerView.sidePadding = screenWidth / 2
                 pickerView.itemSpacing = itemSpacing
-                pickerView.updateForKg()
+                if (currentUnit == WeightUnit.KG) {
+                    pickerView.updateForKg()
+                } else {
+                    pickerView.updateForLbs()
+                }
                 pickerView.requestLayout()
 
                 // Use postDelayed to ensure pickerView is fully measured
