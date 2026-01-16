@@ -1240,6 +1240,12 @@ class HomeNewActivity : BaseActivity() {
                     }
                     isUserProfileLoaded = true
                     tryProcessPendingDeepLink()
+                    if (ResponseObj.user_sub_status == 2){
+                        AnalyticsLogger.logEvent(
+                            this@HomeNewActivity,
+                            AnalyticsEvent.FreeTrialEnded
+                        )
+                    }
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                     if (response.code() == 401) {

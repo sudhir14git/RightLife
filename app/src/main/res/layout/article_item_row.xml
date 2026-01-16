@@ -170,7 +170,7 @@
         android:id="@+id/card2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardview_service"
@@ -649,6 +649,7 @@
             android:fontFamily="@font/merriweather_bold"
             android:textSize="@dimen/textsize_large"
             android:layout_marginVertical="@dimen/textsize_large"
+            android:id="@+id/tv_funfact_heading"
             android:text="Fun Facts" />
 
         <TextView

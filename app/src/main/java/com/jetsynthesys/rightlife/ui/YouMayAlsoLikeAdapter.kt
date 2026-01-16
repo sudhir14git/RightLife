@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ui
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,7 @@ import com.jetsynthesys.rightlife.databinding.RowYouMayAlsoLikeBinding
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 
 class YouMayAlsoLikeAdapter(
     private val context: Context,
@@ -32,8 +34,14 @@ class YouMayAlsoLikeAdapter(
 
             binding.itemText.text = item.contentType ?: "Untitled"
             binding.tvTitle.text = item.title
+
+            /*Log.d("Type-------", ""+getTextAccording(item.contentType))
+            binding.tvLeftTime.text = "${item.leftDuration ?: ""} ${getTextAccording(item.contentType)}"*/
+
             //binding.tvLeftTime.text = item.leftDuration
-            //binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.date)
+            binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.createdAt)
+            binding.tvLeftTime.text = getFormattedLeftText(item)
+
             binding.tvName.text = item.categoryName
 
             binding.imgIconview.setImageResource(
@@ -106,4 +114,38 @@ class YouMayAlsoLikeAdapter(
     override fun onBindViewHolder(holder: LikeViewHolder, position: Int) {
         holder.bind(contentList[position], position)
     }
+
+    private fun getTextAccording(contentType: String?): String {
+        // Use 'when' for better readability and safety.
+        return when {
+            "VIDEO".equals(contentType, ignoreCase = true) -> " left"
+            "AUDIO".equals(contentType, ignoreCase = true) -> " left"
+            "TEXT".equals(contentType, ignoreCase = true) -> "min read"
+            "SERIES".equals(contentType, ignoreCase = true) -> ""
+            else -> "" // Return an empty string for unknown types to avoid showing "null"
+        }
+    }
+
+    private fun getFormattedLeftText(item: Like): String {
+        return when {
+            item.contentType.equals("SERIES", ignoreCase = true) -> {
+                "${item.episodeCount ?: 0} ep"
+            }
+
+            item.contentType.equals("TEXT", ignoreCase = true) -> {
+                "${item.readingTime ?: 0} min read"
+            }
+
+            else -> {
+                formatDuration(item.meta?.duration ?: 0)
+            }
+        }
+    }
+
+    private fun formatDuration(totalSeconds: Int): String {
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
 }
