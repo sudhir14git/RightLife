@@ -724,10 +724,46 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val maxCarbs = SharedPreferenceManager.getInstance(requireActivity()).maxCarbs
             val maxProtein = SharedPreferenceManager.getInstance(requireActivity()).maxProtein
             val maxFats = SharedPreferenceManager.getInstance(requireActivity()).maxFats
-            calValue.text = dailyRecipe?.calories_kcal?.let { round(it).toInt().toString() }
-            carbsValue.text = dailyRecipe?.carbs_g?.let { round(it)?.toInt().toString() }
-            proteinsValue.text = dailyRecipe?.protein_g?.let { round(it)?.toInt().toString() }
-            fatsValue.text = dailyRecipe?.fat_g?.let { round(it)?.toInt().toString() }
+            val currentCal = dailyRecipe?.calories_kcal?.let { round(it).toInt() } ?: 0
+
+// Check if current calories is greater than max
+            if (currentCal > maxCalorie) {
+                calValue.setTextColor(Color.parseColor("#B50200"))
+            } else {
+                calValue.setTextColor(Color.BLACK)
+            }
+
+            calValue.text = currentCal.toString()
+            val currentCarbs = dailyRecipe?.carbs_g?.let { round(it)?.toInt() } ?: 0
+
+// Check if current carbs is greater than max
+            if (currentCarbs > maxCarbs) {
+                carbsValue.setTextColor(Color.parseColor("#B50200"))
+            } else {
+                carbsValue.setTextColor(Color.BLACK)
+            }
+
+            carbsValue.text = currentCarbs.toString()
+            val currentProtein = dailyRecipe?.protein_g?.let { round(it)?.toInt() } ?: 0
+
+// Check if current protein is greater than max
+            if (currentProtein > maxProtein) {
+                proteinsValue.setTextColor(Color.parseColor("#B50200"))
+            } else {
+                proteinsValue.setTextColor(Color.BLACK)
+            }
+
+            proteinsValue.text = currentProtein.toString()
+            val currentFats = dailyRecipe?.fat_g?.let { round(it)?.toInt() } ?: 0
+
+// Check if current fats is greater than max
+            if (currentFats > maxFats) {
+                fatsValue.setTextColor(Color.parseColor("#B50200"))
+            } else {
+                fatsValue.setTextColor(Color.BLACK)
+            }
+
+            fatsValue.text = currentFats.toString()
             maxCalUnit.text = " / " + maxCalorie.toString() + " kCal"
             maxCarbUnit.text = " / " + maxCarbs.toString() + " g"
             maxProteinUnit.text = " / " + maxProtein.toString() + " g"

@@ -289,83 +289,121 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
     }
 
     private fun getRecipesDetails() {
-        if (isAdded  && view != null){
+        if (isAdded && view != null) {
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
+
+        Log.d("RecipeDetails", "getRecipesDetails called → recipeId: $recipeId")
+
         val call = ApiClient.apiServiceFastApiV2.getDetailsViewRecipeById(recipeId = recipeId)
+        Log.d("RecipeDetails", "API call enqueued: getDetailsViewRecipeById for recipeId $recipeId")
+
         call.enqueue(object : Callback<RecipeDetailsViewResponse> {
             override fun onResponse(call: Call<RecipeDetailsViewResponse>, response: Response<RecipeDetailsViewResponse>) {
+                Log.d("RecipeDetails", "onResponse received → isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
-                    val ingredientsList = response.body()?.data?.ingredients.orEmpty()
-                    val ingredientsFormatted = ingredientsList.joinToString(separator = "\n") { "• $it" }
-                    ingredients_description.text = ingredientsFormatted
-                    // Format instructions as a numbered list
-                    val instructionsList = response.body()?.data?.preparation_notes.orEmpty()
-//                    val instructionsFormatted = instructionsList.mapIndexed { index, instruction ->
-//                        "${index + 1}. ${instruction.replaceFirstChar { it.uppercase() }}"
-//                    }.joinToString(separator = "\n")
-//                    instructionsList.forEachIndexed { index, step ->
-//                        println("${index + 1}. $step")
-//                        steps_description.text = "${index + 1}. $step"
-//                    }
-                    val instructionsText = instructionsList.joinToString(separator = "\n") { "- $it" }
-                    steps_description.text = instructionsText
 
-                    serves_text.text = "Serves ${response.body()?.data?.serving_size_for_calorific_breakdown.toString()}"
-                    tvMealName.text = response.body()?.data?.recipe.toString()
-                    time_text.text = response.body()?.data?.active_cooking_time_min.toString()
-                    calorie_value.text = "${response.body()?.data?.calories_kcal?.toInt().toString()} Kcal"
-                    carbs_value.text = "${response.body()?.data?.carbs_g?.toInt()} g"
-                    protein_value.text = "${response.body()?.data?.protein_g?.toInt()} g"
-                    fat_value.text = "${response.body()?.data?.fat_g?.toInt()} g"
-                    if (getFoodType(response.body()?.data?.category) == "Veg"){
-                        vegImage.visibility = View.VISIBLE
-                        vegImage.setImageResource(R.drawable.green_circle)
-                        vegTv.text = "Veg"
-                    }else if (getFoodType(response.body()?.data?.category) == "Non-Veg"){
-                        vegImage.visibility = View.VISIBLE
-                        vegImage.setColorFilter(ContextCompat.getColor(context!!, R.color.red), PorterDuff.Mode.SRC_IN)
-                        vegTv.text = "Non-Veg"
-                    }else{
-                        vegImage.visibility = View.INVISIBLE
+                    val data = response.body()?.data
+                    Log.d("RecipeDetails", "Success → recipe data received (null check: ${data != null})")
+
+                    if (data != null) {
+                        val ingredientsList = data.ingredients.orEmpty()
+                        val ingredientsFormatted = ingredientsList.joinToString(separator = "\n") { "• $it" }
+                        ingredients_description.text = ingredientsFormatted
+                        Log.d("RecipeDetails", "Ingredients set → count: ${ingredientsList.size}")
+
+                        val instructionsList = data.preparation_notes.orEmpty()
+                        val instructionsText = instructionsList.joinToString(separator = "\n") { "- $it" }
+                        steps_description.text = instructionsText
+                        Log.d("RecipeDetails", "Instructions set → count: ${instructionsList.size}")
+
+                        serves_text.text = "Serves ${data.serving_size_for_calorific_breakdown.toString()}"
+                        tvMealName.text = data.recipe.toString()
+                        time_text.text = data.active_cooking_time_min.toString()
+                        calorie_value.text = "${data.calories_kcal?.toInt().toString()} Kcal"
+                        carbs_value.text = "${data.carbs_g?.toInt()} g"
+                        protein_value.text = "${data.protein_g?.toInt()} g"
+                        fat_value.text = "${data.fat_g?.toInt()} g"
+                        Log.d("RecipeDetails", "Nutritional values & name/time set → calories: ${data.calories_kcal}, carbs: ${data.carbs_g}")
+
+                        val foodTypeResult = getFoodType(data.category)
+                        if (foodTypeResult == "Veg") {
+                            vegImage.visibility = View.VISIBLE
+                            vegImage.setImageResource(R.drawable.green_circle)
+                            vegTv.text = "Veg"
+                            Log.d("RecipeDetails", "Veg indicator set")
+                        } else if (foodTypeResult == "Non-Veg") {
+                            vegImage.visibility = View.VISIBLE
+                            vegImage.setColorFilter(ContextCompat.getColor(context!!, R.color.red), PorterDuff.Mode.SRC_IN)
+                            vegTv.text = "Non-Veg"
+                            Log.d("RecipeDetails", "Non-Veg indicator set")
+                        } else {
+                            vegImage.visibility = View.INVISIBLE
+                            Log.d("RecipeDetails", "No Veg/Non-Veg indicator (other category)")
+                        }
+
+                        foodType.text = data.meal_type
+                        Log.d("RecipeDetails", "Meal type text set: ${data.meal_type}")
+
+                        when (data.meal_type) {
+                            "Breakfast" -> {
+                                mealTypeImage.setImageResource(R.drawable.ic_breakfast)
+                                Log.d("RecipeDetails", "Meal icon set: Breakfast")
+                            }
+                            "Snack" -> {
+                                mealTypeImage.setImageResource(R.drawable.ic_morning_snack)
+                                Log.d("RecipeDetails", "Meal icon set: Snack")
+                            }
+                            "Lunch" -> {
+                                mealTypeImage.setImageResource(R.drawable.ic_lunch)
+                                Log.d("RecipeDetails", "Meal icon set: Lunch")
+                            }
+                            "One Pot Dish" -> {
+                                mealTypeImage.setImageResource(R.drawable.ic_evening_snack)
+                                Log.d("RecipeDetails", "Meal icon set: One Pot Dish")
+                            }
+                            "Dinner" -> {
+                                mealTypeImage.setImageResource(R.drawable.ic_dinner)
+                                Log.d("RecipeDetails", "Meal icon set: Dinner")
+                            }
+                            else -> {
+                                mealTypeImage.setImageResource(R.drawable.ic_view_meal_place)
+                                Log.d("RecipeDetails", "Meal icon set: Default (unknown meal type)")
+                            }
+                        }
+
+                        val imageUrl = data.photo_url
+                        Log.d("RecipeDetails", "Loading image from URL: $imageUrl")
+                        loadImageFromGoogleDrive(imageUrl, imgFood)
+                    } else {
+                        Log.w("RecipeDetails", "Success but data is null")
                     }
-                    foodType.text = response.body()?.data?.meal_type
-                    if (response.body()?.data?.meal_type.equals("Breakfast")){
-                        mealTypeImage.setImageResource(R.drawable.ic_breakfast)
-                    }else if (response.body()?.data?.meal_type.equals("Snack")){
-                        mealTypeImage.setImageResource(R.drawable.ic_morning_snack)
-                    }else if (response.body()?.data?.meal_type.equals("Lunch")){
-                        mealTypeImage.setImageResource(R.drawable.ic_lunch)
-                    }else if (response.body()?.data?.meal_type.equals("One Pot Dish")){
-                        mealTypeImage.setImageResource(R.drawable.ic_evening_snack)
-                    }else if (response.body()?.data?.meal_type.equals("Dinner")){
-                        mealTypeImage.setImageResource(R.drawable.ic_dinner)
-                    }else{
-                        mealTypeImage.setImageResource(R.drawable.ic_view_meal_place)
-                    }
-                    val imageUrl = response.body()?.data?.photo_url
-                    loadImageFromGoogleDrive(imageUrl, imgFood)
                 } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("RecipeDetails", "API error → code: ${response.code()}, error body: $errorBody")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
+
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<RecipeDetailsViewResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
+                Log.e("RecipeDetails", "API call failed completely", t)
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
+
+                if (isAdded && view != null) {
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }

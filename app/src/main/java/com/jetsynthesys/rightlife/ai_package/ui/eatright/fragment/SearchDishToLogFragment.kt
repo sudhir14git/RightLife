@@ -478,22 +478,33 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
         })
     }
 
-    private fun getRecipesDetails(recipeId : String) {
-        if (isAdded  && view != null){
+    private fun getRecipesDetails(recipeId: String) {
+        if (isAdded && view != null) {
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
+
+        Log.d("RecipeDetailsById", "getRecipesDetails called → recipeId: $recipeId")
+
         val call = ApiClient.apiServiceFastApiV2.getRecipeDetailsById(recipeId = recipeId)
+        Log.d("RecipeDetailsById", "API call enqueued: getRecipeDetailsById for recipeId $recipeId")
+
         call.enqueue(object : Callback<RecipeDetailsResponse> {
             override fun onResponse(call: Call<RecipeDetailsResponse>, response: Response<RecipeDetailsResponse>) {
+                Log.d("RecipeDetailsById", "onResponse received → isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     val ingredientRecipesDetails = response.body()?.data
+                    Log.d("RecipeDetailsById", "Success → data received (null check: ${ingredientRecipesDetails != null})")
+
+                    Log.d("RecipeDetailsById", "Starting fragment transaction to DishToLogFragment")
 
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         val snapMealFragment = DishToLogFragment()
@@ -507,25 +518,34 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                         args.putParcelable("selectedMealLogList", mealLogRequests)
                         args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
                         args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
+
+                        Log.d("RecipeDetailsById", "Bundle created with keys: ModuleName, searchType, mealType, selectedMealDate, ingredientRecipeDetails, snapDishLocalListModel, selectedMealLogList, selectedSnapMealLogList, snapMealRequestLocalListModel")
+
                         snapMealFragment.arguments = args
                         replace(R.id.flFragment, snapMealFragment, "Steps")
                         addToBackStack(null)
                         commit()
+
+                        Log.d("RecipeDetailsById", "Fragment transaction committed → replaced with DishToLogFragment (tag: Steps)")
                     }
                 } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("RecipeDetailsById", "API error → code: ${response.code()}, error body: $errorBody")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
+
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<RecipeDetailsResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
+                Log.e("RecipeDetailsById", "API call failed completely", t)
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
+
+                if (isAdded && view != null) {
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }
