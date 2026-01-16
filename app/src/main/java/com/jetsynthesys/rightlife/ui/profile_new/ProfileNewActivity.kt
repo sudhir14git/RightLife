@@ -155,7 +155,7 @@ class ProfileNewActivity : BaseActivity() {
     }
 
     fun openHeightPicker() {
-        val bottomSheet = HeightPickerBottomSheet.newInstance("5'7\"", "ft")
+        val bottomSheet = HeightPickerBottomSheet.newInstance("6'7\"", "ft")
         bottomSheet.setOnHeightSelectedListener { height, unit ->
             selectedHeight = height
             if (unit == "ft") {
