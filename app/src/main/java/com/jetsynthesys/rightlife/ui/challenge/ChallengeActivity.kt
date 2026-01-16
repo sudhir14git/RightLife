@@ -142,7 +142,7 @@ class ChallengeActivity : BaseActivity() {
                     toApiDate(sharedPreferenceManager.challengeStartDate), selectedDay.dateString
                 )
             ) {
-                showCustomToast("Hold up, we haven’t lived that day yet!")
+                showCustomToast("No challenges available for this day.")
                 return@CalendarChallengeAdapter
             }
             if (!isFutureDate(selectedDay.dateString) || isToday(selectedDay.dateString)) {
