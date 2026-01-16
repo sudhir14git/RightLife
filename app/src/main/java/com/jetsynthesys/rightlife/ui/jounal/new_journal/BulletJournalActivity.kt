@@ -33,10 +33,8 @@ class BulletJournalActivity : BaseActivity() {
 
         journalItem = intent.getSerializableExtra("Section") as? JournalItem
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
-        startDate = intent.getStringExtra("StartDate").toString()
         isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
-        if (startDate.isEmpty())
-            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
 
         journalEntry?.let {

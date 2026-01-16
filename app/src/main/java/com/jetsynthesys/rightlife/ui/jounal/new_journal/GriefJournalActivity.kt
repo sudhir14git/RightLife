@@ -37,10 +37,8 @@ class GriefJournalActivity : BaseActivity() {
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
         questionsList = intent.getSerializableExtra("QuestionList") as? ArrayList<Question>
         position = intent.getIntExtra("Position", 0)
-        startDate = intent.getStringExtra("StartDate").toString()
         isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
-        if (startDate.isEmpty())
-            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
 
         if (questionsList?.isNotEmpty() == true) {
