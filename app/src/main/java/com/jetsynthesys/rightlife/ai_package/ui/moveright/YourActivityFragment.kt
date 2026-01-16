@@ -372,8 +372,15 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                Log.d("FetchUserWorkouts", "Starting fetch for date: $formattedDate")
+
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                Log.d("FetchUserWorkouts", "userId: $userid")
+
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                Log.d("FetchUserWorkouts", "Current system date: $currentDate | Requested range: $formattedDate to $formattedDate")
+
+                Log.d("FetchUserWorkouts", "Calling API: getNewUserWorkouts (page=1, limit=10)")
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = userid,
                     start_date = formattedDate,
@@ -382,9 +389,13 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     limit = 10
                 )
 
+                Log.d("FetchUserWorkouts", "API response received → isSuccessful = ${response.isSuccessful}, code = ${response.code()}")
+
                 if (response.isSuccessful) {
                     val workouts = response.body()
                     workouts?.let {
+                        Log.d("FetchUserWorkouts", "Workouts received → synced: ${it.syncedWorkouts.size}, unsynced: ${it.unsyncedWorkouts.size}")
+
                         // Map syncedWorkouts to CardItem objects
                         val defaultHeartRateZones = HeartRateZones(
                             lightZone = emptyList(),
@@ -406,6 +417,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             cardioZone = 0f,
                             peakZone = 0f
                         )
+
                         val syncedCardItems = it.syncedWorkouts.map { workout ->
                             val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
                             val durationMinutes = durationDouble.toInt()
@@ -439,7 +451,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             )
                         }
 
-                        // Map unsyncedWorkouts to CardItem objects
                         val unsyncedCardItems = it.unsyncedWorkouts.map { workout ->
                             val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
                             val durationMinutes = durationDouble.toInt()
@@ -495,51 +506,52 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             )
                         }
 
-                        // Combine synced and unsynced CardItems
                         val newActivities = ArrayList<ActivityModel>()
                         val allCardItems = syncedCardItems + unsyncedCardItems
 
                         withContext(Dispatchers.Main) {
                             if (!isAdded || view == null || context == null) {
-                                Log.w("FetchCalories", "Fragment not attached after API call for date $formattedDate, skipping UI update")
+                                Log.w("FetchUserWorkouts", "Fragment not attached after API call for date $formattedDate, skipping UI update")
                                 return@withContext
                             }
 
-                            // Update activityList and adapter
+                            Log.d("FetchUserWorkouts", "Preparing UI update → total activities: ${allCardItems.size}, synced view items: ${syncedCardItemsView.size}")
+
                             newActivities.addAll(allCardItems)
                             activityList.clear()
                             newActivityList.clear()
                             activityList.addAll(newActivities)
                             newActivityList.addAll(unsyncedCardItems)
-                            Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
+
+                            Log.d("FetchUserWorkouts", "Lists updated → activityList: ${activityList.size}, newActivityList: ${newActivityList.size}")
+
                             myActivityAdapter.addAll(newActivities, syncedCardItemsView, -1, null, false)
                             myActivityAdapter.notifyDataSetChanged()
 
-                            // Update RecyclerView visibility
                             if (activityList.isNotEmpty()) {
                                 myActivityRecyclerView.visibility = View.VISIBLE
                                 layoutSaveWorkout.visibility = View.VISIBLE
                                 layoutAddWorkout.visibility = View.GONE
                                 layoutWorkoutData.visibility = View.VISIBLE
                                 layoutNoDataCard.visibility = View.GONE
-                                Log.d("FetchCalories", "Adapter updated with ${newActivities.size} activities, RecyclerView visible for date $formattedDate")
+                                Log.d("FetchUserWorkouts", "Showing data → RecyclerView visible, ${activityList.size} items")
                             } else {
                                 myActivityRecyclerView.visibility = View.GONE
                                 layoutAddWorkout.visibility = View.VISIBLE
                                 layoutSaveWorkout.visibility = View.GONE
                                 layoutWorkoutData.visibility = View.GONE
                                 layoutNoDataCard.visibility = View.VISIBLE
-                                Log.d("FetchCalories", "No activities to display for date $formattedDate")
+                                Log.d("FetchUserWorkouts", "No data → showing empty state")
                             }
                             layoutSaveWorkout.isEnabled = true
 
-                            // Safe dismiss loader
                             activity?.runOnUiThread {
                                 dismissLoader(requireView())
                             }
                         }
                     } ?: withContext(Dispatchers.Main) {
-                        // Handle null workouts
+                        Log.w("FetchUserWorkouts", "Response successful but body null for date $formattedDate")
+
                         if (context != null && isAdded && view != null) {
                             myActivityRecyclerView.visibility = View.GONE
                             layoutAddWorkout.visibility = View.VISIBLE
@@ -555,6 +567,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         }
                     }
                 } else {
+                    Log.e("FetchUserWorkouts", "API failed → code = ${response.code()}, message = ${response.message()}")
+
                     withContext(Dispatchers.Main) {
                         if (context != null && isAdded && view != null) {
                             myActivityRecyclerView.visibility = View.GONE
@@ -568,7 +582,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("FetchUserWorkouts", "Exception while fetching workouts for $formattedDate", e)
+
                 withContext(Dispatchers.Main) {
                     if (context != null && isAdded && view != null) {
                         myActivityRecyclerView.visibility = View.GONE

@@ -894,26 +894,47 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchToolList() {
+        Log.d("ToolList", "fetchToolList called")
         // progressDialog.show()
+
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        Log.d("ToolList", "Token retrieved: ${token?.take(20)}...")
+        Log.d("ToolList", "UserId retrieved: $userId")
+
         //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
+
         val call = ApiClient.apiService.getToolList(token, userId)
+        Log.d("ToolList", "API call initiated for userId: $userId")
+
         call.enqueue(object : Callback<ModuleResponse> {
             override fun onResponse(
                 call: Call<ModuleResponse>,
                 response: Response<ModuleResponse>
             ) {
+                Log.d("ToolList", "onResponse received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     // progressDialog.dismiss()
                     val toolResponse = response.body()
+                    Log.d("ToolList", "Response body received, success: ${toolResponse?.success}")
+
                     toolResponse?.let {
                         if (it.success == true) {
                             val tools = it.data
+                            Log.d("ToolList", "Tools data received, count: ${tools.size}")
+
                             toolsList.clear()
+                            Log.d("ToolList", "Cleared existing toolsList")
+
                             toolsList.addAll(tools)
+                            Log.d("ToolList", "Added tools to toolsList, total count: ${toolsList.size}")
+
                             toolAdapter.notifyDataSetChanged()
+                            Log.d("ToolList", "Adapter notified of data change")
+                            Log.d("ToolList", "Tool list fetched successfully")
                         } else {
+                            Log.w("ToolList", "Request failed with statusCode: ${it.statusCode}")
                             Toast.makeText(
                                 activity,
                                 "Request failed with status: ${it.statusCode}",
@@ -921,14 +942,24 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                             ).show()
                         }
                     }
+
+                    if (toolResponse == null) {
+                        Log.w("ToolList", "Response body is null")
+                    }
                 } else {
+                    Log.e("ToolList", "Response not successful: ${response.code()}")
+                    Log.e("ToolList", "Error body: ${response.errorBody()?.string()}")
                     /* Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                      Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                      progressDialog.dismiss()*/
                     //             Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
+
             override fun onFailure(call: Call<ModuleResponse>, t: Throwable) {
+                Log.e("ToolList", "API call failed: ${t.message}")
+                Log.e("ToolList", "Exception: ${t.javaClass.simpleName}")
+                t.printStackTrace()
                 /* Log.e("Error", "API call failed: ${t.message}")
                  Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
                  progressDialog.dismiss()*/
