@@ -1,13 +1,17 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -377,6 +381,19 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+        searchEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        searchEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                // Hide keyboard when done is pressed
+                val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+                searchEditText.clearFocus()
+                true
+            } else {
+                false
+            }
+        }
 
         getRecipesList()  // this will handle tab restore on success
     }
