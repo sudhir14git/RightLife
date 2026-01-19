@@ -319,41 +319,78 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
     }
 
     private fun getFrequentlyLog() {
+        Log.d("FrequentlyLog", "getFrequentlyLog called")
+
         if (isAdded  && view != null){
+            Log.d("FrequentlyLog", "Fragment is added and view is not null, showing loader")
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
+        } else {
+            Log.w("FrequentlyLog", "Fragment not added or view is null, skipping loader")
         }
+
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        Log.d("FrequentlyLog", "UserId retrieved: $userId")
+
         val call = ApiClient.apiServiceFastApiV2.getFrequentlyLog(userId)
+        Log.d("FrequentlyLog", "API call initiated for userId: $userId")
+
         call.enqueue(object : Callback<FrequentRecipesResponse> {
             override fun onResponse(call: Call<FrequentRecipesResponse>, response: Response<FrequentRecipesResponse>) {
+                Log.d("FrequentlyLog", "onResponse received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
+                        Log.d("FrequentlyLog", "Dismissing loader after successful response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     if (response.body()?.data?.frequent_recipes != null){
+                        Log.d("FrequentlyLog", "Frequent recipes data is not null")
+
                         if (response.body()?.data?.frequent_recipes!!.isNotEmpty()){
+                            val recipesCount = response.body()!!.data.frequent_recipes.size
+                            Log.d("FrequentlyLog", "Frequent recipes count: $recipesCount")
+
                             frequentRecipeLogList.addAll(response.body()!!.data.frequent_recipes)
+                            Log.d("FrequentlyLog", "Added recipes to frequentRecipeLogList, total count: ${frequentRecipeLogList.size}")
+
+                            Log.d("FrequentlyLog", "Calling onFrequentlyLoggedList()")
                             onFrequentlyLoggedList()
+                            Log.d("FrequentlyLog", "Frequently logged recipes loaded successfully")
+                        } else {
+                            Log.w("FrequentlyLog", "Frequent recipes list is empty")
                         }
+                    } else {
+                        Log.w("FrequentlyLog", "Response body data or frequent_recipes is null")
                     }
                 } else {
+                    Log.e("FrequentlyLog", "Response not successful: ${response.code()}")
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+
                     if (isAdded  && view != null){
+                        Log.d("FrequentlyLog", "Dismissing loader after error response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<FrequentRecipesResponse>, t: Throwable) {
+                Log.e("FrequentlyLog", "API call failed: ${t.message}")
+                Log.e("FrequentlyLog", "Exception: ${t.javaClass.simpleName}")
                 Log.e("Error", "API call failed: ${t.message}")
+                t.printStackTrace()
+
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+
                 if (isAdded  && view != null){
+                    Log.d("FrequentlyLog", "Dismissing loader after API failure")
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }
