@@ -66,6 +66,7 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var editDeleteBreakfast : CardView
     private lateinit var tvMealName : TextView
     private lateinit var addToTheMealTV : TextView
+    private lateinit var tv_log_meal_title : TextView
     private lateinit var layoutMain : ConstraintLayout
     private lateinit var searchType : String
     private lateinit var recipeName : String
@@ -122,6 +123,7 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
      //   tvQuantity = view.findViewById(R.id.tvQuantity)
         tvMeasure = view.findViewById(R.id.tvMeasure)
         addToTheMealTV = view.findViewById(R.id.tv_addToTheMeal)
+        tv_log_meal_title = view.findViewById(R.id.tv_log_meal_title)
         tvMealName = view.findViewById(R.id.tvMealName)
         imgFood = view.findViewById(R.id.imgFood)
         layoutMicroTitle = view.findViewById(R.id.layoutMicroTitle)
@@ -373,7 +375,8 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
     }
 
     private fun setDishData(snapRecipeData: IngredientRecipeDetails, isEdit: Boolean) {
-        addToTheMealTV.text = "Update To The Dish"
+        addToTheMealTV.text = "Add To The Meal"
+        tv_log_meal_title.text = "Edit Dish"
         val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
         tvMealName.text = capitalized
         if (snapRecipeData.source.equals("my_recipe")){
