@@ -79,11 +79,11 @@ class SchedulePreferenceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter =
             ScheduleOptionAdapter(scheduleOptions, "EatRight", { selectedOption: ScheduleOption ->
-                if (selectedOption.title == "Rarely" || selectedOption.title == "Never")
+                /*if (selectedOption.title == "Rarely" || selectedOption.title == "Never")
                     showReminderBottomSheet(selectedOption.title)
-                else {
-                    submit(selectedOption.title)
-                }
+                else {*/
+                submit(selectedOption.title)
+                //}
             }.runWithCooldown())
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter

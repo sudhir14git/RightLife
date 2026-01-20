@@ -115,7 +115,8 @@
             android:name=".ui.contentdetailvideo.ContentDetailsActivity"
             android:exported="false"
             android:label="@string/title_activity_content_details"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.contentdetailvideo.FullscreenVideoActivity"
             android:exported="false"

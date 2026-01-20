@@ -13,6 +13,9 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jetsynthesys.rightlife.ui.affirmation.ReminderReceiver
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainApplication : Application() {
 
@@ -22,6 +25,15 @@ class MainApplication : Application() {
         // ---------- App Theme ----------
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
+        CoroutineScope(Dispatchers.Default).launch {
+            initHeavySdks()
+        }
+
+        // ---------- Cleanup ----------
+        ReminderReceiver.ringtone?.stop()
+    }
+
+    private fun initHeavySdks() {
         // ---------- Analytics ----------
         AnalyticsLogger.init(this)
 
@@ -30,9 +42,6 @@ class MainApplication : Application() {
 
         // ---------- Meta / Facebook SDK ----------
         initializeMetaSDK()
-
-        // ---------- Cleanup ----------
-        ReminderReceiver.ringtone?.stop()
     }
 
     /**
@@ -48,7 +57,8 @@ class MainApplication : Application() {
             .setAnalyticsCollectionEnabled(true)
 
         // Enable Crashlytics ONLY for allowed builds
-        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = BuildConfig.ENABLE_CRASHLYTICS
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled =
+            BuildConfig.ENABLE_CRASHLYTICS
 
         if (BuildConfig.ENABLE_CRASHLYTICS) {
             Log.d("AppSetup", "Crashlytics ENABLED")
