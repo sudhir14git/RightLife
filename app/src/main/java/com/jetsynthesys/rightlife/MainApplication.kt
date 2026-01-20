@@ -19,6 +19,10 @@ import kotlinx.coroutines.launch
 
 class MainApplication : Application() {
 
+    companion object {
+        var isFreshLaunch = false
+    }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -31,6 +35,7 @@ class MainApplication : Application() {
 
         // ---------- Cleanup ----------
         ReminderReceiver.ringtone?.stop()
+        isFreshLaunch = true
     }
 
     private fun initHeavySdks() {

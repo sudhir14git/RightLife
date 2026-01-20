@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:text="Sleep Music"
             android:fontFamily="@font/dmsans_bold"
-            android:textSize="@dimen/textsize_large24sp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

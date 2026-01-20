@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ComponentCaller
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Paint
@@ -23,6 +25,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.health.connect.client.HealthConnectClient
@@ -63,6 +66,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
+import com.jetsynthesys.rightlife.MainApplication
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
@@ -105,6 +109,7 @@ import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeActivity
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showChallengeInfoBottomSheet
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeEmptyActivity
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper
@@ -1068,6 +1073,57 @@ class HomeNewActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
             }
         }
+
+        if (MainApplication.isFreshLaunch && (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED || !sharedPreferenceManager.enableNotificationServer)
+        ) {
+            ChallengeBottomSheetHelper.showChallengeReminderBottomSheet(this) { dialog ->
+                checkPermission()
+                dialog.dismiss()
+            }
+            MainApplication.isFreshLaunch = false
+        }
+    }
+
+    private fun checkPermission(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    100
+                )
+                return false
+            } else {
+                enableNotificationServer()
+                return true
+            }
+        } else {
+            enableNotificationServer()
+            // Permission not required before Android 13
+            return true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                enableNotificationServer()
+            } else {
+                showCustomToast("Notification permission denied", false)
+                sharedPreferenceManager.enableNotificationServer = false
+            }
+        }
     }
 
 
@@ -1082,6 +1138,14 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
         getSubscriptionList()
         //getSubscriptionProducts(binding.tvStriketroughPrice);
+    }
+
+    private fun enableNotificationServer() {
+        val requestBody = mapOf("pushNotification" to true)
+        CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
+            //showToast(message)
+            sharedPreferenceManager.enableNotificationServer = true
+        }
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -1240,7 +1304,7 @@ class HomeNewActivity : BaseActivity() {
                     }
                     isUserProfileLoaded = true
                     tryProcessPendingDeepLink()
-                    if (ResponseObj.user_sub_status == 2){
+                    if (ResponseObj.user_sub_status == 2) {
                         AnalyticsLogger.logEvent(
                             this@HomeNewActivity,
                             AnalyticsEvent.FreeTrialEnded

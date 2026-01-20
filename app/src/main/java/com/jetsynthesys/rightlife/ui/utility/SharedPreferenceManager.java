@@ -397,6 +397,16 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
+    public Boolean getEnableNotificationServer() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.SERVER_ENABLE_NOTIFICATION, false);
+    }
+
+    public void setEnableNotificationServer(boolean enableNotification) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.SERVER_ENABLE_NOTIFICATION, enableNotification);
+        editor.apply();
+    }
+
     public Boolean getEnableNotification() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.ENABLE_NOTIFICATION, false);
     }
