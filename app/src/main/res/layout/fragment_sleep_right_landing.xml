@@ -279,6 +279,15 @@
                         app:layout_constraintTop_toTopOf="@id/sleep_duration_layout_top"
                         app:layout_constraintEnd_toEndOf="@id/sleep_duration_layout_top"
                         android:src="@drawable/sleep_time_line" />
+                    <View
+                        android:id="@+id/dotted_line_new"
+                        android:layout_width="0dp"
+                        android:layout_height="2dp"
+                        android:background="@drawable/dotted_line_drawable"
+                        app:layout_constraintTop_toTopOf="@id/sleep_time_line_top"
+                        app:layout_constraintBottom_toBottomOf="@+id/sleep_time_line_top"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
                     <!-- Sleep and Wakeup Times -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -748,7 +757,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
-                        android:text="You might’ve slept great—or not. Log your\nnight or sync your device to reveal your\nsleep performance."
+                        android:text="You might’ve slept great or not. Log your\nnight or sync your device to reveal your\nsleep performance."
                         android:id="@+id/tv_sleep_mystery_subtitle"
                         android:textSize="16sp"
                         android:layout_marginEnd="15dp"
@@ -1809,7 +1818,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/sleep_text_color"
-                            android:text="You might’ve slept great—or not. Log your\nnight or sync your device to reveal your\nsleep performance."
+                            android:text="You might’ve slept great or not. Log your\nnight or sync your device to reveal your\nsleep performance."
                             android:id="@+id/tv_sleep_data_subtitle"
                             android:textSize="16sp"
                             android:layout_marginEnd="15dp"
@@ -2122,7 +2131,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
-                        android:text="You might’ve slept great—or not. Log your\nnight or sync your device to reveal your\nsleep performance."
+                        android:text="You might’ve slept great or not. Log your\nnight or sync your device to reveal your\nsleep performance."
                         android:id="@+id/tv_sleep_data_subtitle_"
                         android:textSize="16sp"
                         android:layout_marginEnd="15dp"
@@ -2239,7 +2248,15 @@
                         app:layout_constraintTop_toTopOf="@id/sleep_duration_layout"
                         app:layout_constraintEnd_toEndOf="@id/sleep_duration_layout"
                         android:src="@drawable/sleep_time_line" />
-                    <!-- Sleep and Wakeup Times -->
+                    <View
+                        android:id="@+id/dotted_line"
+                        android:layout_width="0dp"
+                        android:layout_height="4dp"
+                       android:layout_marginTop="75dp"
+                        android:background="@drawable/dotted_line_drawable"
+                        app:layout_constraintTop_toTopOf="@id/sleep_duration_layout"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />                    <!-- Sleep and Wakeup Times -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
