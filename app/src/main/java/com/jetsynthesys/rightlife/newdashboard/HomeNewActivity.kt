@@ -1236,6 +1236,7 @@ class HomeNewActivity : BaseActivity() {
                     )
                     SharedPreferenceManager.getInstance(applicationContext)
                         .saveUserId(ResponseObj.userdata.id)
+                    ResponseObj.userdata.bodyFat = ResponseObj.bodyFat
                     SharedPreferenceManager.getInstance(applicationContext)
                         .saveUserProfile(ResponseObj)
 

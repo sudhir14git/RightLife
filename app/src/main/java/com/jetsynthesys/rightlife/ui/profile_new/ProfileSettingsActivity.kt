@@ -211,6 +211,7 @@ class ProfileSettingsActivity : BaseActivity() {
                         jsonResponse, UserProfileResponse::class.java
                     )
                     sharedPreferenceManager.saveUserId(profileResponse.userdata.id)
+                    profileResponse.userdata.bodyFat = profileResponse.bodyFat
                     sharedPreferenceManager.saveUserProfile(profileResponse)
 
                     sharedPreferenceManager.setAIReportGeneratedView(profileResponse.reportView)

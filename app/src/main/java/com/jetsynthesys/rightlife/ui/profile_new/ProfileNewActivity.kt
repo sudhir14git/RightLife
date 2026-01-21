@@ -410,6 +410,10 @@ class ProfileNewActivity : BaseActivity() {
         } else {
             binding.tvHeight.text = "${userData.height.toInt()} cm"
         }
+
+        if (userData.bodyFat != null) {
+            binding.tvBodyFat.text = "${userData.bodyFat} %"
+        }
     }
 
     private fun openCamera() {
@@ -1375,13 +1379,14 @@ class ProfileNewActivity : BaseActivity() {
         val height = binding.tvHeight.text.toString()
         val weight = binding.tvWeight.text.toString()
         val gender = binding.tvGender.text.toString()
-        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty()) {
+        val bodyFat = binding.tvBodyFat.text.toString()?.replace("%", "")?.trim() ?: ""
+        if (firstName.isEmpty() || lastName.isEmpty() || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty() || bodyFat.isEmpty()) {
             showCustomToast("Please fill all required fields before proceeding.")
         } else if (!validateUsername(firstName)) {
             showCustomToast("Please enter valid First Name")
         } else if (!validateUsername(firstName)) {
             showCustomToast("Please enter valid Last Name")
-        } else if (!email.matches(Utils.emailPattern.toRegex())) {
+        } else if (email.isNotEmpty() && !email.matches(Utils.emailPattern.toRegex())) {
             showCustomToast("Invalid Email format")
         } else if (age.split(" ")[0].toInt() !in 13..80) showCustomToast("Face Scan is available only for users aged 13–80.")
         else {
@@ -1419,6 +1424,8 @@ class ProfileNewActivity : BaseActivity() {
                     userData.heightUnit = "FT_AND_INCHES"
                 }
             }
+
+            userData.bodyFat = bodyFat
 
             if (preSignedUrlData != null) {
                 userData.profilePicture = preSignedUrlData?.file?.url
@@ -1534,13 +1541,11 @@ class ProfileNewActivity : BaseActivity() {
                     val ResponseObj = gson.fromJson(
                         jsonResponse, UserProfileResponse::class.java
                     )
-                    SharedPreferenceManager.getInstance(applicationContext)
-                        .saveUserId(ResponseObj.userdata.id)
-                    SharedPreferenceManager.getInstance(applicationContext)
-                        .saveUserProfile(ResponseObj)
+                    sharedPreferenceManager.saveUserId(ResponseObj.userdata.id)
+                    ResponseObj.userdata.bodyFat = ResponseObj.bodyFat
+                    sharedPreferenceManager.saveUserProfile(ResponseObj)
 
-                    SharedPreferenceManager.getInstance(applicationContext)
-                        .setAIReportGeneratedView(ResponseObj.reportView)
+                    sharedPreferenceManager.setAIReportGeneratedView(ResponseObj.reportView)
 
                     userDataResponse = sharedPreferenceManager.userProfile
                     userData = userDataResponse.userdata
@@ -1685,7 +1690,7 @@ class ProfileNewActivity : BaseActivity() {
             ?.toDoubleOrNull()
             ?: 0.0
         // set available value
-        if (bodyFat >= 5){
+        if (bodyFat >= 5) {
             dialogBinding.btnContinue.isEnabled = true
             dialogBinding.btnContinue.backgroundTintList = colorStateListSelected
             dialogBinding.edtBodyFat.setText(average(bodyFat.toString()).toString())

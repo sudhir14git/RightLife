@@ -151,7 +151,7 @@ class CreateUsernameActivity : BaseActivity() {
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
-                    Log.d("AAAA", "Response = " + response.body())
+                    Log.d("TAG", "Response = " + response.body())
                 } else {
                     Toast.makeText(
                         this@CreateUsernameActivity,
