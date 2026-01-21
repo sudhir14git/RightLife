@@ -665,7 +665,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
             }
         }
         val adapter =
-            ArrayAdapter(requireActivity(), R.layout.snap_mealtype_spinner,  servingsList.map {it.type })
+            ArrayAdapter(requireActivity(), R.layout.snap_mealtype_spinner,  newServingList.map {it.type })
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         spinner.adapter = adapter
         // Store default serving
