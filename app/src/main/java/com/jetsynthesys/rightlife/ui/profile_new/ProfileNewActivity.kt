@@ -31,6 +31,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -39,6 +40,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -87,6 +89,9 @@ import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.jetsynthesys.rightlife.ui.utility.isValidIndianMobile
 import com.shawnlin.numberpicker.NumberPicker
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -102,16 +107,13 @@ import kotlin.math.abs
 import kotlin.math.floor
 
 class ProfileNewActivity : BaseActivity() {
-    private var selectedWeight = "60.0 kg"
+    private var selectedWeight = "75.0 kg"
     private var selectedHeight = "5.8"
 
     private lateinit var binding: ActivityProfileNewBinding
     private val CAMERA_REQUEST: Int = 100
     private val PICK_IMAGE_REQUEST: Int = 101
     private var cameraImageUri: Uri? = null
-    private val numbers = mutableListOf<Float>()
-    private lateinit var adapterHeight: RulerAdapterVertical
-    private lateinit var adapterWeight: RulerAdapter
     private var dialogOtp: Dialog? = null
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
@@ -148,26 +150,26 @@ class ProfileNewActivity : BaseActivity() {
                 getUrlFromURI(cameraImageUri!!)
             }
         }
-    private fun openWeightPicker() {
-        val bottomSheet = WeightPickerBottomSheet.newInstance(60.0, "kg")
+    private fun openWeightPicker(initialWeight: Double, unit: String) {
+        val bottomSheet = WeightPickerBottomSheet.newInstance(initialWeight, unit)
         bottomSheet.setOnWeightSelectedListener { weight, unit ->
             selectedWeight = String.format("%.1f %s", weight, unit)
-            binding.tvWeight.setText("$selectedWeight")
+            binding.tvWeight.text = "$selectedWeight"
         }
         bottomSheet.show(supportFragmentManager, "WeightPicker")
     }
 
-    fun openHeightPicker() {
-        val bottomSheet = HeightPickerBottomSheet.newInstance("6'7\"", "ft")
+    private fun openHeightPicker(unit: String) {
+        val bottomSheet = HeightPickerBottomSheet.newInstance(unit = unit)
         bottomSheet.setOnHeightSelectedListener { height, unit ->
             selectedHeight = height
             if (unit == "ft") {
                 selectedHeight = "$height $unit"
                 val height = height.toString().split(".")
-                binding.tvHeight.setText("${height[0]} ft ${height[1]} in")
+                binding.tvHeight.text = "${height[0]} ft ${height[1]} in"
             }else{
                 selectedHeight = "$height $unit"
-                binding.tvHeight.setText("${height}")
+                binding.tvHeight.text = "${height}"
 
             }
             //binding.edtHeight.setText("${selectedHeight}")
@@ -207,24 +209,50 @@ class ProfileNewActivity : BaseActivity() {
 
         binding.tvHeight.setOnClickListener {
             it.disableViewForSeconds()
-            //showHeightSelectionBottomSheet(userData.gender)
-            openHeightPicker()
+            lifecycleScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) {
+                    val unit = if (binding.tvHeight.text.toString().trim().contains("ft")) "ft" else "cm"
+                    openHeightPicker(unit)
+                }
+            }
         }
 
 
         binding.arrowHeight.setOnClickListener {
             it.disableViewForSeconds()
-            showHeightSelectionBottomSheet(userData.gender)
+            lifecycleScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) {
+                    val unit = if (binding.tvHeight.text.toString().trim().contains("ft")) "ft" else "cm"
+                    openHeightPicker(unit)
+                }
+            }
         }
 
         binding.tvWeight.setOnClickListener {
             it.disableViewForSeconds()
-            //showWeightSelectionBottomSheet(userData.gender)
-            openWeightPicker()
+            lifecycleScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) {
+                    val weightParts = binding.tvWeight.text.toString().trim().split(" ")
+
+                    val value = weightParts.getOrNull(0)?.toDoubleOrNull() ?: 75.0
+                    val unit = weightParts.getOrNull(1) ?: "kg"
+
+                    openWeightPicker(value, unit)
+                }
+            }
         }
         binding.arrowWeight.setOnClickListener {
             it.disableViewForSeconds()
-            showWeightSelectionBottomSheet(userData.gender)
+            lifecycleScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) {
+                    val weightParts = binding.tvWeight.text.toString().trim().split(" ")
+
+                    val value = weightParts.getOrNull(0)?.toDoubleOrNull() ?: 75.0
+                    val unit = weightParts.getOrNull(1) ?: "kg"
+
+                    openWeightPicker(value, unit)
+                }
+            }
         }
 
         binding.tvBodyFat.setOnClickListener {
@@ -670,344 +698,6 @@ class ProfileNewActivity : BaseActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun showWeightSelectionBottomSheet(gender: String) {
-        // Create and configure BottomSheetDialog
-        val bottomSheetDialog = BottomSheetDialog(this)
-        var selectedLabel = " KGS"
-        var selectedWeight = binding.tvWeight.text.toString()
-        if (selectedWeight.isEmpty()) {
-            selectedWeight = "50 KGS"
-        } else {
-            val w = selectedWeight.split(" ")
-            selectedLabel = " ${w[1].lowercase(Locale.getDefault())}"
-        }
-
-
-        // Inflate the BottomSheet layout
-        val dialogBinding = BottomsheetWeightSelectionBinding.inflate(layoutInflater)
-        val bottomSheetView = dialogBinding.root
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-
-        // Set up the animation
-        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
-        if (bottomSheetLayout != null) {
-            val slideUpAnimation: Animation =
-                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
-            bottomSheetLayout.animation = slideUpAnimation
-        }
-
-        dialogBinding.selectedNumberText.text = selectedWeight
-
-        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        dialogBinding.rulerView.layoutManager = layoutManager
-
-        // Generate numbers with increments of 0.1
-
-        for (i in 0..3000) {
-            numbers.add(i / 10f) // Increment by 0.1
-        }
-
-
-        adapterWeight = RulerAdapter(numbers) { number ->
-            // Handle the selected number
-        }
-        dialogBinding.rulerView.adapter = adapterWeight
-
-        if (selectedLabel == " kg") {
-            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
-            dialogBinding.kgOption.setTextColor(Color.WHITE)
-
-            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
-            dialogBinding.lbsOption.setTextColor(Color.BLACK)
-            setKgsValue()
-
-            dialogBinding.selectedNumberText.text = selectedWeight
-        } else {
-            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
-            dialogBinding.lbsOption.setTextColor(Color.WHITE)
-
-            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_unselected)
-            dialogBinding.kgOption.setTextColor(Color.BLACK)
-            setLbsValue()
-
-            dialogBinding.selectedNumberText.text = selectedWeight
-        }
-
-        dialogBinding.kgOption.setOnClickListener {
-            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
-            dialogBinding.kgOption.setTextColor(Color.WHITE)
-
-            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
-            dialogBinding.lbsOption.setTextColor(Color.BLACK)
-
-            selectedLabel = " kg"
-            selectedWeight = if (gender == "Male" || gender == "M") "75 kg"
-            else "55 kg"
-            setKgsValue()
-
-            dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
-            dialogBinding.selectedNumberText.text = selectedWeight
-        }
-
-        dialogBinding.lbsOption.setOnClickListener {
-            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
-            dialogBinding.lbsOption.setTextColor(Color.WHITE)
-
-            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_unselected)
-            dialogBinding.kgOption.setTextColor(Color.BLACK)
-
-            selectedLabel = " lbs"
-            selectedWeight = if (gender == "Male" || gender == "M") "165 lbs"
-            else "120 lbs"
-            setLbsValue()
-
-            dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 1650 else 1200)
-            dialogBinding.selectedNumberText.text = selectedWeight
-        }
-
-
-        // Center number with snap alignment
-        val snapHelper: SnapHelper = LinearSnapHelper()
-        snapHelper.attachToRecyclerView(dialogBinding.rulerView)
-
-        dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    // Get the currently snapped position
-                    val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
-                    if (snappedView != null) {
-                        val position = recyclerView.layoutManager!!.getPosition(snappedView)
-                        val snappedNumber = numbers[position]
-                        //selected_number_text.setText("$snappedNumber Kg")
-                        dialogBinding.selectedNumberText.text = "$snappedNumber$selectedLabel"
-                        selectedWeight = dialogBinding.selectedNumberText.text.toString()
-                    }
-                }
-            }
-        })
-
-        dialogBinding.rlRulerContainer.post {
-            // Get the width of the parent LinearLayout
-            val parentWidth: Int = dialogBinding.rlRulerContainer.width
-
-            // Calculate horizontal padding (half of parent width)
-            val paddingHorizontal = parentWidth / 2
-
-            // Set horizontal padding programmatically
-            dialogBinding.rulerView.setPadding(
-                paddingHorizontal,
-                dialogBinding.rulerView.paddingTop,
-                paddingHorizontal,
-                dialogBinding.rulerView.paddingBottom
-            )
-        }
-
-        dialogBinding.rulerView.post {
-            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.split(" ")[0].toDouble() * 10).toInt())
-        }
-
-        dialogBinding.btnConfirm.setOnClickListener {
-            bottomSheetDialog.dismiss()
-            dialogBinding.rulerView.adapter = null
-            binding.tvWeight.text = selectedWeight
-        }
-
-        bottomSheetDialog.show()
-    }
-
-    private fun showHeightSelectionBottomSheet(gender: String) {
-        var selectedHeight = "5 ft 10 in"
-        var selectedLabel = " feet"
-        // Create and configure BottomSheetDialog
-        val decimalFormat = DecimalFormat("###.##")
-        val bottomSheetDialog = BottomSheetDialog(this)
-
-        // Inflate the BottomSheet layout
-        val dialogBinding = BottomsheetHeightSelectionBinding.inflate(layoutInflater)
-        val bottomSheetView = dialogBinding.root
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
-        dialogBinding.rulerView.layoutManager = layoutManager
-
-
-        // Set up the animation
-        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
-        if (bottomSheetLayout != null) {
-            val slideUpAnimation: Animation =
-                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
-            bottomSheetLayout.animation = slideUpAnimation
-        }
-
-        adapterHeight = RulerAdapterVertical(numbers) { number ->
-            // Handle the selected number
-        }
-        dialogBinding.rulerView.adapter = adapterHeight
-
-        selectedHeight = binding.tvHeight.text.toString()
-        if (selectedHeight.isEmpty()) {
-            selectedHeight = "5 ft 10 in"
-        } else {
-            val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1].equals("cm", ignoreCase = true)) " cm"
-            else " feet"
-            if (selectedLabel == " feet") {
-                dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
-                dialogBinding.feetOption.setTextColor(Color.WHITE)
-
-                dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
-                dialogBinding.cmsOption.setTextColor(Color.BLACK)
-                setFtIn()
-            } else {
-                dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
-                dialogBinding.cmsOption.setTextColor(Color.WHITE)
-
-                dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
-                dialogBinding.feetOption.setTextColor(Color.BLACK)
-                setCms()
-            }
-        }
-
-        dialogBinding.selectedNumberText.text = selectedHeight
-
-
-        dialogBinding.feetOption.setOnClickListener {
-            dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
-            dialogBinding.feetOption.setTextColor(Color.WHITE)
-
-            dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
-            dialogBinding.cmsOption.setTextColor(Color.BLACK)
-
-            selectedLabel = " feet"
-
-            selectedHeight = if (gender == "Male" || gender == "M") "5 ft 8 in"
-            else "5 ft 4 in"
-            setFtIn()
-
-            dialogBinding.rulerView.post {
-                if (gender == "Male" || gender == "M") {
-                    dialogBinding.rulerView.scrollToPosition(68 + 8)
-                } else {
-                    dialogBinding.rulerView.scrollToPosition(64 + 8)
-                }
-            }
-            dialogBinding.selectedNumberText.text = selectedHeight
-        }
-
-        dialogBinding.cmsOption.setOnClickListener {
-            dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
-            dialogBinding.cmsOption.setTextColor(Color.WHITE)
-
-            dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
-            dialogBinding.feetOption.setTextColor(Color.BLACK)
-
-            selectedLabel = " cm"
-
-            selectedHeight = if (gender == "Male" || gender == "M") "173 cm"
-            else "163 cm"
-            setCms()
-
-            dialogBinding.rulerView.post {
-                if (gender == "Male" || gender == "M") {
-                    dialogBinding.rulerView.scrollToPosition(173 + 8)
-                } else {
-                    dialogBinding.rulerView.scrollToPosition(163 + 8)
-                }
-            }
-            dialogBinding.selectedNumberText.text = selectedHeight
-        }
-
-        if (selectedLabel == " cm") {
-            setCms()
-        } else {
-            setFtIn()
-        }
-
-        // Attach a LinearSnapHelper for center alignment
-        val snapHelper = LinearSnapHelper()
-        snapHelper.attachToRecyclerView(dialogBinding.rulerView)
-
-        // Add scroll listener to handle snapping logic
-        dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
-                    if (snappedView != null) {
-                        val position =
-                            recyclerView.layoutManager?.getPosition(snappedView) ?: return
-                        val snappedNumber = numbers[position]
-                        if (dialogBinding.selectedNumberText != null) {
-                            dialogBinding.selectedNumberText.text =
-                                "${decimalFormat.format(snappedNumber)}$selectedLabel"
-                            if (selectedLabel == " feet") {
-                                val feet = decimalFormat.format(snappedNumber / 12)
-                                val remainingInches = snappedNumber.toInt() % 12
-                                val h = (feet).toString().split(".")
-                                val ft = h[0]
-                                dialogBinding.selectedNumberText.text = "$ft ft $remainingInches in"
-                            }
-                            selectedHeight = dialogBinding.selectedNumberText.text.toString()
-                        }
-
-                    }
-                }
-            }
-        })
-
-        // Set vertical padding for the marker view programmatically
-        dialogBinding.rlRulerContainer.post {
-            val parentHeight = dialogBinding.rlRulerContainer.height
-            val paddingVertical = parentHeight / 2
-            dialogBinding.markerView.setPadding(
-                dialogBinding.markerView.paddingLeft,
-                paddingVertical,
-                dialogBinding.markerView.paddingRight,
-                paddingVertical
-            )
-        }
-
-        dialogBinding.rulerView.post {
-
-            selectedHeight = binding.tvHeight.text.toString()
-            if (selectedHeight.isEmpty()) {
-                selectedHeight = "5 Ft 10 In"
-            } else {
-                val h = selectedHeight.split(" ")
-                selectedLabel = if (h[1].equals("cm", ignoreCase = true)) " cm"
-                else " feet"
-            }
-
-            if (selectedLabel == " feet") {
-                val regex = Regex("(\\d+)\\s*Ft\\s*(\\d+)\\s*In", RegexOption.IGNORE_CASE)
-                val matchResult = regex.find(selectedHeight)
-
-                if (matchResult != null && matchResult.groupValues.size == 3) {
-                    val feet = matchResult.groupValues[1].toInt()
-                    val inches = matchResult.groupValues[2].toInt()
-                    val index = (feet * 12) + inches
-                    dialogBinding.rulerView.scrollToPosition(index + 8)
-                }
-            } else {
-                dialogBinding.rulerView.scrollToPosition(floor(selectedHeight.split(" ")[0].toDouble()).toInt() + 8)
-            }
-        }
-
-        dialogBinding.btnConfirm.setOnClickListener {
-            if (validateInput(selectedLabel, selectedHeight)) {
-                bottomSheetDialog.dismiss()
-                dialogBinding.rulerView.adapter = null
-                binding.tvHeight.text = selectedHeight
-            }
-        }
-
-        bottomSheetDialog.show()
-    }
-
     private fun showGenderSelectionBottomSheet() {
         val bottomSheetDialog = BottomSheetDialog(this)
 
@@ -1054,65 +744,6 @@ class ProfileNewActivity : BaseActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setLbsValue() {
-        numbers.clear()
-        for (i in 0..6615) {
-            numbers.add(i / 10f)
-        }
-        adapterWeight.notifyDataSetChanged()
-    }
-
-    private fun setKgsValue() {
-        numbers.clear()
-        for (i in 0..3000) {
-            numbers.add(i / 10f) // Increment by 0.1
-        }
-        adapterWeight.notifyDataSetChanged()
-    }
-
-    private fun validateInput(selectedLabel: String, selectedHeight: String): Boolean {
-        var returnValue: Boolean
-        if (selectedLabel == " feet") {
-            val h = selectedHeight.split(" ")
-            val feet = "${h[0]}.${h[2]}".toDouble()
-            if (feet in 4.0..7.0) {
-                returnValue = true
-            } else {
-                returnValue = false
-                showToast("Height should be in between 4 feet to 7 feet")
-            }
-        } else {
-            val w = selectedHeight.split(" ")
-            val height = w[0].toDouble()
-            if (height in 120.0..220.0) {
-                returnValue = true
-            } else {
-                returnValue = false
-                showToast("Height should be in between 120 cm to 220 cm")
-            }
-
-        }
-        return returnValue
-    }
-
-    private fun setCms() {
-        numbers.clear()
-        for (i in 0..250) {
-            numbers.add(i * 1f) // Increment by 0.1  numbers.add(i * 1f)
-        }
-        adapterHeight.setType("cms")
-        adapterHeight.notifyDataSetChanged()
-    }
-
-    private fun setFtIn() {
-        numbers.clear()
-        for (i in 0..250) {
-            numbers.add(i * 1f) // Increment by 0.1  numbers.add(i * 1f)
-        }
-        adapterHeight.setType("feet")
-        adapterHeight.notifyDataSetChanged()
     }
 
     private fun generateEmailOTP(email: String) {

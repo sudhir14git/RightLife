@@ -89,8 +89,7 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
         // ✅ Gender based defaults
         val gender = SharedPreferenceManager
             .getInstance(requireContext())
-            .onboardingQuestionRequest
-            .gender
+            .userProfile.userdata.gender ?: "Male"
 
         if (gender == "Male" || gender == "M") {
             defaultTotalInches = 68 // 5 ft 8 in
