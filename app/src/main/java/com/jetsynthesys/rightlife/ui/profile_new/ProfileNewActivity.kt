@@ -411,7 +411,7 @@ class ProfileNewActivity : BaseActivity() {
             binding.tvHeight.text = "${userData.height.toInt()} cm"
         }
 
-        if (userData.bodyFat != null) {
+        if (userData.bodyFat != null && userData.bodyFat.isNotEmpty()) {
             binding.tvBodyFat.text = "${userData.bodyFat} %"
         }
     }
