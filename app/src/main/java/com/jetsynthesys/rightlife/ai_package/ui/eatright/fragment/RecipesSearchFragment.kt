@@ -664,15 +664,15 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     mealTypeList.addAll(mealTypeLists)
                     Log.d("RecipesSearchFragment", "Meal Types extracted & added → count: ${mealTypeList.size}")
 
-                    // foodTypeLists wala part commented tha original mein, to wahi rakha (sirf log add kiya)
-                    // val foodTypeLists = snapRecipesList
-                    //     .mapNotNull { it.tags }
-                    //     .flatMap { it.split(",", "/") }
-                    //     .map { it.trim() }
-                    //     .filter { it.isNotEmpty() }
-                    //     .distinct()
-                    //     .sorted()
-                    // foodTypeList.addAll(foodTypeLists)
+
+                   /*  val foodTypeLists = snapRecipesList
+                         .mapNotNull { it.tags}
+                         .flatMap { it.split(",", "/") }
+                         .map { it.trim() }
+                         .filter { it.isNotEmpty() }
+                         .distinct()
+                         .sorted()*/
+                     foodTypeList.addAll(foodTypeLists)
                     Log.d("RecipesSearchFragment", "Food Types (tags) → current size: ${foodTypeList.size} (was commented in original)")
 
                     cuisineList.addAll(snapRecipesList.map { it.cuisine }.filterNotNull().distinct().sorted())

@@ -18,24 +18,24 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/ivBack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_back"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/icon_back" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="My Account Info "
-                    android:textSize="18sp"
+                    android:layout_marginStart="4dp"
                     android:fontFamily="@font/merriweather_bold"
+                    android:text="My Account Info "
                     android:textColor="@color/txt_color_mind"
-                    android:layout_marginStart="4dp" />
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <!-- Profile Picture -->
@@ -50,11 +50,11 @@
                     android:id="@+id/ivProfileImage"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
+                    android:layout_gravity="center"
                     android:background="@drawable/circle_background"
-                    android:visibility="visible"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/rl_profile"
-                    android:layout_gravity="center" />
+                    android:visibility="visible" />
 
                 <!-- First Letter -->
                 <TextView
@@ -65,18 +65,18 @@
                     android:gravity="center"
                     android:text="K"
                     android:textColor="@color/black"
-                    android:visibility="gone"
+                    android:textSize="36sp"
                     android:textStyle="bold"
-                    android:textSize="36sp" />
+                    android:visibility="gone" />
 
                 <!-- Edit icon -->
                 <ImageView
                     android:id="@+id/ivEditProfile"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/edit_profile"
                     android:layout_gravity="bottom|end"
-                    android:layout_margin="8dp" />
+                    android:layout_margin="8dp"
+                    android:src="@drawable/edit_profile" />
             </FrameLayout>
 
 
@@ -84,294 +84,332 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="First Name"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_journal_date"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="First Name"
+                android:textColor="@color/txt_color_journal_date" />
 
             <EditText
                 android:id="@+id/etFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
                 android:background="@drawable/edittext_bg"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:maxLength="20"
-                android:inputType="textPersonName"
                 android:fontFamily="@font/dmsans_regular"
-                android:textColor="@color/txt_color_mind" />
+                android:inputType="textPersonName"
+                android:maxLength="20"
+                android:padding="12dp"
+                android:text=""
+                android:textColor="@color/txt_color_mind"
+                android:textSize="16sp" />
 
             <!-- Last Name -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Last Name"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_journal_date"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Last Name"
+                android:textColor="@color/txt_color_journal_date" />
 
             <EditText
                 android:id="@+id/etLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_bg"
-                android:padding="12dp"
-                android:textSize="16sp"
-                android:maxLength="30"
-                android:inputType="textPersonName"
                 android:fontFamily="@font/dmsans_regular"
-                android:textColor="@color/txt_color_mind" />
+                android:inputType="textPersonName"
+                android:maxLength="30"
+                android:padding="12dp"
+                android:textColor="@color/txt_color_mind"
+                android:textSize="16sp" />
 
             <!-- Email -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Email"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_journal_date"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Email"
+                android:textColor="@color/txt_color_journal_date" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/etEmail"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text=""
                     android:background="@drawable/edittext_bg"
-                    android:padding="12dp"
-                    android:textSize="16sp"
-                    android:inputType="textEmailAddress"
                     android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/txt_color_mind" />
+                    android:inputType="textEmailAddress"
+                    android:padding="12dp"
+                    android:text=""
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btnVerifyEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="@color/rightlife"
                     android:text="Verify"
                     android:textColor="@color/white"
-                    android:backgroundTint="@color/rightlife"
-                    android:visibility="visible"
-                    android:layout_marginStart="8dp" />
+                    android:visibility="visible" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tvEmailError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Enter a valid Gmail ID"
-                android:fontFamily="@font/dmsans_regular"
-                android:textColor="@color/light_orange"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:visibility="gone"
-                android:textSize="14sp"/>
+                android:fontFamily="@font/dmsans_regular"
+                android:text="Enter a valid Gmail ID"
+                android:textColor="@color/light_orange"
+                android:textSize="14sp"
+                android:visibility="gone" />
 
             <!-- Mobile Number with Verify -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Mobile Number"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_journal_date"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Mobile Number"
+                android:textColor="@color/txt_color_journal_date" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/etMobile"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:maxLength="10"
-                    android:inputType="number"
+                    android:layout_weight="1"
                     android:background="@drawable/edittext_bg"
-                    android:padding="12dp"
-                    android:textSize="16sp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/txt_color_mind" />
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:padding="12dp"
+                    android:text=""
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btnVerify"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="@color/rightlife"
                     android:text="Verify"
                     android:textColor="@color/white"
-                    android:backgroundTint="@color/rightlife"
-                    android:visibility="visible"
-                    android:layout_marginStart="8dp" />
+                    android:visibility="visible" />
             </LinearLayout>
 
             <!-- Age -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Age"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_journal_date"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Age"
+                android:textColor="@color/txt_color_journal_date" />
 
             <LinearLayout
                 android:id="@+id/llAge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_bg"
-                android:padding="12dp"
-                android:orientation="horizontal"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
-                android:foreground="?attr/selectableItemBackground">
+                android:orientation="horizontal"
+                android:padding="12dp">
 
                 <TextView
                     android:id="@+id/tvAge"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="25 years"
-                    android:textSize="16sp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/txt_color_mind" />
+                    android:text="25 years"
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/arrowAge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
-                    android:src="@drawable/next_arrow_settings"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/next_arrow_settings" />
             </LinearLayout>
 
             <!-- Gender -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Gender"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_journal_date"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Gender"
+                android:textColor="@color/txt_color_journal_date" />
 
             <LinearLayout
                 android:id="@+id/llGender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_bg"
-                android:padding="12dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:foreground="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
 
                 <TextView
                     android:id="@+id/tvGender"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Male"
-                    android:textSize="16sp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/txt_color_mind" />
+                    android:text="Male"
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/arrowGender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/next_arrow_settings"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/next_arrow_settings" />
             </LinearLayout>
 
             <!-- Height -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Height"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_journal_date"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Height"
+                android:textColor="@color/txt_color_journal_date" />
 
             <LinearLayout
                 android:id="@+id/llHeight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_bg"
-                android:padding="12dp"
-                android:orientation="horizontal"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
-                android:foreground="?attr/selectableItemBackground">
+                android:orientation="horizontal"
+                android:padding="12dp">
 
                 <TextView
                     android:id="@+id/tvHeight"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text=""
-                    android:textSize="16sp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/txt_color_mind" />
+                    android:text=""
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/arrowHeight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/next_arrow_settings"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/next_arrow_settings" />
             </LinearLayout>
 
             <!-- Weight -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Weight"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_journal_date"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Weight"
+                android:textColor="@color/txt_color_journal_date" />
 
             <LinearLayout
                 android:id="@+id/llWeight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_bg"
-                android:padding="12dp"
-                android:orientation="horizontal"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
-                android:foreground="?attr/selectableItemBackground">
+                android:orientation="horizontal"
+                android:padding="12dp">
 
                 <TextView
                     android:id="@+id/tvWeight"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text=""
-                    android:textSize="16sp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/txt_color_mind" />
+                    android:text=""
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/arrowWeight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/next_arrow_settings"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/next_arrow_settings" />
+            </LinearLayout>
+
+            <!-- Body Fat -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Body Fat %"
+                android:textColor="@color/txt_color_journal_date" />
+
+            <LinearLayout
+                android:id="@+id/llBodyFat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_bg"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tvBodyFat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text=""
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/arrowBodyFat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/next_arrow_settings" />
             </LinearLayout>
 
             <!-- Delete Account -->
@@ -379,29 +417,29 @@
                 android:id="@+id/llDeleteAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/edittext_bg"
                 android:layout_marginTop="12dp"
+                android:background="@drawable/edittext_bg"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="14dp"
-                android:visibility="gone"
-                android:foreground="?attr/selectableItemBackground">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delete Account"
-                    android:textSize="16sp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/txt_color_mind" />
+                    android:text="Delete Account"
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/arrowDeleteAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/next_arrow_settings"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/next_arrow_settings" />
             </LinearLayout>
 
         </LinearLayout>
@@ -412,12 +450,12 @@
         android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:text="Save"
-        android:backgroundTint="@color/menuselected"
-        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
+        android:backgroundTint="@color/menuselected"
         android:fontFamily="@font/dmsans_bold"
-        android:textSize="18sp"
         android:gravity="center"
-        android:layout_alignParentBottom="true" />
+        android:text="Save"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 </RelativeLayout>

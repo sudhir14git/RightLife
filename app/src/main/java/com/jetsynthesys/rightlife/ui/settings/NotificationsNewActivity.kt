@@ -28,13 +28,18 @@ class NotificationsNewActivity : BaseActivity() {
 
         CommonAPICall.getNotificationSettings(this) { data ->
             binding.pushNotificationsSwitch.isChecked = data.pushNotification == true
+            sharedPreferenceManager.enableNotificationServer = data.pushNotification == true
         }
 
         binding.pushNotificationsSwitch.setOnCheckedChangeListener { _, isChecked ->
             val requestBody = mapOf("pushNotification" to isChecked)
             CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
-                if (count > 0)
+                if (count > 0) {
                     showToast(message)
+                    CommonAPICall.getNotificationSettings(this) { data ->
+                        sharedPreferenceManager.enableNotificationServer = data.pushNotification == true
+                    }
+                }
                 count++
                 if (!result) binding.pushNotificationsSwitch.isChecked = !isChecked
             }

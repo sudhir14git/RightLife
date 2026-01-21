@@ -403,11 +403,9 @@ class HomeExploreFragment : BaseFragment() {
         getPromotionListWeekly()
         getRightLifeEdit()
         getWellnessPlaylist()
-        Handler(Looper.getMainLooper()).postDelayed({
-            getJumpBackInData()
-        }, 2000)
         lifecycleScope.launch {
-            delay(1000)
+            delay(2000)
+            getJumpBackInData()
             (requireActivity() as? HomeNewActivity)?.showChallengeCard()
         }
     }

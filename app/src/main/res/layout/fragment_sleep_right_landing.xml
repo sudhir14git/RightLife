@@ -2191,7 +2191,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:id="@+id/img_ideal_info"
-                            android:src="@drawable/sleep_info_icon" />
+                            android:src="@drawable/sleep_info" />
                     </LinearLayout>
 
                     <!-- Subtitle -->
@@ -2532,7 +2532,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/sleep_text_color"
+                            android:textColor="#0B1215"
                             android:id="@+id/tv_your_sleep_mystery_"
                             android:fontFamily="@font/dmsans_bold"
                             android:text="Where's The Routine?"
@@ -2545,8 +2545,9 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/sleep_text_color"
-                            android:text="You might’ve slept great—or not. Log your\nnight or sync your device to reveal your\nsleep performance."
+                            android:textColor="#0B1215"
+                            android:text="We track patterns across days, not just hours.
+Log or sync sleep to see how steady you’ve really been."
                             android:id="@+id/tv_sleep_mystery_subtitle_"
                             android:textSize="16sp"
                             android:fontFamily="@font/dmsans_regular"

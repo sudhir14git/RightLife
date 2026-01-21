@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Step Number Circle -->
+    <TextView
+        android:id="@+id/tvStepNumber"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/bg_green_circle"
+        android:gravity="center"
+        android:text="1"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/arrowIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="▼"
+        android:textColor="#2ECC71"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="@+id/verticalLine"
+        app:layout_constraintBottom_toBottomOf="@+id/verticalLine"
+        app:layout_constraintStart_toStartOf="@id/tvStepNumber"
+        app:layout_constraintEnd_toEndOf="@id/tvStepNumber" />
+
+    <!-- Vertical Line -->
+    <View
+        android:id="@+id/verticalLine"
+        android:layout_width="2dp"
+        android:layout_height="0dp"
+        android:background="#2ECC71"
+        app:layout_constraintTop_toBottomOf="@id/tvStepNumber"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tvStepNumber"
+        app:layout_constraintEnd_toEndOf="@id/tvStepNumber" />
+
+    <!-- Step Description -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:paddingBottom="16dp"
+        android:text="Wash the poha a few times in running water..."
+        android:textSize="16sp"
+        android:fontFamily="@font/dmsans_regular"
+        app:layout_constraintStart_toEndOf="@id/tvStepNumber"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

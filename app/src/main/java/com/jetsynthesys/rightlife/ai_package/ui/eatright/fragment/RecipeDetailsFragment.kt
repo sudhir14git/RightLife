@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -56,6 +57,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
     private lateinit var serves_text : TextView
     private lateinit var ingredients_description : TextView
     private lateinit var steps_description : TextView
+    private lateinit var stepsContainer : LinearLayout
     private lateinit var addToTheMealTV : TextView
     private lateinit var searchType : String
     private lateinit var quantityEdit: EditText
@@ -107,6 +109,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         imgFood = view.findViewById(R.id.imgFood)
         ingredients_description = view.findViewById(R.id.ingredients_description)
         steps_description = view.findViewById(R.id.steps_description)
+        stepsContainer = view.findViewById(R.id.stepsContainer)
         recipeDescription = view.findViewById(R.id.recipeDescription)
         layoutMacroTitle = view.findViewById(R.id.layoutMacroTitle)
         microUP = view.findViewById(R.id.microUP)
@@ -323,14 +326,29 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                         val instructionsList = data.preparation_notes.orEmpty()
                         val instructionsText = instructionsList.joinToString(separator = "\n") { "- $it" }
                         steps_description.text = instructionsText
+                        data.preparation_notes.forEachIndexed { index, text ->
+                            val view = layoutInflater.inflate(R.layout.item_step, stepsContainer, false)
+                            val tvNumber = view.findViewById<TextView>(R.id.tvStepNumber)
+                            val tvText = view.findViewById<TextView>(R.id.tvDescription)
+                            val line = view.findViewById<View>(R.id.verticalLine)
+                            val arrowIcon = view.findViewById<TextView>(R.id.arrowIcon)
+                            tvNumber.text = (index + 1).toString()
+                            tvText.text = text
+                            // Hide line for last item
+                            if (index == data.preparation_notes.size - 1) {
+                                line.visibility = View.INVISIBLE
+                                arrowIcon.visibility = View.INVISIBLE
+                            }
+                            stepsContainer.addView(view)
+                        }
                         Log.d("RecipeDetails", "Instructions set → count: ${instructionsList.size}")
 
                         serves_text.text = "Serves ${data.serving_size_for_calorific_breakdown.toString()}"
                         tvMealName.text = data.recipe.toString()
                         time_text.text = data.active_cooking_time_min.toString()
                         calorie_value.text = "${data.calories_kcal?.toInt().toString()} Kcal"
-                        carbs_value.text = "${data.carbs_g?.toInt()} g"
-                        protein_value.text = "${data.protein_g?.toInt()} g"
+                        carbs_value.text = "${data.protein_g?.toInt()} g"
+                        protein_value.text = "${data.carbs_g?.toInt()} g"
                         fat_value.text = "${data.fat_g?.toInt()} g"
                         Log.d("RecipeDetails", "Nutritional values & name/time set → calories: ${data.calories_kcal}, carbs: ${data.carbs_g}")
 
@@ -351,9 +369,12 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                         }
 
                         foodType.text = data.meal_type
+                        val input =  data.meal_type
+
+                        val firstWord = input.split("/", ",").first().trim()
                         Log.d("RecipeDetails", "Meal type text set: ${data.meal_type}")
 
-                        when (data.meal_type) {
+                        when (firstWord) {
                             "Breakfast" -> {
                                 mealTypeImage.setImageResource(R.drawable.ic_breakfast)
                                 Log.d("RecipeDetails", "Meal icon set: Breakfast")

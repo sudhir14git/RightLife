@@ -75,12 +75,14 @@ class EnableNotificationActivity : BaseActivity() {
                 return false
             } else {
                 sharedPreferenceManager.enableNotification = true
+                enableNotificationAPICall()
                 startActivity(Intent(this, OnboardingFinalActivity::class.java))
                 finishAffinity()
                 return true
             }
         } else {
             sharedPreferenceManager.enableNotification = true
+            enableNotificationAPICall()
             startActivity(Intent(this, OnboardingFinalActivity::class.java))
             finishAffinity()
             // Permission not required before Android 13
@@ -127,6 +129,7 @@ class EnableNotificationActivity : BaseActivity() {
         CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
             showToast(message)
             sharedPreferenceManager.enableNotification = true
+            sharedPreferenceManager.enableNotificationServer = true
             startActivity(Intent(this, OnboardingFinalActivity::class.java))
             finishAffinity()
         }

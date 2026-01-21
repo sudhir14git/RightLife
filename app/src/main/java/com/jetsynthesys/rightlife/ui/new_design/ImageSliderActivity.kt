@@ -488,6 +488,7 @@ class ImageSliderActivity : BaseActivity() {
                         jsonResponse, UserProfileResponse::class.java
                     )
                     sharedPreferenceManager.saveUserId(ResponseObj.userdata.id)
+                    ResponseObj.userdata.bodyFat = ResponseObj.bodyFat
                     sharedPreferenceManager
                         .saveUserProfile(ResponseObj)
 
