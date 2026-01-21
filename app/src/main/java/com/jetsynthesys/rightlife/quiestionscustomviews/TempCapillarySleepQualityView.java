@@ -12,7 +12,7 @@ import android.view.View;
 
 import java.util.HashMap;
 
-public class TempCapillaryAnxietyLevelView extends View {
+public class TempCapillarySleepQualityView extends View {
     private Paint backgroundPaint, fillPaint, markerPaint, thumbPaint;
     private int viewHeight, viewWidth;
     private float thumbY;
@@ -25,7 +25,7 @@ public class TempCapillaryAnxietyLevelView extends View {
     private OnValueChangeListener listener;
     private HashMap<Integer, Integer> stepColorMap = new HashMap<>();
 
-    public TempCapillaryAnxietyLevelView(Context context, AttributeSet attrs) {
+    public TempCapillarySleepQualityView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -36,7 +36,7 @@ public class TempCapillaryAnxietyLevelView extends View {
         backgroundPaint.setStyle(Paint.Style.FILL);
 
         fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fillPaint.setColor(Color.parseColor("#78DD49")); // Default fill color
+        fillPaint.setColor(Color.parseColor("#F25136")); // Default fill color
         fillPaint.setStyle(Paint.Style.FILL);
 
         markerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);

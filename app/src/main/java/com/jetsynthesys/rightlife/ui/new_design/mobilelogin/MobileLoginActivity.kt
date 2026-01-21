@@ -594,6 +594,7 @@ class MobileLoginActivity : BaseActivity() {
                     val responseObj = gson.fromJson(jsonResponse, UserProfileResponse::class.java)
 
                     sharedPreferenceManager.saveUserId(responseObj.userdata.id)
+                    responseObj.userdata.bodyFat = responseObj.bodyFat
                     sharedPreferenceManager.saveUserProfile(responseObj)
                     sharedPreferenceManager.setAIReportGeneratedView(responseObj.reportView)
 

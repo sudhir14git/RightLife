@@ -5,8 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -67,6 +65,7 @@ import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
@@ -131,13 +130,14 @@ class HomeDashboardFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         fetchDashboardData()
-        getDashboardChecklist()
-        getDashboardChecklistStatus()
+        /*getDashboardChecklist()
+        getDashboardChecklistStatus()*/
         getAiDashboard()
-        Handler(Looper.getMainLooper()).postDelayed({
+        lifecycleScope.launch {
+            delay(1000)
             getDashboardChecklist()
             getDashboardChecklistStatus()
-        }, 1000)
+        }
         (requireActivity() as? HomeNewActivity)?.hideChallengeLayout()
     }
 
@@ -257,9 +257,8 @@ class HomeDashboardFragment : BaseFragment() {
                 val activity =
                     requireActivity() as HomeNewActivity/*val isHealthCamFree = activity.isHealthCamFree*/
 
-                var isHealthCamFree =
-                    sharedPreferenceManager.userProfile?.homeServices?.find { it.title == "HealthCam" }?.isFree
-                        ?: false
+                sharedPreferenceManager.userProfile?.homeServices?.find { it.title == "HealthCam" }?.isFree
+                    ?: false
 
                 val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService
                     ?: false
@@ -498,7 +497,10 @@ class HomeDashboardFragment : BaseFragment() {
                     val checklistResponse =
                         gson.fromJson(promotionResponse2, ChecklistResponse::class.java)
                     sharedPreferenceManager.saveChecklistResponse(checklistResponse)
-                    runWhenAttached { handleChecklistResponse(checklistResponse) }
+                    runWhenAttached {
+                        if (!isFragmentSafe()) return@runWhenAttached
+                        handleChecklistResponse(checklistResponse)
+                    }
                     checkListCount = 0
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -585,7 +587,7 @@ class HomeDashboardFragment : BaseFragment() {
         if (DashboardChecklistManager.checklistStatus) {
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
-            if (sharedPreferenceManager.getFirstTimeCheckListEventLogged()) {
+            if (sharedPreferenceManager.firstTimeCheckListEventLogged) {
                 sharedPreferenceManager.firstTimeCheckListEventLogged = false
                 AnalyticsLogger.logEvent(
                     requireContext(),
@@ -596,7 +598,7 @@ class HomeDashboardFragment : BaseFragment() {
             /*
                     val activity = requireActivity() as HomeNewActivity
                     activity.getUserDetails()*/
-            if (sharedPreferenceManager.getFirstTimeForHomeDashboard()) {
+            if (sharedPreferenceManager.firstTimeForHomeDashboard) {
                 sharedPreferenceManager.firstTimeForHomeDashboard = false
                 AnalyticsLogger.logEvent(
                     requireContext(),
@@ -706,6 +708,7 @@ class HomeDashboardFragment : BaseFragment() {
                         gson.fromJson(promotionResponse2, AiDashboardResponseMain::class.java)
                     runWhenAttached {
                         //handleSelectedModule(aiDashboardResponseMain)
+                        if (!isFragmentSafe()) return@runWhenAttached
                         handleDescoverList(aiDashboardResponseMain)
                         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
                         binding.recyclerView.adapter = HeartRateAdapter(
@@ -736,6 +739,7 @@ class HomeDashboardFragment : BaseFragment() {
                             DashboardChecklistManager.updateFrom(it)
                         }
                         runWhenAttached {
+                            if (!isFragmentSafe()) return@runWhenAttached
                             if (DashboardChecklistManager.isDataLoaded) {
                                 // Chceklist completion logic
                                 if (DashboardChecklistManager.checklistStatus) {
@@ -751,10 +755,10 @@ class HomeDashboardFragment : BaseFragment() {
                                     binding.llDiscoverLayout.visibility = View.VISIBLE
 
                                     // first time Check list visit event
-                                    if (sharedPreferenceManager.getFirstTimeCheckListVisitLogged()) {
+                                    if (sharedPreferenceManager.firstTimeCheckListVisitLogged) {
                                         sharedPreferenceManager.setFirstTimeCheckListVisitLogged(
                                             false
-                                        );
+                                        )
                                         AnalyticsLogger.logEvent(
                                             requireContext(),
                                             AnalyticsEvent.Checklist_FirstTime_Open
@@ -1010,6 +1014,10 @@ class HomeDashboardFragment : BaseFragment() {
             putExtra("BottomSeatName", "SnapMealTypeEat")
             putExtra("snapMealId", snapId)
         })
+    }
+
+    private fun isFragmentSafe(): Boolean {
+        return isAdded && activity != null && !requireActivity().isFinishing && !requireActivity().isDestroyed
     }
 
 }

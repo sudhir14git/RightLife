@@ -94,7 +94,17 @@ public class UserProfileResponse {
     @Expose
     private Integer user_sub_status;
 
+    public String getBodyFat() {
+        return bodyFat;
+    }
 
+    public void setBodyFat(String bodyFat) {
+        this.bodyFat = bodyFat;
+    }
+
+    @SerializedName("body_fat")
+    @Expose
+    private String bodyFat;
 
 
     public Boolean getFacialScanService() {

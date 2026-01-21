@@ -50,6 +50,7 @@ public class SharedPreferenceConstants {
     public static final String FIRST_TIME_SNAP_MEAL_VIDEO = "FIRST_TIME_SNAP_MEAL_VIDEO";
     public static final String FIRST_TIME_SNAP_MEAL_RATING = "FIRST_TIME_SNAP_MEAL_RATING";
     public static final String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
+    public static final String SERVER_ENABLE_NOTIFICATION = "SERVER_ENABLE_NOTIFICATION";
     public static final String EAT_RIGHT_MAX_CALORIES = "EAT_RIGHT_MAX_CALORIES";
     public static final String EAT_RIGHT_MAX_CARBS = "EAT_RIGHT_MAX_CARBS";
     public static final String EAT_RIGHT_MAX_PROTEIN = "EAT_RIGHT_MAX_PROTEIN";

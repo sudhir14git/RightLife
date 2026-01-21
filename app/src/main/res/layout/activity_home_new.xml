@@ -80,9 +80,10 @@
                         android:ellipsize="end"
                         android:fontFamily="@font/dmsans_bold"
                         android:gravity="center"
-                        android:maxLength="15"
+                        android:maxLength="20"
                         android:singleLine="true"
                         android:text=""
+                        android:layout_marginEnd="2dp"
                         android:textColor="@color/txt_color_header"
                         android:textSize="@dimen/textsize_medium" />
                 </LinearLayout>
