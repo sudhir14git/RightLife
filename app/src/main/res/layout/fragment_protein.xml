@@ -178,7 +178,7 @@
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             android:src="@drawable/ic_up"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             app:layout_constraintTop_toBottomOf="@+id/average_number"
                             app:layout_constraintStart_toStartOf="parent" />
 
@@ -188,7 +188,7 @@
                             android:layout_height="wrap_content"
                             android:text="50% past week"
                             android:textSize="10sp"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:layout_marginStart="4dp"
                             android:fontFamily="@font/dmsans_regular"
                             android:textColor="@color/green_text"
@@ -243,7 +243,7 @@
                             android:id="@+id/totalPercentageUp"
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:src="@drawable/ic_up"
                             app:layout_constraintTop_toBottomOf="@+id/totalCalorie"
                             app:layout_constraintStart_toStartOf="parent" />
@@ -254,7 +254,7 @@
                             android:layout_height="wrap_content"
                             android:text="50% past week"
                             android:textSize="10sp"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:layout_marginStart="4dp"
                             android:fontFamily="@font/dmsans_regular"
                             android:textColor="@color/green_text"

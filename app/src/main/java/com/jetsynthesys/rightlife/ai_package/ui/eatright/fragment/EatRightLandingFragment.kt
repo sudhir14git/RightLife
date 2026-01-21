@@ -667,8 +667,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
 
         if(landingPageResponse.other_recipes_you_might_like.size > 0){
             logNextMealSuggestionLayout.visibility = View.GONE
-            otherRecipeMightLikeWithData.visibility = View.VISIBLE
-            otherRecipeRecyclerView.visibility = View.VISIBLE
+            otherRecipeMightLikeWithData.visibility = View.GONE
+            otherRecipeRecyclerView.visibility = View.GONE
         }else{
             logNextMealSuggestionLayout.visibility = View.GONE
             otherRecipeMightLikeWithData.visibility = View.GONE

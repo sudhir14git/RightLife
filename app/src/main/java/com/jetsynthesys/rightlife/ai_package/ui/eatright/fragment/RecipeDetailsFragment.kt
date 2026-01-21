@@ -355,12 +355,12 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                         val foodTypeResult = getFoodType(data.category)
                         if (foodTypeResult == "Veg") {
                             vegImage.visibility = View.VISIBLE
-                            vegImage.setImageResource(R.drawable.green_circle)
+                            vegImage.setImageResource(R.drawable.non_veg_new)
                             vegTv.text = "Veg"
                             Log.d("RecipeDetails", "Veg indicator set")
                         } else if (foodTypeResult == "Non-Veg") {
                             vegImage.visibility = View.VISIBLE
-                            vegImage.setColorFilter(ContextCompat.getColor(context!!, R.color.red), PorterDuff.Mode.SRC_IN)
+                            vegImage.setImageResource(R.drawable.veg_new)
                             vegTv.text = "Non-Veg"
                             Log.d("RecipeDetails", "Non-Veg indicator set")
                         } else {
