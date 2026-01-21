@@ -933,10 +933,12 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
                 showLoader(requireView())
             }
         }
+
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val inputDateStr = selectedMealDate
         val localDate = LocalDate.parse(inputDateStr)
         val localDateTime = localDate.atStartOfDay()
+       // val localDateTime = localDate.atTime(4, 0) // 4:00 AM
         val utcZonedDateTime = localDateTime.atZone(ZoneOffset.UTC)
         val utcInstant = utcZonedDateTime.toInstant()
         val utcDateString = utcInstant.toString()  // "2025-08-04T00:00:00Z"

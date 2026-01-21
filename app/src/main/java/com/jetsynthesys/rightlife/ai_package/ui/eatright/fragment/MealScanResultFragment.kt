@@ -74,6 +74,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -269,6 +270,14 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             }
         }else {
             saveMealLayout.visibility = View.VISIBLE
+
+            val defaultMeal = getDefaultMealType()
+            val defaultIndex = items.indexOf(defaultMeal)
+
+            if (defaultIndex != -1) {
+                spinner.setSelection(defaultIndex)
+                selectedMealType = items[defaultIndex]
+            }
         }
 
         // Handle item selection
@@ -501,6 +510,35 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                 view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
             }
         }
+    }
+
+    fun getDefaultMealType(): String {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val currentMinutes = hour * 60 + minute
+        return when {
+            currentMinutes in (5 * 60)..(9 * 60 + 59) -> "Breakfast"
+            currentMinutes in (10 * 60)..(11 * 60 + 59) -> "Morning Snack"
+            currentMinutes in (12 * 60)..(14 * 60 + 59) -> "Lunch"
+            currentMinutes in (15 * 60)..(18 * 60 + 59) -> "Evening Snacks"
+            else -> "Dinner" // 7:00 PM – 4:59 AM
+        }
+    }
+
+    fun getCustomDate4AM(): LocalDate {
+        val now = LocalDateTime.now()
+        val cutoffHour = 4 // 4:00 AM
+        return if (now.hour < cutoffHour) {
+            now.toLocalDate().minusDays(1)
+        } else {
+            now.toLocalDate()
+        }
+    }
+
+    fun getFormattedCustomDate4AM(): String {
+        val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
+        return getCustomDate4AM().format(formatter)
     }
 
     private fun onMicroNutrientsList(nutrition: ArrayList<IngredientRecipeDetails>) {
