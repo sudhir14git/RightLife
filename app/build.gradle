@@ -27,7 +27,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
 
-        buildConfigField 'String', 'MOENGAGE_ID', "\"92IVJGEL525OCZB74IUIHYHS\""
         buildConfigField 'String', 'DFX_REST_URL', "\"https://api.deepaffex.ai\""
         buildConfigField 'String', 'DFX_WS_URL', "\"wss://api.deepaffex.ai\""
         buildConfigField 'String', 'DFX_LICENSE_KEY', "\"f39ff2b6-d684-4340-8e71-701aa9d9ea49\""
