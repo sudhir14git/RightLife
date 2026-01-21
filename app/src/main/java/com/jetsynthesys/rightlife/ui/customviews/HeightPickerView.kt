@@ -47,7 +47,7 @@ class HeightPickerView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val width = 280
+        val width = 320
         val totalItems = if (isFeetInchesMode) {
             (7 * 12) - (4 * 12) + 1 // Total inches from 4'0" to 7'0"
         } else {
@@ -86,7 +86,7 @@ class HeightPickerView @JvmOverloads constructor(
             if (inches == 0) {
                 canvas.drawLine(startX, y, endXLong, y, majorLinePaint)
                 // Draw feet number on the right
-                canvas.drawText(feet.toString(), endXLong + 20f, y + 15f, textPaint)
+                canvas.drawText(feet.toString(), endXLong + 40f, y + 15f, textPaint)
             } else {
                 // Shorter lines for inches
                 canvas.drawLine(startX, y, endXShort, y, linePaint)
@@ -109,7 +109,7 @@ class HeightPickerView @JvmOverloads constructor(
             // Draw longer line every 10 cm
             if (cm % 10 == 0) {
                 canvas.drawLine(startX, y, endXLong, y, majorLinePaint)
-                canvas.drawText(cm.toString(), endXLong + 20f, y + 15f, textPaint)
+                canvas.drawText(cm.toString(), endXLong + 40f, y + 15f, textPaint)
             } else if (cm % 5 == 0) {
                 // Medium line every 5 cm
                 canvas.drawLine(startX, y, endXShort, y, linePaint)
