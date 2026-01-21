@@ -27,7 +27,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Log Last Night's Sleep"
+        android:text="Log your sleep"
         android:textColor="#0B1215"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.RemoveWorkoutBottomSheet
@@ -35,7 +36,7 @@ class RoutineWorkoutListAdapter(
         // Bind data to views
         holder.mealTitle.text = item.name
         var imageUrl = ""
-        if (item.icon.startsWith("https://d1sacaybzizpm5.cloudfront.net")) {
+        if (item.icon.startsWith(BuildConfig.CDN_URL)) {
             // For Cross Training URL, prepend the jetsynthesisqa base URL
             imageUrl = item.icon
         } else if (item.icon.startsWith("https")) {

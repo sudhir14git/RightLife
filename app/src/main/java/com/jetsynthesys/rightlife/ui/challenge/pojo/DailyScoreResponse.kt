@@ -14,6 +14,7 @@ data class DailyScoreData(
     val performance: String,
     val message: String,
     val rank: Int,
+    val allRank: Int,
     val daily: ScoreProgress,
     val bonus: ScoreProgress,
     val lastReportDate: String

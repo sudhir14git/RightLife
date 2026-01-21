@@ -31,6 +31,7 @@ class RecipeSearchAdapter(
         val item = dataLists[position]
 
         holder.dishName.text = item.recipe
+        holder.servingTimeKcal.text = "Serves ${item.servings} | ${item.active_cooking_time_min.toInt()} mins | ${item.calories_kcal.toInt()} Kcal"
         var imageUrl : String? = ""
         imageUrl = if (item.photo_url.contains("drive.google.com")) {
             getDriveImageUrl(item.photo_url)
@@ -74,6 +75,7 @@ class RecipeSearchAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dishName: TextView = itemView.findViewById(R.id.recipeName)
+        val servingTimeKcal: TextView = itemView.findViewById(R.id.servingTimeKcal)
         val dishImage: ImageView = itemView.findViewById(R.id.imageView)
         val statusDot : ImageView = itemView.findViewById(R.id.statusDot)
     }

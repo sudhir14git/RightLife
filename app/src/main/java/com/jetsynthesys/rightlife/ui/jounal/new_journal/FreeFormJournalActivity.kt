@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
 import com.jetsynthesys.rightlife.ui.DialogUtils
@@ -34,9 +33,8 @@ class FreeFormJournalActivity : BaseActivity() {
         isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
 
         journalItem = intent.getSerializableExtra("Section") as? JournalItem
-        startDate = intent.getStringExtra("StartDate").toString()
-        if (startDate.isEmpty())
-            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+
+        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         journalEntry?.let {
             binding.etJournalEntry.setText(it.answer)
@@ -97,7 +95,7 @@ class FreeFormJournalActivity : BaseActivity() {
                     putExtra("Section", journalItem)
                     putExtra("Answer", binding.etJournalEntry.text.toString())
                     putExtra("JournalEntry", journalEntry)
-                    putExtra("StartDate",startDate)
+                    putExtra("StartDate", startDate)
                     putExtra("StartDate", startDate)
                     putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                 }

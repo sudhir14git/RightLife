@@ -97,9 +97,9 @@ class PhysicalActivitiesFragment : BaseFragment() {
         binding.tvNoOfActivities.text = headerText
 
         binding.btnContinue.setOnClickListener {
-            if (selectedActivities.size > 0) {
+            if (selectedActivities.isNotEmpty()) {
                 binding.btnContinue.isEnabled = false
-                showPhysicalActivitiesBottomSheet()
+                showPhysicalActivitiesBottomSheet(noOfSelectedActivities)
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.btnContinue.isEnabled = true
                 }, 2000)
@@ -205,7 +205,7 @@ class PhysicalActivitiesFragment : BaseFragment() {
         binding.chipGroup.addView(chip)
     }
 
-    private fun showPhysicalActivitiesBottomSheet() {
+    private fun showPhysicalActivitiesBottomSheet(activityNumber: String?) {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(requireContext())
 
@@ -223,6 +223,12 @@ class PhysicalActivitiesFragment : BaseFragment() {
                 AnimationUtils.loadAnimation(requireContext(), R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
         }
+
+        val dayText = if (activityNumber?.toInt() == 1) "day" else "days"
+
+        dialogBinding.tvSubHeader.text =
+            "You selected $activityNumber $dayText per week. Distribute them across your activities."
+
 
         val selectedList = ArrayList<ServingItem>()
         selectedActivities.forEachIndexed { index, s ->

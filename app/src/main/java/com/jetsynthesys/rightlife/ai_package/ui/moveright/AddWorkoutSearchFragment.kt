@@ -25,6 +25,7 @@ import androidx.core.os.BundleCompat
 import androidx.fragment.app.setFragmentResult
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -333,7 +334,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         // === ICON & NAME ===
         if (workout != null) {
             workoutName.text = workout?.title
-            val imageBaseUrl = "https://d1sacaybzizpm5.cloudfront.net/" + workout?.iconUrl
+            val imageBaseUrl = BuildConfig.CDN_URL + workout?.iconUrl
             moduleIcon = imageBaseUrl
            /* Glide.with(requireContext())
                 .load(imageBaseUrl)
@@ -632,9 +633,14 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             return
         }
 
+        Log.d("UpdateWorkoutEntry", "Starting update for itemId: $editWorkoutRoutineItemId at index: $targetIndex")
+        Log.d("UpdateWorkoutEntry", "New values → duration: $durationMinutes min, intensity: $normalizedIntensity")
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                Log.d("UpdateWorkoutEntry", "userId: $userId")
+
                 val request = CalculateCaloriesRequest(
                     userId = userId,
                     activityId = targetEntry.activityId!!,
@@ -643,10 +649,18 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     sessions = targetEntry.sessions,
                     date = getCurrentDate()
                 )
+                Log.d("UpdateWorkoutEntry", "Request created → activityId: ${request.activityId}, duration: ${request.durationMin}, sessions: ${request.sessions}")
+
+                Log.d("UpdateWorkoutEntry", "Calling API: calculateCalories")
                 val response: Response<CalculateCaloriesResponse> = ApiClient.apiServiceFastApi.calculateCalories(request)
+
+                Log.d("UpdateWorkoutEntry", "API response → isSuccessful = ${response.isSuccessful}, code = ${response.code()}")
+
                 if (response.isSuccessful) {
                     val caloriesResponse = response.body()
                     if (caloriesResponse != null) {
+                        Log.d("UpdateWorkoutEntry", "Success → caloriesBurned = ${caloriesResponse.caloriesBurned}, factor = ${caloriesResponse.activityFactor}")
+
                         workoutListRoutine[targetIndex] = targetEntry.copy(
                             durationMin = durationMinutes,
                             intensity = normalizedIntensity,
@@ -655,30 +669,44 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                             activityFactor = caloriesResponse.activityFactor,
                             moduleIcon = moduleIcon ?: workoutListRoutine[targetIndex].moduleIcon
                         )
+
                         withContext(Dispatchers.Main) {
+                            Log.d("UpdateWorkoutEntry", "Updating fragment result & navigating (success case)")
                             setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
                             showCustomToast(requireContext(), "Workout Created Successfully")
                             navigateToCreateRoutineFragment()
                         }
                     } else {
+                        Log.w("UpdateWorkoutEntry", "Success but response body null")
+
                         workoutListRoutine[targetIndex] = targetEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
+
                         withContext(Dispatchers.Main) {
+                            Log.d("UpdateWorkoutEntry", "Updating fragment result & navigating (null body)")
                             setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
                             showCustomToast(requireContext(), "No calories data")
                             navigateToCreateRoutineFragment()
                         }
                     }
                 } else {
+                    Log.e("UpdateWorkoutEntry", "API failed → code = ${response.code()}, message = ${response.message()}")
+
                     workoutListRoutine[targetIndex] = targetEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
+
                     withContext(Dispatchers.Main) {
+                        Log.d("UpdateWorkoutEntry", "Updating fragment result & navigating (error response)")
                         setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
                         showCustomToast(requireContext(), "Error: ${response.code()}")
                         navigateToCreateRoutineFragment()
                     }
                 }
             } catch (e: Exception) {
+                Log.e("UpdateWorkoutEntry", "Exception during update", e)
+
                 workoutListRoutine[targetIndex] = targetEntry.copy(durationMin = durationMinutes, intensity = normalizedIntensity)
+
                 withContext(Dispatchers.Main) {
+                    Log.d("UpdateWorkoutEntry", "Updating fragment result & navigating (exception case)")
                     setFragmentResult("workoutListUpdate", Bundle().apply { putParcelableArrayList("workoutList", workoutListRoutine) })
                     showCustomToast(requireContext(), "Exception: ${e.message}")
                     navigateToCreateRoutineFragment()
@@ -691,8 +719,15 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private fun createWorkout(workoutSession: WorkoutSessionRecord?) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                Log.d("CreateWorkout", "Starting workout creation")
+
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                Log.d("CreateWorkout", "userId fetched: $userId")
+                Log.d("CreateWorkout", "selected date: $mSelectedDate")
+
                 val request = workoutSession?.let {
+                    Log.d("CreateWorkout", "workoutSession found → activityId: ${it.activityId}, duration: ${it.durationMin}, intensity: ${it.intensity}")
+
                     CreateWorkoutRequest(
                         userId = userId,
                         activityId = it.activityId,
@@ -702,29 +737,53 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         date = mSelectedDate
                     )
                 } ?: run {
-                    withContext(Dispatchers.Main) { showCustomToast(requireContext(), "Workout data missing") }
+                    Log.w("CreateWorkout", "workoutSession is null → showing toast and returning")
+                    withContext(Dispatchers.Main) {
+                        showCustomToast(requireContext(), "Workout data missing")
+                    }
                     return@launch
                 }
+
+                Log.d("CreateWorkout", "Request created → $request")
+                Log.d("CreateWorkout", "Calling API: createWorkout")
+
                 val response = ApiClient.apiServiceFastApi.createWorkout(request)
+
                 withContext(Dispatchers.Main) {
+                    Log.d("CreateWorkout", "API response received → isSuccessful = ${response.isSuccessful}, code = ${response.code()}")
+
                     if (response.isSuccessful) {
                         response.body()?.let {
+                            Log.d("CreateWorkout", "Success → response body: $it")
+
                             val fragment = YourActivityFragment()
-                            val args = Bundle().apply { putString("selected_date", mSelectedDate) }
-                            args.putString("ModuleName", moduleName)
+                            val args = Bundle().apply {
+                                putString("selected_date", mSelectedDate)
+                                putString("ModuleName", moduleName)
+                            }
                             fragment.arguments = args
+
+                            Log.d("CreateWorkout", "Replacing fragment: YourActivityFragment with selected_date = $mSelectedDate")
                             requireActivity().supportFragmentManager.beginTransaction()
                                 .replace(R.id.flFragment, fragment, "YourActivityFragment")
                                 .addToBackStack("YourActivityFragment")
                                 .commit()
+
                             showCustomToast(requireContext(), "Workout Saved Successfully")
-                        } ?: showCustomToast(requireContext(), "Empty response")
+                        } ?: run {
+                            Log.w("CreateWorkout", "Success but response body is null")
+                            showCustomToast(requireContext(), "Empty response")
+                        }
                     } else {
+                        Log.e("CreateWorkout", "API failed → code = ${response.code()}, message = ${response.message()}")
                         showCustomToast(requireContext(), "Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) { showCustomToast(requireContext(), "Exception: ${e.message}") }
+                Log.e("CreateWorkout", "Exception in createWorkout", e)
+                withContext(Dispatchers.Main) {
+                    showCustomToast(requireContext(), "Exception: ${e.message}")
+                }
             }
         }
     }
@@ -732,7 +791,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private fun calculateUserCalories(durationMinutes: Int, selectedIntensity: String, activityId: String, navigateToRoutine: Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                Log.d("CalcCalories", "Starting calorie calculation → activityId: $activityId, duration: $durationMinutes min, intensity: $selectedIntensity")
+
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                Log.d("CalcCalories", "userId: $userId")
+
                 val request = CalculateCaloriesRequest(
                     userId = userId,
                     activityId = activityId,
@@ -741,11 +804,19 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     sessions = 1,
                     date = getCurrentDate()
                 )
+                Log.d("CalcCalories", "Request created → $request")
+
+                Log.d("CalcCalories", "Calling API: calculateCalories")
                 val response: Response<CalculateCaloriesResponse> = ApiClient.apiServiceFastApi.calculateCalories(request)
+
                 withContext(Dispatchers.Main) {
+                    Log.d("CalcCalories", "API response received → isSuccessful = ${response.isSuccessful}, code = ${response.code()}")
+
                     if (response.isSuccessful) {
                         val caloriesResponse = response.body()
                         if (caloriesResponse != null) {
+                            Log.d("CalcCalories", "Success → caloriesBurned = ${caloriesResponse.caloriesBurned}, message = ${caloriesResponse.message}")
+
                             lastWorkoutRecord = workout?.title?.let {
                                 WorkoutSessionRecord(
                                     userId = request.userId,
@@ -762,8 +833,14 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                             }
                             calorieBurnedNew = caloriesResponse.caloriesBurned
                             caloriesText.text = caloriesResponse.caloriesBurned.toInt().toString()
-                            if (navigateToRoutine) navigateToCreateRoutineFragment()
+
+                            if (navigateToRoutine) {
+                                Log.d("CalcCalories", "Navigating to create routine fragment (success case)")
+                                navigateToCreateRoutineFragment()
+                            }
                         } else {
+                            Log.w("CalcCalories", "Success but response body is null")
+
                             lastWorkoutRecord = workout?.let {
                                 WorkoutSessionRecord(
                                     userId = request.userId,
@@ -775,9 +852,14 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                                     moduleName = it.title
                                 )
                             }
-                            if (navigateToRoutine) navigateToCreateRoutineFragment()
+                            if (navigateToRoutine) {
+                                Log.d("CalcCalories", "Navigating to create routine fragment (null body case)")
+                                navigateToCreateRoutineFragment()
+                            }
                         }
                     } else {
+                        Log.e("CalcCalories", "API failed → code = ${response.code()}, message = ${response.message()}")
+
                         lastWorkoutRecord = workout?.let {
                             WorkoutSessionRecord(
                                 userId = request.userId,
@@ -789,12 +871,20 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                                 moduleIcon = it.iconUrl
                             )
                         }
-                        if (navigateToRoutine) navigateToCreateRoutineFragment()
+                        if (navigateToRoutine) {
+                            Log.d("CalcCalories", "Navigating to create routine fragment (error response case)")
+                            navigateToCreateRoutineFragment()
+                        }
                     }
                 }
             } catch (e: Exception) {
+                Log.e("CalcCalories", "Exception in calorie calculation", e)
+
                 withContext(Dispatchers.Main) {
-                    if (navigateToRoutine) navigateToCreateRoutineFragment()
+                    Log.d("CalcCalories", "Exception caught → still navigating if needed")
+                    if (navigateToRoutine) {
+                        navigateToCreateRoutineFragment()
+                    }
                 }
             }
         }
@@ -804,8 +894,15 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private fun updateCalories(calorieId: String, durationMinutes: Int, intensity: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                Log.d("UpdateCalories", "Starting update for calorieId: $calorieId")
+                Log.d("UpdateCalories", "durationMinutes = $durationMinutes, intensity = $intensity")
+
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                Log.d("UpdateCalories", "userId fetched: $userId")
+
                 val currentDate = getCurrentDate()
+                Log.d("UpdateCalories", "currentDate: $currentDate")
+
                 val request = UpdateCaloriesRequest(
                     userId = userId,
                     durationMin = durationMinutes,
@@ -813,24 +910,44 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     sessions = 1,
                     date = currentDate
                 )
+                Log.d("UpdateCalories", "Request body created → $request")
+
+                Log.d("UpdateCalories", "Calling API: updateCalories(calorieId = $calorieId)")
                 val response = ApiClient.apiServiceFastApi.updateCalories(calorieId, request)
+
                 withContext(Dispatchers.Main) {
+                    Log.d("UpdateCalories", "API call finished → isSuccessful = ${response.isSuccessful}, code = ${response.code()}")
+
                     if (response.isSuccessful) {
                         response.body()?.let {
+                            Log.d("UpdateCalories", "Success → response body: $it")
+
                             val fragment = YourActivityFragment()
-                            val args = Bundle().apply { putString("ModuleName", moduleName)}
+                            val args = Bundle().apply { putString("ModuleName", moduleName) }
                             fragment.arguments = args
+
+                            Log.d("UpdateCalories", "Replacing fragment: YourActivityFragment")
                             requireActivity().supportFragmentManager.beginTransaction()
                                 .replace(R.id.flFragment, fragment, "YourActivityFragment")
                                 .addToBackStack("YourActivityFragment")
                                 .commit()
-                            showCustomToast(requireContext(), "Calories Updated",)
-                        } ?: showCustomToast(requireContext(), "Empty response")
+
+                            showCustomToast(requireContext(), "Calories Updated")
+                        } ?: run {
+                            Log.w("UpdateCalories", "Success but response body is null")
+                            showCustomToast(requireContext(), "Empty response")
+                        }
                     } else {
+                        Log.e("UpdateCalories", "API failed → code = ${response.code()}, message = ${response.message()}")
+                        // Optional: log error body if you want more detail
+                        // val errorBody = response.errorBody()?.string()
+                        // Log.e("UpdateCalories", "Error body: $errorBody")
+
                         showCustomToast(requireContext(), "Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
+                Log.e("UpdateCalories", "Exception occurred", e)
                 withContext(Dispatchers.Main) {
                     showCustomToast(requireContext(), "Exception: ${e.message}")
                 }

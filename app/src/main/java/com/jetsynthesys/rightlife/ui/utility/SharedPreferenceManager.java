@@ -397,6 +397,16 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
+    public Boolean getEnableNotificationServer() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.SERVER_ENABLE_NOTIFICATION, false);
+    }
+
+    public void setEnableNotificationServer(boolean enableNotification) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.SERVER_ENABLE_NOTIFICATION, enableNotification);
+        editor.apply();
+    }
+
     public Boolean getEnableNotification() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.ENABLE_NOTIFICATION, false);
     }
@@ -729,6 +739,28 @@ public class SharedPreferenceManager {
     // Method to retrieve the access token
     public int getChallengeState() {
         return sharedPreferences.getInt(SharedPreferenceConstants.CHALLENGE_STATUS, 1);
+    }
+
+    public void setChallengeEndDate(String state) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.CHALLENGE_END_DATE, state);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public String getChallengeEndDate() {
+        return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_END_DATE, "28 Feb 2026, 09:00 PM");
+    }
+
+    public void setChallengeStartDate(String state) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.CHALLENGE_START_DATE, state);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public String getChallengeStartDate() {
+        return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_START_DATE, "01 Feb 2026, 09:00 AM");
     }
 }
 

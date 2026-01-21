@@ -39,6 +39,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -59,6 +60,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.databinding.ActivityProfileNewBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetAgeSelectionBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetBodyFatBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetGenderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetHeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
@@ -67,8 +69,10 @@ import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.customviews.HeightPickerBottomSheet
 import com.jetsynthesys.rightlife.ui.customviews.WeightPickerBottomSheet
+import com.jetsynthesys.rightlife.ui.new_design.BodyFatAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
+import com.jetsynthesys.rightlife.ui.new_design.pojo.BodyFat
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpEmailRequest
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
@@ -79,6 +83,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.DecimalDigitsInputFilter
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
@@ -222,6 +227,15 @@ class ProfileNewActivity : BaseActivity() {
         binding.arrowWeight.setOnClickListener {
             it.disableViewForSeconds()
             showWeightSelectionBottomSheet(userData.gender)
+        }
+
+        binding.tvBodyFat.setOnClickListener {
+            it.disableViewForSeconds()
+            showBodyFatBottomSheet()
+        }
+        binding.arrowBodyFat.setOnClickListener {
+            it.disableViewForSeconds()
+            showBodyFatBottomSheet()
         }
 
         binding.arrowDeleteAccount.setOnClickListener {
@@ -428,6 +442,10 @@ class ProfileNewActivity : BaseActivity() {
             binding.tvHeight.text = "${height[0]} ft ${height[1]} in"
         } else {
             binding.tvHeight.text = "${userData.height.toInt()} cm"
+        }
+
+        if (userData.bodyFat != null && userData.bodyFat.isNotEmpty()) {
+            binding.tvBodyFat.text = "${userData.bodyFat} %"
         }
     }
 
@@ -1245,6 +1263,7 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         binding.tvResend.setOnClickListener {
+            it.disableViewForSeconds()
             timer.cancel()
             binding.tvResend.setTextColor(colorStateListNonSelected)
             binding.tvResend.isEnabled = false
@@ -1293,6 +1312,9 @@ class ProfileNewActivity : BaseActivity() {
                     binding.etEmail.isEnabled = false
                     binding.btnVerifyEmail.visibility = GONE
                     setEndDrawable(binding.etEmail)
+
+                    userDataResponse.userdata = userData
+                    sharedPreferenceManager.saveUserProfile(userDataResponse)
 
                 } else {
                     bindingDialog.tvResult.text = "Incorrect OTP"
@@ -1390,13 +1412,14 @@ class ProfileNewActivity : BaseActivity() {
         val height = binding.tvHeight.text.toString()
         val weight = binding.tvWeight.text.toString()
         val gender = binding.tvGender.text.toString()
-        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty()) {
+        val bodyFat = binding.tvBodyFat.text.toString()?.replace("%", "")?.trim() ?: ""
+        if (firstName.isEmpty() || lastName.isEmpty() || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty() || bodyFat.isEmpty()) {
             showCustomToast("Please fill all required fields before proceeding.")
         } else if (!validateUsername(firstName)) {
             showCustomToast("Please enter valid First Name")
         } else if (!validateUsername(firstName)) {
             showCustomToast("Please enter valid Last Name")
-        } else if (!email.matches(Utils.emailPattern.toRegex())) {
+        } else if (email.isNotEmpty() && !email.matches(Utils.emailPattern.toRegex())) {
             showCustomToast("Invalid Email format")
         } else if (age.split(" ")[0].toInt() !in 13..80) showCustomToast("Face Scan is available only for users aged 13–80.")
         else {
@@ -1434,6 +1457,8 @@ class ProfileNewActivity : BaseActivity() {
                     userData.heightUnit = "FT_AND_INCHES"
                 }
             }
+
+            userData.bodyFat = bodyFat
 
             if (preSignedUrlData != null) {
                 userData.profilePicture = preSignedUrlData?.file?.url
@@ -1549,13 +1574,11 @@ class ProfileNewActivity : BaseActivity() {
                     val ResponseObj = gson.fromJson(
                         jsonResponse, UserProfileResponse::class.java
                     )
-                    SharedPreferenceManager.getInstance(applicationContext)
-                        .saveUserId(ResponseObj.userdata.id)
-                    SharedPreferenceManager.getInstance(applicationContext)
-                        .saveUserProfile(ResponseObj)
+                    sharedPreferenceManager.saveUserId(ResponseObj.userdata.id)
+                    ResponseObj.userdata.bodyFat = ResponseObj.bodyFat
+                    sharedPreferenceManager.saveUserProfile(ResponseObj)
 
-                    SharedPreferenceManager.getInstance(applicationContext)
-                        .setAIReportGeneratedView(ResponseObj.reportView)
+                    sharedPreferenceManager.setAIReportGeneratedView(ResponseObj.reportView)
 
                     userDataResponse = sharedPreferenceManager.userProfile
                     userData = userDataResponse.userdata
@@ -1643,7 +1666,7 @@ class ProfileNewActivity : BaseActivity() {
     private val smsConsentLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val message = result.data?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
             message?.let {
                 val otp = Regex("\\b(\\d{6})\\b").find(it)?.value
@@ -1662,6 +1685,191 @@ class ProfileNewActivity : BaseActivity() {
             bindingDialog.etOtp4.setText(otp[3].toString())
             bindingDialog.etOtp5.setText(otp[4].toString())
             bindingDialog.etOtp6.setText(otp[5].toString())
+        }
+    }
+
+    private fun showBodyFatBottomSheet() {
+        // Create and configure BottomSheetDialog
+        val bottomSheetDialog = BottomSheetDialog(this)
+
+        // Inflate the BottomSheet layout
+        val dialogBinding = BottomsheetBodyFatBinding.inflate(layoutInflater)
+        val bottomSheetView = dialogBinding.root
+
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        // Expand fully on show
+        bottomSheetDialog.setOnShowListener { dialog ->
+            val bottomSheet =
+                (dialog as BottomSheetDialog).findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            val behavior = BottomSheetBehavior.from(bottomSheet!!)
+
+            //behavior.state = BottomSheetBehavior.STATE_EXPANDED   // Open full height
+            behavior.skipCollapsed = true                          // No collapsed state
+            behavior.isFitToContents = true                        // Fit to content
+            behavior.isDraggable = true                           // Optional: disable swipe down
+        }
+
+        val bodyFat = binding.tvBodyFat.text.toString()?.replace("%", "")
+            ?.trim()
+            ?.toDoubleOrNull()
+            ?: 0.0
+        // set available value
+        if (bodyFat >= 5) {
+            dialogBinding.btnContinue.isEnabled = true
+            dialogBinding.btnContinue.backgroundTintList = colorStateListSelected
+            dialogBinding.edtBodyFat.setText(average(bodyFat.toString()).toString())
+            dialogBinding.edtBodyFat.setSelection(dialogBinding.edtBodyFat.text.length)
+            dialogBinding.iconMinus.visibility = VISIBLE
+            dialogBinding.iconPlus.visibility = VISIBLE
+            dialogBinding.tvPercent.visibility = VISIBLE
+        }
+
+        val adapter =
+            BodyFatAdapter(this, getBodyFatList(binding.tvGender.text.toString())) { bodyFat ->
+                dialogBinding.btnContinue.isEnabled = true
+                dialogBinding.btnContinue.backgroundTintList = colorStateListSelected
+                dialogBinding.edtBodyFat.setText(average(bodyFat.bodyFatNumber).toString())
+                dialogBinding.edtBodyFat.setSelection(dialogBinding.edtBodyFat.text.length)
+                dialogBinding.iconMinus.visibility = VISIBLE
+                dialogBinding.iconPlus.visibility = VISIBLE
+                dialogBinding.tvPercent.visibility = VISIBLE
+            }
+
+        val gridLayoutManager = GridLayoutManager(this, 2)
+        dialogBinding.rvBodyFat.setLayoutManager(gridLayoutManager)
+        dialogBinding.rvBodyFat.adapter = adapter
+
+        setSelection(binding.tvGender.text.toString(), bodyFat, adapter)
+
+        dialogBinding.edtBodyFat.filters = arrayOf(DecimalDigitsInputFilter())
+
+        dialogBinding.iconMinus.setOnClickListener {
+            var fatValue = dialogBinding.edtBodyFat.text.toString().toDouble()
+            if (fatValue > 5) {
+                fatValue = dialogBinding.edtBodyFat.text.toString().toDouble() - 0.5
+            }
+            dialogBinding.edtBodyFat.setText(fatValue.toString())
+            dialogBinding.edtBodyFat.setSelection(dialogBinding.edtBodyFat.text.length)
+            dialogBinding.edtBodyFat.requestFocus()
+        }
+
+        dialogBinding.iconPlus.setOnClickListener {
+            var fatValue = dialogBinding.edtBodyFat.text.toString().toDouble()
+            if (fatValue < 60) {
+                fatValue = dialogBinding.edtBodyFat.text.toString().toDouble() + 0.5
+            }
+            dialogBinding.edtBodyFat.setText(fatValue.toString())
+            dialogBinding.edtBodyFat.setSelection(dialogBinding.edtBodyFat.text.length)
+            dialogBinding.edtBodyFat.requestFocus()
+        }
+
+        dialogBinding.edtBodyFat.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                s?.length?.let {
+                    if (it > 0) {
+                        dialogBinding.iconMinus.visibility = VISIBLE
+                        dialogBinding.iconPlus.visibility = VISIBLE
+                        dialogBinding.tvPercent.visibility = VISIBLE
+                        dialogBinding.btnContinue.isEnabled = true
+                        dialogBinding.btnContinue.backgroundTintList = colorStateListSelected
+                        setSelection(
+                            binding.tvGender.text.toString(),
+                            s.toString().toDouble(),
+                            adapter
+                        )
+                    } else {
+                        dialogBinding.iconMinus.visibility = GONE
+                        dialogBinding.iconPlus.visibility = GONE
+                        dialogBinding.tvPercent.visibility = GONE
+                        dialogBinding.btnContinue.isEnabled = false
+                        dialogBinding.btnContinue.backgroundTintList = colorStateListNonSelected
+                        adapter.clearSelection()
+                    }
+                }
+            }
+        })
+
+        dialogBinding.btnContinue.setOnClickListener {
+            if (dialogBinding.edtBodyFat.text.toString().toDouble() in 5.0..60.0) {
+                binding.tvBodyFat.text = "${dialogBinding.edtBodyFat.text} %"
+                bottomSheetDialog.dismiss()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Please select fat between 5% to 60%",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun getBodyFatList(gender: String): ArrayList<BodyFat> {
+        val bodyFatList = ArrayList<BodyFat>()
+        if (gender == "Male") {
+            bodyFatList.add(BodyFat(R.drawable.img_male_fat1, "5-14%"))
+            bodyFatList.add(BodyFat(R.drawable.img_male_fat2, "15-24%"))
+            bodyFatList.add(BodyFat(R.drawable.img_male_fat3, "25-33%"))
+            bodyFatList.add(BodyFat(R.drawable.img_male_fat4, "34+%"))
+        } else {
+            bodyFatList.add(BodyFat(R.drawable.img_female_fat1, "10-19%"))
+            bodyFatList.add(BodyFat(R.drawable.img_female_fat2, "20-29%"))
+            bodyFatList.add(BodyFat(R.drawable.img_female_fat3, "30-44%"))
+            bodyFatList.add(BodyFat(R.drawable.img_female_fat4, "45+%"))
+        }
+
+        return bodyFatList
+    }
+
+    private fun average(input: String): Double {
+        val regex = "(\\d+)-(\\d+)".toRegex()
+
+        val matchResult = regex.find(input)
+        if (matchResult != null) {
+            val num1 = matchResult.groupValues[1].toDouble() // Extracts 5
+            val num2 = matchResult.groupValues[2].toDouble() // Extracts 14
+            return (num1 + num2) / 2
+        } else {
+            return input.substring(0, 2).toDouble()
+        }
+
+    }
+
+    private fun setSelection(gender: String, bodyFat: Double, adapter: BodyFatAdapter) {
+        if (gender == "Male") {
+            if (bodyFat in 5.0..14.9)
+                adapter.setSelected(0)
+            else if (bodyFat in 14.0..24.9)
+                adapter.setSelected(1)
+            else if (bodyFat in 25.0..33.9)
+                adapter.setSelected(2)
+            else if (bodyFat >= 34)
+                adapter.setSelected(3)
+        } else {
+            if (bodyFat in 10.0..19.9)
+                adapter.setSelected(0)
+            else if (bodyFat in 20.0..29.9)
+                adapter.setSelected(1)
+            else if (bodyFat in 30.0..44.9)
+                adapter.setSelected(2)
+            else if (bodyFat >= 45)
+                adapter.setSelected(3)
         }
     }
 }

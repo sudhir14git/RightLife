@@ -19,8 +19,6 @@ class ChallengeEmptyActivity : BaseActivity() {
         binding = ActivityEmptyChallengeBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
 
-        val challengeStartDate = intent.getStringExtra("CHALLENGE_START_DATE")
-
         binding.btnBack.setOnClickListener {
             finish()
         }
@@ -28,8 +26,9 @@ class ChallengeEmptyActivity : BaseActivity() {
             finish()
         }
 
-        binding.layoutChallengeCountDownDays.tvCountDownDays.text =
-            getDaysFromToday(challengeStartDate ?: "01 Feb 2026, 09:00 AM").toString()
+        val daysMin = getDaysFromToday(sharedPreferenceManager.challengeStartDate).split(" ")
+        binding.layoutChallengeCountDownDays.tvCountDownDays.text = daysMin[0]
+        binding.layoutChallengeCountDownDays.tvDaysToGo.text = "${daysMin[1]} to go"
 
         binding.layoutChallengeCountDownDays.imgInfoChallege.setOnClickListener {
             showChallengeInfoBottomSheet(this@ChallengeEmptyActivity)

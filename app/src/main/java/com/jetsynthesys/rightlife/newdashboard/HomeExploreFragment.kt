@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -45,14 +46,14 @@ import com.jetsynthesys.rightlife.ui.ServicePaneAdapter
 import com.jetsynthesys.rightlife.ui.TestAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
-import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
 import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity
 import com.zhpan.bannerview.constants.PageStyle
 import com.zhpan.indicator.enums.IndicatorStyle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -402,9 +403,11 @@ class HomeExploreFragment : BaseFragment() {
         getPromotionListWeekly()
         getRightLifeEdit()
         getWellnessPlaylist()
-        Handler(Looper.getMainLooper()).postDelayed({
+        lifecycleScope.launch {
+            delay(2000)
             getJumpBackInData()
-        }, 2000)
+            (requireActivity() as? HomeNewActivity)?.showChallengeCard()
+        }
     }
 
     private fun callAPIS() {
@@ -640,7 +643,7 @@ class HomeExploreFragment : BaseFragment() {
                 if (!isFragmentSafe()) return
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
-                    val jsonResponse = gson.toJson(response.body())
+                    gson.toJson(response.body())
 
                     // LiveEventResponse ResponseObj = gson.fromJson(jsonResponse,LiveEventResponse.class);
                     //Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().get(0).getAuthorName());
@@ -1030,22 +1033,22 @@ class HomeExploreFragment : BaseFragment() {
     private fun handlePromotionResponseWeekly(promotionResponse: PromotionWeeklyResponse) {
         cardItems.clear()
         promotionResponse.data.promotionList.indices.forEach { i ->
-           /* val cardItem = CardItem(
-                promotionResponse.data.promotionList[i]._id,
-                promotionResponse.data.promotionList[i].name,
-                R.drawable.facialconcept,
-                promotionResponse.data.promotionList[i].desktopImage,
-                promotionResponse.data.promotionList[i].content,
-                promotionResponse.data.promotionList[i].buttonName,
-                promotionResponse.data.promotionList[i].category,
-                promotionResponse.data.promotionList[i].views.toString(),
-                promotionResponse.data.promotionList[i].seriesId,
-                promotionResponse.data.promotionList[i].seriesType,
-                promotionResponse.data.promotionList[i].selectedContentType,
-                promotionResponse.data.promotionList[i].titleImage,
-                promotionResponse.data.promotionList[i].buttonImage,
-                promotionResponse.data.promotionList[i].contentId
-            )*/
+            /* val cardItem = CardItem(
+                 promotionResponse.data.promotionList[i]._id,
+                 promotionResponse.data.promotionList[i].name,
+                 R.drawable.facialconcept,
+                 promotionResponse.data.promotionList[i].desktopImage,
+                 promotionResponse.data.promotionList[i].content,
+                 promotionResponse.data.promotionList[i].buttonName,
+                 promotionResponse.data.promotionList[i].category,
+                 promotionResponse.data.promotionList[i].views.toString(),
+                 promotionResponse.data.promotionList[i].seriesId,
+                 promotionResponse.data.promotionList[i].seriesType,
+                 promotionResponse.data.promotionList[i].selectedContentType,
+                 promotionResponse.data.promotionList[i].titleImage,
+                 promotionResponse.data.promotionList[i].buttonImage,
+                 promotionResponse.data.promotionList[i].contentId
+             )*/
             val promo = promotionResponse.data.promotionList[i]
             val cardItem = CardItem(
                 promo._id,
@@ -1075,39 +1078,39 @@ class HomeExploreFragment : BaseFragment() {
                     return@CircularCardAdapter
                 }
 
-            /*    if (item.seriesType.equals("daily", ignoreCase = true) ||
-                    item.category.equals("CONTENT", ignoreCase = true) || item.category
-                        .equals("Test Category", ignoreCase = true)
-                ) {
-                    //Call Content Activity here
-                    callRlEditDetailActivity(item)
-                } else if (item.category.equals("live", ignoreCase = true)) {
-                    Toast.makeText(requireActivity(), "Live Content", Toast.LENGTH_SHORT).show()
-                } else if (item.category.equals("MIND_AUDIT", ignoreCase = true) ||
-                    item.category.equals("Mind Audit", ignoreCase = true) ||
-                    item.category.equals("Health Audit", ignoreCase = true) ||
-                    item.category.equals("mindAudit", ignoreCase = true)
-                ) {
-                    if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true) {
-                        ActivityUtils.startMindAuditActivity(requireContext())
-                    }
-                } else if (item.category.equals("VOICE_SCAN", ignoreCase = true)) {
-                    val intent = Intent(requireActivity(), VoiceScanActivity::class.java)
-                    // Optionally pass data
-                    //intent.putExtra("key", "value");
-                    startActivity(intent)
-                } else if (item.category.equals("FACIAL_SCAN", ignoreCase = true)
-                    || item.category.equals("FACE_SCAN", ignoreCase = true)
-                    || item.category.equals("Health Cam", ignoreCase = true)
-                ) {
-                    val spm = SharedPreferenceManager.getInstance(requireActivity())
-                    (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
-                } else if (item.category.equals("snap_meal", ignoreCase = true)
-                        || item.category.equals("SNAP_MEAL", ignoreCase = true)
-                        || item.category.equals("Snap_Meal", ignoreCase = true)
-                ){
+                /*    if (item.seriesType.equals("daily", ignoreCase = true) ||
+                        item.category.equals("CONTENT", ignoreCase = true) || item.category
+                            .equals("Test Category", ignoreCase = true)
+                    ) {
+                        //Call Content Activity here
+                        callRlEditDetailActivity(item)
+                    } else if (item.category.equals("live", ignoreCase = true)) {
+                        Toast.makeText(requireActivity(), "Live Content", Toast.LENGTH_SHORT).show()
+                    } else if (item.category.equals("MIND_AUDIT", ignoreCase = true) ||
+                        item.category.equals("Mind Audit", ignoreCase = true) ||
+                        item.category.equals("Health Audit", ignoreCase = true) ||
+                        item.category.equals("mindAudit", ignoreCase = true)
+                    ) {
+                        if ((requireActivity() as? HomeNewActivity)?.checkTrailEndedAndShowDialog() == true) {
+                            ActivityUtils.startMindAuditActivity(requireContext())
+                        }
+                    } else if (item.category.equals("VOICE_SCAN", ignoreCase = true)) {
+                        val intent = Intent(requireActivity(), VoiceScanActivity::class.java)
+                        // Optionally pass data
+                        //intent.putExtra("key", "value");
+                        startActivity(intent)
+                    } else if (item.category.equals("FACIAL_SCAN", ignoreCase = true)
+                        || item.category.equals("FACE_SCAN", ignoreCase = true)
+                        || item.category.equals("Health Cam", ignoreCase = true)
+                    ) {
+                        val spm = SharedPreferenceManager.getInstance(requireActivity())
+                        (requireActivity() as? HomeNewActivity)?.callFaceScanClick()
+                    } else if (item.category.equals("snap_meal", ignoreCase = true)
+                            || item.category.equals("SNAP_MEAL", ignoreCase = true)
+                            || item.category.equals("Snap_Meal", ignoreCase = true)
+                    ){
 
-                }*/
+                    }*/
 
                 handlePromotionBannerTap(item)
 
@@ -1185,7 +1188,11 @@ class HomeExploreFragment : BaseFragment() {
         }
 
         // LIVE
-        if (seriesType.equals("live", ignoreCase = true) || category.equals("live", ignoreCase = true)) {
+        if (seriesType.equals("live", ignoreCase = true) || category.equals(
+                "live",
+                ignoreCase = true
+            )
+        ) {
             Toast.makeText(requireContext(), "Live Content", Toast.LENGTH_SHORT).show()
             return
         }
@@ -1198,9 +1205,11 @@ class HomeExploreFragment : BaseFragment() {
                     ActivityUtils.startMindAuditActivity(requireContext())
                 }
             }
+
             "meal_snap" -> (requireActivity() as? HomeNewActivity)?.callSnapMealClick()
             "voice_scan" -> startActivity(Intent(requireContext(), VoiceScanActivity::class.java))
-            else -> { /* no-op */ }
+            else -> { /* no-op */
+            }
         }
     }
 
@@ -1213,16 +1222,22 @@ class HomeExploreFragment : BaseFragment() {
                     putExtra("contentId", contentId)
                 })
             }
-            contentType.equals("VIDEO", ignoreCase = true) || contentType.equals("AUDIO", ignoreCase = true) -> {
+
+            contentType.equals("VIDEO", ignoreCase = true) || contentType.equals(
+                "AUDIO",
+                ignoreCase = true
+            ) -> {
                 startActivity(Intent(requireContext(), ContentDetailsActivity::class.java).apply {
                     putExtra("contentId", contentId)
                 })
             }
+
             contentType.equals("SERIES", ignoreCase = true) -> {
                 startActivity(Intent(requireContext(), SeriesListActivity::class.java).apply {
                     putExtra("contentId", contentId)
                 })
             }
+
             else -> {
                 // fallback
                 startActivity(Intent(requireContext(), ContentDetailsActivity::class.java).apply {
@@ -1233,8 +1248,7 @@ class HomeExploreFragment : BaseFragment() {
     }
 
     private fun normalizePromoCategory(raw: String): String {
-        val s = raw.trim().lowercase().replace(" ", "_").replace("-", "_")
-        return when (s) {
+        return when (val s = raw.trim().lowercase().replace(" ", "_").replace("-", "_")) {
             "facial_scan", "face_scan", "health_cam", "healthcam", "facialscan", "facescan" -> "face_scan"
             "mind_audit", "health_audit", "mindaudit", "healthaudit" -> "mind_audit"
             "meal_snap", "snap_meal", "mealsnap", "snapmeal" -> "meal_snap"
@@ -1242,8 +1256,6 @@ class HomeExploreFragment : BaseFragment() {
             else -> s
         }
     }
-
-
 
 
     private fun handleServicePaneResponse(responseObj: ServicePaneResponse) {

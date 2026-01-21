@@ -10,6 +10,8 @@ public class SharedPreferenceConstants {
     public static final String FIRST_HOME_VISIT = "first_home_visit";
 
     public static final String CHALLENGE_STATUS = "CHALLENGE_STATUS";
+    public static final String CHALLENGE_START_DATE = "CHALLENGE_START_DATE";
+    public static final String CHALLENGE_END_DATE = "CHALLENGE_END_DATE";
     public static final String IS_LOGGED_IN = "is_logged_in";
     public static final String USER_ID = "user_id";
     public static final String SNAP_MEAL_ID = "snap_meal_id";
@@ -48,6 +50,7 @@ public class SharedPreferenceConstants {
     public static final String FIRST_TIME_SNAP_MEAL_VIDEO = "FIRST_TIME_SNAP_MEAL_VIDEO";
     public static final String FIRST_TIME_SNAP_MEAL_RATING = "FIRST_TIME_SNAP_MEAL_RATING";
     public static final String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
+    public static final String SERVER_ENABLE_NOTIFICATION = "SERVER_ENABLE_NOTIFICATION";
     public static final String EAT_RIGHT_MAX_CALORIES = "EAT_RIGHT_MAX_CALORIES";
     public static final String EAT_RIGHT_MAX_CARBS = "EAT_RIGHT_MAX_CARBS";
     public static final String EAT_RIGHT_MAX_PROTEIN = "EAT_RIGHT_MAX_PROTEIN";

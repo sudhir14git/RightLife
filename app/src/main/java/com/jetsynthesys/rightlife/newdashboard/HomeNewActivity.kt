@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ComponentCaller
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Paint
@@ -23,7 +25,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
@@ -62,6 +66,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
+import com.jetsynthesys.rightlife.MainApplication
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
@@ -104,6 +109,7 @@ import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeActivity
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showChallengeInfoBottomSheet
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeEmptyActivity
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper
@@ -1067,6 +1073,57 @@ class HomeNewActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
             }
         }
+
+        if (MainApplication.isFreshLaunch && (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED || !sharedPreferenceManager.enableNotificationServer)
+        ) {
+            ChallengeBottomSheetHelper.showChallengeReminderBottomSheet(this) { dialog ->
+                checkPermission()
+                dialog.dismiss()
+            }
+            MainApplication.isFreshLaunch = false
+        }
+    }
+
+    private fun checkPermission(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    100
+                )
+                return false
+            } else {
+                enableNotificationServer()
+                return true
+            }
+        } else {
+            enableNotificationServer()
+            // Permission not required before Android 13
+            return true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                enableNotificationServer()
+            } else {
+                showCustomToast("Notification permission denied", false)
+                sharedPreferenceManager.enableNotificationServer = false
+            }
+        }
     }
 
 
@@ -1081,11 +1138,14 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
         getSubscriptionList()
         //getSubscriptionProducts(binding.tvStriketroughPrice);
-        lifecycleScope.launch {
-            delay(2000)
-            showChallengeCard()
-        }
+    }
 
+    private fun enableNotificationServer() {
+        val requestBody = mapOf("pushNotification" to true)
+        CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
+            //showToast(message)
+            sharedPreferenceManager.enableNotificationServer = true
+        }
     }
 
     /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -1176,6 +1236,7 @@ class HomeNewActivity : BaseActivity() {
                     )
                     SharedPreferenceManager.getInstance(applicationContext)
                         .saveUserId(ResponseObj.userdata.id)
+                    ResponseObj.userdata.bodyFat = ResponseObj.bodyFat
                     SharedPreferenceManager.getInstance(applicationContext)
                         .saveUserProfile(ResponseObj)
 
@@ -1244,6 +1305,12 @@ class HomeNewActivity : BaseActivity() {
                     }
                     isUserProfileLoaded = true
                     tryProcessPendingDeepLink()
+                    if (ResponseObj.user_sub_status == 2) {
+                        AnalyticsLogger.logEvent(
+                            this@HomeNewActivity,
+                            AnalyticsEvent.FreeTrialEnded
+                        )
+                    }
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                     if (response.code() == 401) {
@@ -2374,129 +2441,153 @@ class HomeNewActivity : BaseActivity() {
 
     private suspend fun fetchAllHealthData() {
         try {
+
+            val ctx = this@HomeNewActivity ?: return
             val client = healthConnectClient
-            val granted = client.permissionController.getGrantedPermissions()
+
+            val granted = try {
+                client.permissionController.getGrantedPermissions()
+            } catch (e: Exception) {
+                Log.e("HealthSync", "Permission fetch failed", e)
+                emptySet()
+            }
+
+            Log.d("HealthSync", "Granted permissions = $granted")
+
             val now = Instant.now()
-            // ------------------------------
-            // 1) Load last sync time
-            // ------------------------------
-            val savedSync =
-                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime.orEmpty()
+
+            val savedSync = SharedPreferenceManager
+                .getInstance(ctx)
+                .moveRightSyncTime
+                .orEmpty()
+
             val isFirstSync = savedSync.isBlank()
-            // FIRST SYNC → last 30 days
+
             val defaultStart = now.minus(Duration.ofDays(30))
-            // Next sync starts from last modified time
-            val lastSyncInstant = if (isFirstSync) null else Instant.parse(savedSync)
-            // ------------------------------
-            // 2) Always re-sync TODAY (Fix for Fitbit/Samsung)
-            // ------------------------------
+            val lastSyncInstant = if (isFirstSync) null else runCatching {
+                Instant.parse(savedSync)
+            }.getOrNull()
+
+            // ✅ TIMEZONE SAFE
             val todayStart = LocalDate.now()
-                .atStartOfDay()
-                .toInstant(ZoneOffset.UTC)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
 
             val computedStartTime = when {
                 isFirstSync -> defaultStart
                 lastSyncInstant != null -> {
-                    // If lastSyncInstant lies inside today,
-                    // force resync whole today
-                    if (lastSyncInstant.isAfter(todayStart))
-                        todayStart
-                    else
-                        lastSyncInstant
+                    if (lastSyncInstant.isAfter(todayStart)) todayStart else lastSyncInstant
                 }
 
                 else -> defaultStart
             }
+
             val endTime = now
+
             Log.d("HealthSync", "StartTime = $computedStartTime")
             Log.d("HealthSync", "EndTime   = $endTime")
+
             var latestModified: Instant? = null
             var foundNewData = false
 
-            // Update latest modified
             fun markModified(record: Record) {
                 foundNewData = true
                 val modified = record.metadata.lastModifiedTime
-                if (latestModified == null || modified.isAfter(latestModified))
+                if (latestModified == null || modified.isAfter(latestModified)) {
                     latestModified = modified
+                }
             }
 
-            // ------------------------------
-            // 3) Chunked reading for first sync
-            // ------------------------------
             suspend fun <T : Record> fetchChunk(type: KClass<T>): List<T> {
-                return if (isFirstSync)
-                    fetchChunked(type, computedStartTime, endTime, 15)
-                else
-                    client.readRecords(
-                        ReadRecordsRequest(
-                            type,
-                            TimeRangeFilter.between(computedStartTime, endTime)
-                        )
-                    ).records
+                return try {
+                    if (isFirstSync) {
+                        fetchChunked(type, computedStartTime, endTime, 15)
+                    } else {
+                        client.readRecords(
+                            ReadRecordsRequest(
+                                type,
+                                TimeRangeFilter.between(computedStartTime, endTime)
+                            )
+                        ).records
+                    }
+                } catch (e: Exception) {
+                    Log.e("HealthSync", "Fetch failed for ${type.simpleName}", e)
+                    emptyList()
+                }
             }
 
-            // ------------------------------
-            // 4) Permission check
-            // ------------------------------
-            fun <T : Record> hasPermission(type: KClass<T>) =
-                HealthPermission.getReadPermission(type) in granted
+            fun <T : Record> hasPermission(type: KClass<T>): Boolean {
+                val perm = HealthPermission.getReadPermission(type)
+                val grantedNow = perm in granted
+                if (!grantedNow) {
+                    Log.w("HealthSync", "Missing permission for ${type.simpleName}")
+                }
+                return grantedNow
+            }
 
-            // ------------------------------
-            // 5) Loader & assignment helper
-            // ------------------------------
             suspend fun <T : Record> load(
                 type: KClass<T>,
                 assign: (List<T>) -> Unit
             ) {
+                Log.d("HealthSync", "Loading ${type.simpleName}")
+
                 if (!hasPermission(type)) {
-                    Log.w("HealthSync", "Permission missing for ${type.simpleName}")
                     assign(emptyList())
                     return
                 }
+
                 val records = fetchChunk(type)
+                Log.d("HealthSync", "${type.simpleName} count = ${records.size}")
+
                 assign(records)
                 records.forEach { markModified(it) }
             }
+
             // ------------------------------
-            // 6) Fetch all record types
+            // FETCH
             // ------------------------------
             load(TotalCaloriesBurnedRecord::class) { totalCaloriesBurnedRecord = it }
             load(StepsRecord::class) { stepsRecord = it }
             load(HeartRateRecord::class) { heartRateRecord = it }
             load(RestingHeartRateRecord::class) { restingHeartRecord = it }
             load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
-            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
-            load(BloodPressureRecord::class) { bloodPressureRecord = it }
             load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
             load(SleepSessionRecord::class) { sleepSessionRecord = it }
             load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
             load(WeightRecord::class) { weightRecord = it }
             load(BodyFatRecord::class) { bodyFatRecord = it }
             load(DistanceRecord::class) { distanceRecord = it }
             load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
-            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+            load(BloodPressureRecord::class) { bloodPressureRecord = it }
+
             // ------------------------------
-            // 7) Device origin detection
+            // DEVICE DETECTION
             // ------------------------------
             val devicePackage =
                 stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName ?: "unknown"
+
             val deviceManufacturer =
                 stepsRecord?.firstOrNull()?.metadata?.device?.manufacturer ?: devicePackage
-            SharedPreferenceManager.getInstance(this@HomeNewActivity)
-                .saveDeviceName(deviceManufacturer)
+
+            SharedPreferenceManager.getInstance(ctx).saveDeviceName(deviceManufacturer)
+
             // ------------------------------
-            // 8) Save updated sync time
+            // SAVE SYNC TIME
             // ------------------------------
             if (foundNewData && latestModified != null) {
-                SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                SharedPreferenceManager
+                    .getInstance(ctx)
                     .saveMoveRightSyncTime(latestModified.toString())
+
                 Log.d("HealthSync", "Updated lastSync = $latestModified")
             } else {
                 Log.d("HealthSync", "No new data. Sync time unchanged")
             }
+
             // ------------------------------
-            // 9) Push to your server
+            // PUSH TO SERVER
             // ------------------------------
             when (devicePackage) {
                 "com.google.android.apps.fitness" -> storeHealthData()
@@ -2507,7 +2598,7 @@ class HomeNewActivity : BaseActivity() {
             }
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("HealthSync", "Fatal error", e)
         } finally {
             //hideLoaderSafe()
         }
@@ -4235,7 +4326,10 @@ class HomeNewActivity : BaseActivity() {
             dates.challengeEndDate
         )
 
-        sharedPreferenceManager.challengeState = dates.challengeStatus
+        sharedPreferenceManager.challengeState = dates.challengeStatus //3
+        sharedPreferenceManager.challengeStartDate =
+            dates.challengeStartDate //"12 Jan 2026, 09:00 PM"
+        sharedPreferenceManager.challengeEndDate = dates.challengeEndDate //"28 Jan 2026, 09:00 PM"
 
         if (dates.participateDate.isEmpty()) {
 
@@ -4249,17 +4343,14 @@ class HomeNewActivity : BaseActivity() {
             return
         }
 
-        when (dates.challengeStatus) {
+        when (sharedPreferenceManager.challengeState) {
 
             1 -> {
                 if (dates.participateDate.isEmpty()) {
                     // Join challenge
-                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.VISIBLE
                     binding.layoutRegisterChallenge.tvStartEndDate.text = dateRange
+                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.VISIBLE
                 } else {
-                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
-                        View.VISIBLE
-
                     binding.layoutUnlockChallenge.tvStartEndDate.text =
                         getChallengeDateRange(
                             dates.challengeStartDate,
@@ -4269,6 +4360,8 @@ class HomeNewActivity : BaseActivity() {
                         binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
                             formatWithOrdinal(it)
                     }
+                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
+                        View.VISIBLE
                 }
             }
 
@@ -4276,18 +4369,23 @@ class HomeNewActivity : BaseActivity() {
                 // Waiting for challenge
                 if (!DashboardChecklistManager.checklistStatus) {
                     // Checklist not completed
-                    binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
-                        View.VISIBLE
-                    binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
-                        "$checklistCount/6"
-                    binding.layoutChallengeToCompleteChecklist.seekBar.progress =
-                        checklistCount * 10
+                    binding.layoutChallengeToCompleteChecklist.apply {
+                        tvChecklistNumber.text = "$checklistCount/6"
+                        seekBar.progress = checklistCount.takeIf { it != 0 }?.times(10) ?: 1
+                        imgChallenge.imageTintList = ColorStateList.valueOf("#F5B829".toColorInt())
+                        tvChallenge.setTextColor("#F5B829".toColorInt())
+                        tvChallenge.text = "Challenge Upcoming"
+                        completeChallengeChecklist.visibility = View.VISIBLE
+                    }
                 } else {
                     // Checklist completed → Countdown card
                     binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
                         View.VISIBLE
-                    binding.layoutChallengeCountDownDays.tvCountDownDays.text =
-                        getDaysFromToday(dates.challengeStartDate).toString()
+                    val daysMin =
+                        getDaysFromToday(sharedPreferenceManager.challengeStartDate).split(" ")
+                    binding.layoutChallengeCountDownDays.tvCountDownDays.text = daysMin[0]
+                    binding.layoutChallengeCountDownDays.tvDaysToGo.text = "${daysMin[1]} to go"
+
                 }
             }
 
@@ -4295,16 +4393,17 @@ class HomeNewActivity : BaseActivity() {
                 // Active challenge → Daily score
                 if (!DashboardChecklistManager.checklistStatus) {
                     // Checklist not completed
-                    binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
-                        View.VISIBLE
-                    binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
-                        "$checklistCount/6"
-                    binding.layoutChallengeToCompleteChecklist.seekBar.progress =
-                        checklistCount * 10
+                    binding.layoutChallengeToCompleteChecklist.apply {
+                        tvChecklistNumber.text = "$checklistCount/6"
+                        seekBar.progress = checklistCount.takeIf { it != 0 }?.times(10) ?: 1
+                        imgChallenge.imageTintList = ColorStateList.valueOf("#06B27B".toColorInt())
+                        tvChallenge.setTextColor("#06B27B".toColorInt())
+                        tvChallenge.text = "Challenge Active"
+                        completeChallengeChecklist.visibility = View.VISIBLE
+                    }
                 } else {
-                    getDailyScore(DateHelper.getTodayDate())
-                    binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
-                        View.VISIBLE
+                    //Show Score Card
+                    getDailyTasks(DateHelper.getTodayDate())
                 }
             }
 
@@ -4409,6 +4508,7 @@ class HomeNewActivity : BaseActivity() {
     }
 
     fun showChallengeCard() {
+        getDashboardChecklist()
         try {
             if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
                 val appConfig =
@@ -4459,9 +4559,7 @@ class HomeNewActivity : BaseActivity() {
             showChallengeInfoBottomSheet(this@HomeNewActivity)
         }
         binding.layoutChallengeCountDownDays.btnViewChallenge.setOnClickListener {
-            startActivity(Intent(this@HomeNewActivity, ChallengeEmptyActivity::class.java).apply {
-                putExtra("CHALLENGE_START_DATE", dates.challengeStartDate)
-            })
+            startActivity(Intent(this@HomeNewActivity, ChallengeEmptyActivity::class.java))
         }
 
         //Challenge Daily Score
@@ -4490,6 +4588,28 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
+    private fun getDailyTasks(date: String) {
+        AppLoader.show(this)
+        apiService.dailyTask(sharedPreferenceManager.accessToken, date)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>, response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+
+                    getDailyScore(date)
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>, t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
     private fun getDailyScore(date: String) {
         AppLoader.show(this)
         apiService.dailyScore(sharedPreferenceManager.accessToken, date)
@@ -4505,8 +4625,8 @@ class HomeNewActivity : BaseActivity() {
                             gson.fromJson(jsonResponse, DailyScoreResponse::class.java)
                         val scoreData = responseObj.data
                         binding.layoutChallengeDailyScore.apply {
-                            tvPoints.text = scoreData.dailyScore.toString()
-                            scoreSeekBar.progress = scoreData.dailyScore
+                            tvPoints.text = scoreData.totalScore.toString()
+                            scoreSeekBar.progress = scoreData.totalScore.takeIf { it != 0 } ?: 2
                             setSeekBarProgressColor(
                                 scoreSeekBar, getColorCode(scoreData.performance)
                             )
@@ -4519,6 +4639,8 @@ class HomeNewActivity : BaseActivity() {
                             )
                             tvScoreLabel.text = scoreData.performance
                             tvMessage.text = scoreData.message
+                            binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+                                View.VISIBLE
                         }
                     } else {
                         showCustomToast("Something went wrong!", false)

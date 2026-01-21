@@ -42,36 +42,33 @@ object DateHelper {
         }"
     }
 
-    fun getDaysFromToday(dateString: String): Int {
+    fun getDaysFromToday(dateString: String): String {
         val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
         inputFormat.isLenient = false
 
         return try {
-            val targetDate = inputFormat.parse(dateString) ?: return 0
+            val targetDate = inputFormat.parse(dateString) ?: return "0 mins"
 
-            // Clear time part for accurate day calculation
-            val todayCal = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
+            val nowMillis = System.currentTimeMillis()
+            val diffMillis = targetDate.time - nowMillis
+
+            if (diffMillis <= 0) return "0 mins"
+
+            val minutes = diffMillis / (1000 * 60)
+            val hours = diffMillis / (1000 * 60 * 60)
+            val days = diffMillis / (1000 * 60 * 60 * 24)
+
+            when {
+                days >= 1 -> "$days day${if (days > 1) "s" else ""}"
+                hours >= 1 -> "$hours hour${if (hours > 1) "s" else ""}"
+                else -> "$minutes min${if (minutes > 1) "s" else ""}"
             }
-
-            val targetCal = Calendar.getInstance().apply {
-                time = targetDate
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-
-            val diffMillis = targetCal.timeInMillis - todayCal.timeInMillis
-            (diffMillis / (1000 * 60 * 60 * 24)).toInt()
 
         } catch (e: Exception) {
-            0
+            "0 mins"
         }
     }
+
 
     fun getChallengeDuration(startDate: String, endDate: String): String {
         val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
@@ -134,6 +131,48 @@ object DateHelper {
             false
         }
     }
+
+    fun toApiDate(dateString: String): String {
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+
+        val possibleFormats = listOf(
+            SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH),
+            SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH),
+            SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        )
+
+        for (format in possibleFormats) {
+            try {
+                val date = format.parse(dateString)
+                if (date != null) {
+                    return outputFormat.format(date)
+                }
+            } catch (e: Exception) {
+                // try next format
+            }
+        }
+
+        // fallback
+        return getTodayDate()
+    }
+
+    fun isFirstDateAfter(
+        firstDate: String,
+        secondDate: String
+    ): Boolean {
+        return try {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+            formatter.isLenient = false
+
+            val date1 = formatter.parse(firstDate)
+            val date2 = formatter.parse(secondDate)
+
+            date1 != null && date2 != null && date1.after(date2)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 
 
 }

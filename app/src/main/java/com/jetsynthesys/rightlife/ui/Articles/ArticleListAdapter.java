@@ -157,7 +157,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             holder.binding.card2.setVisibility(View.VISIBLE);
             holder.binding.tvServiceCardTitle.setText(article.getRecommendedService().getTitle());
             holder.binding.txtDescCardService.setText(article.getRecommendedService().getDescription());
-            holder.binding.txtTagService.setText(article.getRecommendedService().getModuleId());
+            holder.binding.txtTagService.setText(article.getRecommendedService().getTitle());
 
             GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedService().getImageUrl())
                     .transform(new RoundedCorners(15))
@@ -383,6 +383,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         // funfact Card
         if (article.getFunFacts() != null && article.getFunFacts().getDescription() != null) {
             holder.binding.card4.setVisibility(View.VISIBLE);
+            holder.binding.tvFunfactHeading.setText(article.getFunFacts().getHeading());
             holder.binding.tvFunfact.setText(article.getFunFacts().getDescription());
         } else {
             holder.binding.card4.setVisibility(View.GONE);

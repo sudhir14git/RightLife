@@ -113,6 +113,9 @@
                 android:id="@+id/challengeOverCard"
                 layout="@layout/layout_challenge_over" />
 
+            <include
+                android:id="@+id/rankingCardTop"
+                layout="@layout/layout_rank_challenge_top" />
 
             <include
                 android:id="@+id/scoreCard"

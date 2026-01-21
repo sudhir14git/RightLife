@@ -73,7 +73,7 @@ class CalendarChallengeAdapter(
             }
 
             ivCheckMark.visibility = View.VISIBLE
-            ivCheckMark.setImageResource(if (day.isChecked) R.drawable.cal_selected else R.drawable.cal_not_selected)
+            ivCheckMark.setImageResource(if (day.isChecked) R.drawable.ic_checklist_complete else R.drawable.cal_not_selected)
         }
     }
 }

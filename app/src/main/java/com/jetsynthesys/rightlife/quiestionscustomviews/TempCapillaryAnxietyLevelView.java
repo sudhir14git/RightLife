@@ -36,7 +36,7 @@ public class TempCapillaryAnxietyLevelView extends View {
         backgroundPaint.setStyle(Paint.Style.FILL);
 
         fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        //fillPaint.setColor(Color.parseColor("#E35D5B")); // Default fill color
+        fillPaint.setColor(Color.parseColor("#78DD49")); // Default fill color
         fillPaint.setStyle(Paint.Style.FILL);
 
         markerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -93,7 +93,7 @@ public class TempCapillaryAnxietyLevelView extends View {
      }
 
      // Set initial thumb position to first marker
-     thumbY = markerPositions[0];
+     thumbY = markerPositions[1];
  }
 
 
@@ -107,8 +107,8 @@ public class TempCapillaryAnxietyLevelView extends View {
         canvas.drawRoundRect(centerX - barWidth, 0, centerX + barWidth, viewHeight, cornerRadius, cornerRadius, backgroundPaint);
         canvas.drawRoundRect(centerX - barWidth, thumbY, centerX + barWidth, viewHeight, cornerRadius, cornerRadius, fillPaint);
 
-        for (int pos : markerPositions) {
-            canvas.drawCircle(centerX, pos, 10, markerPaint);
+        for (int i = 1; i < markerPositions.length; i++) {
+            canvas.drawCircle(centerX, markerPositions[i], 10, markerPaint);
         }
 
         float bottomMargin = 0f;
@@ -162,14 +162,18 @@ public class TempCapillaryAnxietyLevelView extends View {
     }
 
     private float getClosestMarker(float y) {
-        float closest = markerPositions[0];
-        for (float pos : markerPositions) {
+        // Start from index 1 → minimum = 1000
+        float closest = markerPositions[1];
+
+        for (int i = 1; i < markerPositions.length; i++) {
+            float pos = markerPositions[i];
             if (Math.abs(y - pos) < Math.abs(y - closest)) {
                 closest = pos;
             }
         }
         return closest;
     }
+
 
     private int getValueFromPosition(float y) {
         int closestIndex = 0;
@@ -237,4 +241,23 @@ public class TempCapillaryAnxietyLevelView extends View {
     public interface OnValueChangeListener {
         void onValueChanged(int value);
     }
+
+    public void setValue(int value) {
+        int index = (value - minValue) / stepValue;
+
+        if (index >= 0 && index < markerPositions.length) {
+            thumbY = markerPositions[index];
+
+            if (stepColorMap.containsKey(value)) {
+                fillPaint.setColor(stepColorMap.get(value));
+            }
+
+            invalidate();
+
+            if (listener != null) {
+                listener.onValueChanged(value);
+            }
+        }
+    }
+
 }

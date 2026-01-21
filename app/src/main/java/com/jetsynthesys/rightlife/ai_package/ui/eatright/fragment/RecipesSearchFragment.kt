@@ -1,13 +1,17 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -377,6 +381,19 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+        searchEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        searchEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                // Hide keyboard when done is pressed
+                val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+                searchEditText.clearFocus()
+                true
+            } else {
+                false
+            }
+        }
 
         getRecipesList()  // this will handle tab restore on success
     }
@@ -603,65 +620,92 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun getRecipesList() {
-        if (isAdded  && view != null){
+        if (isAdded && view != null) {
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
+
+        Log.d("RecipesSearchFragment", "getRecipesList called → starting API fetch")
+
         val call = ApiClient.apiServiceFastApiV2.getRecipesList()
+        Log.d("RecipesSearchFragment", "API call enqueued: getRecipesList")
+
         call.enqueue(object : Callback<RecipeListResponse> {
             override fun onResponse(call: Call<RecipeListResponse>, response: Response<RecipeListResponse>) {
+                Log.d("RecipesSearchFragment", "onResponse received → isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     val mealPlanLists = response.body()?.data ?: emptyList()
+                    Log.d("RecipesSearchFragment", "Success → received ${mealPlanLists.size} recipes")
+
                     snapRecipesList.clear()
                     snapRecipesList.addAll(mealPlanLists)
+                    Log.d("RecipesSearchFragment", "snapRecipesList updated → size now: ${snapRecipesList.size}")
+
                     mealTypeList.clear()
                     foodTypeList.clear()
                     cuisineList.clear()
+
                     val mealTypeLists = snapRecipesList
-                        .mapNotNull { it.meal_type }              // take meal_type string
-                        .flatMap { it.split(",", "/") }           // split by comma OR slash
-                        .map { it.trim() }                        // remove spaces
-                        .filter { it.isNotEmpty() }               // remove empty
-                        .distinct()                               // remove duplicates
-                        .sorted()                                  // sort alphabetically
+                        .mapNotNull { it.meal_type }
+                        .flatMap { it.split(",", "/") }
+                        .map { it.trim() }
+                        .filter { it.isNotEmpty() }
+                        .distinct()
+                        .sorted()
+
                     mealTypeList.addAll(mealTypeLists)
-                    // Assuming snapRecipesList is your recipe list
-//                    val foodTypeLists = snapRecipesList
-//                        .mapNotNull { it.tags }              // take meal_type string
-//                        .flatMap { it.split(",", "/") }           // split by comma OR slash
-//                        .map { it.trim() }                        // remove spaces
-//                        .filter { it.isNotEmpty() }               // remove empty
-//                        .distinct()                               // remove duplicates
-//                        .sorted()                                  // sort alphabetically
-                    foodTypeList.addAll(foodTypeLists)
-                    // foodTypeList.addAll(snapRecipesList.map { it.tags }.filterNotNull().distinct().sorted())
+                    Log.d("RecipesSearchFragment", "Meal Types extracted & added → count: ${mealTypeList.size}")
+
+
+                   /*  val foodTypeLists = snapRecipesList
+                         .mapNotNull { it.tags}
+                         .flatMap { it.split(",", "/") }
+                         .map { it.trim() }
+                         .filter { it.isNotEmpty() }
+                         .distinct()
+                         .sorted()*/
+                     foodTypeList.addAll(foodTypeLists)
+                    Log.d("RecipesSearchFragment", "Food Types (tags) → current size: ${foodTypeList.size} (was commented in original)")
+
                     cuisineList.addAll(snapRecipesList.map { it.cuisine }.filterNotNull().distinct().sorted())
-                    Log.d("RecipesSearchFragment", "Meal Types: $mealTypeList")
-                    Log.d("RecipesSearchFragment", "Dish Types: $foodTypeList")
-                    Log.d("RecipesSearchFragment", "Cuisines: $cuisineList")
+                    Log.d("RecipesSearchFragment", "Cuisines extracted & added → count: ${cuisineList.size}")
+
+                    Log.d("RecipesSearchFragment", "Meal Types final: $mealTypeList")
+                    Log.d("RecipesSearchFragment", "Dish Types final: $foodTypeList")
+                    Log.d("RecipesSearchFragment", "Cuisines final: $cuisineList")
+
                     onSnapSearchDishItemRefresh()
+                    Log.d("RecipesSearchFragment", "onSnapSearchDishItemRefresh() called")
+
                     // ✅ restore after data ready
                     restoreTabStateAfterData()
+                    Log.d("RecipesSearchFragment", "restoreTabStateAfterData() called")
                 } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("RecipesSearchFragment", "API error → code: ${response.code()}, error body: $errorBody")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
+
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<RecipeListResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
+                Log.e("RecipesSearchFragment", "API call failed completely", t)
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
+
+                if (isAdded && view != null) {
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }

@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="270dp"
-    android:layout_marginTop="16dp">
-
-    <com.jetsynthesys.rightlife.ui.GlowGradientCardView
-        android:id="@+id/gradientBorder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    android:layout_marginTop="16dp"
+    android:background="@drawable/rounded_corner_article_gray"
+    android:backgroundTint="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/bg_challenge"
         android:clipToPadding="false"
         android:orientation="vertical">
 
@@ -27,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:src="@drawable/challenge_icon"
-                android:tint="#F5B829" />
+                app:tint="#F5B829" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -35,7 +34,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_toEndOf="@id/imgChallenge"
                 android:fontFamily="@font/dmsans_bold"
-                android:text="Rankings"
+                android:text="All-Time Rankings"
                 android:textColor="#F5B829"
                 android:textSize="14sp" />
 
@@ -44,7 +43,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/info_challenge" />
+                android:src="@drawable/info_challenge"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
@@ -54,16 +54,29 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="130dp"
                 android:layout_centerInParent="true"
                 android:gravity="center_horizontal|top"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/icon_lock_challenge" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/icon_lock_challenge" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginTop="10dp"
+                        android:background="#F7F7F7" />
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"

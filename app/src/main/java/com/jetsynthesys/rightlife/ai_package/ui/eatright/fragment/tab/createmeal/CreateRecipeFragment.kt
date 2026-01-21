@@ -514,25 +514,44 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
     }
 
     private fun getMyRecipesDetails(recipeId : String) {
+        Log.d("RecipeDetails", "getMyRecipesDetails called with recipeId: $recipeId")
+
         if (isAdded  && view != null){
+            Log.d("RecipeDetails", "Fragment is added and view is not null, showing loader")
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
+        } else {
+            Log.w("RecipeDetails", "Fragment not added or view is null, skipping loader")
         }
+
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        Log.d("RecipeDetails", "UserId retrieved: $userId")
+
         val call = ApiClient.apiServiceFastApiV2.getMyRecipesDetails(userId, recipeId)
+        Log.d("RecipeDetails", "API call initiated for userId: $userId, recipeId: $recipeId")
+
         call.enqueue(object : Callback<MyRecipeDetailsResponse> {
             override fun onResponse(call: Call<MyRecipeDetailsResponse>, response: Response<MyRecipeDetailsResponse>) {
+                Log.d("RecipeDetails", "onResponse received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
+                        Log.d("RecipeDetails", "Dismissing loader after successful response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     if (response.body()?.data != null){
                         val ingredientList = response.body()?.data!!.ingredients
+                        Log.d("RecipeDetails", "Recipe data received with ${ingredientList.size} ingredients")
+
                         val myIngredientLists : ArrayList<IngredientRecipeDetails> = ArrayList()
-                        ingredientList.forEach { foodData ->
+
+                        ingredientList.forEachIndexed { index, foodData ->
+                            Log.d("RecipeDetails", "Processing ingredient $index: ${foodData.food_name}, quantity: ${foodData.quantity}")
+
                             val ingredientData = IngredientRecipeDetails(
                                 id = foodData.id,
                                 recipe_id = foodData.recipe_id,
@@ -589,28 +608,49 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
                             )
                             myIngredientLists.add(ingredientData)
                         }
+
+                        Log.d("RecipeDetails", "Total ingredients processed: ${myIngredientLists.size}")
+
                         ingredientLocalListModel = IngredientLocalListModel(myIngredientLists)
                         ingredientLists.addAll(myIngredientLists)
+
+                        Log.d("RecipeDetails", "ingredientLists updated, total count: ${ingredientLists.size}")
+                        Log.d("RecipeDetails", "Updating UI visibility")
+
                         addRecipeNameLayout.visibility = View.GONE
                         continueLayout.visibility = View.GONE
                         addedRecipeListLayout.visibility = View.VISIBLE
                         saveRecipeLayout.visibility = View.VISIBLE
+
+                        Log.d("RecipeDetails", "Calling onIngredientList()")
                         onIngredientList()
+                        Log.d("RecipeDetails", "Recipe details loaded successfully")
+                    } else {
+                        Log.w("RecipeDetails", "Response body or data is null")
                     }
                 } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Log.e("RecipeDetails", "Response not successful: ${response.code()}")
+                    Log.e("RecipeDetails", "Error body: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+
                     if (isAdded  && view != null){
+                        Log.d("RecipeDetails", "Dismissing loader after error response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<MyRecipeDetailsResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
+                Log.e("RecipeDetails", "API call failed: ${t.message}")
+                Log.e("RecipeDetails", "Exception: ${t.javaClass.simpleName}")
+                t.printStackTrace()
+
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+
                 if (isAdded  && view != null){
+                    Log.d("RecipeDetails", "Dismissing loader after API failure")
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }

@@ -371,20 +371,34 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
     }
 
     private fun createMealsSave(snapRecipeList : ArrayList<IngredientRecipeDetails>) {
+        Log.d("CreateMeal", "createMealsSave called with ${snapRecipeList.size} items")
+
         if (isAdded  && view != null){
+            Log.d("CreateMeal", "Fragment is added and view is not null, showing loader")
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
+        } else {
+            Log.w("CreateMeal", "Fragment not added or view is null, skipping loader")
         }
+
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        Log.d("CreateMeal", "UserId retrieved: $userId")
+
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
+        Log.d("CreateMeal", "Current date formatted: $formattedDate")
+
         val mealLogList : ArrayList<MealLog> = ArrayList()
         val recipes: ArrayList<MealRecipe> = ArrayList()
         val ingredients: ArrayList<MealIngredient> = ArrayList()
+
         snapRecipeList?.forEach { mealItem ->
+            Log.d("CreateMeal", "Processing item: ${mealItem.food_name}, source: ${mealItem.source}, quantity: ${mealItem.quantity}")
+
             if (mealItem.source.equals("recipe")){
+                Log.d("CreateMeal", "Adding recipe: ${mealItem.id}")
                 val mealRecipeData = MealRecipe(
                     recipe_id = mealItem.id,
                     meal_quantity = mealItem.quantity,
@@ -394,6 +408,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
                 recipes.add(mealRecipeData)
             }
             if (mealItem.source.equals("ingredient")){
+                Log.d("CreateMeal", "Adding ingredient: ${mealItem.id}")
                 val mealIngredientData = MealIngredient(
                     ingredient_id = mealItem.id,
                     meal_quantity = mealItem.quantity,
@@ -402,6 +417,9 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
                 ingredients.add(mealIngredientData)
             }
         }
+
+        Log.d("CreateMeal", "Total recipes: ${recipes.size}, Total ingredients: ${ingredients.size}")
+
         val createMealRequest = CreateMealRequest(
             meal_type = mealType,
             meal_name = addedNameTv.text.toString(),
@@ -409,18 +427,31 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
             recipes = recipes,
             ingredients = ingredients
         )
+
+        Log.d("CreateMeal", "CreateMealRequest prepared - meal_type: $mealType, meal_name: ${addedNameTv.text}")
+
         val call = ApiClient.apiServiceFastApiV2.createMealRequest(userId, createMealRequest)
+        Log.d("CreateMeal", "API call initiated for userId: $userId")
+
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
+                Log.d("CreateMeal", "onResponse received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
+                        Log.d("CreateMeal", "Dismissing loader after successful response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     val mealData = response.body()?.message
+                    Log.d("CreateMeal", "Meal created successfully, message: $mealData")
+
                     showCustomToast(requireContext(), mealData)
-                   // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+
+                    Log.d("CreateMeal", "Navigating to HomeTabMealFragment")
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
@@ -428,25 +459,39 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
                     args.putString("tabType", "MyMeal")
                     args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
+
+                    Log.d("CreateMeal", "Fragment arguments set - ModuleName: $moduleName, mealType: $mealType")
+
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
                         addToBackStack("landing")
                         commit()
                     }
+                    Log.d("CreateMeal", "Fragment transaction committed")
                 } else {
+                    Log.e("CreateMeal", "Response not successful: ${response.code()}")
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+
                     if (isAdded  && view != null){
+                        Log.d("CreateMeal", "Dismissing loader after error response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
+                Log.e("CreateMeal", "API call failed: ${t.message}")
+                Log.e("CreateMeal", "Exception: ${t.javaClass.simpleName}")
                 Log.e("Error", "API call failed: ${t.message}")
+                t.printStackTrace()
+
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+
                 if (isAdded  && view != null){
+                    Log.d("CreateMeal", "Dismissing loader after API failure")
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }

@@ -234,44 +234,82 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     }
 
     private fun getRecipesList(keyword : String) {
+        Log.d("RecipesList", "getRecipesList called with keyword: $keyword")
+
         if (isAdded  && view != null){
+            Log.d("RecipesList", "Fragment is added and view is not null, showing loader")
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
+        } else {
+            Log.w("RecipesList", "Fragment not added or view is null, skipping loader")
         }
+
         val call = ApiClient.apiServiceFastApiV2.getSearchIngredientList(keyword)
+        Log.d("RecipesList", "API call initiated for keyword: $keyword")
+
         call.enqueue(object : Callback<IngredientResponse> {
             override fun onResponse(call: Call<IngredientResponse>, response: Response<IngredientResponse>) {
+                Log.d("RecipesList", "onResponse received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
+                        Log.d("RecipesList", "Dismissing loader after successful response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     val searchData = response.body()?.data
+                    Log.d("RecipesList", "Search data received, size: ${searchData?.size}")
+
                     if (searchData != null){
                         if (searchData.size > 0){
+                            Log.d("RecipesList", "Search results found: ${searchData.size} items")
+
                             //snapRecipesList.addAll(mealPlanLists)
                             searchIngredientList.clear()
+                            Log.d("RecipesList", "Cleared existing searchIngredientList")
+
                             tvSearchResult.text = "Search Result: ${searchData.size}"
+                            Log.d("RecipesList", "Updated search result text: ${searchData.size}")
+
                             searchIngredientList.addAll(searchData)
+                            Log.d("RecipesList", "Added search data to searchIngredientList, total count: ${searchIngredientList.size}")
+
+                            Log.d("RecipesList", "Calling onSnapSearchDishItemRefresh()")
                             onSnapSearchDishItemRefresh()
+                            Log.d("RecipesList", "Recipes list loaded successfully")
+                        } else {
+                            Log.w("RecipesList", "Search data is empty")
                         }
+                    } else {
+                        Log.w("RecipesList", "Search data is null")
                     }
                 } else {
+                    Log.e("RecipesList", "Response not successful: ${response.code()}")
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+
                     if (isAdded  && view != null){
+                        Log.d("RecipesList", "Dismissing loader after error response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<IngredientResponse>, t: Throwable) {
+                Log.e("RecipesList", "API call failed: ${t.message}")
+                Log.e("RecipesList", "Exception: ${t.javaClass.simpleName}")
                 Log.e("Error", "API call failed: ${t.message}")
+                t.printStackTrace()
+
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+
                 if (isAdded  && view != null){
+                    Log.d("RecipesList", "Dismissing loader after API failure")
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }
