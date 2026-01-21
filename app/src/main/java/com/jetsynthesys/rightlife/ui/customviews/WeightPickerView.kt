@@ -54,7 +54,7 @@ class WeightPickerView @JvmOverloads constructor(
             ((lbsMax - lbsMin) * 10).toInt() + 1 // Each 0.1 lbs
         }
         val width = (totalItems * itemSpacing).toInt() + (sidePadding * 2)
-        val height = 280
+        val height = 320
         setMeasuredDimension(width, height)
     }
 
@@ -85,7 +85,7 @@ class WeightPickerView @JvmOverloads constructor(
             if (value % 10 == 0) {
                 canvas.drawLine(x, startY, x, endYLong, majorLinePaint)
                 // Draw kg number below
-                canvas.drawText(actualWeight.toInt().toString(), x, endYLong + 50f, textPaint)
+                canvas.drawText(actualWeight.toInt().toString(), x, endYLong + 70f, textPaint)
             } else {
                 // Shorter lines for 0.1 kg increments
                 canvas.drawLine(x, startY, x, endYShort, linePaint)
@@ -96,7 +96,7 @@ class WeightPickerView @JvmOverloads constructor(
     private fun drawLbs(canvas: Canvas) {
         val startY = 0f
         val endYShort = 100f
-        val endYLong = 140f
+        val endYLong = 160f
 
         val minValue = (lbsMin * 10).toInt()
         val maxValue = (lbsMax * 10).toInt()
@@ -109,7 +109,7 @@ class WeightPickerView @JvmOverloads constructor(
             // Draw longer line every 10 units (every whole lbs)
             if (value % 10 == 0) {
                 canvas.drawLine(x, startY, x, endYLong, majorLinePaint)
-                canvas.drawText(actualWeight.toInt().toString(), x, endYLong + 50f, textPaint)
+                canvas.drawText(actualWeight.toInt().toString(), x, endYLong + 70f, textPaint)
             } else {
                 // Shorter lines for 0.1 lbs increments
                 canvas.drawLine(x, startY, x, endYShort, linePaint)
