@@ -140,6 +140,11 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
             }else{
                 data.recipe.selected_serving?.value.toString()
             }
+            serves.text = if(data.recipe.selected_serving?.type == ""){
+                "Serves"
+            }else{
+                data.recipe.selected_serving?.type.toString()
+            }
             val mealTime = data.recipe.active_cooking_time_min
             mealTimeTv.text = mealTime.toInt().toString()
             calValue.text = round(data.recipe.calories_kcal!!).toInt().toString()
