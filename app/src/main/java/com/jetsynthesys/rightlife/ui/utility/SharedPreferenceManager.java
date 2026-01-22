@@ -762,5 +762,16 @@ public class SharedPreferenceManager {
     public String getChallengeStartDate() {
         return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_START_DATE, "01 Feb 2026, 09:00 AM");
     }
+
+    public void setChallengeParticipatedDate(String state) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.CHALLENGE_PARTICIPATED_DATE, state);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public String getChallengeParticipatedDate() {
+        return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_PARTICIPATED_DATE, "");
+    }
 }
 

@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.newdashboard
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.ComponentCaller
 import android.app.Dialog
 import android.content.Context
@@ -17,6 +18,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -116,6 +118,7 @@ import com.jetsynthesys.rightlife.ui.challenge.DateHelper
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getChallengeDateRange
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaysFromToday
+import com.jetsynthesys.rightlife.ui.challenge.LeaderboardActivity
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
@@ -212,6 +215,10 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_JUMPBACK = "jumpback"
         const val TARGET_SAVED_ITEMS = "saved-content"
 
+        // Challenge
+        const val TARGET_CHALLENGE_HOME = "challenge-home"
+        const val TARGET_CHALLENGE_LEADERBOARD = "challenge-leaderboard"
+
 
     }
 
@@ -242,6 +249,10 @@ class HomeNewActivity : BaseActivity() {
                 isCategoryModuleLoaded
             }
 
+            TARGET_CHALLENGE_HOME -> isUserProfileLoaded && isChecklistLoaded
+
+            TARGET_CHALLENGE_LEADERBOARD -> isUserProfileLoaded && isChecklistLoaded
+
             else -> {
                 // By default, be conservative
                 isUserProfileLoaded && isChecklistLoaded
@@ -260,6 +271,7 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun handleDeepLinkTarget(target: String?) {
+        Log.d("Umesh","Target  = "+target)
         if (target == null) return
 
         // If data not ready for this target, just store it and return
@@ -506,6 +518,15 @@ class HomeNewActivity : BaseActivity() {
                 startActivity(intent)
             }
 
+            TARGET_CHALLENGE_HOME -> {
+                if (sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus)
+                    startActivity(Intent(this, ChallengeActivity::class.java))
+            }
+
+            TARGET_CHALLENGE_LEADERBOARD -> {
+                if (sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus)
+                    startActivity(Intent(this, LeaderboardActivity::class.java))
+            }
 
             else -> {
                 // Unknown / not mapped → ignore
@@ -1093,11 +1114,15 @@ class HomeNewActivity : BaseActivity() {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    100
-                )
+                if (isNotificationPermanentlyDenied()) {
+                    showGoToSettingsDialog()
+                } else {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        100
+                    )
+                }
                 return false
             } else {
                 enableNotificationServer()
@@ -1147,29 +1172,6 @@ class HomeNewActivity : BaseActivity() {
             sharedPreferenceManager.enableNotificationServer = true
         }
     }
-
-    /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
-        super.onNewIntent(intent, caller)
-        if (intent.getBooleanExtra("start_journal", false)) {
-            startActivity(Intent(this, JournalListActivity::class.java))
-        } else if (intent.getBooleanExtra("start_profile", false)) {
-            startActivity(Intent(this, ProfileSettingsActivity::class.java))
-        } else if (intent.getBooleanExtra("finish_MindAudit", false)) {
-            if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
-                startActivity(Intent(this, MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "ThinkRight")
-                    putExtra("BottomSeatName", "Not")
-                })
-            }
-        } else if (intent.getBooleanExtra("finish_Journal", false)) {
-            if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
-                startActivity(Intent(this, MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "ThinkRight")
-                    putExtra("BottomSeatName", "Not")
-                })
-            }
-        }
-    }*/
 
     // API 35+ (Android 15)
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -4298,10 +4300,13 @@ class HomeNewActivity : BaseActivity() {
 
                         val dates = responseObj.data
                         hideChallengeLayout()
-                        //handleChallengeStatusResponse(dates)
                         // challenge related stuff
                         setChallengeLayout(dates)
                         handleChallengeUI(dates)
+                        lifecycleScope.launch {
+                            delay(5000)
+                            getUserDetails()
+                        }
                     }
                 }
 
@@ -4330,6 +4335,7 @@ class HomeNewActivity : BaseActivity() {
         sharedPreferenceManager.challengeStartDate =
             dates.challengeStartDate //"12 Jan 2026, 09:00 PM"
         sharedPreferenceManager.challengeEndDate = dates.challengeEndDate //"28 Jan 2026, 09:00 PM"
+        sharedPreferenceManager.challengeParticipatedDate = dates.participateDate
 
         if (dates.participateDate.isEmpty()) {
 
@@ -4416,73 +4422,6 @@ class HomeNewActivity : BaseActivity() {
     }
 
 
-    /*private fun handleChallengeStatusResponse(dates: ChallengeDateData) {
-
-        if (getDaysFromToday(dates.challengeEndDate) < 0) {
-            // challenge end here
-            if (dates.participateDate.isNotEmpty()) {
-                // show challenge complete card
-                binding.layoutChallengeCompleted.challengeCompleted.visibility =
-                    View.VISIBLE
-            } else {
-                hideChallengeLayout()
-            }
-        } else {
-            //Challenge is live
-            if (dates.participateDate.isNotEmpty()) {
-                //participated
-                if (getDaysFromToday(dates.challengeLiveDate) < 0) {
-                    //Live date ended
-                    if (!DashboardChecklistManager.checklistStatus) {
-                        //checklist not completed
-                        binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
-                            View.VISIBLE
-                        binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
-                            "$checklistCount/6"
-                    } else {
-                        // checklist completed
-                        if (getDaysFromToday(dates.challengeStartDate) < 0) {
-                            // start date ended
-                            binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
-                                View.VISIBLE
-                        } else {
-                            // start date not ended
-                            binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
-                                View.VISIBLE
-                            binding.layoutChallengeCountDownDays.tvCountDownDays.text =
-                                getDaysFromToday(dates.challengeStartDate).toString()
-                        }
-                    }
-                } else {
-                    // live date not ended
-                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
-                        View.VISIBLE
-                    binding.layoutRegisterChallenge.registerChallengeCard.visibility =
-                        View.GONE
-                    binding.layoutUnlockChallenge.tvStartEndDate.text =
-                        getChallengeDateRange(
-                            dates.challengeStartDate,
-                            dates.challengeEndDate
-                        )
-                    dates.challengeLiveDate.let {
-                        binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
-                            formatWithOrdinal(it)
-                    }
-                }
-            } else {
-                // not participated
-                hideChallengeLayout()
-                binding.layoutRegisterChallenge.registerChallengeCard.visibility =
-                    View.VISIBLE
-                binding.layoutRegisterChallenge.tvStartEndDate.text =
-                    getChallengeDateRange(
-                        dates.challengeStartDate,
-                        dates.challengeEndDate
-                    )
-            }
-        }
-    }*/
-
     private fun formatWithOrdinal(dateStr: String): String {
         val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
         val date = inputFormat.parse(dateStr)
@@ -4517,6 +4456,9 @@ class HomeNewActivity : BaseActivity() {
                         AppConfigResponse::class.java
                     )
                 if (appConfig?.data?.isChallengeStart == true) {
+                    binding.flFreeTrial.visibility = View.GONE
+                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                    binding.llFreeTrailExpired.visibility = View.GONE
                     getChallengeStatus()
                 } else {
                     hideChallengeLayout()
@@ -4656,5 +4598,26 @@ class HomeNewActivity : BaseActivity() {
 
             })
     }
+
+    private fun showGoToSettingsDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Enable Notifications")
+            .setMessage("Notifications are disabled. Please enable them from Settings.")
+            .setCancelable(false)
+            .setPositiveButton("Go to Settings") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun isNotificationPermanentlyDenied(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
 
 }

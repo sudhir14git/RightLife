@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ui.deeplink
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
@@ -288,6 +289,16 @@ class DeepLinkRouterActivity : BaseActivity() {
                 intent.putExtra(HomeNewActivity.EXTRA_DEEP_LINK_TARGET, HomeNewActivity.TARGET_CATEGORY_LIST)
             }
 
+            // Challenge Page
+            path == "/challenge-home" -> {
+                intent.putExtra(HomeNewActivity.EXTRA_DEEP_LINK_TARGET, HomeNewActivity.TARGET_CHALLENGE_HOME)
+            }
+
+            // Challenge LeaderBoard
+            path == "/challenge-leaderboard" -> {
+                intent.putExtra(HomeNewActivity.EXTRA_DEEP_LINK_TARGET, HomeNewActivity.TARGET_CHALLENGE_LEADERBOARD)
+            }
+
             // TODO: map other paths similarly:
             // "/ai-report", "/saved-items", "/sleep-performance", "/weight-tracker", etc.
             // each gets a DEEP_LINK_TARGET, and HomeNewActivity will handle them.
@@ -300,6 +311,8 @@ class DeepLinkRouterActivity : BaseActivity() {
                 )
             }
         }
+
+        Log.d("Umesh","Path = "+path)
 
         startActivity(intent)
     }
