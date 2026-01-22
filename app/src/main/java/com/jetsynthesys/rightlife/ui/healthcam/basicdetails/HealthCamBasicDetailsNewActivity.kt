@@ -103,7 +103,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
-                    val unit = if (binding.edtHeight.text.toString().trim().contains("ft")) "ft" else "cm"
+                    val unit =
+                        if (binding.edtHeight.text.toString().trim().contains("ft")) "ft" else "cm"
                     openHeightPicker(unit)
                 }
             }
@@ -115,10 +116,27 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
-                    val weightParts = binding.edtWeight.text.toString().trim().split(" ")
+                    val weightText = binding.tvWeight.text?.toString()?.trim().orEmpty()
+                    val gender = binding.tvGender.text?.toString()?.trim()
 
-                    val value = weightParts.getOrNull(0)?.toDoubleOrNull() ?: 75.0
-                    val unit = weightParts.getOrNull(1) ?: "kg"
+                    val (value, unit) = if (weightText.isNotEmpty()) {
+                        val parts = weightText.split(" ")
+                        parts.getOrNull(0)?.toDoubleOrNull()
+                        val weightUnit = parts.getOrNull(1) ?: "kg"
+
+                        //Pair(weight ?: if (gender == "Male" || gender == "M") 75.0 else 55.0, weightUnit)
+                        val defaultWeight = when {
+                            gender == "Male" || gender == "M" ->
+                                if (weightUnit == "kg") 75.0 else 165.0
+
+                            else ->
+                                if (weightUnit == "kg") 55.0 else 121.0
+                        }
+
+                        Pair(defaultWeight, weightUnit)
+                    } else {
+                        Pair(if (gender == "Male" || gender == "M") 75.0 else 55.0, "kg")
+                    }
 
                     openWeightPicker(value, unit)
                 }
@@ -290,7 +308,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
     fun openHeightPicker(unit: String) {
-        val bottomSheet = HeightPickerBottomSheet.newInstance(unit = unit)
+        val bottomSheet = HeightPickerBottomSheet.newInstance(
+            unit = unit,
+            gender = binding.edtGender.text.toString()
+        )
         bottomSheet.setOnHeightSelectedListener { height, unit ->
             selectedHeight = height
             if (unit == "ft") {
@@ -308,7 +329,11 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
     private fun openWeightPicker(initialWeight: Double, unit: String) {
-        val bottomSheet = WeightPickerBottomSheet.newInstance(initialWeight, unit)
+        val bottomSheet = WeightPickerBottomSheet.newInstance(
+            initialWeight,
+            unit,
+            binding.edtGender.text.toString()
+        )
         bottomSheet.setOnWeightSelectedListener { weight, unit ->
             selectedWeight = String.format("%.1f %s", weight, unit)
             binding.edtWeight.setText("$selectedWeight")
