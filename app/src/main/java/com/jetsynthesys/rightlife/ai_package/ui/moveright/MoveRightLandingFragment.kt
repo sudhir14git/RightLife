@@ -574,7 +574,16 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 calorie_no_data_filled_layout.visibility = View.GONE
                                 calorie_layout_data_filled.visibility = View.VISIBLE
                                 tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
-                                calorieCountText.text = if (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0.0) "0" else it.data.calorieBalance.difference.toInt().toString()
+                                val intake = it.data.calorieBalance.calorieIntake ?: 0.0
+                                val burnTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                val difference = (intake - burnTarget).toInt()
+
+                                calorieCountText.text = if (difference >= 0) {
+                                    difference.toString() // Positive value without sign
+                                } else {
+                                    difference.toString() // Negative value with minus sign (automatic)
+                                }
+                                calorieCountText.text = difference.toString()
                                 totalIntakeCalorieText.text = if (it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0.0) "0" else it.data.calorieBalance.calorieIntake.toInt().toString()
                                 calorieBalanceMessageTitle.text = it.data.calorieBalance.heading
                                 calorieBalanceDescription.text = it.data.calorieBalance.message
@@ -667,7 +676,16 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 calorie_no_data_filled_layout.visibility = View.GONE
                                 calorie_layout_data_filled.visibility = View.VISIBLE
                                 tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
-                                calorieCountText.text = if (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0.0) "0" else it.data.calorieBalance.difference.toInt().toString()
+                                val intake = it.data.calorieBalance.calorieIntake ?: 0.0
+                                val burnTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                val difference = (intake - burnTarget).toInt()
+
+                                calorieCountText.text = if (difference >= 0) {
+                                    difference.toString() // Positive value without sign
+                                } else {
+                                    difference.toString() // Negative value with minus sign (automatic)
+                                }
+                                calorieCountText.text = difference.toString()
                                 totalIntakeCalorieText.text = if (it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0.0) "0" else it.data.calorieBalance.calorieIntake.toInt().toString()
                                 calorieBalanceMessageTitle.text = it.data.calorieBalance.heading
                                 calorieBalanceDescription.text = it.data.calorieBalance.message
@@ -1122,7 +1140,16 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 calorie_no_data_filled_layout.visibility = View.GONE
                                 calorie_layout_data_filled.visibility = View.VISIBLE
                                 tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
-                                calorieCountText.text = if (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0.0) "0" else it.data.calorieBalance.difference.toInt().toString()
+                                val intake = it.data.calorieBalance.calorieIntake ?: 0.0
+                                val burnTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                val difference = (intake - burnTarget).toInt()
+
+                                calorieCountText.text = if (difference >= 0) {
+                                    difference.toString() // Positive value without sign
+                                } else {
+                                    difference.toString() // Negative value with minus sign (automatic)
+                                }
+                                calorieCountText.text = difference.toString()
                                 totalIntakeCalorieText.text = if (it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0.0) "0" else it.data.calorieBalance.calorieIntake.toInt().toString()
                                 calorieBalanceMessageTitle.text = it.data.calorieBalance.heading
                                 calorieBalanceDescription.text = it.data.calorieBalance.message
@@ -1215,7 +1242,16 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 calorie_no_data_filled_layout.visibility = View.GONE
                                 calorie_layout_data_filled.visibility = View.VISIBLE
                                 tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
-                                calorieCountText.text = if (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0.0) "0" else it.data.calorieBalance.difference.toInt().toString()
+                                val intake = it.data.calorieBalance.calorieIntake ?: 0.0
+                                val burnTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                val difference = (intake - burnTarget).toInt()
+
+                                calorieCountText.text = if (difference >= 0) {
+                                    difference.toString() // Positive value without sign
+                                } else {
+                                    difference.toString() // Negative value with minus sign (automatic)
+                                }
+                                calorieCountText.text = difference.toString()
                                 totalIntakeCalorieText.text = if (it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0.0) "0" else it.data.calorieBalance.calorieIntake.toInt().toString()
                                 calorieBalanceMessageTitle.text = it.data.calorieBalance.heading
                                 calorieBalanceDescription.text = it.data.calorieBalance.message

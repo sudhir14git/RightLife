@@ -257,7 +257,7 @@
             android:layout_marginHorizontal="36dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="40dp"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:backgroundTint="@color/border_green"
             android:fontFamily="@font/dmsans_bold"
             android:text="Confirm"
