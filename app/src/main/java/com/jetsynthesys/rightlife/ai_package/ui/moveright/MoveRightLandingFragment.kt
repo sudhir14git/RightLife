@@ -619,7 +619,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
                                             else -> "Weight Loss Zone"
                                         }
-                                        weightLossZoneText.text = zoneText
+                                        weightLossZoneText.text = it.data.calorieBalance.goal
                                         progressBarCalorieBalance.post {
                                             val max = progressBarCalorieBalance.max.toFloat()
                                             if (max <= 0f) return@post
@@ -741,7 +741,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
                                             else -> "Weight Loss Zone"
                                         }
-                                        weightLossZoneText.text = zoneText
+                                        weightLossZoneText.text = it.data.calorieBalance.goal
                                         progressBarCalorieBalance.post {
                                             val max = progressBarCalorieBalance.max.toFloat()
                                             if (max <= 0f) return@post
@@ -1185,7 +1185,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
                                             else -> "Weight Loss Zone"
                                         }
-                                        weightLossZoneText.text = zoneText
+                                        weightLossZoneText.text = it.data.calorieBalance.goal
                                         progressBarCalorieBalance.post {
                                             val max = progressBarCalorieBalance.max.toFloat()
                                             if (max <= 0f) return@post
@@ -1307,7 +1307,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
                                             else -> "Weight Loss Zone"
                                         }
-                                        weightLossZoneText.text = zoneText
+                                        weightLossZoneText.text = it.data.calorieBalance.goal
                                         progressBarCalorieBalance.post {
                                             val max = progressBarCalorieBalance.max.toFloat()
                                             if (max <= 0f) return@post

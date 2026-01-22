@@ -38,8 +38,9 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/left_arrow_reclangle"
+                    android:src="@drawable/recepie_back_button"
                     app:layout_constraintStart_toStartOf="@+id/imgFood"
                     app:layout_constraintTop_toTopOf="@+id/imgFood"
                     />

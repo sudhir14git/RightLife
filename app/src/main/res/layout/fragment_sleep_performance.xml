@@ -459,7 +459,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
-                        android:text="You might’ve slept great—or not. Log your night or sync your device to reveal your sleep performance."
+                        android:text="You might’ve slept great or not. Log your night or sync your device to reveal your sleep performance."
                         android:id="@+id/tv_sleep_mystery_subtitle"
                         android:textSize="16sp"
                         android:fontFamily="@font/dmsans_regular"
