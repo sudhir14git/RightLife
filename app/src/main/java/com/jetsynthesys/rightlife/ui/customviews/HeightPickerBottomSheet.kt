@@ -11,7 +11,6 @@ import android.widget.ScrollView
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class HeightPickerBottomSheet : BottomSheetDialogFragment() {
 
@@ -42,11 +41,16 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
     private var onHeightSelected: ((String, String) -> Unit)? = null
 
     companion object {
-        fun newInstance(height: String = "5'7\"", unit: String = "ft"): HeightPickerBottomSheet {
+        fun newInstance(
+            height: String = "5'7\"",
+            unit: String = "ft",
+            gender: String = "Male"
+        ): HeightPickerBottomSheet {
             val fragment = HeightPickerBottomSheet()
             val args = Bundle()
             args.putString("height", height)
             args.putString("unit", unit) // "ft" or "cm"
+            args.putString("gender", gender)
             fragment.arguments = args
             return fragment
         }
@@ -68,11 +72,13 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         dialog?.setOnShowListener { dialogInterface ->
-            val bottomSheet = (dialogInterface as? com.google.android.material.bottomsheet.BottomSheetDialog)
-                ?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            val bottomSheet =
+                (dialogInterface as? com.google.android.material.bottomsheet.BottomSheetDialog)
+                    ?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             bottomSheet?.let {
                 val behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(it)
-                behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+                behavior.state =
+                    com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
                 behavior.isDraggable = true
             }
         }
@@ -87,9 +93,7 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
         cmsOption = view.findViewById(R.id.cmsOption)
 
         // ✅ Gender based defaults
-        val gender = SharedPreferenceManager
-            .getInstance(requireContext())
-            .userProfile.userdata.gender ?: "Male"
+        val gender = arguments?.getString("gender", "Male") ?: "Male"
 
         if (gender == "Male" || gender == "M") {
             defaultTotalInches = 68 // 5 ft 8 in
@@ -268,6 +272,7 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
                     v.parent.requestDisallowInterceptTouchEvent(false)
                     snapToNearest()
                 }
+
                 MotionEvent.ACTION_CANCEL -> v.parent.requestDisallowInterceptTouchEvent(false)
             }
             false

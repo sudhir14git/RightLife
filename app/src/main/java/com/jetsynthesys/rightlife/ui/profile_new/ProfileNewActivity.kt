@@ -31,7 +31,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -42,10 +41,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SnapHelper
 import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -64,14 +59,10 @@ import com.jetsynthesys.rightlife.databinding.ActivityProfileNewBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetAgeSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetBodyFatBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetGenderSelectionBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetHeightSelectionBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.DialogOtpVerificationBinding
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.BodyFatAdapter
-import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
-import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
 import com.jetsynthesys.rightlife.ui.new_design.pojo.BodyFat
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpEmailRequest
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest
@@ -84,7 +75,6 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DecimalDigitsInputFilter
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.jetsynthesys.rightlife.ui.utility.isValidIndianMobile
@@ -99,12 +89,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
-import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
-import kotlin.math.floor
 
 class ProfileNewActivity : BaseActivity() {
     private var selectedWeight = "75.0 kg"
@@ -150,8 +138,13 @@ class ProfileNewActivity : BaseActivity() {
                 getUrlFromURI(cameraImageUri!!)
             }
         }
+
     private fun openWeightPicker(initialWeight: Double, unit: String) {
-        val bottomSheet = WeightPickerBottomSheet.newInstance(initialWeight, unit)
+        val bottomSheet = WeightPickerBottomSheet.newInstance(
+            initialWeight,
+            unit,
+            binding.tvGender.text.toString()
+        )
         bottomSheet.setOnWeightSelectedListener { weight, unit ->
             selectedWeight = String.format("%.1f %s", weight, unit)
             binding.tvWeight.text = "$selectedWeight"
@@ -160,14 +153,17 @@ class ProfileNewActivity : BaseActivity() {
     }
 
     private fun openHeightPicker(unit: String) {
-        val bottomSheet = HeightPickerBottomSheet.newInstance(unit = unit)
+        val bottomSheet = HeightPickerBottomSheet.newInstance(
+            unit = unit,
+            gender = binding.tvGender.text.toString()
+        )
         bottomSheet.setOnHeightSelectedListener { height, unit ->
             selectedHeight = height
             if (unit == "ft") {
                 selectedHeight = "$height $unit"
                 val height = height.toString().split(".")
                 binding.tvHeight.text = "${height[0]} ft ${height[1]} in"
-            }else{
+            } else {
                 selectedHeight = "$height $unit"
                 binding.tvHeight.text = "${height}"
 
@@ -176,6 +172,7 @@ class ProfileNewActivity : BaseActivity() {
         }
         bottomSheet.show(supportFragmentManager, "HeightPicker")
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileNewBinding.inflate(layoutInflater)
@@ -211,7 +208,8 @@ class ProfileNewActivity : BaseActivity() {
             it.disableViewForSeconds()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
-                    val unit = if (binding.tvHeight.text.toString().trim().contains("ft")) "ft" else "cm"
+                    val unit =
+                        if (binding.tvHeight.text.toString().trim().contains("ft")) "ft" else "cm"
                     openHeightPicker(unit)
                 }
             }
@@ -222,7 +220,8 @@ class ProfileNewActivity : BaseActivity() {
             it.disableViewForSeconds()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
-                    val unit = if (binding.tvHeight.text.toString().trim().contains("ft")) "ft" else "cm"
+                    val unit =
+                        if (binding.tvHeight.text.toString().trim().contains("ft")) "ft" else "cm"
                     openHeightPicker(unit)
                 }
             }
@@ -232,12 +231,30 @@ class ProfileNewActivity : BaseActivity() {
             it.disableViewForSeconds()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
-                    val weightParts = binding.tvWeight.text.toString().trim().split(" ")
+                    val weightText = binding.tvWeight.text?.toString()?.trim().orEmpty()
+                    val gender = binding.tvGender.text?.toString()?.trim()
 
-                    val value = weightParts.getOrNull(0)?.toDoubleOrNull() ?: 75.0
-                    val unit = weightParts.getOrNull(1) ?: "kg"
+                    val (value, unit) = if (weightText.isNotEmpty()) {
+                        val parts = weightText.split(" ")
+                        parts.getOrNull(0)?.toDoubleOrNull()
+                        val weightUnit = parts.getOrNull(1) ?: "kg"
+
+                        //Pair(weight ?: if (gender == "Male" || gender == "M") 75.0 else 55.0, weightUnit)
+                        val defaultWeight = when {
+                            gender == "Male" || gender == "M" ->
+                                if (weightUnit == "kg") 75.0 else 165.0
+
+                            else ->
+                                if (weightUnit == "kg") 55.0 else 121.0
+                        }
+
+                        Pair(defaultWeight, weightUnit)
+                    } else {
+                        Pair(if (gender == "Male" || gender == "M") 75.0 else 55.0, "kg")
+                    }
 
                     openWeightPicker(value, unit)
+
                 }
             }
         }
@@ -245,10 +262,27 @@ class ProfileNewActivity : BaseActivity() {
             it.disableViewForSeconds()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
-                    val weightParts = binding.tvWeight.text.toString().trim().split(" ")
+                    val weightText = binding.tvWeight.text?.toString()?.trim().orEmpty()
+                    val gender = binding.tvGender.text?.toString()?.trim()
 
-                    val value = weightParts.getOrNull(0)?.toDoubleOrNull() ?: 75.0
-                    val unit = weightParts.getOrNull(1) ?: "kg"
+                    val (value, unit) = if (weightText.isNotEmpty()) {
+                        val parts = weightText.split(" ")
+                        parts.getOrNull(0)?.toDoubleOrNull()
+                        val weightUnit = parts.getOrNull(1) ?: "kg"
+
+                        //Pair(weight ?: if (gender == "Male" || gender == "M") 75.0 else 55.0, weightUnit)
+                        val defaultWeight = when {
+                            gender == "Male" || gender == "M" ->
+                                if (weightUnit == "kg") 75.0 else 165.0
+
+                            else ->
+                                if (weightUnit == "kg") 55.0 else 121.0
+                        }
+
+                        Pair(defaultWeight, weightUnit)
+                    } else {
+                        Pair(if (gender == "Male" || gender == "M") 75.0 else 55.0, "kg")
+                    }
 
                     openWeightPicker(value, unit)
                 }
