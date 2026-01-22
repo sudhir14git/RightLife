@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.breathwork
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -148,16 +150,22 @@ class BreathworkActivity : BaseActivity() {
     private fun showBottomSheet(breathingData: BreathingData, from: Int = 0) {
         val bottomSheetDialog = BottomSheetDialog(this)
         val dialogBinding = BottomsheetBreathworkContextBinding.inflate(layoutInflater)
-        val bottomSheetView = dialogBinding.root
-        bottomSheetDialog.setContentView(bottomSheetView)
-
-        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
-        if (bottomSheetLayout != null) {
-            val slideUpAnimation: Animation =
-                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
-            bottomSheetLayout.animation = slideUpAnimation
-        }
+        bottomSheetDialog.setContentView(dialogBinding.root)
         bottomSheetDialog.setCancelable(false)
+
+        bottomSheetDialog.setOnShowListener {
+            val bottomSheet =
+                bottomSheetDialog.findViewById<View>(
+                    com.google.android.material.R.id.design_bottom_sheet
+                ) ?: return@setOnShowListener
+
+            BottomSheetBehavior.from(bottomSheet).apply {
+                state = BottomSheetBehavior.STATE_COLLAPSED
+                isDraggable = false
+                isHideable = false
+            }
+        }
+
 
         val textColorRes: Int
         val bgColorRes: Int
