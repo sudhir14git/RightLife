@@ -24,7 +24,7 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
     private lateinit var backIc: ImageView
     private val fragmentMap = mutableMapOf<String, Fragment>() // Cache fragments by tag
     private var currentFragmentTag: String? = null // Track current fragment
-    private val tabTitles = arrayOf("Cholesterol", "Sugar", "Iron", "Magnesium", "Calcium", "Vitamin A", "Vitamin C", "Vitamin D", "Vitamin K", "Zinc", "Sodium")
+    private val tabTitles = arrayOf("Sugar", "Iron", "Magnesium", "Calcium", "Vitamin A", "Vitamin C", "Vitamin D", "Vitamin K", "Zinc", "Sodium")
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMicosTabBinding
         get() = FragmentMicosTabBinding::inflate
@@ -119,7 +119,7 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
         var fragment = fragmentMap[tag]
         if (fragment == null) {
             fragment = when (tag) {
-                "Cholesterol" -> CholesterolFragment()
+               // "Cholesterol" -> CholesterolFragment()
                 "Sugar" -> SugarFragment()
                 "Iron" -> IronFragment()
                 "Magnesium" -> MagnesiumFragment()
@@ -130,7 +130,7 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
                 "Vitamin K" -> VitaminKFragment()
                 "Zinc" -> ZincFragment()
                 "Sodium" -> SodiumFragment()
-                else -> CholesterolFragment()
+                else -> SugarFragment()
             }
             fragmentMap[tag] = fragment
             transaction.add(R.id.fragmentMicrosContainer, fragment, tag)

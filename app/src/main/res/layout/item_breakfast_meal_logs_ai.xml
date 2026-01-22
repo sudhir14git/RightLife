@@ -202,24 +202,25 @@
                     android:src="@drawable/ic_serves" />
 
                 <TextView
-                    android:id="@+id/tv_serves"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="10sp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="Serves" />
-
-                <TextView
                     android:id="@+id/tv_serves_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="5dp"
                     android:textSize="11sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
                     android:text="1" />
+
+                <TextView
+                    android:id="@+id/tv_serves"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="1dp"
+                    android:textSize="10sp"
+                    android:visibility="visible"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/workout_textcolor"
+                    android:text="Serves" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

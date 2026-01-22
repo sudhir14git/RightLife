@@ -211,6 +211,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:textSize="10sp"
+                        android:visibility="gone"
                         android:fontFamily="@font/dmsans_regular"
                         android:textColor="@color/workout_textcolor"
                         android:text="Serves" />
