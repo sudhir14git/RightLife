@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="20dp"
     android:background="@drawable/toproundedcornershape"
-    android:paddingBottom="80dp"
+    android:paddingBottom="10dp"
     android:orientation="vertical">
 
     <!--<RelativeLayout
@@ -75,13 +75,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:paddingBottom="@dimen/margin_card_16dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
             android:paddingBottom="@dimen/margin_card_16dp"
             tools:ignore="UselessParent">
 
@@ -131,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="40dp"
-            android:layout_marginBottom="42dp"
+            android:layout_marginBottom="20dp"
             android:text="Continue"
             android:textSize="16sp"
             android:fontFamily="@font/dmsans_bold"
