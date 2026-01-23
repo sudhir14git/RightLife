@@ -7,6 +7,134 @@ import com.google.firebase.analytics.FirebaseAnalytics
 object AnalyticsLogger {
 
     private var firebaseAnalytics: FirebaseAnalytics? = null
+    val internalUserList  = listOf(
+        "24kavitapawar@gmail.com",
+        "a28280652@gmail.com",
+        "adityatyagi7980@gmail.com",
+        "aman.memon@jetsynthesys.com",
+        "amanmemon21@gmail.com",
+        "amantestingrl@gmail.com",
+        "avicciii02@gmail.com",
+        "bbvxv9604@gmail.com",
+        "bhukkadbhau@gmail.com",
+        "bjasprit23@gmail.com",
+        "bryanshreshta777@gmail.com",
+        "cesarthegoatsheep@gmail.com",
+        "checktest272@gmail.com",
+        "checktestting@gmail.com",
+        "digitalcartels22@gmail.com",
+        "goyaltushar578@gmail.com",
+        "healthtesting80@gmail.com",
+        "himannshukene09@gmail.com",
+        "himanshukene@gmail.com",
+        "himanshukene03@gmail.com",
+        "himanshukene09@gmail.com",
+        "himanshusolutions1@gmail.com",
+        "hshshxgdhshs@gmail.com",
+        "kavita31072023@gmail.com",
+        "kaviuser05@gmail.com",
+        "kaviuser101@gmail.com",
+        "melagames11@gmail.com",
+        "melatest03@gmail.com",
+        "melatest04@gmail.com",
+        "narangjasvin@gmail.com",
+        "nikhilshinde0897@gmail.com",
+        "girrajtomar10@gmail.com",
+        "girraj@rightlife.com",
+        "playizzonissues@gmail.com",
+        "developer.suhas@gmail.com",
+        "bramhi.bhandari@icloud.com",
+        "pratikvelani@gmail.com",
+        "praveenkumarj298@gmail.com",
+        "rightlife.testing@gmail.com",
+        "rightlife.testing@icloud.com",
+        "rightlifetest01@gmail.com",
+        "rightlifetest101@gmail.com",
+        "rightlifetest102@gmail.com",
+        "rightlifetest105@gmail.com",
+        "rightlifetest3000@gmail.com",
+        "rightlifetest3001@gmail.com",
+        "rightlifetest4000@gmail.com",
+        "rightlifetest5000@gmail.com",
+        "rightlifetester@gmail.com",
+        "righttesting3@gmail.com",
+        "rlteamai02@gmail.com",
+        "rltest246@gmail.com",
+        "rltestuser50@gmail",
+        "rluser0510@gmail.com",
+        "rluser2025@gmail.com",
+        "rluser5060@gmail.com",
+        "rluser50709@gmail.com",
+        "rluser737@gmail.com",
+        "sailormanpopeye067@gmail.com",
+        "shailesh06081974@gmail.com",
+        "sundarw02@gmail.com",
+        "sunny61090@gmail.com",
+        "testdev2025dec@gmail.com",
+        "testgirraj@gmail.com",
+        "testingpayment69@gmail.com",
+        "unicornsharma797@gmail.com",
+        "xo1.test01@gmail.com",
+        "xo1.test05@gmail.com",
+        "xo1.test06@gmail.com",
+        "yashvir8126@gmail.com",
+        "yashvirsingh0505@gmail.com",
+        "mamillamadhurii@gmail.com",
+        "umeshrane0701@gmail.com",
+        "umeshtest2025@gmail.com",
+        "umeshsudhakarrane@gmail.com",
+        "khyatirane115@gmail.com",
+        "singhanurag1234@gmail.com",
+        "madhurichinni294@gmail.com",
+        "rightlifee@gmail.com",
+        "aditm19@icloud.com",
+        "kritarthasuvarna@gmail.com",
+        "work.kritarth@gmail.com",
+        "ngoloh911@gmail.com",
+        "umesh.rane@rightlife.com",
+        "chavan_pratik@icloud.com",
+        "rishabh151096@gmail.com",
+        "rishsip15@gmail.com",
+        "rishabh@rightlife.com",
+        "rishabh.jetsynthesys@gmail.com",
+        "rishabh.sipani.min15@itbhu.ac.in",
+        "7439302713",
+        "8417891653",
+        "8888027825",
+        "sudhie.joshi@gmail.com",
+        "mailsudhirjoshi@gmail.com",
+        "justinjaju7@gmail.com",
+        "pranjalsoni977@gmail.com",
+        "developeranshusinghtech@gmail.com",
+        "jetsynthesys.sa@gmail.com",
+        "testdemo1920@gmail.com",
+        "gurujihumai23@gmail.com",
+        "p48527070@gmail.com",
+        "9763467743",
+        "8788162341",
+        "shubhankar@rightlife.com",
+        "9325583199",
+        "xo1.test03@gmail.com",
+        "rightlifeus1@gmail.com",
+        "teamstandby52@gmail.com",
+        "6374591589",
+        "saishyam78@gmail.com",
+        "saishyam7897@gmail.com",
+        "iamgod261123@gmail.com",
+        "sai.shyam@icloud.com",
+        "kavita31072023@gamil.com",
+        "rajannavani@gmail.com",
+        "roshan.g.poojari@gmail.com",
+        "amansms95@gmail.com",
+        "m.nilanjan@gmail.com",
+        "sujaur.rahman@gmail.com",
+        "praveenkumarj1298@gmail.com",
+        "pratikchavaan@gmail.com",
+        "sudhier.joshi@gmail.com",
+        "shubhankar.jetsynthesys@gmail.com",
+        "9022677945"
+    )
+
 
     fun init(context: Context) {
         if (firebaseAnalytics == null) {
@@ -57,7 +185,7 @@ object AnalyticsLogger {
 
         // 2) Derive productId (active subscription)
         val productId = sp.userProfile?.subscription
-                ?.firstOrNull { it.status }?.productId.orEmpty()
+            ?.firstOrNull { it.status }?.productId.orEmpty()
 
         // 3) Safe accessors
         val isSubscribed = sp.userProfile?.isSubscribed == true
@@ -65,14 +193,13 @@ object AnalyticsLogger {
         val age = sp.userProfile?.userdata?.age
         val goal = sp.selectedOnboardingModule?.trim()
         val subGoal = sp.selectedOnboardingSubModule?.trim()
-        val loginType =sp.userProfile?.userdata?.loginType?.trim()?.lowercase() ?: "google" // if you store it
+        val loginType =
+            sp.userProfile?.userdata?.loginType?.trim()?.lowercase() ?: "google" // if you store it
         val userId = sp.userId
         //val userDaysCount = sp.userProfile?.userdata?.createdAt
         val userDaysCount = getUserDayCount(
-                sp.userProfile?.userdata?.createdAt
+            sp.userProfile?.userdata?.createdAt
         )
-
-
 
 
         // Device name
@@ -83,6 +210,7 @@ object AnalyticsLogger {
             sku.contains("monthly", ignoreCase = true) -> "monthly"
             sku.contains("year", ignoreCase = true) ||
                     sku.contains("annual", ignoreCase = true) -> "annual"
+
             sku.isBlank() -> "free"
             else -> "other"
         }
@@ -92,8 +220,14 @@ object AnalyticsLogger {
         out.putIfAbsent(AnalyticsParam.DEVICE_NAME, deviceName)                // NEW
         out.putIfAbsent(AnalyticsParam.USER_ID, userId)
         out.putIfAbsent(AnalyticsParam.PLATFORM_TYPE, "android")
-        out.putIfAbsent(AnalyticsParam.LOGIN_TYPE, loginType)                 // don’t hardcode "Google"
-        out.putIfAbsent(AnalyticsParam.USER_TYPE, "New User")// Old User//if (isSubscribed) "paid" else "free")
+        out.putIfAbsent(
+            AnalyticsParam.LOGIN_TYPE,
+            loginType
+        )                 // don’t hardcode "Google"
+        out.putIfAbsent(
+            AnalyticsParam.USER_TYPE,
+            "New User"
+        )// Old User//if (isSubscribed) "paid" else "free")
         out.putIfAbsent(AnalyticsParam.USER_PLAN, if (isSubscribed) "Premium" else "Free")
         gender?.let { out.putIfAbsent(AnalyticsParam.GENDER, it) }            // avoid !!
         age?.let { out.putIfAbsent(AnalyticsParam.AGE, it) }
@@ -104,6 +238,12 @@ object AnalyticsLogger {
         // Firebase already timestamps events, but if you want your own key, keep it as Long epoch ms
         out.putIfAbsent(AnalyticsParam.TIMESTAMP, System.currentTimeMillis())
         out.putIfAbsent(AnalyticsParam.DAY_FROM_LOGIN, userDaysCount)
+        val trafficType =
+            if (internalUserList.contains(sp.userProfile.userdata.email) || internalUserList.contains(
+                    sp.userProfile.userdata.phoneNumber
+                )
+            ) "Internal User" else "External User"
+        out.putIfAbsent(AnalyticsParam.Traffic_Type, trafficType)
 
         return out
     }
@@ -119,197 +259,5 @@ object AnalyticsLogger {
 
         return (diffMillis / millisInDay).toInt() + 1
     }
-
-
-
-//    /*fun logEvent(context: Context, eventName: String, params: Map<String, Any>? = null) {
-//        addParams(context, params)
-//        val bundle = Bundle()
-//        params?.forEach { (key, value) ->
-//            when (value) {
-//                is String -> bundle.putString(key, value)
-//                is Int -> bundle.putInt(key, value)
-//                is Long -> bundle.putLong(key, value)
-//                is Double -> bundle.putDouble(key, value)
-//                is Float -> bundle.putFloat(key, value)
-//                is Boolean -> bundle.putBoolean(key, value)
-//            }
-//        }
-//        firebaseAnalytics?.logEvent(eventName, bundle)
-//    }
-//
-//    private fun addParams(context: Context, params: Map<String, Any>?): Map<String, Any> {
-//        val newParams = (params ?: emptyMap()).toMutableMap()
-//        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
-//        var productId = ""
-//        sharedPreferenceManager.userProfile?.subscription?.forEach { subscription ->
-//            if (subscription.status) {
-//                productId = subscription.productId
-//            }
-//        }
-//
-//        newParams[AnalyticsParam.USER_ID] = sharedPreferenceManager.userId
-//        newParams[AnalyticsParam.PLATFORM_TYPE] = "android"
-//        newParams[AnalyticsParam.LOGIN_TYPE] = "Google"
-//        newParams[AnalyticsParam.USER_TYPE] = if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "free User"
-//        newParams[AnalyticsParam.GENDER] = sharedPreferenceManager.userProfile?.userdata?.gender!!
-//        newParams[AnalyticsParam.AGE] = sharedPreferenceManager.userProfile?.userdata?.age!!
-//        newParams[AnalyticsParam.GOAL] = sharedPreferenceManager.selectedOnboardingModule
-//        newParams[AnalyticsParam.SUB_GOAL] = sharedPreferenceManager.selectedOnboardingSubModule
-//        newParams[AnalyticsParam.USER_PLAN] = productId
-//        newParams[AnalyticsParam.TIMESTAMP] = System.currentTimeMillis()
-//        return newParams
-//    }*/
-
-
-
-
-    /// check this code later
-
-/*
-    private const val MAX_KEY_LEN = 40
-    private const val MAX_VAL_LEN = 100
-
-    @Synchronized
-    fun init(context: Context) {
-        if (firebaseAnalytics == null) {
-            firebaseAnalytics = FirebaseAnalytics.getInstance(context.applicationContext)
-        }
-    }
-
-    private fun sanitizeKey(raw: String?): String =
-            (raw?.trim().orEmpty()).take(MAX_KEY_LEN)
-
-    private fun sanitizeValue(value: Any?): Any? = when (value) {
-        null -> null
-        is String -> value.trim().take(MAX_VAL_LEN)
-        is Int, is Long, is Double, is Float, is Boolean -> value
-        else -> null // ignore unsupported types to avoid ClassCast issues
-    }
-
-    */
-/** Public, crash-proof logger (always safe) *//*
-
-    fun logEvent(context: Context, eventName: String, params: Map<String, Any>? = null) {
-        runCatching {
-            val fa = firebaseAnalytics ?: return@runCatching // not initialized yet → skip silently
-            val name = sanitizeKey(eventName)
-            if (name.isEmpty()) return@runCatching
-
-            val finalParams = addParams(context, params) // merged defaults + caller
-            if (finalParams.isEmpty()) {
-                // Still log an empty bundle (valid), or return if you prefer
-            }
-
-            val bundle = Bundle()
-            for ((k, vRaw) in finalParams) {
-                val key = sanitizeKey(k)
-                val v = sanitizeValue(vRaw) ?: continue
-                when (v) {
-                    is String -> bundle.putString(key, v)
-                    is Int -> bundle.putInt(key, v)
-                    is Long -> bundle.putLong(key, v)
-                    is Double -> bundle.putDouble(key, v)
-                    is Float -> bundle.putFloat(key, v)
-                    is Boolean -> bundle.putBoolean(key, v)
-                }
-            }
-
-            fa.logEvent(name, bundle)
-        }.onFailure {
-            // Swallow to guarantee no crash; keep a log line for debugging if needed
-            // Log.e("AnalyticsLogger", "logEvent failed", it)
-        }
-    }
-
-    */
-/** Deprecated no-context overload — keep but make it safe *//*
-
-    @Deprecated("Use logEvent(context, ...) so auto-params are included")
-    fun logEvent(eventName: String, params: Map<String, Any>? = null) {
-        runCatching {
-            val fa = firebaseAnalytics ?: return@runCatching
-            val name = sanitizeKey(eventName)
-            if (name.isEmpty()) return@runCatching
-
-            val bundle = Bundle()
-            params?.forEach { (k, vRaw) ->
-                val key = sanitizeKey(k)
-                val v = sanitizeValue(vRaw) ?: return@forEach
-                when (v) {
-                    is String -> bundle.putString(key, v)
-                    is Int -> bundle.putInt(key, v)
-                    is Long -> bundle.putLong(key, v)
-                    is Double -> bundle.putDouble(key, v)
-                    is Float -> bundle.putFloat(key, v)
-                    is Boolean -> bundle.putBoolean(key, v)
-                }
-            }
-            fa.logEvent(name, bundle)
-        }
-    }
-
-    */
-/** NPE-safe defaults merger — NO !! anywhere *//*
-
-    private fun addParams(context: Context, params: Map<String, Any>?): Map<String, Any> {
-        val out = mutableMapOf<String, Any>()
-        // Caller params first → caller overrides defaults
-        params?.forEach { (k, v) ->
-            val key = sanitizeKey(k)
-            val value = sanitizeValue(v)
-            if (key.isNotEmpty() && value != null) out[key] = value
-        }
-
-        val sp = runCatching { SharedPreferenceManager.getInstance(context) }.getOrNull()
-        // Defensive reads (everything nullable)
-        val userProfile = sp?.userProfile
-        val subscriptions = userProfile?.subscription ?: emptyList()
-        val activeSku = subscriptions.firstOrNull { it?.status == true }?.productId.orEmpty()
-
-        val isSubscribed = (userProfile?.isSubscribed == true)
-        val gender = userProfile?.userdata?.gender?.trim()?.lowercase()
-        val age = userProfile?.userdata?.age
-        val goal = sp?.selectedOnboardingModule?.trim()
-        val subGoal = sp?.selectedOnboardingSubModule?.trim()
-        val loginType = userProfile?.userdata?.loginType?.trim()?.lowercase().orEmpty()
-        val userId = sp?.userId.orEmpty()
-
-        // Device name (always safe)
-        val manufacturer = android.os.Build.MANUFACTURER?.trim().orEmpty()
-        val model = android.os.Build.MODEL?.trim().orEmpty()
-        val deviceName = (listOf(manufacturer, model).filter { it.isNotEmpty() }.joinToString(" ")
-                .ifEmpty { "unknown" })
-
-        // New vs Old lifecycle (derive from your own flag; default "old")
-        val isNewUser = (sp?.isFirstOpen == true)
-        val userLifecycle = if (isNewUser) "new" else "old"
-
-        // Human-readable plan
-        val subscriptionPlan = when {
-            activeSku.contains("monthly", true) -> "monthly"
-            activeSku.contains("year", true) || activeSku.contains("annual", true) -> "annual"
-            activeSku.isBlank() -> "free"
-            else -> "other"
-        }
-
-        // Put defaults ONLY if caller didn’t pass them
-        if (userId.isNotEmpty()) out.putIfAbsent(AnalyticsParam.USER_ID, userId)
-        out.putIfAbsent(AnalyticsParam.PLATFORM_TYPE, "android")
-        if (loginType.isNotEmpty()) out.putIfAbsent(AnalyticsParam.LOGIN_TYPE, loginType)
-        out.putIfAbsent(AnalyticsParam.USER_TYPE, if (isSubscribed) "paid" else "free")
-        out.putIfAbsent(AnalyticsParam.USER_LIFECYCLE, userLifecycle)
-        out.putIfAbsent(AnalyticsParam.DEVICE_NAME, deviceName)
-        gender?.let { if (it.isNotEmpty()) out.putIfAbsent(AnalyticsParam.GENDER, it) }
-        age?.let { out.putIfAbsent(AnalyticsParam.AGE, it) }
-        goal?.let { if (it.isNotEmpty()) out.putIfAbsent(AnalyticsParam.GOAL, it.lowercase()) }
-        subGoal?.let { if (it.isNotEmpty()) out.putIfAbsent(AnalyticsParam.SUB_GOAL, it.lowercase()) }
-        if (activeSku.isNotEmpty()) out.putIfAbsent(AnalyticsParam.USER_PLAN, activeSku)
-        out.putIfAbsent(AnalyticsParam.SUBSCRIPTION_PLAN, subscriptionPlan)
-        out.putIfAbsent(AnalyticsParam.TIMESTAMP, System.currentTimeMillis())
-
-        return out
-    }
-*/
 
 }

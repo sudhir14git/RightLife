@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -11,10 +12,11 @@ object AppLoader {
 
     private var dialog: Dialog? = null
 
-    fun show(context: Context) {
+    fun show(activity: Activity) {
+        if (activity.isFinishing || activity.isDestroyed) return
         if (dialog?.isShowing == true) return
 
-        dialog = Dialog(context).apply {
+        dialog = Dialog(activity).apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setCancelable(false)
             setContentView(R.layout.dialiog_loader_layout)
@@ -23,10 +25,21 @@ object AppLoader {
         }
     }
 
-    fun hide() {
-        dialog?.let {
-            if (it.isShowing) it.dismiss()
+    fun hide(activity: Activity?) {
+        if (activity == null) return
+        if (activity.isFinishing || activity.isDestroyed) return
+
+        activity.runOnUiThread {
+            try {
+                dialog?.let {
+                    if (it.isShowing) {
+                        it.dismiss()
+                    }
+                }
+                dialog = null
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
-        dialog = null
     }
 }
