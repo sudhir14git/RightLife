@@ -12,13 +12,14 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger.internalUserList
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -66,7 +67,7 @@ class CreateUsernameActivity : BaseActivity() {
             btnContinue.backgroundTintList = colorStateListSelected
             btnContinue.isEnabled = true
         } else {
-            if (edtUsername.text.toString().isNotEmpty()){
+            if (edtUsername.text.toString().isNotEmpty()) {
                 tvError.visibility = VISIBLE
                 tvError.setText(R.string.error_username)
             }
@@ -87,15 +88,15 @@ class CreateUsernameActivity : BaseActivity() {
                 if (p0.toString().isNotEmpty()) {
                     tvError.visibility = GONE
                     if (validateUsername(p0.toString())) {
-                    tvError.visibility = GONE
-                    btnContinue.backgroundTintList = colorStateListSelected
-                    btnContinue.isEnabled = true
+                        tvError.visibility = GONE
+                        btnContinue.backgroundTintList = colorStateListSelected
+                        btnContinue.isEnabled = true
+                    } else {
+                        tvError.visibility = VISIBLE
+                        btnContinue.backgroundTintList = colorStateList
+                        btnContinue.isEnabled = false
+                    }
                 } else {
-                    tvError.visibility = VISIBLE
-                    btnContinue.backgroundTintList = colorStateList
-                    btnContinue.isEnabled = false
-                }
-                }else{
                     btnContinue.backgroundTintList = colorStateList
                     btnContinue.isEnabled = false
                 }
@@ -119,15 +120,25 @@ class CreateUsernameActivity : BaseActivity() {
                 sharedPreferenceManager.createUserName = true
                 val intent = Intent(this, HappyToHaveYouActivity::class.java)
                 startActivity(intent)
-                AnalyticsLogger.logEvent(
-                    AnalyticsEvent.NAMEPAGE_CONTINUE_TAP,
-                    mapOf(
-                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                        AnalyticsParam.USERNAME to edtUsername.text.toString(),
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                try {
+                    val trafficType =
+                        if (internalUserList.contains(sharedPreferenceManager.userProfile.userdata.email) || internalUserList.contains(
+                                sharedPreferenceManager.userProfile.userdata.phoneNumber
+                            )
+                        ) "Internal User" else "External User"
+                    AnalyticsLogger.logEvent(
+                        AnalyticsEvent.NAMEPAGE_CONTINUE_TAP,
+                        mapOf(
+                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                            AnalyticsParam.USERNAME to edtUsername.text.toString(),
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                            AnalyticsParam.Traffic_Type to trafficType
+                        )
                     )
-                )
-            }else{
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            } else {
                 showCustomToast("Username should not be empty!")
             }
         }
@@ -147,7 +158,8 @@ class CreateUsernameActivity : BaseActivity() {
     }
 
     private fun updateUserData(userdata: Userdata) {
-        val call: Call<ResponseBody> = apiService.updateUser(sharedPreferenceManager.accessToken, userdata)
+        val call: Call<ResponseBody> =
+            apiService.updateUser(sharedPreferenceManager.accessToken, userdata)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {

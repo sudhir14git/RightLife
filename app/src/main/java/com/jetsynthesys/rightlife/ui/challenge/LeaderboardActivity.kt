@@ -14,6 +14,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityLeaderboardBinding
 import com.jetsynthesys.rightlife.ui.challenge.adapters.LeaderboardAdapter
 import com.jetsynthesys.rightlife.ui.challenge.pojo.LeaderboardResponse
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -38,6 +40,11 @@ class LeaderboardActivity : BaseActivity() {
         // default  (Week)
         binding.tabGroupNew.check(R.id.rbAllTime)
         loadLeaderboard("all")
+
+        AnalyticsLogger.logEvent(
+            this@LeaderboardActivity,
+            AnalyticsEvent.Chl_Leaderboard_Open
+        )
     }
 
     private fun setupToolbar() {

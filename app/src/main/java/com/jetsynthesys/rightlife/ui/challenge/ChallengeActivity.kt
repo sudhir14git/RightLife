@@ -401,7 +401,7 @@ class ChallengeActivity : BaseActivity() {
                 override fun onResponse(
                     call: Call<ResponseBody?>, response: Response<ResponseBody?>
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@ChallengeActivity)
                     if (response.isSuccessful) {
                         val gson = Gson()
                         val jsonResponse = response.body()?.string()
@@ -442,7 +442,7 @@ class ChallengeActivity : BaseActivity() {
                 override fun onFailure(
                     call: Call<ResponseBody?>, t: Throwable
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@ChallengeActivity)
                     handleNoInternetView(t)
                 }
 
@@ -456,7 +456,7 @@ class ChallengeActivity : BaseActivity() {
                 override fun onResponse(
                     call: Call<ResponseBody?>, response: Response<ResponseBody?>
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@ChallengeActivity)
                     if (response.isSuccessful && response.body() != null) {
                         binding.scoreCard.layoutScoreCard.visibility = View.VISIBLE
                         val gson = Gson()
@@ -522,7 +522,7 @@ class ChallengeActivity : BaseActivity() {
                 override fun onFailure(
                     call: Call<ResponseBody?>, t: Throwable
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@ChallengeActivity)
                     handleNoInternetView(t)
                 }
 
@@ -536,7 +536,7 @@ class ChallengeActivity : BaseActivity() {
                 override fun onResponse(
                     call: Call<ResponseBody?>, response: Response<ResponseBody?>
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@ChallengeActivity)
                     if (response.isSuccessful && response.body() != null) {
                         val gson = Gson()
                         val jsonResponse = response.body()?.string()
@@ -736,7 +736,7 @@ class ChallengeActivity : BaseActivity() {
                 override fun onFailure(
                     call: Call<ResponseBody?>, t: Throwable
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@ChallengeActivity)
                     handleNoInternetView(t)
                 }
 
