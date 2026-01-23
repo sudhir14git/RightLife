@@ -299,24 +299,19 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         }
 
         Log.d("RecipeDetails", "getRecipesDetails called → recipeId: $recipeId")
-
         val call = ApiClient.apiServiceFastApiV2.getDetailsViewRecipeById(recipeId = recipeId)
         Log.d("RecipeDetails", "API call enqueued: getDetailsViewRecipeById for recipeId $recipeId")
-
         call.enqueue(object : Callback<RecipeDetailsViewResponse> {
             override fun onResponse(call: Call<RecipeDetailsViewResponse>, response: Response<RecipeDetailsViewResponse>) {
                 Log.d("RecipeDetails", "onResponse received → isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
-
                 if (response.isSuccessful) {
                     if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
-
                     val data = response.body()?.data
                     Log.d("RecipeDetails", "Success → recipe data received (null check: ${data != null})")
-
                     if (data != null) {
                         val ingredientsList = data.ingredients.orEmpty()
                         val ingredientsFormatted = ingredientsList.joinToString(separator = "\n") { "• $it" }
@@ -355,12 +350,12 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                         val foodTypeResult = getFoodType(data.category)
                         if (foodTypeResult == "Veg") {
                             vegImage.visibility = View.VISIBLE
-                            vegImage.setImageResource(R.drawable.non_veg_new)
+                            vegImage.setImageResource(R.drawable.veg_new)
                             vegTv.text = "Veg"
                             Log.d("RecipeDetails", "Veg indicator set")
                         } else if (foodTypeResult == "Non-Veg") {
                             vegImage.visibility = View.VISIBLE
-                            vegImage.setImageResource(R.drawable.veg_new)
+                            vegImage.setImageResource(R.drawable.non_veg_new)
                             vegTv.text = "Non-Veg"
                             Log.d("RecipeDetails", "Non-Veg indicator set")
                         } else {
@@ -419,7 +414,6 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     }
                 }
             }
-
             override fun onFailure(call: Call<RecipeDetailsViewResponse>, t: Throwable) {
                 Log.e("RecipeDetails", "API call failed completely", t)
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()

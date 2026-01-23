@@ -85,6 +85,7 @@ class VitaminDFragment : BaseFragment<FragmentSugarBinding>() {
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
     private lateinit var percentageIc : TextView
+    private lateinit var totalPercentageIc : TextView
     private lateinit var sugar_description_heading : TextView
     private lateinit var sugar_description_text : TextView
     private lateinit var layoutLineChart: FrameLayout
@@ -123,6 +124,7 @@ class VitaminDFragment : BaseFragment<FragmentSugarBinding>() {
         averageBurnCalorie = view.findViewById(R.id.average_number)
         averageHeading = view.findViewById(R.id.averageHeading)
         percentageIc = view.findViewById(R.id.percentageIc)
+        totalPercentageIc = view.findViewById(R.id.totalPercentageIc)
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
@@ -842,6 +844,8 @@ class VitaminDFragment : BaseFragment<FragmentSugarBinding>() {
         activity?.runOnUiThread {
             averageBurnCalorie.text = activeCaloriesResponse.current_avg_vitamin_d.toInt().toString()
             totalCalorie.text = activeCaloriesResponse.total_vitamin_d.toInt().toString()
+            percentageIc.text = "IU"
+            totalPercentageIc.text = "IU"
             if (activeCaloriesResponse.progressSign.contentEquals("plus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
                 // percentageIc.setImageResource(R.drawable.ic_up)
