@@ -4,12 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:padding="16dp">
-
     <RelativeLayout
-        android:id="@+id/rl_breathing_practice_main"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
         android:background="@color/white">
         <!-- Back Button -->
         <ImageButton
@@ -49,6 +48,15 @@
                 android:textColor="@color/black" />
 
         </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_breathing_practice_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/white">
 
         <!-- Plus Button -->
         <ImageButton
@@ -65,13 +73,14 @@
         <!-- Breathing Phase -->
         <TextView
             android:id="@+id/breathingPhase"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_above="@+id/circleContainer"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="50dp"
             android:text="Inhale"
+            android:gravity="center_horizontal"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/black" />

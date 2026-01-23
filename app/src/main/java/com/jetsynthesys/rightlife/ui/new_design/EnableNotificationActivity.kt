@@ -18,6 +18,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class EnableNotificationActivity : BaseActivity() {
+    var lastClickTime = 0L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setChildContentView(R.layout.activity_enable_notification)
@@ -25,11 +26,12 @@ class EnableNotificationActivity : BaseActivity() {
 
         findViewById<ImageView>(R.id.imageClose).setOnClickListener {
             sharedPreferenceManager.enableNotification = true
-            startActivity(Intent(this, SyncNowActivity::class.java))
+            startActivity(Intent(this, OnboardingFinalActivity::class.java))
             AnalyticsLogger.logEvent(
                 AnalyticsEvent.ENABLE_NOTIFICATION_CLOSE,
                 mapOf(
                     AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.USERNAME to sharedPreferenceManager.userName,
                     AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                     AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
@@ -38,16 +40,22 @@ class EnableNotificationActivity : BaseActivity() {
         }
 
         btnEnableNotification.setOnClickListener {
-            checkPermission()
-            AnalyticsLogger.logEvent(
-                AnalyticsEvent.ENABLE_NOTIFICATION_CLICK,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime > 500) { // 500ms debounce
+                lastClickTime = currentTime
+                checkPermission()
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.ENABLE_NOTIFICATION_CLICK,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.USERNAME to sharedPreferenceManager.userName,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                        AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                    )
                 )
-            )
+            }
+
         }
     }
 
@@ -67,13 +75,15 @@ class EnableNotificationActivity : BaseActivity() {
                 return false
             } else {
                 sharedPreferenceManager.enableNotification = true
-                startActivity(Intent(this, SyncNowActivity::class.java))
+                enableNotificationAPICall()
+                startActivity(Intent(this, OnboardingFinalActivity::class.java))
                 finishAffinity()
                 return true
             }
         } else {
             sharedPreferenceManager.enableNotification = true
-            startActivity(Intent(this, SyncNowActivity::class.java))
+            enableNotificationAPICall()
+            startActivity(Intent(this, OnboardingFinalActivity::class.java))
             finishAffinity()
             // Permission not required before Android 13
             return true
@@ -91,6 +101,16 @@ class EnableNotificationActivity : BaseActivity() {
         if (requestCode == 100) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableNotificationAPICall()
+                AnalyticsLogger.logEvent(
+                        AnalyticsEvent.NOTIFICATION_ENABLE_SUCCESS,
+                        mapOf(
+                                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                                AnalyticsParam.USERNAME to sharedPreferenceManager.userName,
+                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                        )
+                )
             } else {
                 Toast.makeText(
                     this,
@@ -98,19 +118,20 @@ class EnableNotificationActivity : BaseActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 sharedPreferenceManager.enableNotification = true
-                startActivity(Intent(this, SyncNowActivity::class.java))
+                startActivity(Intent(this, OnboardingFinalActivity::class.java))
                 finish()
             }
         }
     }
 
-    private fun enableNotificationAPICall(){
+    private fun enableNotificationAPICall() {
         val requestBody = mapOf("pushNotification" to true)
         CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
             showToast(message)
-            finishAffinity()
             sharedPreferenceManager.enableNotification = true
-            startActivity(Intent(this, SyncNowActivity::class.java))
+            sharedPreferenceManager.enableNotificationServer = true
+            startActivity(Intent(this, OnboardingFinalActivity::class.java))
+            finishAffinity()
         }
     }
 

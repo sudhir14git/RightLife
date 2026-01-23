@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
@@ -27,6 +28,7 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
     private var listener: RatingReportFeedbackListener? = null
     private var isRating: Boolean = false
     private var context: Context? = null
+    private var ratingNew = 0
 
     interface RatingReportFeedbackListener {
         fun onReportFeedbackRating(rating: Double, isSave: Boolean)
@@ -64,10 +66,132 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
         val disabledLayoutCancel = view.findViewById<LinearLayoutCompat>(R.id.disabled_layoutCancel)
         val layoutNotNow = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNow)
         val ratingBar = view.findViewById<RatingBar>(R.id.ratingBar)
+        val star1 = view.findViewById<ImageView>(R.id.star1)
+        val star2 = view.findViewById<ImageView>(R.id.star2)
+        val star3 = view.findViewById<ImageView>(R.id.star3)
+        val star4 = view.findViewById<ImageView>(R.id.star4)
+        val star5 = view.findViewById<ImageView>(R.id.star5)
         val tvTitles = view.findViewById<TextView>(R.id.tvTitles)
         val layoutSubmitAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutSubmitAfter)
         val layoutNotNowAfter = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNowAfter)
         val editText = view.findViewById<EditText>(R.id.editText)
+        val tvRateDescriptions = view.findViewById<TextView>(R.id.tvRateDescriptions)
+        val tvCount = view.findViewById<TextView>(R.id.tvCount)
+        star1.setOnClickListener {
+            star1.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star2.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+            star3.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+            star4.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+            star5.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+
+            tvTitles.text = "What Can We Do Better ?"
+            tvRateDescriptions.text = "Help us improve by sharing what felt off or missing."
+            layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
+            layoutSubmit.isEnabled = true
+            ratingNew = 1
+        }
+        star2.setOnClickListener {
+            star1.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star2.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star3.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+            star4.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+            star5.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+
+            tvTitles.text = "What Can We Do Better ?"
+            tvRateDescriptions.text = "Help us improve by sharing what felt off or missing."
+            layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
+            layoutSubmit.isEnabled = true
+            ratingNew = 2
+        }
+        star3.setOnClickListener {
+            star1.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star2.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star3.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star4.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+            star5.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+            tvTitles.text = "What Can We Do Better ?"
+            tvRateDescriptions.text = "Help us improve by sharing what felt off or missing."
+            layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
+            layoutSubmit.isEnabled = true
+            ratingNew = 3
+
+        }
+        star4.setOnClickListener {
+            star1.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star2.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star3.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star4.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star5.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_empty_new)
+            )
+            tvTitles.text = "What did we get right ?"
+            tvRateDescriptions.text = "Your insights help us understand what’s working so we can keep doing more of it."
+            layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
+            layoutSubmit.isEnabled = true
+            ratingNew = 4
+
+        }
+        star5.setOnClickListener {
+            star1.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star2.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star3.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star4.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            star5.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_star_filled_new)
+            )
+            tvTitles.text = "What did we get right ?"
+            tvRateDescriptions.text = "Your insights help us understand what’s working so we can keep doing more of it."
+            layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
+            layoutSubmit.isEnabled = true
+            ratingNew = 5
+
+        }
 
         val isSave = arguments?.getBoolean("isSave") ?: false
         /*  if (isRating){
@@ -90,10 +214,12 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
             layoutSubmit.isEnabled = true
             if (rating > 3){
                 tvTitles.text = "What did we get right ?"
+                tvRateDescriptions.text = "Your insights help us understand what’s working so we can keep doing more of it."
             }else{
                 tvTitles.text = "What Can We Do Better ?"
+                tvRateDescriptions.text = "Help us improve by sharing what felt off or missing."
             }
-            Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
         }
 
         closeIcon.setOnClickListener {
@@ -112,6 +238,15 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
             //   Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
             listener?.onReportFeedbackRating(1.0, isSave)
         }
+
+        editText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                val count = s?.length ?: 0
+                tvCount.text = "$count /300 Characters"
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
         layoutSubmitAfter.setOnClickListener {
             if (editText.text.length > 1 && editText.text.isNotEmpty()){

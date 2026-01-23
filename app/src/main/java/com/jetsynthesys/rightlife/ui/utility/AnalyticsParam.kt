@@ -3,23 +3,32 @@ package com.jetsynthesys.rightlife.ui.utility
 object AnalyticsParam {
     const val USER_ID = "user_id"
     const val USER_TYPE = "user_type"
+    const val PLATFORM_TYPE = "platform_type"
+    const val LOGIN_TYPE = "login_type"
     const val GENDER = "gender"
     const val AGE = "age"
     const val WEIGHT = "weight"
     const val HEIGHT = "height"
     const val GOAL = "goal"
+    const val GOAL1 = "Goal1"
+    const val GOAL2 = "Goal2"
+    const val GOAL3 = "Goal3"
+    const val GOAL4 = "Goal4"
     const val BODY_FAT = "body_fat"
     const val STRESS_MANAGEMENT = "stress_management"
     const val SUB_GOAL = "subgoal"
     const val USER_PLAN = "user_plan"
     const val TIMESTAMP = "timestamp"
+    const val DAY_FROM_LOGIN = "Day_from_login"
     const val TIME_TO_COMPLETE = "time_to_complete"
     const val PROFILE_SKIPPED = "profile_skipped"
     const val CHECKLIST_COMPLETE = "checklist_complete"
     const val FACE_SCAN_COMPLETE = "face_scan_complete"
     const val MEAL_SCAN_COMPLETE = "meal_scan_complete"
+    const val MR_Workout_AddToLog = "MR_Workout_AddToLog"
     const val MEAL_SCAN_RATING = "meal_scan_rating"
     const val RATING = "rating"
+    const val STAR_RATING = "rating"
     const val START_TIME = "start_time"
     const val END_TIME = "end_time"
     const val TOTAL_DURATION = "total_duration"
@@ -44,4 +53,42 @@ object AnalyticsParam {
     const val PROFILE_STATUS = "profile_status"
     const val HEALTH_DATA_TYPE = "health_data_type"
     const val DISCOVER_TYPE = "discover_type"
+    const val LIST_OF_DISHES = "list_of_dishes"
+    const val WORKOUT_NAME = "workout_name"
+
+    //
+    const val USERNAME = "UserName"
+
+    //content params
+    const val CONTENT_ID = "content_id"
+    const val CONTENT_TYPE = "content_type"
+    const val CONTENT_MODULE = "content_module"
+    const val CONTENT_TITLE = "content_title"
+    const val CONTENT_CATEGORY = "content_category"
+    const val SERIES_TYPE = "series_type"
+
+    const val PHONE_NUMBER = "Phone Number"
+
+
+    // new defaults
+    // AnalyticsParam
+    const val DEVICE_NAME = "device_name"
+    const val USER_LIFECYCLE = "user_lifecycle"   // "new" | "old"
+    const val SUBSCRIPTION_PLAN = "subscription_plan" // e.g., "monthly", "annual"
+
+    const val MR_Crash_Msg = "mr_crash_msh"
+
+    // Razorpay
+    const val PAYMENT_METHOD = "payment_method"
+    const val PAYMENT_STATUS = "payment_status"
+    const val PAYMENT_ID = "payment_id"
+    const val ORDER_ID = "order_id"
+    const val AMOUNT = "amount"
+    const val CURRENCY = "currency"
+    const val RECEIPT = "receipt"
+
+    // NEW EVENTS PARAMS const
+    const val SELECTED_GOALS = "selected_goals"
+    const val SELECTED_TOPIC = "selected_topic"
+
 }

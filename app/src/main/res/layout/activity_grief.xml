@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Journal"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textSize="20sp"
             android:textColor="@color/txt_color_mind"
             android:layout_centerInParent="true" />
@@ -107,7 +107,8 @@
                 android:gravity="top|start"
                 android:padding="12dp"
                 android:inputType="textMultiLine"
-                android:maxLength="5000"/>
+                android:maxLength="5000"
+                android:layout_margin="8dp"/>
         </LinearLayout>
     </ScrollView>
 
@@ -115,14 +116,13 @@
     <Button
         android:id="@+id/btnSave"
         android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_height="56dp"
         android:text="Save"
         android:layout_margin="16dp"
-        android:fontFamily="@font/dmsans_regular"
-        android:textSize="18sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:textSize="@dimen/textsize_large20sp"
         android:backgroundTint="#FFDD80"
-        android:textColor="#FFBFBFBF"
+        android:textColor="#80984C01"
         android:enabled="false"
-        android:paddingVertical="12dp"
         android:layout_gravity="center_horizontal"/>
 </LinearLayout>

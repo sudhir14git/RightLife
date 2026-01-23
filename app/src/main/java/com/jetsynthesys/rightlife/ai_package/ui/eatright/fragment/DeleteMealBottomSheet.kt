@@ -94,7 +94,7 @@ class DeleteMealBottomSheet : BottomSheetDialogFragment() {
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
-        val call = ApiClient.apiServiceFastApi.deleteMyMeal(userId, mealId)
+        val call = ApiClient.apiServiceFastApiV2.deleteMyMeal(userId, mealId)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {

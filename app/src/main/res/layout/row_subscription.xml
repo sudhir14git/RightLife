@@ -1,104 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:padding="0dp"
+    android:background="@android:color/transparent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
+    <!-- RelativeLayout to position the star icon and dialog content -->
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:background="@drawable/bg_subscription_plan"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_marginTop="20dp">
 
+        <!-- Star Icon Positioned Half Above the Dialog -->
         <TextView
-            android:id="@+id/tvCurrentPlan"
+            android:id="@+id/tvBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Plan"
-            android:background="@drawable/roundedcornershape"
+            android:text="Best Value"
+            android:background="@drawable/rounded_bg"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
+            android:layout_marginTop="-21dp"
+            android:adjustViewBounds="true"
             android:textColor="@color/white"
             android:paddingHorizontal="16dp"
             android:paddingVertical="4dp"
+            android:layout_marginHorizontal="8dp"
             android:textSize="@dimen/textsize_small"
             android:backgroundTint="@color/color_green" />
 
-        <TextView
-            android:id="@+id/planTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Monthly Plan"
-            android:layout_marginVertical="4dp"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_mind"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/planName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Monthly Plan"
-            android:layout_marginBottom="4dp"
-            android:layout_below="@+id/planTitle"
-            android:fontFamily="@font/dmsans_regular"
-            android:textColor="@color/txt_color_mind"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvPlanAmmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0.0"
-            android:layout_below="@id/planName"
-            android:textColor="@color/txt_color_journal_date"
-
-            android:textSize="20sp"
-            android:fontFamily="@font/dmsans_bold"
-            android:paddingVertical="4dp"
-            android:backgroundTint="@color/color_green" />
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:id="@+id/ll_planOffer"
-            android:layout_below="@id/tvPlanAmmount"
-            android:orientation="horizontal"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/planOffer"
+
+            <LinearLayout
+                android:id="@+id/llHeaderLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tvPlanAmmount"
-                android:text="amount/month"
-                android:fontFamily="@font/dmsans_regular"
-                android:textColor="@color/txt_color_journal_date"
-                android:textSize="14sp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/planOffer_discount"
+                <ImageView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/logo_rightlife" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginHorizontal="8dp">
+
+                    <TextView
+                        android:id="@+id/planTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Monthly"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/txt_color_mind"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvCancel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cancel anytime online"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/gray_past_price"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:fontFamily="@font/dmsans_regular"
-                android:textColor="@color/txt_color_journal_date"
-                android:layout_marginStart="5dp"
-                android:textSize="14sp" />
+                android:orientation="vertical"
+                android:gravity="end"
+                android:layout_alignParentEnd="true">
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/tvPlanAmmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.0"
+                    android:textColor="@color/txt_color_journal_date"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:paddingVertical="4dp"
+                    android:backgroundTint="@color/color_green" />
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:id="@+id/ll_planOffer"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/trialEnds"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/ll_planOffer"
-            android:text="Trial ends on ##-##-##"
-            android:textColor="@color/text_color_char_left"
-            android:textSize="14sp"
-            android:fontFamily="@font/dmsans_regular"
-            android:layout_marginTop="4dp" />
+                    <TextView
+                        android:id="@+id/planOffer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="amount/month"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/planOffer_discount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llMiddleLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/llHeaderLayout"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical">
+
+                <!-- LEFT: Plan Name -->
+                <TextView
+                    android:id="@+id/planName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Monthly Plan"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textColor="@color/txt_color_mind"
+                    android:textSize="12sp"
+                    android:maxLines="2"/>
+
+                <!-- RIGHT: Buy Button Container -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end">   <!-- Align Buy button to right -->
+
+                    <TextView
+                        android:id="@+id/tvBuy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Buy"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:background="@drawable/rounded_bg"
+                        android:textColor="@color/white"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="4dp"
+                        android:layout_marginHorizontal="8dp"
+                        android:textSize="@dimen/textsize_small"
+                        android:backgroundTint="@color/menuselected" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/viewLineLayout"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CECECE"
+                android:layout_marginVertical="8dp"
+                android:layout_below="@id/llMiddleLayout"/>
+
+            <LinearLayout
+                android:id="@+id/llBulletPoints"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:layout_below="@id/viewLineLayout"/>
+
+        </RelativeLayout>
 
     </RelativeLayout>
-
-</androidx.cardview.widget.CardView>
+</FrameLayout>

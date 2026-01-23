@@ -71,6 +71,8 @@ class AnexityPowerFragment : Fragment() {
         )
 
         binding.anxietySliderView.setStepColorMap(colorMap)
+        anxietyLevelTexts[0].setTypeface(null, Typeface.BOLD)
+        selectedAnxiety = anxietyLevelTexts[0].text.toString()
         binding.anxietySliderView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal

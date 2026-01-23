@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,9 +30,16 @@ import com.google.android.flexbox.FlexboxLayout
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipesResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeDetailsResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DishToLogFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapDishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.DishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -56,6 +64,9 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
+    private var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
+    private var snapMealRequestLocalListModel : SnapMealRequestLocalListModel? = null
+    private var snapMealLogRequests : SelectedMealLogList? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentFrequentlyLoggedBinding
         get() = FragmentFrequentlyLoggedBinding::inflate
@@ -87,23 +98,63 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         mealType = arguments?.getString("mealType").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
 
+        val recipeDetailsLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("snapDishLocalListModel", RecipeDetailsLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("snapDishLocalListModel")
+        }
+
+        val selectedMealLogListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("selectedMealLogList", SelectedMealLogList::class.java)
+        } else {
+            arguments?.getParcelable("selectedMealLogList")
+        }
+
+        val selectedSnapMealLogListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("selectedSnapMealLogList", SelectedMealLogList::class.java)
+        } else {
+            arguments?.getParcelable("selectedSnapMealLogList")
+        }
+
+        val snapMealRequestLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("snapMealRequestLocalListModel", SnapMealRequestLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("snapMealRequestLocalListModel")
+        }
+
+        if (snapMealRequestLocalListModels != null){
+            snapMealRequestLocalListModel = snapMealRequestLocalListModels
+        }
+
+        if (recipeDetailsLocalListModels != null){
+            recipeDetailsLocalListModel = recipeDetailsLocalListModels
+        }
+
+        if (selectedMealLogListModels != null){
+            mealLogRequests = selectedMealLogListModels
+        }
+
+        if (selectedSnapMealLogListModels != null){
+            snapMealLogRequests = selectedSnapMealLogListModels
+        }
+
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
         frequentlyLoggedRecyclerView.adapter = frequentlyLoggedListAdapter
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val fragment = YourMealLogsFragment()
-                val args = Bundle()
-                args.putString("ModuleName", moduleName)
-                args.putString("selectedMealDate", selectedMealDate)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
-                }
-            }
-        })
+//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                val fragment = YourMealLogsFragment()
+//                val args = Bundle()
+//                args.putString("ModuleName", moduleName)
+//                args.putString("selectedMealDate", selectedMealDate)
+//                fragment.arguments = args
+//                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                    replace(R.id.flFragment, fragment, "landing")
+//                    addToBackStack("landing")
+//                    commit()
+//                }
+//            }
+//        })
 
         getFrequentlyLog()
 
@@ -119,7 +170,6 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
                 commit()
             }
         }
-
         // Add button clicked (For demonstration, adding a dummy ingredient)
         btnAdd.setOnClickListener {
 //            val newIngredient = "New Item ${ingredientsList.size + 1}"
@@ -151,8 +201,8 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         }
     }
 
-
     private fun onFrequentlyLoggedList (){
+        if (!isAdded) return   // SAFETY
 
         if (frequentRecipeLogList.size > 0){
             frequentlyLoggedRecyclerView.visibility = View.VISIBLE
@@ -174,7 +224,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
                 for (item in frequentRecipeLogList) {
                     // check if this item matches ANY meal in mealDataList
                     val matchFound = mealDataList.any { meal ->
-                        item._id == meal.meal_id && item.recipe_name == meal.recipe_name
+                        item.id == meal.meal_id && item.recipe == meal.recipe_name
                     }
                     if (matchFound) {
                         item.isFrequentLog = true
@@ -195,10 +245,17 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         }
     }
 
-    private fun onFrequentlyLoggedItem(mealLogDateModel: FrequentRecipe, position: Int, isRefresh: Boolean) {
-        val valueLists : ArrayList<FrequentRecipe> = ArrayList()
-        valueLists.addAll(frequentRecipeLogList as Collection<FrequentRecipe>)
-        frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    private fun onFrequentlyLoggedItem(frequentRecipe: FrequentRecipe, position: Int, isRefresh: Boolean) {
+
+        if (frequentRecipe.source != null){
+            when (frequentRecipe.source) {
+                "recipe" -> getRecipesDetails(frequentRecipe.id)
+                "ingredient" -> getIngredientDetails(frequentRecipe.id)
+            }
+        }
+//        val valueLists : ArrayList<FrequentRecipe> = ArrayList()
+//        valueLists.addAll(frequentRecipeLogList as Collection<FrequentRecipe>)
+//        frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
       //  addDishBottomSheet.visibility = View.VISIBLE
 //        val newIngredient = mealLogDateModel
 //        for (ingredient in valueLists) {
@@ -207,23 +264,40 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
 //                updateIngredientChips()
 //            }
 //        }
-        val mealLogData = MealLogItems(
-            meal_id = mealLogDateModel._id,
-            recipe_name = mealLogDateModel.recipe_name,
-            meal_quantity = 1,
-            unit = "g",
-            measure = "Bowl",
-            isMealLogSelect = mealLogDateModel.isFrequentLog
-        )
+//        val mealLogData = MealLogItems(
+//            meal_id = mealLogDateModel._id,
+//            recipe_name = mealLogDateModel.recipe_name,
+//            meal_quantity = 1,
+//            unit = "g",
+//            measure = "Bowl",
+//            isMealLogSelect = mealLogDateModel.isFrequentLog
+//        )
 //        mealLogList.add(mealLogData)
 //        val mealLogRequest = SelectedMealLogList(
 //            meal_name = "",
 //            meal_type = mealType,
 //            meal_log = mealLogList
 //        )
-      //  mealLogRequests = mealLogRequest
-        val parent = parentFragment as? HomeTabMealFragment
-        parent?.setSelectedFrequentlyLog(mealLogData, false, null, null)
+//        mealLogRequests = mealLogRequest
+//        val parent = parentFragment as? HomeTabMealFragment
+//        parent?.setSelectedFrequentlyLog(mealLogData, false, null, null)
+//        requireActivity().supportFragmentManager.beginTransaction().apply {
+//            val snapMealFragment = DishToLogFragment()
+//            val args = Bundle()
+//            args.putString("ModuleName", moduleName)
+//            args.putString("searchType", searchType)
+//            args.putString("mealType", mealType)
+//            args.putString("selectedMealDate", selectedMealDate)
+//            args.putParcelable("ingredientRecipesDetails", ingredientRecipesDetails)
+//            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
+//            args.putParcelable("selectedMealLogList", mealLogRequests)
+//            args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
+//            args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
+//            snapMealFragment.arguments = args
+//            replace(R.id.flFragment, snapMealFragment, "Steps")
+//            addToBackStack(null)
+//            commit()
+//        }
     }
 
     // Function to update Flexbox with chips
@@ -245,26 +319,118 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
     }
 
     private fun getFrequentlyLog() {
+        Log.d("FrequentlyLog", "getFrequentlyLog called")
+
+        if (isAdded  && view != null){
+            Log.d("FrequentlyLog", "Fragment is added and view is not null, showing loader")
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        } else {
+            Log.w("FrequentlyLog", "Fragment not added or view is null, skipping loader")
+        }
+
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        Log.d("FrequentlyLog", "UserId retrieved: $userId")
+
+        val call = ApiClient.apiServiceFastApiV2.getFrequentlyLog(userId)
+        Log.d("FrequentlyLog", "API call initiated for userId: $userId")
+
+        call.enqueue(object : Callback<FrequentRecipesResponse> {
+            override fun onResponse(call: Call<FrequentRecipesResponse>, response: Response<FrequentRecipesResponse>) {
+                Log.d("FrequentlyLog", "onResponse received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
+                if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        Log.d("FrequentlyLog", "Dismissing loader after successful response")
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+
+                    if (response.body()?.data?.frequent_recipes != null){
+                        Log.d("FrequentlyLog", "Frequent recipes data is not null")
+
+                        if (response.body()?.data?.frequent_recipes!!.isNotEmpty()){
+                            val recipesCount = response.body()!!.data.frequent_recipes.size
+                            Log.d("FrequentlyLog", "Frequent recipes count: $recipesCount")
+
+                            frequentRecipeLogList.addAll(response.body()!!.data.frequent_recipes)
+                            Log.d("FrequentlyLog", "Added recipes to frequentRecipeLogList, total count: ${frequentRecipeLogList.size}")
+
+                            Log.d("FrequentlyLog", "Calling onFrequentlyLoggedList()")
+                            onFrequentlyLoggedList()
+                            Log.d("FrequentlyLog", "Frequently logged recipes loaded successfully")
+                        } else {
+                            Log.w("FrequentlyLog", "Frequent recipes list is empty")
+                        }
+                    } else {
+                        Log.w("FrequentlyLog", "Response body data or frequent_recipes is null")
+                    }
+                } else {
+                    Log.e("FrequentlyLog", "Response not successful: ${response.code()}")
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+
+                    if (isAdded  && view != null){
+                        Log.d("FrequentlyLog", "Dismissing loader after error response")
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<FrequentRecipesResponse>, t: Throwable) {
+                Log.e("FrequentlyLog", "API call failed: ${t.message}")
+                Log.e("FrequentlyLog", "Exception: ${t.javaClass.simpleName}")
+                Log.e("Error", "API call failed: ${t.message}")
+                t.printStackTrace()
+
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+
+                if (isAdded  && view != null){
+                    Log.d("FrequentlyLog", "Dismissing loader after API failure")
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun getIngredientDetails(ingredientId : String?) {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val call = ApiClient.apiServiceFastApi.getFrequentlyLog(userId)
-        call.enqueue(object : Callback<FrequentRecipesResponse> {
-            override fun onResponse(call: Call<FrequentRecipesResponse>, response: Response<FrequentRecipesResponse>) {
+        val call = ApiClient.apiServiceFastApiV2.getIngredientDetails(ingredientId!!)
+        call.enqueue(object : Callback<IngredientDetailResponse> {
+            override fun onResponse(call: Call<IngredientDetailResponse>, response: Response<IngredientDetailResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
-                    if (response.body()?.data?.frequent_recipes != null){
-                        if (response.body()?.data?.frequent_recipes!!.isNotEmpty()){
-                            frequentRecipeLogList.addAll(response.body()!!.data.frequent_recipes)
-                            onFrequentlyLoggedList()
-                        }
+                    val ingredientRecipesDetails = response.body()?.data
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val snapMealFragment = DishToLogFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        args.putString("searchType", "Frequently")
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        args.putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
+                        args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
+                        args.putParcelable("selectedMealLogList", mealLogRequests)
+                        args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
+                        args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
+                        snapMealFragment.arguments = args
+                        replace(R.id.flFragment, snapMealFragment, "Steps")
+                        addToBackStack(null)
+                        commit()
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -276,7 +442,62 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
                     }
                 }
             }
-            override fun onFailure(call: Call<FrequentRecipesResponse>, t: Throwable) {
+            override fun onFailure(call: Call<IngredientDetailResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun getRecipesDetails(recipeId : String?) {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
+        val call = ApiClient.apiServiceFastApiV2.getRecipeDetailsById(recipeId = recipeId!!)
+        call.enqueue(object : Callback<RecipeDetailsResponse> {
+            override fun onResponse(call: Call<RecipeDetailsResponse>, response: Response<RecipeDetailsResponse>) {
+                if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    val ingredientRecipesDetails = response.body()?.data
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val snapMealFragment = DishToLogFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        args.putString("searchType", "Frequently")
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        args.putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
+                        args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
+                        args.putParcelable("selectedMealLogList", mealLogRequests)
+                        args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
+                        args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
+                        snapMealFragment.arguments = args
+                        replace(R.id.flFragment, snapMealFragment, "Steps")
+                        addToBackStack(null)
+                        commit()
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<RecipeDetailsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){

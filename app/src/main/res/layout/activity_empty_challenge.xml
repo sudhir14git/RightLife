@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_vertical_gradient_challenge"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingRight="8dp"
+        android:weightSum="1">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/merriweather_bold"
+            android:gravity="center"
+            android:text="Challenge"
+            android:textColor="@color/txt_color_mind"
+            android:textSize="@dimen/textsize_large24sp" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/layoutChallengeCountDownDays"
+                layout="@layout/layout_count_down_empty" />
+
+            <include
+                android:id="@+id/scoreCard"
+                layout="@layout/layout_score_empty" />
+
+            <include
+                android:id="@+id/rankingCard"
+                layout="@layout/layout_rank_empty" />
+
+            <include
+                android:id="@+id/sharingCard"
+                layout="@layout/layout_share_challenge" />
+
+            <include
+                android:id="@+id/challengeTasks"
+                layout="@layout/layout_challenge_tasks" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

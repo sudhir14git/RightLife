@@ -1,5 +1,6 @@
 <!-- res/layout/bottom_sheet_layout.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripleffect="http://schemas.android.com/apk/res-auto"
     android:id="@+id/design_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:gravity="center"
         android:text="Do these keep you awake at night?"
         android:textColor="@color/txt_color_header"
@@ -49,8 +50,9 @@
             android:layout_weight="1"
             android:textSize="16sp"
             android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/menuselected" />
+            android:textColor="@color/black"
+            ripleffect:rippleColor="@color/menuselected"
+            android:backgroundTint="@color/color_bg_button_affirmed" />
 
     </LinearLayout>
 </LinearLayout>

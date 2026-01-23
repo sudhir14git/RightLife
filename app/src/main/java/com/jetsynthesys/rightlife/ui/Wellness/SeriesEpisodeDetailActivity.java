@@ -30,12 +30,12 @@ import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.ContentData;
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailContentResponse;
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode;
 import com.jetsynthesys.rightlife.databinding.ActivitySeriesepisodeDetailLayoutBinding;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
-import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
@@ -54,12 +54,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SeriesEpisodeDetailActivity extends BaseActivity {
+    private final Handler handler = new Handler();
+    private final String contentTypeForTrack = "";
     ActivitySeriesepisodeDetailLayoutBinding binding;
     String seriesId = "";
     String episodeId = "";
     private MediaPlayer mediaPlayer;
-    private boolean isPlaying = false; // To track the current state of the player
-    private final Handler handler = new Handler();
     // Update progress in SeekBar and Circular Progress Bar
     private final Runnable updateProgress = new Runnable() {
         @Override
@@ -86,7 +86,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
             }
         }
     };
-    private final String contentTypeForTrack = "";
+    private boolean isPlaying = false; // To track the current state of the player
     private ExoPlayer player;
     private PlayerView playerView;
     private EpisodeDetailContentResponse ContentResponseObj;
@@ -160,7 +160,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
                             setContentDetails(ContentResponseObj);
                             setupVideoContent(ContentResponseObj);
                             //getSeriesWithEpisodes(ContentResponseObj.getData().getId());
-                            callContentTracking(ContentResponseObj, "1.0", "1.0");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -301,26 +300,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         }
 
 
-    }
-
-    private void callContentTracking(EpisodeDetailContentResponse contentResponseObj, String duration, String watchDuration) {
-        // article consumed
-        String userId = sharedPreferenceManager.getUserId();
-        String moduleId = contentResponseObj != null && contentResponseObj.data != null ?
-                contentResponseObj.data.moduleId : "";
-        String contentId = contentResponseObj != null && contentResponseObj.data != null ?
-                contentResponseObj.data._id : "";
-
-        EpisodeTrackRequest episodeTrackRequest = new EpisodeTrackRequest(
-                userId,
-                moduleId,
-                contentId,
-                duration,
-                watchDuration,
-                ContentResponseObj.data.type.toUpperCase()
-        );
-
-        CommonAPICall.INSTANCE.trackEpisodeOrContent(this, episodeTrackRequest);
     }
 
     private void setupYouTubePlayer(String videoId) {
@@ -497,6 +476,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
 
     private void releasePlayer() {
         if (player != null) {
+            callTrackAPI((double) player.getCurrentPosition() / 1000);
             player.release();
             player = null;
         }
@@ -506,8 +486,23 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (mediaPlayer != null) {
+            callTrackAPI((double) mediaPlayer.getCurrentPosition() / 1000);
             mediaPlayer.release();
         }
         handler.removeCallbacks(updateProgress);
+    }
+
+    private void callTrackAPI(double watchDuration) {
+        ContentData contentData = ContentResponseObj.data;
+        if ((contentData.meta.duration - watchDuration) > 10)
+            CommonAPICall.INSTANCE.postSeriesContentPlayedProgress(
+                    this,
+                    contentData.meta.duration,
+                    contentData.moduleId,
+                    watchDuration,
+                    contentData.moduleId,
+                    contentData.type,
+                    contentData._id
+            );
     }
 }

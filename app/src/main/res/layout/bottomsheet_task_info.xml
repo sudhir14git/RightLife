@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/toproundedcornershape"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/merriweather_bold"
+            android:text="Make The Score Count"
+            android:textColor="@color/txt_color_header"
+            android:textSize="22dp" />
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/close_breathwork" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="12dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:gravity="center_horizontal"
+        android:text="Track your Sleep, Move, Think, and Eat habits daily. Earn points. Build consistency. Win prizes."
+        android:textColor="@color/txt_color_header"
+        android:textSize="14sp" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="16dp"
+        android:backgroundTint="@color/gray_light_bg"
+        app:cardCornerRadius="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_horizontal"
+                android:text="Daily tasks build your daily routine"
+                android:textColor="@color/txt_color_header"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="start"
+                android:text="Each one gives points and unlocks the extra boost when all four core areas are done."
+                android:textColor="@color/txt_color_header"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_horizontal"
+                android:text="Bonus wins reward quality"
+                android:textColor="@color/txt_color_header"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="start"
+                android:text="Sleep well, eat within range, move more, and spend mindful minutes to squeeze extra points from the same day."
+                android:textColor="@color/txt_color_header"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

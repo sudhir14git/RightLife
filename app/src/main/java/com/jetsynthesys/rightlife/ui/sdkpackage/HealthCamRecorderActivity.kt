@@ -7,9 +7,12 @@ import ai.nuralogix.anurasdk.error.AnuraError
 import ai.nuralogix.anurasdk.utils.AnuLogUtil
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -26,6 +29,8 @@ import com.jetsynthesys.rightlife.ui.healthcam.HealthCamFacialScanRequest
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamReportIdResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.healthcam.ReportData
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -93,7 +98,10 @@ class HealthCamRecorderActivity : BaseActivity() {
         if (requestPermission()) {
             registerScan()
         }
-
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.FaceScan_Cam_PageOpen,
+            mapOf("timestamp" to System.currentTimeMillis())
+        )
     }
 
 
@@ -160,6 +168,7 @@ class HealthCamRecorderActivity : BaseActivity() {
 
     private fun requestPermission(): Boolean {
         val permissionList = ArrayList<String>()
+
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_EXTERNAL_STORAGE
@@ -167,6 +176,7 @@ class HealthCamRecorderActivity : BaseActivity() {
         ) {
             permissionList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
+
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
@@ -174,16 +184,19 @@ class HealthCamRecorderActivity : BaseActivity() {
         ) {
             permissionList.add(Manifest.permission.CAMERA)
         }
-        val permissionStrings = arrayOfNulls<String>(permissionList.size)
-        permissionList.toArray(permissionStrings)
-        return if (permissionList.size > 0) {
-            ActivityCompat.requestPermissions(this, permissionStrings, MY_PERMISSIONS_REQUEST)
-            false
-        } else {
-            AnuLogUtil.d(TAG, "have all the required permissions")
-            true
-        }
+
+        // No permissions needed
+        if (permissionList.isEmpty()) return true
+
+        // Request permissions
+        ActivityCompat.requestPermissions(
+            this,
+            permissionList.toTypedArray(),
+            MY_PERMISSIONS_REQUEST
+        )
+        return false
     }
+
 
     private fun registerScan() {
         /**
@@ -237,9 +250,42 @@ class HealthCamRecorderActivity : BaseActivity() {
         ) {
             registerScan()
         } else {
-//             returnErrorResult("")
+            val sp = getSharedPreferences("PREFS", MODE_PRIVATE)
+            val deniedOnce = sp.getBoolean("KEY_DENIED_ONCE", false)
+            if (deniedOnce) {
+                // User denied earlier -> Now show settings dialog
+                showPermissionSettingsDialog()
+                return
+            } else {
+                getSharedPreferences("PREFS", MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("KEY_DENIED_ONCE", true)
+                    .apply()
+                finish()
+            }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun showPermissionSettingsDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Permission Required")
+            .setMessage("Please enable permissions from Settings to continue.")
+            .setPositiveButton("Go to Settings") { _, _ ->
+                val intent = Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:$packageName")
+                )
+                intent.addCategory(Intent.CATEGORY_DEFAULT)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+            .show()
     }
 
 
@@ -333,6 +379,12 @@ class HealthCamRecorderActivity : BaseActivity() {
                         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         putExtra("FROM", "RECORDER")
                     }
+
+                    AnalyticsLogger.logEvent(
+                        this@HealthCamRecorderActivity,
+                        AnalyticsEvent.Checklist_FaceScan_Completed
+                    )
+
                     startActivity(intent)
                     finish()
                 } else {

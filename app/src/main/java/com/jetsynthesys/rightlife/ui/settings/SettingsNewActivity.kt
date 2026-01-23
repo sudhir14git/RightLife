@@ -18,14 +18,14 @@ import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.LogoutUserRequest
 import com.jetsynthesys.rightlife.databinding.ActivitySettingsNewBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteSettingBinding
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -129,7 +129,7 @@ class SettingsNewActivity : BaseActivity() {
 
     private fun showLogoutBottomSheet() {
         val bottomSheetDialog = BottomSheetDialog(this)
-        val dialogBinding = BottomsheetDeleteTagBinding.inflate(layoutInflater)
+        val dialogBinding = BottomsheetDeleteSettingBinding.inflate(layoutInflater)
         val bottomSheetView = dialogBinding.root
         bottomSheetDialog.setContentView(bottomSheetView)
 
@@ -140,8 +140,10 @@ class SettingsNewActivity : BaseActivity() {
             bottomSheetLayout.animation = slideUpAnimation
         }
 
-        dialogBinding.tvTitle.text = "Logout?"
+        dialogBinding.tvTitle.text = "Log Out?"
         dialogBinding.tvDescription.text = "Are you sure you want to Logout?"
+
+        dialogBinding.ivDialogClose.setImageResource(R.drawable.close_breathwork)
 
         dialogBinding.ivDialogClose.setOnClickListener {
             bottomSheetDialog.dismiss()
@@ -154,6 +156,13 @@ class SettingsNewActivity : BaseActivity() {
         dialogBinding.btnYes.setOnClickListener {
             logoutUser()
             bottomSheetDialog.dismiss()
+            AnalyticsLogger.logEvent(
+                this,
+                AnalyticsEvent.Settings_Logout_Confirm,
+                mapOf(
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                )
+            )
         }
         bottomSheetDialog.show()
     }
@@ -201,25 +210,25 @@ class SettingsNewActivity : BaseActivity() {
         })
     }
 
- /*   private fun clearUserDataAndFinish() {
-        AnalyticsLogger.logEvent(
-            this,
-            AnalyticsEvent.USER_SIGN_OUT
-        )
-        val sharedPreferences =
-            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.clear()
-        editor.apply()
-        SharedPreferenceManager.getInstance(this).clearData()
+    /*   private fun clearUserDataAndFinish() {
+           AnalyticsLogger.logEvent(
+               this,
+               AnalyticsEvent.USER_SIGN_OUT
+           )
+           val sharedPreferences =
+               getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
+           val editor = sharedPreferences.edit()
+           editor.clear()
+           editor.apply()
+           SharedPreferenceManager.getInstance(this).clearData()
 
-        val intent = Intent(this, DataControlActivity::class.java)
-        startActivity(intent)
+           val intent = Intent(this, DataControlActivity::class.java)
+           startActivity(intent)
 
-        finishAffinity()
-    }*/
+           finishAffinity()
+       }*/
 
-    private fun clearUserDataAndFinish() {
+    /*private fun clearUserDataAndFinish() {
         val keysToKeep = setOf(
             SharedPreferenceConstants.ALL_IN_ONE_PLACE,
             SharedPreferenceConstants.AFFIRMATION_CONTEXT_SCREEN,
@@ -265,6 +274,64 @@ class SettingsNewActivity : BaseActivity() {
                 editor.remove(key)
             }
         }
+        editor.remove("ACCESS_TOKEN")
+        editor.remove("access_token")
+        editor.apply()
+    }*/
+
+    private fun clearUserDataAndFinish() {
+        val keysToKeep = setOf(
+            SharedPreferenceConstants.ALL_IN_ONE_PLACE,
+            SharedPreferenceConstants.AFFIRMATION_CONTEXT_SCREEN,
+            SharedPreferenceConstants.BREATH_WORK_CONTEXT_SCREEN,
+            SharedPreferenceConstants.FACE_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.JOURNAL_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MEAL_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MIND_AUDIT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MRER_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_SOUND_CONTEXT_SCREEN,
+            SharedPreferenceConstants.TRSR_CONTEXT_SCREEN,
+            SharedPreferenceConstants.EAT_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MOVE_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.THINK_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN,
+            SharedPreferenceConstants.APP_CONFIG_RESPONSE
+        )
+
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.USER_SIGN_OUT
+        )
+
+        // FIXED: Use the correct SharedPreferences file name
+        val sharedPreferences = getSharedPreferences("app_shared_prefs", MODE_PRIVATE)
+        removeKeysNotInKeepList(sharedPreferences, keysToKeep)
+
+        val intent = Intent(this, DataControlActivity::class.java)
+        startActivity(intent)
+
+        finishAffinity()
+    }
+
+    private fun removeKeysNotInKeepList(
+        sharedPreferences: SharedPreferences,
+        keysToKeep: Set<String>
+    ) {
+        val editor = sharedPreferences.edit()
+
+        // Get all current preference keys
+        val allKeys = sharedPreferences.all.keys
+
+        // Remove keys that are not in the keysToKeep list
+        allKeys.forEach { key ->
+            if (key !in keysToKeep) {
+                editor.remove(key)
+            }
+        }
+
+        // Explicitly remove access token to ensure it's cleared
+        editor.remove(SharedPreferenceConstants.ACCESS_TOKEN)
 
         editor.apply()
     }

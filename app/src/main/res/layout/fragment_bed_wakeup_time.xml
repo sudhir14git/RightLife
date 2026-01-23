@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -7,85 +8,106 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:padding="16dp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="What time do you usually go to bed and wake up?"
-            android:textSize="@dimen/textsize_large18sp"
-            android:fontFamily="@font/merriweather_bold"
+            android:layout_marginHorizontal="@dimen/margin_card_16dp"
             android:layout_marginBottom="16dp"
-            android:textColor="@color/menu_icon_color_unselected" />
+            android:fontFamily="@font/merriweather_bold"
+            android:text="What time do you usually go to bed and wake up?"
+            android:textColor="@color/menu_icon_color_unselected"
+            android:textSize="@dimen/textsize_large18sp" />
 
         <!-- Bedtime Label -->
         <TextView
             android:id="@+id/tvBedtimeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:drawableStart="@drawable/ic_sleep_bad"
+            android:drawablePadding="@dimen/margin_card_16dp"
+            android:fontFamily="@font/dmsans_regular"
             android:text="Bedtime:"
-            android:textSize="16sp"
             android:textColor="#000000"
-            android:layout_marginBottom="8dp"/>
+            android:textSize="16sp" />
 
         <!-- Bedtime TimePicker -->
         <TimePicker
             android:id="@+id/timePickerBedtime"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:timePickerMode="spinner"
-            android:layout_marginBottom="16dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
             android:theme="@style/TimePickerTheme"
-            android:layout_gravity="center" />
+            android:timePickerMode="spinner" />
 
         <!-- Wake Time Label -->
         <TextView
             android:id="@+id/tvWakeTimeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:drawableStart="@drawable/ic_sleep_clock"
+            android:drawablePadding="@dimen/margin_card_16dp"
+            android:fontFamily="@font/dmsans_regular"
             android:text="Wake Time:"
-            android:textSize="16sp"
             android:textColor="#000000"
-            android:layout_marginBottom="8dp"/>
+            android:textSize="16sp" />
 
         <!-- Wake Time TimePicker -->
         <TimePicker
             android:id="@+id/timePickerWakeTime"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:timePickerMode="spinner"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
             android:theme="@style/TimePickerTheme"
-            android:layout_marginBottom="16dp"
-            android:layout_gravity="center"/>
+            android:timePickerMode="spinner" />
 
-        <!-- Sleep Duration -->
+    </LinearLayout>
+
+    <!-- Sleep Duration -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_above="@id/btn_continue">
+
+        <TextView
+            android:id="@+id/tvSleepDuration_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_regular"
+            android:text="Sleep duration: "
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
         <TextView
             android:id="@+id/tvSleepDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sleep duration: 9 hrs 30 mins"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginBottom="24dp"/>
-
-        <!-- Continue Button -->
-        <Button
-            android:id="@+id/btn_continue"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="36dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/menuselected"
             android:fontFamily="@font/dmsans_bold"
-            android:text="@string/str_continue"
-            android:textColor="@color/white"
-            android:textSize="@dimen/textsize_large"
-            android:layout_alignParentBottom="true" />
-
+            android:text="9 hrs 30 mins"
+            android:textColor="#1292E5"
+            android:textSize="16sp" />
     </LinearLayout>
-</ScrollView>
+
+    <!-- Continue Button -->
+    <Button
+        android:id="@+id/btn_continue"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="36dp"
+        android:backgroundTint="@color/menuselected"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="@string/str_continue"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textsize_large18sp" />
+</RelativeLayout>

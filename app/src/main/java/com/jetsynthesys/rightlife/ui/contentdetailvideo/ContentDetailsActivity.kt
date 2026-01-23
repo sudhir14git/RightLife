@@ -2,8 +2,6 @@ package com.jetsynthesys.rightlife.ui.contentdetailvideo
 
 import android.content.Intent
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnCompletionListener
-import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -16,16 +14,11 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -35,13 +28,12 @@ import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse
 import com.jetsynthesys.rightlife.databinding.ActivityContentDetailsBinding
 import com.jetsynthesys.rightlife.shortVibrate
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall
-import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
 import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
-import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -67,24 +59,27 @@ class ContentDetailsActivity : BaseActivity() {
     private var watchProgessDurationAudio: String = "0"
     private lateinit var binding: ActivityContentDetailsBinding
     private var contentTypeForTrack: String = ""
-    private var contentId: String? = null
+    private lateinit var contentId: String
+    private lateinit var contentResponseObj: ModuleContentDetail
+    private var startTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityContentDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        var contentId = intent.getStringExtra("contentId")
+        contentId = intent.getStringExtra("contentId").toString()
+        startTime = System.currentTimeMillis()
         //API Call
         if (contentId != null) {
             getContendetails(contentId)
             // get morelike content
             getMoreLikeContent(contentId)
-            binding.tvViewAll.setOnClickListener(View.OnClickListener { view: View? ->
+            binding.tvViewAll.setOnClickListener {
                 val intent1 = Intent(this, ViewAllActivity::class.java)
                 intent1.putExtra("ContentId", contentId)
                 startActivity(intent1)
-            })
+            }
         }
         binding.icBackDialog.setOnClickListener {
             finish()
@@ -94,6 +89,21 @@ class ContentDetailsActivity : BaseActivity() {
         viewCountRequest.id = contentId
         viewCountRequest.userId = sharedPreferenceManager.userId
         CommonAPICall.updateViewCount(this, viewCountRequest)
+
+        binding.btnFullscreen.setOnClickListener {
+            try {
+                val url = ApiClient.VIDEO_CDN_URL + contentResponseObj.data.url
+                PlayerHolder.lastPosition = player.currentPosition
+                binding.exoPlayerView.player = null   // <<< MUST ADD THIS
+                val intent = Intent(this, FullscreenVideoActivity::class.java)
+                intent.putExtra("VIDEO_URL", url)
+                intent.putExtra("CONTENT_ID", contentId)
+                startActivity(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
     }
 
     // get single content details
@@ -117,7 +127,7 @@ class ContentDetailsActivity : BaseActivity() {
                             val successMessage = response.body()!!.string()
                             val gson = Gson()
                             val jsonResponse = gson.toJson(response.body().toString())
-                            val contentResponseObj = gson.fromJson<ModuleContentDetail>(
+                            contentResponseObj = gson.fromJson<ModuleContentDetail>(
                                 successMessage,
                                 ModuleContentDetail::class.java
                             )
@@ -197,51 +207,62 @@ class ContentDetailsActivity : BaseActivity() {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
                     contentResponseObj.data.like = false
                     postContentLike(contentResponseObj.data.id, false)
+                    val newCount: Int = getCurrentCount() - 1
+                    binding.txtLikeCount.text = getLikeText(newCount)
                 } else {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
                     contentResponseObj.data.like = true
                     postContentLike(contentResponseObj.data.id, true)
+                    val newCount: Int = getCurrentCount() + 1
+                    binding.txtLikeCount.text = getLikeText(newCount)
                 }
             }
             if (contentResponseObj.data.like) {
                 binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
             }
             binding.imageShareArticle.setOnClickListener { shareIntent() }
-            binding.txtLikeCount.text = contentResponseObj.data.likeCount.toString()
+            binding.txtLikeCount.text = getLikeText(contentResponseObj.data.likeCount)
         }
         binding.icBookmark.setOnClickListener {
             if (contentResponseObj != null) {
                 if (contentResponseObj.data.bookmarked) {
                     contentResponseObj.data.bookmarked = false
                     binding.icBookmark.setImageResource(R.drawable.ic_save_article)
-                    postArticleBookMark(contentResponseObj.data.id, false)
+                    postArticleBookMark(
+                        contentResponseObj.data.id,
+                        false,
+                        contentResponseObj.data.contentType
+                    )
                 } else {
                     contentResponseObj.data.bookmarked = true
                     binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
-                    postArticleBookMark(contentResponseObj.data.id, true)
+                    postArticleBookMark(
+                        contentResponseObj.data.id,
+                        true,
+                        contentResponseObj.data.contentType
+                    )
                 }
             }
         }
         if (contentResponseObj?.data?.bookmarked == true) {
             binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
         }
-
-        callContentTracking(contentResponseObj, "1.0", "1.0")
-
     }
 
-    private fun callContentTracking(
-        contentResponseObj: ModuleContentDetail?,
-        duration: String,
-        watchDuration: String
-    ) {
-// article consumed
-        val episodeTrackRequest = EpisodeTrackRequest(
-            sharedPreferenceManager.userId, contentResponseObj?.data?.moduleId ?: "",
-            contentResponseObj?.data?.id ?: "", duration, watchDuration, contentTypeForTrack
-        )
+    private fun getLikeText(count: Int): String = when (count) {
+        0 -> "0 like"
+        1 -> "1 like"
+        else -> "$count likes"
+    }
 
-        trackEpisodeOrContent(this, episodeTrackRequest)
+    private fun getCurrentCount(): Int {
+        try {
+            val countText = binding.txtLikeCount.text.toString()
+            val numbersOnly = countText.replace("[^0-9]".toRegex(), "")
+            return if (numbersOnly.isEmpty()) 0 else numbersOnly.toInt()
+        } catch (e: java.lang.Exception) {
+            return 0
+        }
     }
 
     private fun setReadMoreView(desc: String?) {
@@ -363,70 +384,37 @@ class ContentDetailsActivity : BaseActivity() {
 
 
     private fun initializePlayer(previewUrl: String) {
-        // Ensure 'this' is a valid Context.
-        // If in an Activity, 'this' is fine.
-        // If in a Fragment, use 'requireContext()':
-        //player = ExoPlayer.Builder(this).build()
-        val renderersFactory = DefaultRenderersFactory(this)
-            .setEnableDecoderFallback(true)
 
-        player = ExoPlayer.Builder(this, renderersFactory).build()
-        player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
-
-        player.playWhenReady = true
+        player = PlayerHolder.initPlayer(this)
         binding.exoPlayerView.player = player
 
-        val fullVideoUrl =
-            ApiClient.VIDEO_CDN_URL + previewUrl // Re-integrating your original URL logic
-        val videoUri = Uri.parse(fullVideoUrl)
-
-        Log.d("ExoPlayerInit", "Attempting to play URL: $videoUri")
-
+        val videoUri = Uri.parse(ApiClient.VIDEO_CDN_URL + previewUrl)
         val dataSourceFactory = DefaultHttpDataSource.Factory()
-        // Set a User-Agent to improve compatibility and avoid 403 errors with some servers/CDNs
-        //.setUserAgent("ExoPlayer/2.x (Linux; Android) YourAppName/1.0") // Replace YourAppName and version
 
-        val mediaSource = if (videoUri.toString().endsWith(".m3u8", ignoreCase = true)) {
-            HlsMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(videoUri))
-        } else if (videoUri.toString().endsWith(".mp4", ignoreCase = true)) {
-            ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(videoUri))
-        } else {
-            // Handle other formats or throw an error if the format is not supported
-            Log.e("ExoPlayerInit", "Unsupported video format for URL: $videoUri")
-            // Optionally, return a dummy media source or throw an exception
-            return // Exit the function if format is unsupported
+        val mediaSource =
+            if (videoUri.toString().endsWith(".m3u8")) {
+                HlsMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(videoUri))
+            } else {
+                ProgressiveMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(videoUri))
+            }
+
+        // ⭐ DO NOT CHECK currentMediaItem — ALWAYS SET THE SOURCE
+        player.setMediaSource(mediaSource, /* resetPosition */ false)
+
+        // prepare only once
+        if (PlayerHolder.needsPrepare) {
+            player.prepare()
+            PlayerHolder.needsPrepare = false
         }
 
-        player.setMediaSource(mediaSource)
+        // resume video
+        player.seekTo(PlayerHolder.lastPosition)
+        player.playWhenReady = true
 
-        player.addListener(object : Player.Listener {
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                when (playbackState) {
-                    Player.STATE_IDLE -> Log.d("ExoPlayer", "State: IDLE")
-                    Player.STATE_BUFFERING -> Log.d("ExoPlayer", "State: BUFFERING")
-                    Player.STATE_READY -> {
-                        Log.d("ExoPlayer", "Player is ready to play")
-                        logContentOpenedEvent()
-                    }
-
-                    Player.STATE_ENDED -> {
-                        Log.d("ExoPlayer", "Playback ended")
-                        logContentWatchedEvent()
-                    }
-                }
-            }
-
-            override fun onPlayerError(error: PlaybackException) {
-                Log.e("ExoPlayer", "Playback error: ${error.message}", error)
-                error.printStackTrace()
-                // Optionally, show a Toast or dialog to the user about the error
-                // Toast.makeText(this@YourActivity, "Error playing video: ${error.message}", Toast.LENGTH_LONG).show()
-            }
-        })
-
-        player.prepare()
+        //logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.VIDEO_OPENED)
+        logContentOpenedEvent()
     }
 
 
@@ -482,7 +470,7 @@ class ContentDetailsActivity : BaseActivity() {
             Toast.makeText(this, "Failed to load audio", Toast.LENGTH_SHORT).show()
         }
 
-        mediaPlayer.setOnPreparedListener(OnPreparedListener { mp: MediaPlayer? ->
+        mediaPlayer.setOnPreparedListener { mp: MediaPlayer? ->
             mediaPlayer.start()
             binding.seekBar.max = mediaPlayer.duration
             isPlaying = true
@@ -491,27 +479,48 @@ class ContentDetailsActivity : BaseActivity() {
             handler.post(updateProgress)
             watchProgessDurationAudio = "0"
             logContentOpenedEventAudio()
-        })
+        }
         // Play/Pause Button Listener
-        binding.playPauseButton.setOnClickListener(View.OnClickListener { v: View? ->
-            if (isPlaying) {
-                mediaPlayer.pause()
-                binding.playPauseButton.setImageResource(R.drawable.ic_sound_play)
-                handler.removeCallbacks(updateProgress)
-            } else {
-                mediaPlayer.start()
-                binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
-                //updateProgress();
-                handler.post(updateProgress)
+        /*  binding.playPauseButton.setOnClickListener {
+              if (isPlaying) {
+                  mediaPlayer.pause()
+                  binding.playPauseButton.setImageResource(R.drawable.ic_sound_play)
+                  handler.removeCallbacks(updateProgress)
+              } else {
+                  mediaPlayer.start()
+                  binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
+                  //updateProgress();
+                  handler.post(updateProgress)
+              }
+              isPlaying = !isPlaying
+          }*/
+
+        binding.playPauseButton.setOnClickListener {
+            try {
+                if (!mediaPlayer.isPlaying) {
+                    mediaPlayer.start()
+                } else {
+                    mediaPlayer.pause()
+                }
+            } catch (e: IllegalStateException) {
+                // Recover if mediaPlayer was reset somehow
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(ApiClient.VIDEO_CDN_URL + moduleContentDetail?.data?.url)
+                mediaPlayer.prepareAsync()
             }
-            isPlaying = !isPlaying
-        })
-        mediaPlayer.setOnCompletionListener(OnCompletionListener { mp: MediaPlayer? ->
-            Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
+            binding.playPauseButton.setImageResource(
+                if (mediaPlayer.isPlaying) R.drawable.ic_sound_pause else R.drawable.ic_sound_play
+            )
+
+        }
+
+
+        mediaPlayer.setOnCompletionListener { mp: MediaPlayer? ->
+            //Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
             handler.removeCallbacks(updateProgress)
             watchProgessDurationAudio = "100"
             logContentWatchedEventAudio()
-        })
+        }
 
         binding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -557,8 +566,8 @@ class ContentDetailsActivity : BaseActivity() {
 
 
     // post Bookmark api
-    private fun postArticleBookMark(contentId: String, isBookmark: Boolean) {
-        val request = ArticleBookmarkRequest(contentId, isBookmark)
+    private fun postArticleBookMark(contentId: String, isBookmark: Boolean, contentType: String) {
+        val request = ArticleBookmarkRequest(contentId, isBookmark, "", contentType)
         // Make the API call
         val call = apiService.ArticleBookmarkRequest(sharedPreferenceManager.accessToken, request)
         call.enqueue(object : Callback<ResponseBody?> {
@@ -571,7 +580,12 @@ class ContentDetailsActivity : BaseActivity() {
                     )
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
-                    Utils.showCustomToast(this@ContentDetailsActivity, response.message())
+                    val message = if (isBookmark) {
+                        "Added To Your Saved Items"
+                    } else {
+                        "Removed From Saved Items"
+                    }
+                    showCustomToast(message, isBookmark)
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -596,7 +610,7 @@ class ContentDetailsActivity : BaseActivity() {
                     Log.d("API Response", "Article response: $articleLikeResponse")
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
-                    Utils.showCustomToast(this@ContentDetailsActivity, response.message())
+                    //Utils.showCustomToast(this@ContentDetailsActivity, response.message())
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -612,10 +626,11 @@ class ContentDetailsActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
 
-        val shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
-                "Check it out here. " +
-                "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
-                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
+        val shareText =
+            "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
+                    "Check it out here. " +
+                    "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
+                    "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
 
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText)
@@ -677,59 +692,117 @@ class ContentDetailsActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (Util.SDK_INT >= 24) {
-            //  initializePlayer();
+
+        // Some OEMs require video surface attachment in onStart()
+        if (PlayerHolder.player != null) {
+            binding.exoPlayerView.player = PlayerHolder.player
+            PlayerHolder.player?.seekTo(PlayerHolder.lastPosition)
+            PlayerHolder.player?.playWhenReady = true
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (Util.SDK_INT >= 24) {
-            releasePlayer()
-        }
-    }
 
     private fun releasePlayer() {
         if (::player.isInitialized) {
+            callTrackAPI(player.currentPosition.toDouble() / 1000)
             player.release()
         }
+
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (::mediaPlayer.isInitialized) {
-            mediaPlayer.release()
-        }
-        handler.removeCallbacks(updateProgress)
-        Log.d("contentDetails", "onDestroyCalled")
+    /*    override fun onDestroy() {
+            super.onDestroy()
+            if (::mediaPlayer.isInitialized) {
+                callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
+                mediaPlayer.release()
+            }
+            handler.removeCallbacks(updateProgress)
+            Log.d("contentDetails", "onDestroyCalled")
+        }*/
+
+
+    private fun callTrackAPI(watchDuration: Double) {
+        val contentData = contentResponseObj.data
+        //if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
+        CommonAPICall.postVideoPlayedProgress(
+            this,
+            contentData.meta.duration.toDouble(),
+            contentId,
+            watchDuration,
+            contentData.moduleId,
+            contentData.contentType
+        )
     }
+
     // analytics logger
-
     private fun logContentOpenedEvent() {
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.VIDEO_OPENED, mapOf(
-                AnalyticsParam.VIDEO_ID to (contentId ?: "")
+                AnalyticsParam.VIDEO_ID to contentId
             )
         )
+
+        logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.Video_Open)
     }
 
     private fun logContentWatchedEvent() {
+        val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.VIDEO_WATCHED_PERCENT, mapOf(
-                AnalyticsParam.VIDEO_ID to (contentId ?: ""),
-                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration // % watched
+                AnalyticsParam.VIDEO_ID to contentId,
+                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration, // % watched
+                AnalyticsParam.TOTAL_DURATION to duration
             )
         )
     }
 
+    fun logVideoOpenEvent(
+        context: ContentDetailsActivity,
+        contentResponseObj: ModuleContentDetail?,
+        contentId: String?,
+        eventName: String = AnalyticsEvent.Video_Open
+    ) {
+        runCatching {
+            val data = contentResponseObj?.data
+
+            val params = mutableMapOf<String, Any>()
+
+            // helper for non-null values trimmed & limited to 100 chars
+            fun putSafe(key: String, value: Any?) {
+                when (value) {
+                    is String -> if (value.isNotBlank()) params[key] = value.trim().take(100)
+                    is Number, is Boolean -> params[key] = value
+                }
+            }
+
+            putSafe(AnalyticsParam.VIDEO_ID, contentId)
+            putSafe(AnalyticsParam.CONTENT_MODULE, data?.moduleId ?: "unknown_module")
+            putSafe(AnalyticsParam.CONTENT_TYPE, data?.title ?: "unknown_type")
+            putSafe(AnalyticsParam.CONTENT_CATEGORY, data?.categoryName ?: "unknown_category")
+
+            if (params.isEmpty()) return // nothing to log
+
+            AnalyticsLogger.logEvent(
+                context,
+                eventName,
+                params
+            )
+        }.onFailure { e ->
+            Log.e("AnalyticsLogger", "Video_Open event failed: ${e.localizedMessage}", e)
+        }
+    }
+
+
     private fun logContentWatchedEventAudio() {
+        val duration = System.currentTimeMillis() - startTime
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.AUDIO_LISTENED_PERCENT, mapOf(
-                AnalyticsParam.VIDEO_ID to (contentId ?: ""),
-                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDurationAudio // % watched
+                AnalyticsParam.VIDEO_ID to contentId,
+                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDurationAudio, // % watched
+                AnalyticsParam.TOTAL_DURATION to duration
             )
         )
     }
@@ -738,9 +811,10 @@ class ContentDetailsActivity : BaseActivity() {
         AnalyticsLogger.logEvent(
             this,
             AnalyticsEvent.AUDIO_OPENED, mapOf(
-                AnalyticsParam.VIDEO_ID to (contentId ?: "")
+                AnalyticsParam.VIDEO_ID to contentId
             )
         )
+        logVideoOpenEvent(this, contentResponseObj, contentId, AnalyticsEvent.Audio_Open)
     }
 
     override fun onBackPressed() {
@@ -749,6 +823,119 @@ class ContentDetailsActivity : BaseActivity() {
             logContentWatchedEvent()
         } else {
             logContentWatchedEventAudio()
+        }
+    }
+
+    /*    override fun onPause() {
+            super.onPause()
+
+            // Pause video
+            if (::player.isInitialized && player.isPlaying) {
+                player.pause()
+            }
+
+            // Pause audio
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+            }
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            if (::player.isInitialized) {
+                callTrackAPI(player.currentPosition.toDouble() / 1000)
+                player.release()
+            }
+
+            if (::mediaPlayer.isInitialized) {
+                callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
+                mediaPlayer.release()
+            }
+            handler.removeCallbacks(updateProgress)
+        }*/
+
+    override fun onPause() {
+        super.onPause()
+
+        try {
+            PlayerHolder.lastPosition = player?.currentPosition ?: 0L
+
+            // Pause audio (DON’T stop, only pause)
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+            }
+
+            handler.removeCallbacks(updateProgress)
+        } catch (e: Exception) {
+            Log.e("ContentDetails", "Error during onPause", e)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        try {
+            // Re-attach player surface here (most critical)
+            if (PlayerHolder.player != null) {
+                binding.exoPlayerView.player = PlayerHolder.player
+                PlayerHolder.player?.seekTo(PlayerHolder.lastPosition)
+                PlayerHolder.player?.playWhenReady = true
+            }
+
+            if (::mediaPlayer.isInitialized) {
+                mediaPlayer.setOnCompletionListener {
+                    handler.removeCallbacks(updateProgress)
+                    watchProgessDurationAudio = "100"
+                    logContentWatchedEventAudio()
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("ContentDetails", "onResume error", e)
+        }
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            // Release or stop both players if user left app quickly (Home/Recent Apps)
+            PlayerHolder.lastPosition = player?.currentPosition ?: 0L
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                //  mediaPlayer.reset()
+            }
+        } catch (e: Exception) {
+            Log.e("ContentDetails", "Error releasing players onStop", e)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            // Release video player
+            if (::player.isInitialized) {
+                if (player.duration.toDouble() - player.currentPosition.toDouble() < 2) {
+                    val contentData = contentResponseObj.data
+                    callTrackAPI(contentData.meta.duration.toDouble() / 1000)
+                } else {
+                    callTrackAPI(player.currentPosition.toDouble() / 1000)
+                }
+                player.release()
+                binding.exoPlayerView.player = null
+                PlayerHolder.lastPosition = 0
+                PlayerHolder.release()
+            }
+
+            // Release audio player
+            if (::mediaPlayer.isInitialized) {
+                callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
+                mediaPlayer.release()
+            }
+
+            handler.removeCallbacks(updateProgress)
+        } catch (e: Exception) {
+            Log.e("ContentDetails", "Error releasing players onDestroy", e)
         }
     }
 

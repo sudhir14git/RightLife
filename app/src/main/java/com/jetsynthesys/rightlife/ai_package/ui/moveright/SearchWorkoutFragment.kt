@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -60,8 +61,25 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
 
         searchWorkoutBackButton.setOnClickListener {
-            navigateToYourActivityFragment()
+            if(routine.equals("routine")){
+                val fragment = CreateRoutineFragment()
+                val args = Bundle().apply {
+                    putString("routine", routine)
+                    putString("routineName", routineName)
+                    putParcelableArrayList("workoutList", workoutList)
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
+            }else{
+                navigateToYourActivityFragment()
+            }
+
         }
+
 
         // Set up tabs
         val tabTitles = arrayOf("All Workouts", "My Routine", "Frequently Logged")
@@ -88,6 +106,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                         putString("routineName", routineName)
                         putString("routineId",routineid)
                         putString("selected_date", mSelectedDate)
+                       putString("ModuleName", moduleName)
                         putParcelableArrayList("workoutList", workoutList)
                     }
                 }
@@ -107,6 +126,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                                 putString("routineName", routineName)
                                 putString("selected_date", mSelectedDate)
                                 putParcelableArrayList("workoutList", workoutList)
+                                putString("ModuleName", moduleName)
                             }
                         }
                         replaceFragment(allWorkoutFragment)
@@ -127,6 +147,11 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString()
                 workoutViewModel.setSearchQuery(query)
+                if (query.isNotEmpty()) {
+                    tabLayout.visibility = View.GONE
+                } else {
+                    tabLayout.visibility = View.VISIBLE
+                }
                 Log.d("SearchWorkoutFragment", "Search query set in ViewModel: $query")
             }
 
@@ -134,11 +159,27 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         })
 
         // Handle back press
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            true  // 🔥 Yeh important hai - callback ko enable karta hai
+        ) {
+            if(routine.equals("routine")){
+                val fragment = CreateRoutineFragment()
+                val args = Bundle().apply {
+                    putString("routine", routine)
+                    putString("routineName", routineName)
+                    putParcelableArrayList("workoutList", workoutList)
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
+            }else{
                 navigateToYourActivityFragment()
             }
-        })
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -162,9 +203,11 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
     private fun navigateToYourActivityFragment() {
         if (moduleName.equals("HomeDashboard")){
             activity?.finish()
-        }else{
+        }
+        else{
             val fragment = YourActivityFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.flFragment, fragment, "YourActivityFragment")

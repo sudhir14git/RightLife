@@ -2,8 +2,6 @@ package com.jetsynthesys.rightlife.ui.contentdetailvideo
 
 import android.content.Intent
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnCompletionListener
-import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -14,6 +12,7 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -22,18 +21,26 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailContentResponse
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode
 import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
+import com.jetsynthesys.rightlife.shortVibrate
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
-import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonAPICall.updateViewCount
+import com.jetsynthesys.rightlife.ui.Wellness.SeriesListAdapter
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Episode
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.SeriesResponse
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
-import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState
@@ -45,10 +52,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 import java.net.URI
-import java.net.URISyntaxException
 import java.util.concurrent.TimeUnit
 
 class NewSeriesDetailsActivity : BaseActivity() {
+    private var episodeId: String? = null
     private var isPlaying = false
     private val handler = Handler()
     private lateinit var mediaPlayer: MediaPlayer
@@ -56,23 +63,21 @@ class NewSeriesDetailsActivity : BaseActivity() {
     private lateinit var player: ExoPlayer
     private lateinit var binding: ActivityNewSeriesDetailsBinding
     private var contentTypeForTrack: String = ""
+    private lateinit var ContentResponseObj: EpisodeDetailContentResponse
+    private lateinit var seriesId: String
+    private var lastPosition: Float = 0f
+    private var isBookmarked = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityNewSeriesDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         var contentId = intent.getStringExtra("contentId")
-        var seriesId = intent.getStringExtra("seriesId")
-        var episodeId = intent.getStringExtra("episodeId")
+        seriesId = intent.getStringExtra("seriesId").toString()
+         episodeId = intent.getStringExtra("episodeId")
         //API Call
-        if (seriesId != null) {
-
-            if (seriesId != null) {
-                if (episodeId != null) {
-                    getSeriesDetails(seriesId, episodeId)
-                }
-            }
-        }
+        episodeId?.let { getSeriesDetails(seriesId, it) }
+        getSeriesWithEpisodes(seriesId)
 
         val viewCountRequest = ViewCountRequest()
         viewCountRequest.id = seriesId
@@ -82,6 +87,30 @@ class NewSeriesDetailsActivity : BaseActivity() {
         binding.icBackDialog.setOnClickListener {
             finish()
         }
+
+        binding.icBookmark.setOnClickListener {
+            CommonAPICall.contentBookMark(
+                this,
+                seriesId,
+                isBookmarked,
+                episodeId!!,
+                contentTypeForTrack
+            ) { success, message ->
+                if (success) {
+                    isBookmarked = !isBookmarked
+                    val msg = if (isBookmarked) {
+                        "Added To Your Saved Items"
+                    } else {
+                        "Removed From Saved Items"
+                    }
+                    showCustomToast(msg, isBookmarked)
+                    binding.icBookmark.setImageResource(if (isBookmarked) R.drawable.ic_save_article_active else R.drawable.ic_save_article)
+                } else {
+                    Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
     }
 
     // get single content details
@@ -108,7 +137,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                             val gson = Gson()
                             val jsonResponse = gson.toJson(response.body().toString())
                             Log.d("API Response", "Content Details: $jsonResponse")
-                            val ContentResponseObj = gson.fromJson<EpisodeDetailContentResponse>(
+                            ContentResponseObj = gson.fromJson<EpisodeDetailContentResponse>(
                                 successMessage,
                                 EpisodeDetailContentResponse::class.java
                             )
@@ -143,9 +172,11 @@ class NewSeriesDetailsActivity : BaseActivity() {
         binding.tvContentDesc.text = contentResponseObj.data?.desc
         binding.category.text = contentResponseObj.data?.tags?.get(0)?.name ?: ""
         binding.tvTime.text = contentResponseObj.data?.meta?.let { formatTimeInMinSec(it.duration) }
+
         if (contentResponseObj != null) {
             //binding.authorName.setText(contentResponseObj.data.artist.get(0).firstName + " " + contentResponseObj.data.artist.get(0).lastName)
-
+            isBookmarked = contentResponseObj.data.isBookmarked
+            binding.icBookmark.setImageResource(if (isBookmarked) R.drawable.ic_save_article_active else R.drawable.ic_save_article)
             setArtistname(contentResponseObj)
 
             Glide.with(applicationContext)
@@ -206,20 +237,25 @@ class NewSeriesDetailsActivity : BaseActivity() {
             }
             setReadMoreView(contentResponseObj.data.desc)
 
-            /*   binding.imageLikeArticle.setOnClickListener { v ->
+               binding.imageLikeArticle.setOnClickListener { v ->
                    v.shortVibrate()
                    binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
-                   if (contentResponseObj.data.li) {
+                   if (contentResponseObj.data.isLike) {
                        binding.imageLikeArticle.setImageResource(R.drawable.like)
-                       contentResponseObj.data.like = false
-                       postContentLike(contentResponseObj.data.id, false)
+                       contentResponseObj.data.isLike = false
+                       postContentLike(contentResponseObj.data._id, false)
                    } else {
                        binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
-                       contentResponseObj.data.like = true
-                       postContentLike(contentResponseObj.data.id, true)
+                       contentResponseObj.data.isLike = true
+                       postContentLike(contentResponseObj.data._id, true)
                    }
-               }*/
+               }
             binding.imageShareArticle.setOnClickListener { shareIntent() }
+            if (contentResponseObj.data.isLike) {
+                binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
+            }
+            binding.imageShareArticle.setOnClickListener { shareIntent() }
+            binding.txtLikeCount.text = contentResponseObj.data.likeCount.toString()
         }
 
 
@@ -248,23 +284,9 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
         }
-        callContentTracking(contentResponseObj, "1.0", "1.0")
+
+        logVideoOpenEvent(this, contentResponseObj, episodeId, AnalyticsEvent.SeriesEpisode_Open)
     }
-
-    private fun callContentTracking(
-        contentResponseObj: EpisodeDetailContentResponse,
-        duration: String,
-        watchDuration: String
-    ) {
-// article consumed
-        val episodeTrackRequest = EpisodeTrackRequest(
-            sharedPreferenceManager.userId, contentResponseObj.data?.moduleId ?: "",
-            contentResponseObj.data?._id ?: "", duration, watchDuration, contentTypeForTrack
-        )
-
-        trackEpisodeOrContent(this, episodeTrackRequest)
-    }
-
 
     private fun setReadMoreView(desc: String?) {
         if (desc.isNullOrEmpty()) {
@@ -355,7 +377,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
         //val previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3"
-        val url = ApiClient.CDN_URL_QA + (moduleContentDetail.data?.previewUrl
+        val url = ApiClient.VIDEO_CDN_URL + (moduleContentDetail.data?.url
             ?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
         Log.d("API Response", "Sleep aid URL: $url")
         mediaPlayer = MediaPlayer()
@@ -366,16 +388,16 @@ class NewSeriesDetailsActivity : BaseActivity() {
             Toast.makeText(this, "Failed to load audio", Toast.LENGTH_SHORT).show()
         }
 
-        mediaPlayer.setOnPreparedListener(OnPreparedListener { mp: MediaPlayer? ->
+        mediaPlayer.setOnPreparedListener { mp: MediaPlayer? ->
             mediaPlayer.start()
             binding.seekBar.max = mediaPlayer.duration
             isPlaying = true
             binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
             // Update progress every second
             handler.post(updateProgress)
-        })
+        }
         // Play/Pause Button Listener
-        binding.playPauseButton.setOnClickListener(View.OnClickListener { v: View? ->
+        binding.playPauseButton.setOnClickListener { v: View? ->
             if (isPlaying) {
                 mediaPlayer.pause()
                 binding.playPauseButton.setImageResource(R.drawable.ic_sound_play)
@@ -387,11 +409,11 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 handler.post(updateProgress)
             }
             isPlaying = !isPlaying
-        })
-        mediaPlayer.setOnCompletionListener(OnCompletionListener { mp: MediaPlayer? ->
+        }
+        mediaPlayer.setOnCompletionListener { mp: MediaPlayer? ->
             Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
             handler.removeCallbacks(updateProgress)
-        })
+        }
 
         binding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -463,10 +485,11 @@ class NewSeriesDetailsActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
 
-        val shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
-                "Check it out here. " +
-                "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
-                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
+        val shareText =
+            "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
+                    "Check it out here. " +
+                    "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
+                    "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
 
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText)
@@ -555,6 +578,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
     private fun releasePlayer() {
         if (::player.isInitialized) {
+            callTrackAPI(player.currentPosition.toDouble() / 1000)
             player.release()
         }
     }
@@ -562,10 +586,33 @@ class NewSeriesDetailsActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if (::mediaPlayer.isInitialized) {
+            callTrackAPI(mediaPlayer.currentPosition.toDouble() / 1000)
             mediaPlayer.release()
+        } else {
+            callTrackAPI((lastPosition).toDouble())
         }
         handler.removeCallbacks(updateProgress)
         Log.d("contentDetails", "onDestroyCalled")
+    }
+
+    private fun callTrackAPI(watchDuration: Double) {
+        // ✅ Check if ContentResponseObj is initialized before accessing
+        if (!::ContentResponseObj.isInitialized) {
+            Log.d("contentDetails", "ContentResponseObj not initialized, skipping track API")
+            return
+        }
+
+        val contentData = ContentResponseObj.data
+        //if ((contentData.meta.duration.toDouble() - watchDuration).toInt() > 10)
+            CommonAPICall.postSeriesContentPlayedProgress(
+                this,
+                contentData.meta.duration.toDouble(),
+                contentData.contentId,
+                watchDuration,
+                contentData.moduleId,
+                "SERIES",
+                contentData._id
+            )
     }
 
 
@@ -579,6 +626,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     // Example: https://youtu.be/VIDEO_ID
                     uri.path?.substring(1)
                 }
+
                 host.contains("youtube.com") -> {
                     val query = uri.query
                     if (query != null) {
@@ -600,6 +648,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
                     null
                 }
+
                 else -> null
             }
         } catch (e: Exception) {
@@ -616,6 +665,11 @@ class NewSeriesDetailsActivity : BaseActivity() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 youTubePlayer.loadVideo(videoId, 0f)
                 Log.d("YouTube", "Video loaded: $videoId")
+            }
+
+            override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
+                // This is called every second during playback
+                lastPosition = second
             }
 
             override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerState) {
@@ -681,6 +735,72 @@ class NewSeriesDetailsActivity : BaseActivity() {
             }
         } else if (binding != null && binding.tvAuthorName != null) {
             binding.tvAuthorName.text = "" // or set some default value
+        }
+    }
+
+    private fun getSeriesWithEpisodes(seriesId: String) {
+        val call =
+            apiService.getSeriesWithEpisodes(sharedPreferenceManager.accessToken, seriesId, true)
+        call.enqueue(object : Callback<JsonElement?> {
+            override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                Utils.dismissLoader(this@NewSeriesDetailsActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+                    val seriesResponseModel =
+                        gson.fromJson(jsonResponse, SeriesResponse::class.java)
+                    setupEpisodeListData(
+                        seriesResponseModel.data.episodes,
+                        seriesResponseModel.data.categoryName,
+                        seriesResponseModel.data.moduleId
+                    )
+                } else {
+                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                Utils.dismissLoader(this@NewSeriesDetailsActivity)
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+    private fun setupEpisodeListData(contentList: ArrayList<Episode>, categoryName: String, moduleId: String) {
+        val adapter = SeriesListAdapter(this, contentList, categoryName,moduleId)
+        val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.rvAllEpisodes.setLayoutManager(horizontalLayoutManager)
+        binding.rvAllEpisodes.setAdapter(adapter)
+    }
+
+    fun logVideoOpenEvent(context: NewSeriesDetailsActivity, contentResponseObj: EpisodeDetailContentResponse, contentId: String?, eventName: String = AnalyticsEvent.Video_Open) {
+        runCatching {
+            val data = contentResponseObj?.data
+
+            val params = mutableMapOf<String, Any>()
+
+            // helper for non-null values trimmed & limited to 100 chars
+            fun putSafe(key: String, value: Any?) {
+                when (value) {
+                    is String -> if (value.isNotBlank()) params[key] = value.trim().take(100)
+                    is Number, is Boolean -> params[key] = value
+                }
+            }
+
+            putSafe(AnalyticsParam.VIDEO_ID, contentId)
+            putSafe(AnalyticsParam.CONTENT_MODULE, data?.moduleId ?: "unknown_module")
+            putSafe(AnalyticsParam.CONTENT_TYPE, data?.title ?: "unknown_type")
+            putSafe(AnalyticsParam.SERIES_TYPE, data?.type ?: "unknown_type")
+
+            if (params.isEmpty()) return // nothing to log
+
+            AnalyticsLogger.logEvent(
+                    context,
+                    AnalyticsEvent.SeriesEpisode_Open,
+                    params
+            )
+        }.onFailure { e ->
+            Log.e("AnalyticsLogger", "Video_Open event failed: ${e.localizedMessage}", e)
         }
     }
 }

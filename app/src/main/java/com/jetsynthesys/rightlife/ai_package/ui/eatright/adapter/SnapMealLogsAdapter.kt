@@ -10,13 +10,13 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.model.response.DishLists
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import kotlin.math.round
 
-class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList<DishLists>,
-                          private var clickPos: Int, private var snapMealData : DishLists?, private var isClickView : Boolean,
-                          val onBreakFastSnapMealDeleteItem: (DishLists, Int, Boolean) -> Unit,
-                          val onBreakFastSnapMealEditItem: (DishLists, Int, Boolean) -> Unit, val isLogs : Boolean) :
+class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList<IngredientRecipeDetails>,
+                          private var clickPos: Int, private var snapMealData : IngredientRecipeDetails?, private var isClickView : Boolean,
+                          val onBreakFastSnapMealDeleteItem: (IngredientRecipeDetails, Int, Boolean) -> Unit,
+                          val onBreakFastSnapMealEditItem: (IngredientRecipeDetails, Int, Boolean) -> Unit, val isLogs : Boolean) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -25,7 +25,7 @@ class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList
 
     override fun getItemViewType(position: Int): Int {
         return when (dataLists[position]) {
-            is DishLists -> TYPE_SNAP_MEAL
+            is IngredientRecipeDetails -> TYPE_SNAP_MEAL
             else -> {
                 TYPE_SNAP_MEAL
             }
@@ -44,7 +44,7 @@ class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = dataLists[position]) {
-            is DishLists -> (holder as SnapMealViewHolder).bind(item)
+            is IngredientRecipeDetails -> (holder as SnapMealViewHolder).bind(item)
         }
     }
 
@@ -53,7 +53,7 @@ class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList
     }
 
     inner class SnapMealViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(data: DishLists) {
+        fun bind(data: IngredientRecipeDetails) {
             val mealTimeTv : TextView = itemView.findViewById(R.id.tv_eat_time)
             val delete: ImageView = itemView.findViewById(R.id.image_delete)
             val edit: ImageView = itemView.findViewById(R.id.image_edit)
@@ -88,8 +88,8 @@ class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
-                layoutEatTime.visibility = View.VISIBLE
-                layoutVegNonveg.visibility = View.VISIBLE
+                layoutEatTime.visibility = View.GONE
+                layoutVegNonveg.visibility = View.GONE
                 servesLayout.visibility = View.VISIBLE
             }
             val snapData = data
@@ -100,28 +100,31 @@ class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList
 //                    val capitalized = name.replaceFirstChar { it.uppercase() }
 //                    mealName.text = capitalized
 //                }else{
-                val capitalized = data.name.replaceFirstChar { it.uppercase() }
+                val capitalized = data.food_name?.replaceFirstChar { it.uppercase() }
                     mealName.text = capitalized
  //               }
                 servesCount.text = "1"
                 val mealTime = ""
                 mealTimeTv.text = ""//mealTime.toInt().toString()
-                calValue.text = round(snapData.calories_kcal)?.toInt().toString()
-                proteinValue.text = round(snapData.protein_g)?.toInt().toString()
-                carbsValue.text = round(snapData.carb_g)?.toInt().toString()
-                fatsValue.text = round(snapData.fat_g)?.toInt().toString()
-                val imageUrl = ""//getDriveImageUrl(data.photo_url)
+                calValue.text = round(snapData.calories_kcal!!)?.toInt().toString()
+                proteinValue.text = round(snapData.protein_g!!)?.toInt().toString()
+                carbsValue.text = round(snapData.carbs_g!!)?.toInt().toString()
+                fatsValue.text = round(snapData.fat_g!!)?.toInt().toString()
+                var imageUrl : String? = ""
+                imageUrl = if (data.photo_url.contains("drive.google.com")) {
+                    getDriveImageUrl(data.photo_url)
+                }else{
+                    data.photo_url
+                }
                 Glide.with(this.itemView)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_view_meal_place)
                     .error(R.drawable.ic_view_meal_place)
                     .into(mealImage)
             }
-
 //            delete.setOnClickListener {
 //                onBreakFastSnapMealDeleteItem(data, bindingAdapterPosition, true)
 //            }
-//
 //            edit.setOnClickListener {
 //                onBreakFastSnapMealEditItem(data, bindingAdapterPosition, true)
 //            }
@@ -139,7 +142,7 @@ class SnapMealLogsAdapter(val context: Context, private var dataLists: ArrayList
         }
     }
 
-    fun addAll(item : ArrayList<DishLists>?, pos: Int, snapMeal : DishLists?,
+    fun addAll(item : ArrayList<IngredientRecipeDetails>?, pos: Int, snapMeal : IngredientRecipeDetails?,
                isClick : Boolean) {
         dataLists.clear()
         if (item != null) {

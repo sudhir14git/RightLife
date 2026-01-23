@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.ContentValues
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -93,46 +95,6 @@ class AgeSelectionFragment : Fragment() {
         "78 years",
         "79 years",
         "80 years",
-        "81 years",
-        "82 years",
-        "83 years",
-        "84 years",
-        "85 years",
-        "86 years",
-        "87 years",
-        "88 years",
-        "89 years",
-        "90 years",
-        "91 years",
-        "92 years",
-        "93 years",
-        "94 years",
-        "95 years",
-        "96 years",
-        "97 years",
-        "98 years",
-        "99 years",
-        "100 years",
-        "101 years",
-        "102 years",
-        "103 years",
-        "104 years",
-        "105 years",
-        "106 years",
-        "107 years",
-        "108 years",
-        "109 years",
-        "110 years",
-        "111 years",
-        "112 years",
-        "113 years",
-        "114 years",
-        "115 years",
-        "116 years",
-        "117 years",
-        "118 years",
-        "119 years",
-        "120 years"
     )
 
     private lateinit var llSelectedAge: LinearLayout
@@ -202,8 +164,9 @@ class AgeSelectionFragment : Fragment() {
                     AnalyticsParam.AGE to selectedAge
                 )
             )
-
-            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            Handler(Looper.getMainLooper()).postDelayed({
+                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            }, 500)
         }
 
         // new number picker

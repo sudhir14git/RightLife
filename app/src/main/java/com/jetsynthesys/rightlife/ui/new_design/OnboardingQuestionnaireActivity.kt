@@ -197,7 +197,7 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                                 Intent(
                                     this@OnboardingQuestionnaireActivity,
                                     HomeNewActivity::class.java
-                                )
+                                ).putExtra("OPEN_MY_HEALTH", true)
                             )
                         finishAffinity()
                         SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity)
@@ -209,7 +209,7 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                                 productId = subscription.productId
                             }
                         }
-                        AnalyticsLogger.logEvent(
+                        /*AnalyticsLogger.logEvent(
                             this@OnboardingQuestionnaireActivity,
                             AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE, mapOf(
                                 AnalyticsParam.TIME_TO_COMPLETE to (System.currentTimeMillis() - startTime) / 1000,
@@ -225,6 +225,11 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                                 AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
                                 AnalyticsParam.PROFILE_SKIPPED to profileSkipped,
                             )
+                        )
+                        */
+                        AnalyticsLogger.logEvent(
+                            this@OnboardingQuestionnaireActivity,
+                            AnalyticsEvent.Checklist_Profile_Completed
                         )
                     } else {
                         navigateToNextPage()

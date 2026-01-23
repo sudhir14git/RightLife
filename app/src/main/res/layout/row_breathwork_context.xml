@@ -22,8 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="What This Is"
-        android:fontFamily="@font/merriweather_regular"
-        android:textSize="16sp"
+        android:fontFamily="@font/merriweather_bold"
+        android:textSize="@dimen/textsize_large18sp"
         android:textColor="@color/custom_breathing_card_color_text"/>
 
     <TextView
@@ -33,8 +33,8 @@
         android:layout_marginTop="10dp"
         android:gravity="center_horizontal"
         android:text="Create your own breath rhythm by setting how long you inhale, hold, and exhale — tailored to your mood, energy, or focus."
-        android:fontFamily="@font/merriweather_regular"
-        android:textSize="12sp"/>
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="@dimen/textsize_large"/>
 
 
 </LinearLayout>

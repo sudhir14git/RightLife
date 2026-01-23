@@ -24,8 +24,8 @@
             android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@color/view_border"
-            app:layout_constraintTop_toTopOf="parent"></View>
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/view_border"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_meal_name"
@@ -43,24 +43,27 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="visible"
-                android:scaleType="fitXY"
+                android:scaleType="centerCrop"
+                android:background="@drawable/rounded_image_bg"
+                android:clipToOutline="true"
                 android:src="@drawable/green_circle" />
 
             <TextView
                 android:id="@+id/tv_meal_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="20dp"
                 android:visibility="visible"
                 android:ellipsize="end"
                 android:maxLines="1"
+                app:layout_constraintEnd_toStartOf="@+id/layoutDelete"
                 app:layout_constraintStart_toEndOf="@+id/image_meal"
                 app:layout_constraintTop_toTopOf="parent"
                 android:textSize="14sp"
-                android:fontFamily="@font/dmsans_bold"
+                android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/black_no_meals"
-                android:text="Poha" />
+                android:text="" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/layout_veg_nonveg"
@@ -69,6 +72,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@+id/image_meal"
                 app:layout_constraintTop_toBottomOf="@+id/tv_meal_name"
                 android:orientation="horizontal"
@@ -98,6 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@+id/layout_veg_nonveg"
                 app:layout_constraintTop_toBottomOf="@+id/tv_meal_name"
                 android:orientation="horizontal"
@@ -134,213 +139,244 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <ImageView
-                android:id="@+id/imageUpDown"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layoutDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="3dp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:visibility="visible"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_up_down_arrow" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageUpDown"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_up_down_arrow" />
+
+                <ImageView
+                    android:id="@+id/image_delete"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/delete_icon_green" />
+
+                <ImageView
+                    android:id="@+id/image_edit"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitXY"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/edit_green_icon" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layout_meal_cal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="left"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/image_meal"
+                app:layout_constraintTop_toBottomOf="@+id/tv_meal_name">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/servesLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_marginEnd="10dp">
+
+                    <ImageView
+                        android:id="@+id/image_serve"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_serves" />
+
+                    <TextView
+                        android:id="@+id/tv_serves"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="10sp"
+                        android:visibility="gone"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="Serves" />
+
+                    <TextView
+                        android:id="@+id/tv_serves_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="1" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginEnd="10dp">
+
+                    <ImageView
+                        android:id="@+id/image_cal"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_cal" />
+
+                    <TextView
+                        android:id="@+id/tv_cal_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="1,157" />
+
+                    <TextView
+                        android:id="@+id/tv_cal_unit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="kCal" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp">
+
+                    <ImageView
+                        android:id="@+id/imageProtein"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_protein" />
+
+                    <TextView
+                        android:id="@+id/tvProteinValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="8" />
+
+                    <TextView
+                        android:id="@+id/tvProteinUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="g" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp">
+
+                    <ImageView
+                        android:id="@+id/imageCarbs"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_cabs" />
+
+                    <TextView
+                        android:id="@+id/tvCarbsValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="308" />
+
+                    <TextView
+                        android:id="@+id/tvCarbsUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="g" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginStart="10dp">
+
+                    <ImageView
+                        android:id="@+id/imageFats"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_fats" />
+
+                    <TextView
+                        android:id="@+id/tvFatsValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="17" />
+
+                    <TextView
+                        android:id="@+id/tvFatsUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="g" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/layout_meal_cal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_margin="10dp"
-            android:gravity="left"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_meal_name">
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:id="@+id/image_serve"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_serves" />
-
-                <TextView
-                    android:id="@+id/tv_serves"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="10sp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="Serves" />
-
-                <TextView
-                    android:id="@+id/tv_serves_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="1" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:id="@+id/image_cal"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_cal" />
-
-                <TextView
-                    android:id="@+id/tv_cal_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="1,157" />
-
-                <TextView
-                    android:id="@+id/tv_cal_unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="10sp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="kCal" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:id="@+id/image_subtraction"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_protein" />
-
-                <TextView
-                    android:id="@+id/tv_subtraction_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="8" />
-
-                <TextView
-                    android:id="@+id/tv_subtraction_unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="10sp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="g" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:id="@+id/image_baguette"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_cabs" />
-
-                <TextView
-                    android:id="@+id/tv_baguette_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="308" />
-
-                <TextView
-                    android:id="@+id/tv_baguette_unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="10sp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="g" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginStart="10dp">
-
-                <ImageView
-                    android:id="@+id/image_dewpoint"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_fats" />
-
-                <TextView
-                    android:id="@+id/tv_dewpoint_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="17" />
-
-                <TextView
-                    android:id="@+id/tv_dewpoint_unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="10sp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="g" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

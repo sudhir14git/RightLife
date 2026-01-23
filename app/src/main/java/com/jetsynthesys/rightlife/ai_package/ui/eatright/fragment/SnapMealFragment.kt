@@ -19,6 +19,8 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.provider.OpenableColumns
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -46,7 +48,9 @@ import android.widget.TextView
 import android.widget.MediaController
 import android.widget.VideoView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -59,29 +63,41 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealsNutrientsRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealNutrientsResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingMealBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
-import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.ai_package.utils.showToast
+import com.jetsynthesys.rightlife.apimodel.UploadImage
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
+class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>(), SnapMealDetectBottomSheet.SnapMealDetectListener {
 
     private var moduleName : String = ""
-
+    lateinit var apiService: ApiService
+    private var preSignedUrlData: PreSignedUrlData? = null
+    private var imageGeneratedUrl = ""
     private lateinit var currentPhotoPath: String
     private lateinit var takePhotoInfoLayout : LinearLayoutCompat
+    private lateinit var tvProceed : TextView
     private lateinit var enterMealDescriptionLayout : LinearLayoutCompat
     private lateinit var proceedLayout : LinearLayoutCompat
     private lateinit var skipTV : TextView
@@ -90,9 +106,11 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private lateinit var videoView : VideoView
     private var imagePath : String = ""
     private var gallery : String = ""
+    private lateinit var title : TextView
     private lateinit var imagePathsecond : Uri
     private var isProceedResult : Boolean = false
     private var isGalleryOpen : Boolean = false
+    private lateinit var snapMealDetectBottomSheet : SnapMealDetectBottomSheet
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var backButton : ImageView
     private var loadingOverlay : FrameLayout? = null
@@ -109,14 +127,17 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        apiService = com.jetsynthesys.rightlife.RetrofitData.ApiClient.getClient(requireContext()).create(ApiService::class.java)
         proceedLayout = view.findViewById(R.id.layout_proceed)
         imageFood = view.findViewById(R.id.imageFood)
         videoView = view.findViewById(R.id.videoView)
         takePhotoInfoLayout = view.findViewById(R.id.takePhotoInfoLayout)
+        tvProceed = view.findViewById(R.id.tvProceed)
         enterMealDescriptionLayout = view.findViewById(R.id.enterMealDescriptionLayout)
         skipTV = view.findViewById(R.id.skipTV)
         mealDescriptionET = view.findViewById(R.id.mealDescriptionET)
         backButton = view.findViewById(R.id.backButton)
+        title = view.findViewById(R.id.title)
 
         homeTab = arguments?.getString("homeTab").toString()
         moduleName = arguments?.getString("ModuleName").toString()
@@ -127,17 +148,25 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         val imagePathString = arguments?.getString("ImagePathsecound")
         if (imagePathString != null){
             currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
-
         }else{
             currentPhotoPathsecound = null
         }
 
         skipTV.setOnClickListener {
-            if (imagePath != ""){
-                uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
-            }else{
-                Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
+            if (!skipTV.isEnabled) return@setOnClickListener
+            skipTV.isEnabled = false
+            if (imagePath != "") {
+                if (imageGeneratedUrl != "") {
+                    getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+                } else {
+                    imagePathsecond?.let { getUrlFromURI(it) }
+                }
+            } else {
+                Toast.makeText(context, "Please capture food", Toast.LENGTH_SHORT).show()
             }
+            skipTV.postDelayed({
+                skipTV.isEnabled = true
+            }, 1200)
         }
 
         if (gallery.equals("gallery")){
@@ -156,6 +185,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             imageFood.visibility = View.VISIBLE
                             imageFood.setImageBitmap(rotatedBitmap)
                             takePhotoInfoLayout.visibility = View.GONE
+                            tvProceed.text = "Proceed"
+                            title.visibility = View.VISIBLE
                             enterMealDescriptionLayout.visibility = View.VISIBLE
                             skipTV.visibility = View.VISIBLE
                             proceedLayout.isEnabled = false
@@ -175,6 +206,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         }else{
             if (sharedPreferenceManager.getFirstTimeUserForSnapMealVideo()) {
                 takePhotoInfoLayout.visibility = View.GONE
+                tvProceed.text = "Proceed"
+                title.visibility = View.VISIBLE
                 //   enterMealDescriptionLayout.visibility = View.VISIBLE
                 videoView.visibility = View.GONE
                 val cameraDialog = CameraDialogFragment("", moduleName, homeTab, mealType, selectedMealDate)
@@ -192,6 +225,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                                 imageFood.setImageBitmap(rotatedBitmap)
 
                                 takePhotoInfoLayout.visibility = View.GONE
+                                tvProceed.text = "Proceed"
+                                title.visibility = View.VISIBLE
                                 enterMealDescriptionLayout.visibility = View.VISIBLE
                                 skipTV.visibility = View.VISIBLE
                                 proceedLayout.isEnabled = false
@@ -213,7 +248,12 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 //  }else{
                 if (isProceedResult){
                     if (imagePath != ""){
-                        uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+                       // uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+                        if (imageGeneratedUrl != ""){
+                            getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+                        }else{
+                            imagePathsecond?.let { getUrlFromURI(it) }
+                        }
                     }else{
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
@@ -224,6 +264,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 //      }
             } else {
                 takePhotoInfoLayout.visibility = View.VISIBLE
+                tvProceed.text = "Next"
+                title.visibility = View.INVISIBLE
                 enterMealDescriptionLayout.visibility = View.GONE
                 videoView.visibility = View.VISIBLE
                 sharedPreferenceManager.setFirstTimeUserForSnapMealVideo(true)
@@ -233,9 +275,16 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         videoPlay()
 
         proceedLayout.setOnClickListener {
+            if (!proceedLayout.isEnabled) return@setOnClickListener
+            proceedLayout.isEnabled = false
                 if (isProceedResult){
                     if (imagePath != ""){
-                        uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+                        if (imageGeneratedUrl != ""){
+                            getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+                        }else{
+                            imagePathsecond?.let { getUrlFromURI(it) }
+                        }
+                       // uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
                     }else{
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
@@ -254,6 +303,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                                     imageFood.visibility = View.VISIBLE
                                     imageFood.setImageBitmap(rotatedBitmap)
                                     takePhotoInfoLayout.visibility = View.GONE
+                                    tvProceed.text = "Proceed"
+                                    title.visibility = View.VISIBLE
                                     enterMealDescriptionLayout.visibility = View.VISIBLE
                                     skipTV.visibility = View.VISIBLE
                                     proceedLayout.isEnabled = false
@@ -270,6 +321,10 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                     }
                     cameraDialog.show(parentFragmentManager, "CameraDialog")
                 }
+
+            proceedLayout.postDelayed({
+                proceedLayout.isEnabled = true
+            }, 1200)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -354,6 +409,21 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         })
     }
 
+    private fun notMealDetectItem() {
+        // 1️⃣ Check if BottomSheet already showing
+        val existingSheet = childFragmentManager.findFragmentByTag("SnapMealDetectBottomSheet")
+        if (existingSheet != null && existingSheet.isAdded) {
+            return     // <-- STOP showing again
+        }
+        // 2️⃣ Create and show if not already visible
+        val snapMealDetectBottomSheet = SnapMealDetectBottomSheet()
+        snapMealDetectBottomSheet.isCancelable = true
+        snapMealDetectBottomSheet.show(
+            childFragmentManager,
+            "SnapMealDetectBottomSheet"
+        )
+    }
+
      fun openGalleryForImage() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, REQUEST_IMAGE_PICK)
@@ -427,6 +497,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             // Update UI
                             imagePath = currentPhotoPath
                             takePhotoInfoLayout.visibility = View.GONE
+                            tvProceed.text = "Proceed"
+                            title.visibility = View.VISIBLE
                             enterMealDescriptionLayout.visibility = View.VISIBLE
                             skipTV.visibility = View.VISIBLE
                             proceedLayout.isEnabled = false
@@ -516,105 +588,30 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         loadingOverlay?.visibility = View.GONE
     }
 
-    private fun uploadFoodImagePath(imagePath: String, description: String) {
-        if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
-        }
-        val base64Image = encodeImageToBase64(imagePath)
-        val apiKey = "HanN8X1baCEM0E49xNcN"
-        val request = AnalysisRequest(apiKey, base64Image, description)
-        val call = ApiClient.apiServiceFoodCaptureImageApi.analyzeFoodImage(
-            "analysis", request)
-        call.enqueue(object : Callback<ScanMealNutritionResponse> {
-            override fun onResponse(call: Call<ScanMealNutritionResponse>, response: Response<ScanMealNutritionResponse>) {
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    println("Success: ${response.body()}")
-                    if (response.body()?.data != null){
-                        if (response.body()?.data!!.isNotEmpty()){
-                            requireActivity().supportFragmentManager.beginTransaction().apply {
-                                val snapMealFragment = MealScanResultFragment()
-                                val args = Bundle()
-                                args.putString("homeTab", homeTab)
-                                args.putString("selectedMealDate", selectedMealDate)
-                                args.putString("mealType", mealType)
-                                args.putString("ModuleName", moduleName)
-                                args.putString("ImagePath", imagePath)
-                                args.putString("description", mealDescriptionET.text.toString())
-                                args.putString("ImagePathsecound", imagePathsecond.toString())
-                                args.putParcelable("foodDataResponses", response.body())
-                                snapMealFragment.arguments = args
-                                replace(R.id.flFragment, snapMealFragment, "Steps")
-                                addToBackStack(null)
-                                commit()
-                            }
-                        }else{
-                            Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
-                        }
-                    }else{
-                        Toast.makeText(context, "Data not find out please try again", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    println("Error: ${response.errorBody()?.string()}")
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    val errorBody = response.errorBody()?.string()
-                    if (!errorBody.isNullOrEmpty()) {
-                        try {
-                            val json = JSONObject(errorBody)
-                            val message = json.optString("text", "Unknown error")
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                        } catch (e: Exception) {
-                            Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
-                        }
-                    }else{
-                        Toast.makeText(context, "Server error", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            override fun onFailure(call: Call<ScanMealNutritionResponse>, t: Throwable) {
-                println("Failure: ${t.message}")
-                if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-                    }
-                }
-                Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
+    private fun encodeImageToBase64(imagePath: String): String? {
+        return try {
 
-    private fun encodeImageToBase64(imagePath: String): String {
         val bitmap = BitmapFactory.decodeFile(imagePath)
-        // Resize if too large (e.g. max 1080px width)
-        val scaledBitmap = Bitmap.createScaledBitmap(
-            bitmap,
-            1080,
-            (bitmap.height * 1080f / bitmap.width).toInt(),
-            true
-        )
-        val outputStream = ByteArrayOutputStream()
-        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream) // 75% quality
-        val compressedBytes = outputStream.toByteArray()
-        return Base64.encodeToString(compressedBytes, Base64.NO_WRAP)
+        if (bitmap != null) {
+            // Resize if too large (e.g. max 1080px width)
+            val scaledBitmap = Bitmap.createScaledBitmap(
+                bitmap,
+                1080,
+                (bitmap.height * 1080f / bitmap.width).toInt(),
+                true
+            )
+            val outputStream = ByteArrayOutputStream()
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream) // 75% quality
+            val compressedBytes = outputStream.toByteArray()
+             Base64.encodeToString(compressedBytes, Base64.NO_WRAP)
+        } else {
+        null
     }
-
-//    private fun encodeImageToBase64(imagePath: String): String {
-//        val file = File(imagePath)
-//        val inputStream = FileInputStream(file)
-//        val bytes = inputStream.readBytes()
-//        inputStream.close()
-//        return Base64.encodeToString(bytes, Base64.DEFAULT)
-//    }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     private fun videoPlay(){
         val videoUri = Uri.parse("android.resource://${requireContext().packageName}/${R.raw.mealsnap_v31}")
@@ -658,6 +655,188 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         }
         return inSampleSize
     }
+
+    private fun getUrlFromURI(uri: Uri) {
+        val uploadImage = UploadImage()
+        uploadImage.isPublic = false
+        uploadImage.fileType = "USER_FILES"
+        if (uri != null) {
+            val (fileName, fileSize) = getFileNameAndSize(requireContext(), uri) ?: return
+            uploadImage.fileSize = fileSize
+            uploadImage.fileName = fileName
+        }
+        uriToFile(uri)?.let { getPreSignedUrl(uploadImage, it) }
+    }
+
+    private fun uriToFile(uri: Uri): File? {
+        val contentResolver = requireContext().contentResolver
+        val fileName = getFileName(uri) ?: "temp_image_file"
+        val tempFile = File(requireContext().cacheDir, fileName)
+
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val outputStream = FileOutputStream(tempFile)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        var name: String? = null
+        val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && it.moveToFirst()) {
+                name = it.getString(nameIndex)
+            }
+        }
+        return name
+    }
+
+    private fun getFileNameAndSize(context: Context, uri: Uri): Pair<String, Long>? {
+        val returnCursor = context.contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+            if (it.moveToFirst()) {
+                val name = it.getString(nameIndex)
+                val size = it.getLong(sizeIndex)
+                return Pair(name, size)
+            }
+        }
+        return null
+    }
+
+    private fun getPreSignedUrl(uploadImage: UploadImage, file: File) {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
+        val call: Call<PreSignedUrlResponse> = apiService.getPreSignedUrl(sharedPreferenceManager.accessToken, uploadImage)
+        call.enqueue(object : Callback<PreSignedUrlResponse?> {
+            override fun onResponse(
+                call: Call<PreSignedUrlResponse?>,
+                response: Response<PreSignedUrlResponse?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.let { preSignedUrlData = it }
+                    response.body()?.data?.url?.let {
+                        CommonAPICall.uploadImageToPreSignedUrl(
+                            requireContext(),
+                            file, it
+                        ) { success ->
+                            if (success) {
+                                if (isAdded && view != null) {
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
+                                //showToast("Image uploaded successfully!")
+                                imageGeneratedUrl = it.split("?").get(0)
+                                getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+                            } else {
+                                if (isAdded && view != null) {
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
+                                showToast("Upload failed!")
+                            }
+                        }
+                    }
+                } else {
+                    if (isAdded && view != null) {
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    showToast("Server Error: " + response.code())
+                }
+            }
+            override fun onFailure(call: Call<PreSignedUrlResponse?>, t: Throwable) {
+                // handleNoInternetView(t)
+                if (isAdded && view != null) {
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun getSnapMealsNutrients(imageUrl: String, description: String) {
+        if (!isAdded) return
+        val act = activity ?: return
+        act.runOnUiThread { showLoader(requireView()) }
+        val base64Image = encodeImageToBase64(imagePath)
+        val request = SnapMealsNutrientsRequest(imageUrl, description)
+        val call = ApiClient.apiServiceFastApiV2.getSnapMealsNutrients(request)
+        call.enqueue(object : Callback<SnapMealNutrientsResponse> {
+            override fun onResponse(
+                call: Call<SnapMealNutrientsResponse>,
+                response: Response<SnapMealNutrientsResponse>
+            ) {
+                if (!isAdded) return
+                val act = activity ?: return
+                act.runOnUiThread { dismissLoader(requireView()) }
+                val body = response.body()
+                if (response.isSuccessful && body?.data != null) {
+                    if (body.data.dish.isNotEmpty()) {
+                        if (!isAdded) return
+                        val fm = act.supportFragmentManager
+                        val snapMealFragment = MealScanResultFragment().apply {
+                            arguments = Bundle().apply {
+                                putString("homeTab", homeTab)
+                                putString("selectedMealDate", selectedMealDate)
+                                putString("mealType", mealType)
+                                putString("ModuleName", moduleName)
+                                putString("ImagePath", imagePath)
+                                putString("description", mealDescriptionET.text.toString())
+                                putString("ImagePathsecound", imagePathsecond.toString())
+                                putParcelable("foodDataResponses", body)
+                            }
+                        }
+                        fm.beginTransaction()
+                            .replace(R.id.flFragment, snapMealFragment, "Steps")
+                            .addToBackStack(null)
+                            .commitAllowingStateLoss() // Changed from commit() to commitAllowingStateLoss()
+                    } else {
+                        notMealDetectItem()
+                    }
+                } else {
+                    notMealDetectItem()
+                }
+            }
+            override fun onFailure(call: Call<SnapMealNutrientsResponse>, t: Throwable) {
+                if (!isAdded) return
+                val act = activity ?: return
+                act.runOnUiThread { dismissLoader(requireView()) }
+                notMealDetectItem()
+            }
+        })
+    }
+
+    override fun onSnapMealDetect(notDetect: Boolean) {
+        if (imagePath != ""){
+            //  imagePathsecond
+            if (imageGeneratedUrl != ""){
+                skipTV.isEnabled = true
+                getSnapMealsNutrients(imageGeneratedUrl, mealDescriptionET.text.toString())
+            }else{
+                imagePathsecond?.let { getUrlFromURI(it) }
+            }
+            // imagePathString.let { Uri.parse(it) }!!
+            // uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+        }else{
+            Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 class CameraDialogFragment(private val imagePath: String, val moduleName : String, val homeTab : String,
@@ -670,15 +849,27 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     private var isTorchOn = false
     private var isGalleryOpen = false
     var imageSelectedListener: OnImageSelectedListener? = null
+    private var isCameraDialogShowing = false
+    private var cameraSettingsDialog: AlertDialog? = null
+
+
 
     // Activity Result Launcher for selecting an image from gallery
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
         uri?.let {
             imageSelectedListener?.onImageSelected(it)
-            dismiss()
-            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
-        } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+            if (isAdded) {
+                dismiss()
+            }
+            if (isAdded && context != null) {
+                Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -691,7 +882,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewFinder = view.findViewById(R.id.viewFinder)
-       // requestPermissionsIfNeeded()
+        // requestPermissionsIfNeeded()
         /*if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -703,8 +894,13 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             if (moduleName.equals("HomeDashboard")){
 //                startActivity(Intent(context, HomeDashboardActivity::class.java))
 //                requireActivity().finish()
-                requireActivity().onBackPressedDispatcher.onBackPressed()
+                if (isAdded) {
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }else if (homeTab.equals("homeTab")){
+                if (!isAdded) return@setOnClickListener
+                val act = activity ?: return@setOnClickListener
+
                 dismiss()
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
@@ -712,22 +908,32 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
                 fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
+                act.supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
                     addToBackStack("landing")
-                    commit()
+                    commitAllowingStateLoss()
                 }
             }else{
-                val fragment = HomeBottomTabFragment()
+                // val fragment = HomeBottomTabFragment()
+                if (!isAdded) return@setOnClickListener
+                val act = activity ?: return@setOnClickListener
+
                 dismiss()
-                val args = Bundle()
-                args.putString("ModuleName", "EatRight")
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
+                val fragmentManager = act.supportFragmentManager
+                val snapMealFragment = fragmentManager.findFragmentByTag("SnapMealFragmentTag")
+                snapMealFragment?.let {
+                    fragmentManager.beginTransaction()
+                        .remove(it)
+                        .commitAllowingStateLoss()
                 }
+                //               val args = Bundle()
+//                args.putString("ModuleName", "EatRight")
+//                fragment.arguments = args
+//                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                    replace(R.id.flFragment, fragment, "landing")
+//                    addToBackStack("landing")
+//                    commit()
+//                }
             }
         }
 
@@ -754,7 +960,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 view.findViewById<ImageView>(R.id.galleryButton)?.isEnabled = true
             }, 700) // 500 ms delay
         }
-
+        requestPermissionsIfNeeded()
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
@@ -762,23 +968,76 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         startCamera()
     }
 
-    private fun onPermissionsDenied(deniedPermissions: List<String>) {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+    private fun showCameraSettingsDialog() {
+        if (!isAdded) return
+        if (cameraSettingsDialog?.isShowing == true) return
+
+        val builder = AlertDialog.Builder(requireContext())
+            .setTitle("Camera Access Denied")
+            .setMessage("Please enable camera access in Settings to snap your meal.")
+            .setCancelable(false)
+            .setPositiveButton("Open Settings", null)
+            .setNegativeButton("Cancel", null)
+        cameraSettingsDialog = builder.create()
+        cameraSettingsDialog?.setOnShowListener {
+            val positiveBtn = cameraSettingsDialog?.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negativeBtn = cameraSettingsDialog?.getButton(AlertDialog.BUTTON_NEGATIVE)
+            positiveBtn?.setOnClickListener {
+                cameraSettingsDialog?.dismiss()
+                openAppSettings()
+            }
+            negativeBtn?.setOnClickListener {
+                cameraSettingsDialog?.dismiss()
+                closeSnapMealFragment()
+            }
+        }
+        cameraSettingsDialog?.show()
     }
 
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.all { it.value }
+    private fun openAppSettings() {
+        if (!isAdded) return
 
-        if (allGranted) {
-            // ✅ All permissions granted
-            onPermissionsGranted()
-        } else {
-
-            onPermissionsDenied(permissions.filterValues { !it }.keys.toList())
+        try {
+            val intent = Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", requireActivity().packageName, null)
+            )
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Fallback: App list settings
+            try {
+                val fallbackIntent = Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
+                fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(fallbackIntent)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
         }
     }
+
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (!isAdded) return@registerForActivityResult
+
+            val allGranted = permissions.all { it.value }
+            if (allGranted) {
+                onPermissionsGranted()
+                return@registerForActivityResult
+            }
+            // Some permissions denied
+            val permanentlyDenied = permissions.any { (perm, granted) ->
+                !granted && !shouldShowRequestPermissionRationale(perm)
+            }
+            if (permanentlyDenied) {
+                // User denied twice or pressed "Don't ask again"
+                showCameraSettingsDialog()
+//            } else {
+//                // Temporary deny (first time)
+//                showRationaleDialog()
+            }
+        }
 
     private fun requestPermissionsIfNeeded() {
         if (allPermissionsGranted()) {
@@ -790,17 +1049,17 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
 
     override fun onResume() {
         super.onResume()
-        requestPermissionsIfNeeded()
-        /*if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
-        }*/
+        if (isCameraPermissionGranted()) {
+            cameraSettingsDialog?.dismiss()
+            cameraSettingsDialog = null
 
+            if (!allPermissionsGranted()) {
+                // This will re-request CAMERA permission if needed
+                permissionLauncher.launch(REQUIRED_PERMISSIONS)
+            } else {
+                startCamera()
+            }
+        }
         // Intercept device back press while this dialog is showing
         dialog?.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
@@ -812,13 +1071,23 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         }
     }
 
-    private fun closeSnapMealFragment() {
-      //  dismiss() // Close the dialog first
+    private fun isCameraPermissionGranted(): Boolean {
+        if (!isAdded) return false
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 
+    private fun closeSnapMealFragment() {
+        if (!isAdded) return
+        val act = activity ?: return
+
+        //  dismiss() // Close the dialog first
         if (moduleName.equals("HomeDashboard")){
 //                startActivity(Intent(context, HomeDashboardActivity::class.java))
 //                requireActivity().finish()
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            act.onBackPressedDispatcher.onBackPressed()
         }else if (homeTab.equals("homeTab")){
             dismiss()
             val fragment = HomeTabMealFragment()
@@ -827,16 +1096,15 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             args.putString("ModuleName", moduleName)
             args.putString("mealType", mealType)
             fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
+            act.supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
                 addToBackStack("landing")
-                commit()
+                commitAllowingStateLoss()
             }
         }else{
             dismiss()
-            val fragmentManager = requireActivity().supportFragmentManager
+            val fragmentManager = act.supportFragmentManager
             val snapMealFragment = fragmentManager.findFragmentByTag("SnapMealFragmentTag")
-
             snapMealFragment?.let {
                 fragmentManager.beginTransaction()
                     .remove(it)
@@ -845,46 +1113,13 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         }
     }
 
-
-    private fun requestGalleryPermissionIfNeeded(): Boolean {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 101)
-            false
-        } else {
-            true
-        }
-    }
-
-//    private fun startCamera() {
-//        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-//        cameraProviderFuture.addListener({
-//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-//
-//            val preview = Preview.Builder().build().also {
-//                it.setSurfaceProvider(viewFinder.surfaceProvider)
-//            }
-//            imageCapture = ImageCapture.Builder()
-//                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-//                .setFlashMode(ImageCapture.FLASH_MODE_OFF)
-//                .build()
-//            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-//            try {
-//                cameraProvider.unbindAll()
-//                camera = cameraProvider.bindToLifecycle(
-//                    viewLifecycleOwner, cameraSelector, preview, imageCapture
-//                )
-//            } catch (exc: Exception) {
-//                Log.e(TAG, "Use case binding failed", exc)
-//            }
-//        }, ContextCompat.getMainExecutor(requireContext()))
-//    }
-
     private fun startCamera() {
+        if (!isAdded) return
+
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
+            if (!isAdded) return@addListener
+
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val aspectRatio = AspectRatio.RATIO_16_9
             val preview = Preview.Builder()
@@ -934,18 +1169,39 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri
                     Log.d(TAG, "Photo saved: $savedUri")
-                    requireActivity().runOnUiThread {
+
+                    // Check if fragment is still attached before updating UI
+                    if (!isAdded) return
+                    val act = activity ?: return
+
+                    act.runOnUiThread {
+                        if (!isAdded) return@runOnUiThread
+
                         savedUri?.let { uri ->
                             imageSelectedListener?.onImageSelected(uri)
-                            dismiss()
+                            if (isAdded) {
+                                dismiss()
+                            }
                         }
-                        Toast.makeText(requireContext(), "Photo saved successfully!", Toast.LENGTH_SHORT).show()
+                        if (isAdded && context != null) {
+                            Toast.makeText(requireContext(), "Photo saved successfully!", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
+
                 override fun onError(exception: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_LONG).show()
+
+                    // Check if fragment is still attached before updating UI
+                    if (!isAdded) return
+                    val act = activity ?: return
+
+                    act.runOnUiThread {
+                        if (!isAdded) return@runOnUiThread
+
+                        if (isAdded && context != null) {
+                            Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
@@ -953,6 +1209,8 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     }
 
     private fun toggleFlash() {
+        if (!isAdded) return
+
         camera?.let {
             val hasFlash = it.cameraInfo.hasFlashUnit()
             if (!hasFlash) {
@@ -968,63 +1226,58 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 it.cameraControl.enableTorch(isTorchOn)
                 view?.findViewById<ImageView>(R.id.flashToggle)?.setImageResource(R.drawable.flash_icon)
             }
-         //   Toast.makeText(requireContext(), "Flash ${if (isTorchOn) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
+            //   Toast.makeText(requireContext(), "Flash ${if (isTorchOn) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
         } ?: run {
-            Toast.makeText(requireContext(), "Camera not initialized", Toast.LENGTH_SHORT).show()
+            if (isAdded && context != null) {
+                Toast.makeText(requireContext(), "Camera not initialized", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     private fun openGallery() {
-        if (allPermissionsGranted()) {
-            Handler(Looper.getMainLooper()).post {
-            pickImageLauncher.launch("image/*")
-        }
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
-        }
+        pickImageLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+        isAdded && ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
+        if (!isAdded) return
+
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(requireContext(), "Permissions not granted", Toast.LENGTH_SHORT).show()
+                if (context != null) {
+                    Toast.makeText(requireContext(), "Permissions not granted", Toast.LENGTH_SHORT).show()
+                }
                 navigateToFragment(MoveRightLandingFragment(), "landingFragment")
             }
         }
     }
 
-    private val REQUIRED_PERMISSIONS = mutableListOf(
-        Manifest.permission.CAMERA
-    ).apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            add(Manifest.permission.READ_MEDIA_IMAGES)
-        } else {
-            add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-    }.toTypedArray()
-
     private fun navigateToFragment(fragment: Fragment, tag: String) {
-        requireActivity().supportFragmentManager.beginTransaction().apply {
+        if (!isAdded) return
+        val act = activity ?: return
+
+        act.supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)
-            commit()
+            commitAllowingStateLoss()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        imageCapture = null // Clear the reference to prevent memory leaks
+        camera = null
+        cameraSettingsDialog?.dismiss()
+        cameraSettingsDialog = null
         cameraExecutor.shutdown()
     }
 

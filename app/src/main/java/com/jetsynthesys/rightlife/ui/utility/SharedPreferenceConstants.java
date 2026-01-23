@@ -6,13 +6,19 @@ public class SharedPreferenceConstants {
     public static final String FIRST_VISIT = "first_visit";
 
     public static final String FIRST_SYNC = "first_sync";
+
+    public static final String FIRST_HOME_VISIT = "first_home_visit";
+
+    public static final String CHALLENGE_STATUS = "CHALLENGE_STATUS";
+    public static final String CHALLENGE_START_DATE = "CHALLENGE_START_DATE";
+    public static final String CHALLENGE_END_DATE = "CHALLENGE_END_DATE";
     public static final String IS_LOGGED_IN = "is_logged_in";
     public static final String USER_ID = "user_id";
     public static final String SNAP_MEAL_ID = "snap_meal_id";
 
     public static final String DEVICE_NAME = "device_name";
 
-    public static final String SYNC_TIME = "sync_time";
+    public static final String SYNC_TIME = "last_sync_time";
 
     public static final String SLEEP_SYNC_TIME = "sleep_sync_time";
     public static final String USER_PROFILE = "user_profile";
@@ -39,10 +45,12 @@ public class SharedPreferenceConstants {
     public static final String CURRENT_QUESTION = "CURRENT_QUESTION";
     public static final String ONBOARDING_QUESTION = "ONBOARDING_QUESTION";
     public static final String FIRST_TIME_AFFIRMATION = "FIRST_TIME_AFFIRMATION";
+    public static final String FIRST_TIME_AFFIRMATION_PLAYLIST = "FIRST_TIME_AFFIRMATION_PLAYLIST";
 
     public static final String FIRST_TIME_SNAP_MEAL_VIDEO = "FIRST_TIME_SNAP_MEAL_VIDEO";
     public static final String FIRST_TIME_SNAP_MEAL_RATING = "FIRST_TIME_SNAP_MEAL_RATING";
     public static final String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
+    public static final String SERVER_ENABLE_NOTIFICATION = "SERVER_ENABLE_NOTIFICATION";
     public static final String EAT_RIGHT_MAX_CALORIES = "EAT_RIGHT_MAX_CALORIES";
     public static final String EAT_RIGHT_MAX_CARBS = "EAT_RIGHT_MAX_CARBS";
     public static final String EAT_RIGHT_MAX_PROTEIN = "EAT_RIGHT_MAX_PROTEIN";
@@ -70,6 +78,22 @@ public class SharedPreferenceConstants {
     public static final String FOUR_7_8_BREATH_WORK = "FOUR_7_8_BREATH_WORK";
     public static final String EQUAL_BREATH_WORK = "EQUAL_BREATH_WORK";
     public static final String ALTERNATE_BREATH_WORK = "ALTERNATE_BREATH_WORK";
+
+    public static final String CHECKLISTDATA = "CHECKLISTDATA";
+    public static final String FIRST_TIME_HOMEDASHBOARD = "FIRST_TIME_HOMEDASHBOARD";
+    public static final String FIRST_TIME_CHECKLIST_EVENT = "FIRST_TIME_CHECKLIST_EVENT";
+    public static final String FIRST_TIME_CHECKLIST_VISIT_EVENT = "FIRST_TIME_CHECKLIST_VISIT";
+
+
+    public static final String USER_MOBILE = "user_mobile";
+    public static final String FCM_TOKEN = "fcm_token";
+
+    //force update
+    public static final String FORCE_UPDATE_ENABLED = "force_update_enabled";
+    public static final String FORCE_UPDATE_MIN_VERSION = "force_update_min_version";
+    public static final String FORCE_UPDATE_URL = "force_update_url";
+    public static final String FORCE_UPDATE_MESSAGE = "force_update_message";
+    public static final String APP_CONFIG_RESPONSE = "app_config_response";
 
 }
 

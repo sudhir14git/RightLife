@@ -7,15 +7,12 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityJournalPromptBinding
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -32,7 +29,6 @@ class JournalPromptActivity : BaseActivity() {
     private var questionsList: ArrayList<Question> = ArrayList()
     private var questions4: ArrayList<Question> = ArrayList()
     private var sectionList: ArrayList<Section> = ArrayList()
-    private var startDate = ""
     private var isFromThinkRight = false
 
 
@@ -44,11 +40,7 @@ class JournalPromptActivity : BaseActivity() {
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         val journalItem: JournalItem = intent.getSerializableExtra("Section") as JournalItem
-        startDate = intent.getStringExtra("StartDate").toString()
         isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
-        if (startDate.isEmpty())
-            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-
 
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -61,6 +53,12 @@ class JournalPromptActivity : BaseActivity() {
     <p>Gratitude Journaling has been shown to boost mood, shift perspective, and build emotional resilience.</p>
     <p>Even a few simple entries can help rewire your focus toward the positive.</p>
 """.trimIndent()
+            } else if (journalItem.title == "Bullet") {
+                """
+    <p>Bullet Journaling helps organize your inner world in small, manageable pieces.</p>
+    <p>Use it to list your moods, wins, worries, intentions—or anything else on your mind.</p>
+    <p>It’s a great option when you don’t feel like writing full paragraphs but still want to check in with yourself.</p>
+""".trimIndent()
             } else {
                 """
     <p>Grief Journaling is a safe place to hold pain, memories, questions, or anger.</p>
@@ -72,6 +70,17 @@ class JournalPromptActivity : BaseActivity() {
 
             DialogUtils.showJournalCommonDialog(this, journalItem.title!!, htmlText)
         }
+        // write a code here to show subtext according to journal item
+        val subtext = when
+        {
+            journalItem.title.equals("Gratitude", ignoreCase = true) -> "Reflect on small joys and big wins to build a thankful mindset."
+            journalItem.title.equals("Bullet", ignoreCase = true) -> "Quick prompts to help you track, organize, and reflect with clarity."
+            journalItem.title.equals("Grief", ignoreCase = true) -> "Each question is here to help you process, remember, and heal—one step at a time."
+            else -> "" // Default empty text for any other case
+        }
+
+        binding.tvSubtitle.text = subtext
+
 
         getSections(journalItem.id!!)
 
@@ -80,27 +89,29 @@ class JournalPromptActivity : BaseActivity() {
         // Setup RecyclerView
         adapter = PromptAdapter(questions4, object : PromptAdapter.OnItemClickListener {
             override fun onItemClick(question: Question) {
-                val intent =
-                    Intent(this@JournalPromptActivity, GriefJournalActivity::class.java).apply {
+                startActivity(
+                    Intent(
+                        this@JournalPromptActivity,
+                        GriefJournalActivity::class.java
+                    ).apply {
                         putExtra("Section", journalItem)
                         putExtra("Answer", question.question)
                         putExtra("QuestionList", questionsList)
                         putExtra("Position", questionsList.indexOf(question))
-                        putExtra("StartDate", startDate)
                         putExtra("FROM_THINK_RIGHT", isFromThinkRight)
-                    }
-                startActivity(intent)
+                    })
             }
 
             override fun onSwapClick(question: Question, position: Int) {
-                if (questionsList.isNotEmpty() && questionsList.size > 4) {
+           /*     if (questionsList.isNotEmpty() && questionsList.size > 4) {
                     questionsList[position] = questionsList[4]
                     questionsList.removeAt(position)
                     questionsList.add(question)
                     questions4.clear()
                     questions4.addAll(questionsList.take(4))
                     adapter.notifyDataSetChanged()
-                }
+                }*/
+                handleQuestionReplacement(position)
             }
 
         })
@@ -202,12 +213,30 @@ class JournalPromptActivity : BaseActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     response.body()?.data?.let { sectionList.addAll(it) }
-                    for (i in 0 until sectionList.size) {
-                        if (i == 0) {
-                            sectionList[0].sectionName?.let { addChip(it, true) }
-                            sectionList[0].id?.let { getQuestions(it) }
-                        } else
-                            sectionList[i].sectionName?.let { addChip(it, false) }
+
+                    // Check if only default section exists
+                    val hasOnlyDefaultSection = sectionList.size == 1 &&
+                            (sectionList[0].sectionName.equals("default", ignoreCase = true))
+
+                    if (hasOnlyDefaultSection) {
+                        // Hide chip list/chip group
+                        binding.chipGroup.visibility = View.GONE  // Replace with your actual chip container ID
+
+                        // Still load the questions for the default section
+                        sectionList[0].id?.let { getQuestions(it) }
+                    } else {
+                        // Show chip list
+                        binding.chipGroup.visibility = View.VISIBLE  // Replace with your actual chip container ID
+
+                        // Add chips for all sections
+                        for (i in 0 until sectionList.size) {
+                            if (i == 0) {
+                                sectionList[0].sectionName?.let { addChip(it, true) }
+                                sectionList[0].id?.let { getQuestions(it) }
+                            } else {
+                                sectionList[i].sectionName?.let { addChip(it, false) }
+                            }
+                        }
                     }
                 } else {
                     Toast.makeText(
@@ -254,4 +283,50 @@ class JournalPromptActivity : BaseActivity() {
 
         })
     }
+
+    //single question replacement function
+    /**
+     * Replaces the clicked question with the next available question
+     * The clicked question is moved to the end of the list (can come back later)
+     */
+    private fun handleQuestionReplacement(position: Int) {
+        // Validate we have more questions to show
+        if (questionsList.size <= 4) {
+            Toast.makeText(
+                this,
+                "No more prompts available",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        // Safety check for position
+        if (position < 0 || position >= questions4.size || position >= questionsList.size) {
+            return
+        }
+
+        // Store the old question that will be replaced
+        val oldQuestion = questionsList[position]
+
+        // Get the next question (always at index 4 since we only show first 4)
+        val nextQuestion = questionsList[4]
+
+        // Replace the clicked question at its position with the next question
+        questionsList[position] = nextQuestion
+
+        // Remove the next question from index 4 (since we just moved it to 'position')
+        questionsList.removeAt(4)
+
+        // Add the old question to the end of the list (so it can come back later)
+        questionsList.add(oldQuestion)
+
+        // Update the display list (first 4 items)
+        questions4.clear()
+        questions4.addAll(questionsList.take(4))
+
+        // Animate only the changed item for smooth UX
+        adapter.notifyItemChanged(position)
+    }
+
+
 }

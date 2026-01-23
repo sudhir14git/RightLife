@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
-import android.view.PointerIcon
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -24,6 +23,7 @@ import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeMindAuditAdapter
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,6 +42,7 @@ class MindAuditResultActivity : BaseActivity() {
     private var reportId: String? = null
     private var isFrom: String? = null
     private var isFromThinkRight = false
+    private var MindAuditDateCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +62,10 @@ class MindAuditResultActivity : BaseActivity() {
             }
         })
 
+        getMindAuditCountDays()
+
         binding.btnTakeAssessment.setOnClickListener {
+            binding.btnTakeAssessment.disableViewForSeconds()
             //startActivity(Intent(this, MindAuditFromActivity::class.java))
             val intent = Intent(
                 this,
@@ -71,14 +75,19 @@ class MindAuditResultActivity : BaseActivity() {
             startActivity(intent)
         }
 
-        binding.tvCheckprogressDays.setOnClickListener{
-            val intent = Intent(
-                this,
-                MASuggestedAssessmentActivity::class.java
-            )
-            intent.putExtra("SelectedAssessment", selectedAssessment)
-            startActivity(intent)
+        binding.tvCheckprogressDays.setOnClickListener {
+            binding.tvCheckprogressDays.disableViewForSeconds()
+            if (selectedAssessment == "Others") {
+                startActivity(Intent(this, MindAuditFromActivity::class.java).apply {
+                    putExtra("IS_FROM_MIND_AUDIT_RESULT", true)
+                })
+            } else {
+                startActivity(Intent(
+                    this,
+                    MASuggestedAssessmentActivity::class.java
+                ).apply { putExtra("SelectedAssessment", selectedAssessment) })
             }
+        }
 
 
         if (sharedPreferenceManager.userEmotions != null) {
@@ -110,6 +119,7 @@ class MindAuditResultActivity : BaseActivity() {
         ) { header: String? -> this.showDisclaimerDialog(header) }
         binding.rvSuggestedAssessment.adapter = suggestedAssessmentAdapter
         //binding.rvSuggestedAssessment.scrollToPosition(0)
+
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -164,21 +174,6 @@ class MindAuditResultActivity : BaseActivity() {
                 response: Response<MindAuditResultResponse?>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    /*      try {
-                              if (response.body()!!.result.isNullOrEmpty()){
-
-                                  binding.rlAssessmentNotTaken.visibility = View.GONE
-                                  binding.scrollviewResult.visibility = View.VISIBLE
-                              // binding.tvMainScore.text = response.body()!!.result[0].assessmentsTaken[0].interpretations.anger.level.toString() + " " + response.body()!!.result[0].assessmentsTaken[0].interpretations.anger.score.toString()
-                                  handleAssessmentScore(response)
-                              }else{
-                                  binding.rlAssessmentNotTaken.visibility = View.VISIBLE
-                                  binding.scrollviewResult.visibility = View.GONE
-                              }
-                          } catch (e: Exception) {
-                              e.printStackTrace()
-                          }*/
-
                     try {
                         val resultList = response.body()?.result
 
@@ -292,8 +287,22 @@ class MindAuditResultActivity : BaseActivity() {
         with(binding) {
             when (assessmentTaken.assessment) {
                 "DASS-21" -> {
+                    cardviewMainscoreHappiness.visibility = View.GONE
+                    cardviewMainscore.visibility = View.VISIBLE
+                    binding.apply {
+                        tvRange1.text = ""
+                        tvRange2.text = ""
+                        tvRange3.text = ""
+                        tvRange4.text = ""
+                        tvRange5.text = ""
+                        tvRange6.text = ""
+                        tvRange5.visibility = View.VISIBLE
+                        tvExtSevere.visibility = View.VISIBLE
+                        tvRange5.gravity = Gravity.START
+                    }
                     assessmentTaken.interpretations.anxiety?.let {
                         cardviewMainscore.visibility = View.VISIBLE
+                        cardviewMainscoreHappiness.visibility = View.GONE
                         binding.mainScoreTitle.text = "Anxiety"
                         binding.mainScoreTitle.visibility = View.VISIBLE
                         binding.mainScoreLevel.text = assessmentTaken.interpretations.anxiety.level
@@ -315,11 +324,11 @@ class MindAuditResultActivity : BaseActivity() {
                         val explanation = getDASS21AnxietyExplanation(
                             assessmentTaken.interpretations.anxiety.score.toFloat()
                         )
-                        binding.tvResultExplanationTitle.text = explanation.first
-                        binding.tvResultExplanation.text = explanation.second
+                        //binding.tvResultExplanationTitle.text = explanation.first
+                        //binding.tvResultExplanation.text = explanation.second
                         cardviewMainscore.setOnClickListener {
                             if (assessmentTaken.assessment.equals("DASS-21")) {
-                                setRainbowView(assessmentTaken.interpretations.anxiety.score.toInt())
+                                //setRainbowView(assessmentTaken.interpretations.anxiety.score.toInt())
                                 val explanation = getDASS21AnxietyExplanation(
                                     assessmentTaken.interpretations.anxiety.score.toFloat()
                                 )
@@ -329,24 +338,35 @@ class MindAuditResultActivity : BaseActivity() {
                                 binding.tvResultExplanationTitle.text = explanation.first
                                 binding.tvResultExplanation.text = explanation.second
                                 binding.apply {
-                                    tvRange1.text = "0"
-                                    tvRange2.text = "7"
-                                    tvRange3.text = "9"
-                                    tvRange4.text = "14"
-                                    tvRange5.text = "20+"
+                                    tvRange1.text = ""
+                                    tvRange2.text = ""
+                                    tvRange3.text = ""
+                                    tvRange4.text = ""
+                                    tvRange5.text = ""
                                     tvRange6.text = ""
                                     tvRange5.visibility = View.VISIBLE
                                     tvExtSevere.visibility = View.VISIBLE
                                     tvRange5.gravity = Gravity.START
                                 }
+                                val intent = Intent(
+                                    this@MindAuditResultActivity,
+                                    MindAuditDass21DetailResultActivity::class.java
+                                )
+                                intent.putExtra(
+                                    "SHOW_INTERPRETATION",
+                                    "anxiety"
+                                ) // can be stress/anxiety/depression
+                                intent.putExtra("REPORT_ID", reportId)
+                                intent.putExtra("Assessment", assessmentTaken.assessment)
+                                startActivity(intent)
                             }
                         }
                         binding.apply {
-                            tvRange1.text = "0"
-                            tvRange2.text = "7"
-                            tvRange3.text = "9"
-                            tvRange4.text = "14"
-                            tvRange5.text = "20+"
+                            tvRange1.text = ""
+                            tvRange2.text = ""
+                            tvRange3.text = ""
+                            tvRange4.text = ""
+                            tvRange5.text = ""
                             tvRange6.text = ""
                             tvRange5.visibility = View.VISIBLE
                             tvExtSevere.visibility = View.VISIBLE
@@ -373,11 +393,11 @@ class MindAuditResultActivity : BaseActivity() {
                         val explanation = getDASS21DepressionExplanation(
                             assessmentTaken.interpretations.depression.score.toFloat()
                         )
-                        binding.tvResultExplanationTitle.text = explanation.first
-                        binding.tvResultExplanation.text = explanation.second
+                        //binding.tvResultExplanationTitle.text = explanation.first
+                        //binding.tvResultExplanation.text = explanation.second
                         cardviewMainscore2.setOnClickListener {
-                            setCenterRainbowView(assessmentTaken.interpretations.depression.score.toInt())
-                            setRainbowView(assessmentTaken.interpretations.depression.score.toInt())
+                            //setCenterRainbowView(assessmentTaken.interpretations.depression.score.toInt())
+                            //setRainbowView(assessmentTaken.interpretations.depression.score.toInt())
                             val explanation = getDASS21DepressionExplanation(
                                 assessmentTaken.interpretations.depression.score.toFloat()
                             )
@@ -387,23 +407,35 @@ class MindAuditResultActivity : BaseActivity() {
                             binding.tvResultExplanationTitle.text = explanation.first
                             binding.tvResultExplanation.text = explanation.second
                             binding.apply {
-                                tvRange1.text = "0"
-                                tvRange2.text = "9"
-                                tvRange3.text = "13"
-                                tvRange4.text = "20"
-                                tvRange5.text = "28+"
+                                tvRange1.text = ""
+                                tvRange2.text = ""
+                                tvRange3.text = ""
+                                tvRange4.text = ""
+                                tvRange5.text = ""
                                 tvRange6.text = ""
                                 tvRange5.visibility = View.VISIBLE
                                 tvExtSevere.visibility = View.VISIBLE
                                 tvRange5.gravity = Gravity.START
                             }
+
+                            val intent = Intent(
+                                this@MindAuditResultActivity,
+                                MindAuditDass21DetailResultActivity::class.java
+                            )
+                            intent.putExtra(
+                                "SHOW_INTERPRETATION",
+                                "depression"
+                            ) // can be stress/anxiety/depression
+                            intent.putExtra("REPORT_ID", reportId)
+                            intent.putExtra("Assessment", assessmentTaken.assessment)
+                            startActivity(intent)
                         }
                         binding.apply {
-                            tvRange1.text = "0"
-                            tvRange2.text = "9"
-                            tvRange3.text = "13"
-                            tvRange4.text = "20"
-                            tvRange5.text = "28+"
+                            tvRange1.text = ""
+                            tvRange2.text = ""
+                            tvRange3.text = ""
+                            tvRange4.text = ""
+                            tvRange5.text = ""
                             tvRange6.text = ""
                         }
                     }
@@ -427,34 +459,45 @@ class MindAuditResultActivity : BaseActivity() {
                         binding.tvResultExplanationTitle.text = explanation.first
                         binding.tvResultExplanation.text = explanation.second
                         cardviewMainscore3.setOnClickListener {
-                            setRightRainbowView(assessmentTaken.interpretations.stress.score.toInt())
-                            setRainbowView(assessmentTaken.interpretations.stress.score.toInt())
+                            //setRightRainbowView(assessmentTaken.interpretations.stress.score.toInt())
+                            //setRainbowView(assessmentTaken.interpretations.stress.score.toInt())
                             val explanation = getDASS21StressExplanation(
                                 assessmentTaken.interpretations.stress.score.toFloat()
                             )
                             cardviewMainscore3.setCardBackgroundColor(
                                 resources.getColor(getColorResForScore(assessmentTaken.interpretations.stress.level))
                             )
-                            binding.tvResultExplanationTitle.text = explanation.first
-                            binding.tvResultExplanation.text = explanation.second
+                            // binding.tvResultExplanationTitle.text = explanation.first
+                            //binding.tvResultExplanation.text = explanation.second
                             binding.apply {
-                                tvRange1.text = "0"
-                                tvRange2.text = "14"
-                                tvRange3.text = "18"
-                                tvRange4.text = "25"
-                                tvRange5.text = "34+"
+                                tvRange1.text = ""
+                                tvRange2.text = ""
+                                tvRange3.text = ""
+                                tvRange4.text = ""
+                                tvRange5.text = ""
                                 tvRange6.text = ""
                                 tvRange5.visibility = View.VISIBLE
                                 tvExtSevere.visibility = View.VISIBLE
                                 tvRange5.gravity = Gravity.START
                             }
+                            val intent = Intent(
+                                this@MindAuditResultActivity,
+                                MindAuditDass21DetailResultActivity::class.java
+                            )
+                            intent.putExtra(
+                                "SHOW_INTERPRETATION",
+                                "stress"
+                            ) // can be stress/anxiety/depression
+                            intent.putExtra("REPORT_ID", reportId)
+                            intent.putExtra("Assessment", assessmentTaken.assessment)
+                            startActivity(intent)
                         }
                         binding.apply {
-                            tvRange1.text = "0"
-                            tvRange2.text = "14"
-                            tvRange3.text = "18"
-                            tvRange4.text = "25"
-                            tvRange5.text = "34+"
+                            tvRange1.text = ""
+                            tvRange2.text = ""
+                            tvRange3.text = ""
+                            tvRange4.text = ""
+                            tvRange5.text = ""
                             tvRange6.text = ""
                         }
                     }
@@ -462,6 +505,14 @@ class MindAuditResultActivity : BaseActivity() {
                     scoreBarcard.visibility = View.VISIBLE
                     scoreBarcardGad7.visibility = View.GONE
                     scoreBarContainerhappiness.visibility = View.GONE
+                    cardviewMainscore.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.GONE
+
+                    binding.tvResultExplanationTitle.text = ""
+                    binding.tvResultExplanation.text = ""
+                    setFanArcView(assessmentTaken)
+
+                    showAssessmentScorebar("DASS-21")
                 }
 
                 "PHQ-9" -> {
@@ -473,10 +524,10 @@ class MindAuditResultActivity : BaseActivity() {
                         binding.mainScoreLevel.visibility = View.VISIBLE
                         binding.tvMainScore.text =
                             assessmentTaken.interpretations.depression.score.toString()
-                        setRainbowView(assessmentTaken.interpretations.depression.score.toInt())
+                        setRainbowViewPHQ9(assessmentTaken.interpretations.depression.score.toInt())
                         binding.cardviewMainscore.setCardBackgroundColor(
                             resources.getColor(
-                                getColorResForScore(assessmentTaken.interpretations.depression.score)
+                                getColorResForScorePhq9(assessmentTaken.interpretations.depression.score)
                             )
                         )
                         setExplanationTitle(
@@ -495,6 +546,8 @@ class MindAuditResultActivity : BaseActivity() {
                     scoreBarcard.visibility = View.VISIBLE
                     scoreBarcardGad7.visibility = View.GONE
                     scoreBarContainerhappiness.visibility = View.GONE
+                    cardviewMainscore.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.GONE
 
                     binding.apply {
                         tvRange1.text = "1"
@@ -508,19 +561,23 @@ class MindAuditResultActivity : BaseActivity() {
                         tvExtSevere.visibility = View.VISIBLE
                         tvRange5.gravity = Gravity.START
                     }
+                    imgScorebarPhq9.visibility = View.VISIBLE
+                    showAssessmentScorebar("PHQ-9")
                 }
 
                 "OHQ" -> {
                     assessmentTaken.interpretations.happiness?.let {
                         binding.mainScoreTitle.text = "Happiness"
-                        binding.mainScoreTitle.visibility = View.VISIBLE
+                        binding.mainScoreTitle.visibility = View.GONE
                         binding.mainScoreLevel.text =
                             assessmentTaken.interpretations.happiness.level
-                        binding.mainScoreLevel.visibility = View.VISIBLE
-                        binding.tvMainScore.text =
+                        binding.mainScoreLevel.visibility = View.GONE
+                        binding.tvMainScoreHappiness.text =
+                            assessmentTaken.interpretations.happiness.score.toString()
+                        mainScoreLevelMessage.text =
                             assessmentTaken.interpretations.happiness.score.toString()
                         setHappinessRainbowView(assessmentTaken.interpretations.happiness.score.toFloat())
-                        binding.cardviewMainscore.setCardBackgroundColor(
+                        binding.cardviewMainscoreHappiness.setCardBackgroundColor(
                             resources.getColor(
                                 getColorForHappinessScore(assessmentTaken.interpretations.happiness.score.toFloat())
                             )
@@ -531,13 +588,21 @@ class MindAuditResultActivity : BaseActivity() {
                         )
                         val explanation =
                             getHappinessExplanation(assessmentTaken.interpretations.happiness.score.toFloat())
-                        binding.tvResultExplanationTitle.text = explanation.first
-                        binding.tvResultExplanation.text = explanation.second
+                        binding.mainScoreLevelMessage.text = explanation.first
+                        binding.mainScoreLevelDesciption.text = explanation.second
+                        tvResultExplanation.text = ""
+                        tvResultExplanationTitle.text = ""
+                        ivMainScoreImage.setImageResource(
+                            getImageForHappinessScore(assessmentTaken.interpretations.happiness.score.toFloat())
+                        )
                     }
                     cardviewMainscore3.visibility = View.GONE
                     cardviewMainscore2.visibility = View.GONE
                     scoreBarContainer.visibility = View.GONE
                     scoreBarContainerhappiness.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.VISIBLE
+                    cardviewMainscore.visibility = View.GONE
+
 
                     binding.apply {
                         tvRange1.text = "1"
@@ -547,6 +612,13 @@ class MindAuditResultActivity : BaseActivity() {
                         tvRange5.text = "4.99"
                         tvRange6.text = "27"
                     }
+                    cardviewMainscoreHappiness.setOnClickListener(View.OnClickListener {
+
+                            binding.mainScoreLevelDesciption.visibility =
+                                if (binding.mainScoreLevelDesciption.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+
+                    })
+                    showAssessmentScorebar("OHQ")
                 }
 
                 "GAD-7" -> {
@@ -557,10 +629,10 @@ class MindAuditResultActivity : BaseActivity() {
                         binding.mainScoreLevel.visibility = View.VISIBLE
                         binding.tvMainScore.text =
                             assessmentTaken.interpretations.anxiety.score.toString()
-                        setRainbowViewCAS(assessmentTaken.interpretations.anxiety.score)
+                        setRainbowViewGAD(assessmentTaken.interpretations.anxiety.score)
                         binding.cardviewMainscore.setCardBackgroundColor(
                             resources.getColor(
-                                getColorResForScoreCASandGAD(assessmentTaken.interpretations.anxiety.level)
+                                getColorResForScoreGAD7(assessmentTaken.interpretations.anxiety.score)
                             )
                         )
                         setExplanationTitle(
@@ -581,6 +653,8 @@ class MindAuditResultActivity : BaseActivity() {
                     scoreBarcardGad7.visibility = View.VISIBLE
 
                     scoreBarContainerhappiness.visibility = View.GONE
+                    cardviewMainscore.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.GONE
 
                     binding.apply {
                         tvRange1.text = "0"
@@ -598,6 +672,7 @@ class MindAuditResultActivity : BaseActivity() {
                         tvRange4.gravity = Gravity.START
                         tvRange5.gravity = Gravity.END
                     }
+                    showAssessmentScorebar("GAD-7")
                 }
 
                 "CAS" -> {
@@ -611,7 +686,8 @@ class MindAuditResultActivity : BaseActivity() {
                         setRainbowViewCAS(assessmentTaken.interpretations.anger.score)
                         binding.cardviewMainscore.setCardBackgroundColor(
                             resources.getColor(
-                                getColorResForScoreCASandGAD(assessmentTaken.interpretations.anger.level)
+                                getColorResForScoreCAS(assessmentTaken.interpretations.anger.score)
+                                //getColorResForScoreCASandGAD(assessmentTaken.interpretations.anger.level)
                             )
                         )
                         setExplanationTitle(assessmentTaken.interpretations.anger.level, "Anger")
@@ -627,7 +703,8 @@ class MindAuditResultActivity : BaseActivity() {
                     scoreBarcard.visibility = View.GONE
                     scoreBarcardGad7.visibility = View.VISIBLE
                     scoreBarContainerhappiness.visibility = View.GONE
-
+                    cardviewMainscore.visibility = View.VISIBLE
+                    cardviewMainscoreHappiness.visibility = View.GONE
                     binding.apply {
                         tvRange1.text = "0"
                         tvRange2.text = "13"
@@ -644,6 +721,8 @@ class MindAuditResultActivity : BaseActivity() {
                         tvRange4.gravity = Gravity.START
                         tvRange5.gravity = Gravity.END
                     }
+                    showAssessmentScorebar("CAS")
+
                 }
 
                 else -> {}
@@ -652,6 +731,38 @@ class MindAuditResultActivity : BaseActivity() {
 
 
     }
+
+    private fun setFanArcView(assessmentTaken: AssessmentsTaken?) {
+        binding.fanArcView.visibility = View.VISIBLE
+        binding.rainbowView.visibility = View.GONE
+        val anxietyScore = assessmentTaken?.interpretations?.anxiety?.score ?: 0
+        val depressionScore = assessmentTaken?.interpretations?.depression?.score ?: 0
+        val stressScore = assessmentTaken?.interpretations?.stress?.score ?: 0
+        var anxietyScoreList = getColorArrayForDASS_Anxiety_Score(anxietyScore)
+        var depressionScoreList = getColorArrayForDASS_Depression_Score(depressionScore)
+        var stressScoreList = getColorArrayForDASS_Stress_Score(stressScore)
+        val newColors2 = listOf(
+            anxietyScoreList.toList(),
+            depressionScoreList.toList(),
+            stressScoreList.toList()
+        )
+        binding.fanArcView.setSegmentColors(newColors2)
+
+    }
+
+    private fun getImageForHappinessScore(score: Float): Int {
+        return when {
+            score in 1f..1.9999f -> R.drawable.happiness_1   // very low
+            score in 2f..2.9999f -> R.drawable.happiness_2    // low
+            score in 3f..3.9999f -> R.drawable.happiness_3 // neutral
+            score == 4f -> R.drawable.happiness_4          // average
+            score in 4.00001f..4.9999f -> R.drawable.happiness_5 // slightly happy
+            score in 5f..5.9999f -> R.drawable.happiness_6    // happy
+            score >= 6f -> R.drawable.happiness_7              // very happy
+            else -> R.drawable.happiness_7                           // fallback
+        }
+    }
+
 
     private fun setLeftRainbowView(score: Int) {
         binding.leftArc.visibility = View.VISIBLE
@@ -683,19 +794,38 @@ class MindAuditResultActivity : BaseActivity() {
 
     private fun setRainbowView(score: Int) {
         binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
         binding.rainbowView.setRainbowColors(getColorArrayForScore(score))
         binding.rainbowView.setStrokeWidth(60f)
         binding.rainbowView.setArcSpacing(8f)
     }
+    private fun setRainbowViewPHQ9(score: Int) {
+        binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
+        binding.rainbowView.setRainbowColors(getColorArrayForScorePHQ9(score))
+        binding.rainbowView.setStrokeWidth(60f)
+        binding.rainbowView.setArcSpacing(8f)
+    }
+
     private fun setRainbowViewCAS(score: Int) {
         binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
         binding.rainbowView.setRainbowColors(getColorArrayForScoreCAS(score))
+        binding.rainbowView.setStrokeWidth(60f)
+        binding.rainbowView.setArcSpacing(8f)
+    }
+
+    private fun setRainbowViewGAD(score: Int) {
+        binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
+        binding.rainbowView.setRainbowColors(getColorArrayForScoreGAD(score))
         binding.rainbowView.setStrokeWidth(60f)
         binding.rainbowView.setArcSpacing(8f)
     }
 
     private fun setHappinessRainbowView(score: Float) {
         binding.rainbowView.visibility = View.VISIBLE
+        binding.fanArcView.visibility = View.GONE
         binding.rainbowView.setRainbowColors(getColorArrayForHappinessScore(score))
         binding.rainbowView.setStrokeWidth(40f)
         binding.rainbowView.setArcSpacing(8f)
@@ -788,15 +918,15 @@ class MindAuditResultActivity : BaseActivity() {
             }
         }
 
-    /*    for (assessment in suggestedAssessments) {
-            addChip(assessment, assessment == selectedAssessment)
-        }*/
+        /*    for (assessment in suggestedAssessments) {
+                addChip(assessment, assessment == selectedAssessment)
+            }*/
 
         for (assessmentName in suggestedAssessments) {
             var isCompleted = false
 
             // check in savedAssessment list
-            for (saved in assessments?.savedAssessment ?: emptyList()) {
+            for (saved in assessments.savedAssessment) {
                 if (saved.assessmentType == assessmentName && saved.isCompleted) {
                     isCompleted = true
                     break
@@ -814,7 +944,7 @@ class MindAuditResultActivity : BaseActivity() {
 
 
         //if (allAssessments.isNotEmpty()) {
-        addChip("Other")
+        addChip("Others")
         //}
 
         suggestedAssessmentString = allAssessments
@@ -902,25 +1032,27 @@ class MindAuditResultActivity : BaseActivity() {
             val position = binding.chipGroup1.indexOfChild(view)
             val selectedChip = binding.chipGroup1.getChildAt(position) as Chip
             Log.d("selected chip", " --" + selectedChip.text.toString())
-            if (selectedChip.text.toString().equals("Sleep Audit")) {
+            if (selectedChip.text.toString() == "Sleep Audit") {
 
             } else {
-                if (selectedChip.text.toString().equals("Other")) {
+                if (selectedChip.text.toString() == "Others") {
                     binding.llOtherSection.visibility = View.VISIBLE
                     binding.scrollviewResult.visibility = View.GONE
                     binding.rlAssessmentNotTaken.visibility = View.GONE
+                    binding.tvCheckprogressDays.visibility =
+                        if (MindAuditDateCount == 0) View.VISIBLE else View.GONE
                     if (suggestedAssessmentString.isEmpty())
                         binding.tvOtherAssessment.visibility = View.GONE
                     else
                         binding.tvOtherAssessment.visibility = View.VISIBLE
                 } else {
+
+                    binding.tvCheckprogressDays.visibility = View.VISIBLE
                     binding.llOtherSection.visibility = View.GONE
-                    binding.scrollviewResult.visibility = View.VISIBLE
                     getAssessmentResult(selectedChip.text.toString())
                     binding.tvAssessmentTaken.text = selectedChip.text.toString() + " " + "Score"
-                    selectedAssessment = selectedChip.text.toString()
                 }
-
+                selectedAssessment = selectedChip.text.toString()
             }
         }
 
@@ -954,6 +1086,34 @@ class MindAuditResultActivity : BaseActivity() {
             else -> R.color.red_ext_severe
         }
     }
+    private fun getColorResForScorePhq9(score: Int): Int {
+        return when (score) {
+            in 0..4 -> R.color.green_minimal
+            in 5..9-> R.color.cyan_mild
+            in 10..14 -> R.color.blue_moderate
+            in 15..19 -> R.color.orange_severe
+            else -> R.color.red_ext_severe
+        }
+    }
+    private fun getColorResForScoreCAS(score: Int): Int {
+        return when (score) {
+            in 0..13 -> R.color.green_minimal
+            in 14..19-> R.color.blue_moderate
+            in 20..28 -> R.color.orange_severe
+            in 29..63 -> R.color.red_ext_severe
+            else -> R.color.red_ext_severe
+        }
+    }
+    private fun getColorResForScoreGAD7(score: Int): Int {
+        return when (score) {
+            in 0..4 -> R.color.green_minimal
+            in 5..9-> R.color.blue_moderate
+            in 10..14 -> R.color.orange_severe
+            in 15..21 -> R.color.red_ext_severe
+            else -> R.color.red_ext_severe
+        }
+    }
+
     private fun getColorResForScore(score: String): Int {
         return when (score.lowercase()) {
             "normal" -> R.color.green_minimal
@@ -964,6 +1124,7 @@ class MindAuditResultActivity : BaseActivity() {
             else -> R.color.red_ext_severe
         }
     }
+
     private fun getColorResForScoreCASandGAD(score: String): Int {
         return when (score.lowercase()) {
             "minimal" -> R.color.green_minimal
@@ -1009,6 +1170,105 @@ class MindAuditResultActivity : BaseActivity() {
             if (index < activeColorCount) colorLevels[index] else fallbackColor
         }
     }
+
+    // Get Depression color array based on DASS-21 scoring
+    fun getColorArrayForDASS_Depression_Score(score: Int): IntArray {
+        val colorLevels = listOf(
+            0xFF06B27B.toInt(), // green_minimal
+            0xFF54C8DB.toInt(), // cyan_mild
+            0xFF57A3FC.toInt(), // blue_moderate
+            0xFFFFBD44.toInt(), // orange_severe
+            0xFFFC6656.toInt()  // red_ext_severe
+        )
+
+        val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
+
+        val activeColorCount = when (score) {
+            in 0..9 -> 1
+            in 10..13 -> 2
+            in 14..20 -> 3
+            in 21..27 -> 4
+            else -> 5
+        }
+
+        return IntArray(5) { index ->
+            if (index < activeColorCount) colorLevels[index] else fallbackColor
+        }
+    }
+
+    // Get Anxiety color array based on DASS-21 scoring
+    fun getColorArrayForDASS_Anxiety_Score(score: Int): IntArray {
+        val colorLevels = listOf(
+            0xFF06B27B.toInt(), // green_minimal
+            0xFF54C8DB.toInt(), // cyan_mild
+            0xFF57A3FC.toInt(), // blue_moderate
+            0xFFFFBD44.toInt(), // orange_severe
+            0xFFFC6656.toInt()  // red_ext_severe
+        )
+
+        val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
+
+        val activeColorCount = when (score) {
+            in 0..7 -> 1
+            in 8..9 -> 2
+            in 10..14 -> 3
+            in 15..19 -> 4
+            else -> 5
+        }
+
+        return IntArray(5) { index ->
+            if (index < activeColorCount) colorLevels[index] else fallbackColor
+        }
+    }
+
+    // Get Stress color array based on DASS-21 scoring
+    fun getColorArrayForDASS_Stress_Score(score: Int): IntArray {
+        val colorLevels = listOf(
+            0xFF06B27B.toInt(), // green_minimal
+            0xFF54C8DB.toInt(), // cyan_mild
+            0xFF57A3FC.toInt(), // blue_moderate
+            0xFFFFBD44.toInt(), // orange_severe
+            0xFFFC6656.toInt()  // red_ext_severe
+        )
+
+        val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
+
+        val activeColorCount = when (score) {
+            in 0..14 -> 1
+            in 15..18 -> 2
+            in 19..25 -> 3
+            in 26..33 -> 4
+            else -> 5
+        }
+
+        return IntArray(5) { index ->
+            if (index < activeColorCount) colorLevels[index] else fallbackColor
+        }
+    }
+
+    fun getColorArrayForScoreGAD(score: Int): IntArray {
+        val colorLevels = listOf(
+            0xFF06B27B.toInt(), // green_minimal
+            0xFF57A3FC.toInt(), // blue_moderate
+            0xFFFFBD44.toInt(), // orange_severe
+            0xFFFC6656.toInt()  // red_ext_severe
+        )
+
+        val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
+
+        val activeColorCount = when (score) {
+            in 0..4 -> 1
+            in 5..9 -> 2
+            in 10..14 -> 3
+            in 15..21 -> 4
+            else -> 5
+        }
+
+        return IntArray(4) { index ->
+            if (index < activeColorCount) colorLevels[index] else fallbackColor
+        }
+    }
+
     fun getColorArrayForScoreCAS(score: Int): IntArray {
         val colorLevels = listOf(
             0xFF06B27B.toInt(), // green_minimal
@@ -1020,14 +1280,38 @@ class MindAuditResultActivity : BaseActivity() {
         val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
 
         val activeColorCount = when (score) {
-            in 0..3 -> 1
-            in 4..8 -> 2
-            in 9..13 -> 3
-            in 14..18 -> 4
+            in 0..13 -> 1
+            in 13..19 -> 2
+            in 20..28 -> 3
+            in 29..63 -> 4
             else -> 5
         }
 
         return IntArray(4) { index ->
+            if (index < activeColorCount) colorLevels[index] else fallbackColor
+        }
+    }
+
+    fun getColorArrayForScorePHQ9(score: Int): IntArray {
+        val colorLevels = listOf(
+            0xFF06B27B.toInt(), // green_minimal
+            0xFF54C8DB.toInt(), // cyan_mild
+            0xFF57A3FC.toInt(), // blue_moderate
+            0xFFFFBD44.toInt(), // orange_severe
+            0xFFFC6656.toInt()  // red_ext_severe
+        )
+
+        val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
+
+        val activeColorCount = when (score) {
+            in 0..4 -> 1
+            in 5..9 -> 2
+            in 10..14 -> 3
+            in 15..19 -> 4
+            else -> 5
+        }
+
+        return IntArray(5) { index ->
             if (index < activeColorCount) colorLevels[index] else fallbackColor
         }
     }
@@ -1274,6 +1558,96 @@ class MindAuditResultActivity : BaseActivity() {
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerView.layoutManager = horizontalLayoutManager
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun getMindAuditCountDays() {
+        val call = apiService.getMindAuditDays(
+            sharedPreferenceManager.accessToken
+        )
+
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonString = response.body()?.string()
+
+                    val responseObj: MindAuditResponse =
+                        gson.fromJson(jsonString, MindAuditResponse::class.java)
+                    MindAuditDateCount = responseObj.data.MindAuditDateCount
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+    data class MindAuditResponse(
+        val success: Boolean,
+        val statusCode: Int,
+        val data: MindAuditData
+    )
+
+    data class MindAuditData(
+        val MindAuditDateCount: Int,
+        val MindAuditBasicAssesmentDate: String
+    )
+
+
+    fun showAssessmentScorebar(assessment: String) {
+        when (assessment) {
+            "DASS-21" -> {
+                binding.imgScorebarDass21.visibility = View.VISIBLE
+                binding.imgScorebarGad7.visibility = View.GONE
+                binding.imgScorebarPhq9.visibility = View.GONE
+                binding.imgScorebarCas.visibility = View.GONE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.GONE
+
+            }
+
+            "PHQ-9" -> {
+                binding.imgScorebarDass21.visibility = View.GONE
+                binding.imgScorebarGad7.visibility = View.GONE
+                binding.imgScorebarPhq9.visibility = View.VISIBLE
+                binding.imgScorebarCas.visibility = View.GONE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.GONE
+            }
+
+            "OHQ" -> {
+                binding.imgScorebarDass21.visibility = View.GONE
+                binding.imgScorebarGad7.visibility = View.GONE
+                binding.imgScorebarPhq9.visibility = View.GONE
+                binding.imgScorebarCas.visibility = View.GONE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.VISIBLE
+            }
+
+            "GAD-7" -> {
+                binding.imgScorebarDass21.visibility = View.GONE
+                binding.imgScorebarGad7.visibility = View.VISIBLE
+                binding.imgScorebarPhq9.visibility = View.GONE
+                binding.imgScorebarCas.visibility = View.GONE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.GONE
+            }
+
+            "CAS" -> {
+                binding.imgScorebarDass21.visibility = View.GONE
+                binding.imgScorebarGad7.visibility = View.GONE
+                binding.imgScorebarPhq9.visibility = View.GONE
+                binding.imgScorebarCas.visibility = View.VISIBLE
+                binding.scoreBarContainer.visibility = View.GONE
+                binding.happinessScoreBarContainer.visibility = View.GONE
+            }
+
+            else -> {}
+        }
     }
 
 }

@@ -19,7 +19,7 @@ class JournalNewActivity : BaseActivity() {
     private lateinit var adapter: JournalAdapter
     private var isFromTool = false
     private var whereToGo = ""
-    private var startDate = ""
+    //private var startDate = ""
     private var isFromThinkRight = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,10 +29,10 @@ class JournalNewActivity : BaseActivity() {
 
         isFromTool = intent.getBooleanExtra("IS_FROM_TOOLS", false)
         whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
-        startDate = intent.getStringExtra("StartDate").toString()
+        //startDate = intent.getStringExtra("StartDate").toString()
         isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
-        if (startDate.isEmpty())
-            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        /*if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())*/
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -118,7 +118,7 @@ class JournalNewActivity : BaseActivity() {
 
             "Bullet" -> Intent(
                 this@JournalNewActivity,
-                BulletJournalActivity::class.java
+                JournalPromptActivity::class.java
             )
 
             else -> Intent(
@@ -127,7 +127,7 @@ class JournalNewActivity : BaseActivity() {
             )
         }.apply {
             putExtra("Section", journalItem)
-            putExtra("StartDate", startDate)
+            //putExtra("StartDate", startDate)
             putExtra("FROM_THINK_RIGHT", isFromThinkRight)
         }
 
@@ -135,7 +135,7 @@ class JournalNewActivity : BaseActivity() {
     }
 
     private fun callPostMindFullDataAPI() {
-        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
+        /*val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)*/
     }
 }

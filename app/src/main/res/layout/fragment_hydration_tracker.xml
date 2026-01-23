@@ -207,7 +207,7 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/ic_up"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:layout_marginStart="21dp"
                         app:layout_constraintTop_toBottomOf="@+id/average_number"
                         app:layout_constraintStart_toStartOf="parent" />
@@ -218,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:text="50% past week"
                         android:textSize="10sp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:layout_marginStart="4dp"
                         android:textColor="@color/green_text"
                         app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"
@@ -446,6 +446,7 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
                 android:text=""
+                android:layout_marginBottom="10dp"
                 app:layout_constraintTop_toBottomOf="@+id/hydration_description_heading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -455,7 +456,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
@@ -556,7 +557,7 @@
                                 app:layout_constraintEnd_toEndOf="@id/tv_quantity_ml"
                                 android:gravity="center_vertical"
                                 android:textStyle="bold"
-                                android:text="/5000ml"
+                                android:text="/3000ml"
                                 android:textSize="13sp"
                                 android:textColor="@color/black"
                                 />

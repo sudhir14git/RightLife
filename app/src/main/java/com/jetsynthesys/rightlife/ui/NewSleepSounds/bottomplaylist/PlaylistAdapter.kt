@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.NewSleepSounds.bottomplaylist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
@@ -13,7 +14,7 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
 class PlaylistAdapter(
     private val list: ArrayList<Service>,
 
-    private var currentIndex: Int,
+     var currentIndex: Int,
 
     private val onItemClick: (Int) -> Unit,
 
@@ -23,7 +24,8 @@ class PlaylistAdapter(
     inner class PlaylistViewHolder(val binding: ItemPlaylistBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(service: Service, position: Int) {
             binding.songTitle.text = service.title
-            binding.songSubtitle.text = service.desc ?: ""
+            binding.songSubtitle.text = service.meta.duration.toString() ?: ""
+            binding.songSubtitle.text = formatDuration(service.meta?.duration ?: 0)
             Glide.with(binding.root.context)
                 .load(ApiClient.CDN_URL_QA + service.image)
                 .placeholder(R.drawable.rl_placeholder)
@@ -32,8 +34,16 @@ class PlaylistAdapter(
 
             if (position == currentIndex) {
                 binding.playingIcon.visibility = View.VISIBLE
+                binding.deleteIcon.visibility = View.GONE
+                binding.songTitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.blue_bar))
             } else {
                 binding.playingIcon.visibility = View.GONE
+                binding.deleteIcon.visibility = View.VISIBLE
+                binding.songTitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.txt_color_journal_date))
+                // Add click listener for delete icon
+                binding.deleteIcon.setOnClickListener {
+                    removeItem(adapterPosition)
+                }
             }
 
             binding.root.setOnClickListener {
@@ -63,5 +73,9 @@ class PlaylistAdapter(
         onItemRemoved(position)
 
     }
-
+    private fun formatDuration(durationInSeconds: Int): String {
+        val minutes = durationInSeconds / 60
+        val seconds = durationInSeconds % 60
+        return String.format("%d:%02d min", minutes, seconds)
+    }
 }

@@ -22,6 +22,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
 import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
@@ -55,12 +56,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Locale
+import kotlin.reflect.KClass
 
 class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
     private lateinit var healthConnectClient: HealthConnectClient
@@ -248,29 +252,43 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         return zonedDateTime.toInstant()
     }
 
-    private suspend fun fetchAllHealthData() {
-        if (!isAdded) {
-            Log.d("ActivitySyncBottomSheet", "Fragment not attached, skipping fetch")
-            return
-        }
-        Log.d("ActivitySyncBottomSheet", "Fetching health data")
-        var endTime = Instant.now()
-        var startTime = Instant.now()
-        val syncTime = if (isAdded) {
-            SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
-        } else ""
-        if (syncTime.isEmpty()) {
-            endTime = Instant.now()
-            startTime = endTime.minus(Duration.ofDays(30))
-        } else {
-            endTime = Instant.now()
-            startTime = convertUtcToInstant(syncTime)
-        }
-        Log.d("ActivitySyncBottomSheet", "Time range: start=$startTime, end=$endTime")
+    private suspend fun fetchAllHealthDatas() {
         try {
-            // Fetch device info
+            if (!isAdded) {
+                Log.d("ActivitySyncBottomSheet", "Fragment not attached, skipping fetch")
+                return
+            }
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+            val now = Instant.now()
+            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime.orEmpty()
+            val startTime: Instant = if (syncTime.isBlank()) {
+                // First-time sync: pull last 30 days
+                now.minus(Duration.ofDays(30))
+            } else {
+                // Next sync: only fetch new data
+                Instant.parse(syncTime)
+            }
+            val endTime: Instant = now
+            // Trackers for incremental sync
+            var latestModifiedTime: Instant? = null
+            var recordsFound = false
 
+            // Update function for lastModifiedTime
+            fun updateLastSync(record: Record) {
+                val modified = record.metadata.lastModifiedTime
+                if (latestModifiedTime == null || modified.isAfter(latestModifiedTime)) {
+                    latestModifiedTime = modified
+                }
+            }
+//            var startTime = Instant.now()
+//            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime ?: ""
+//            if (syncTime == "") {
+//                endTime = Instant.now()
+//                startTime = endTime.minus(Duration.ofDays(30))
+//            }else{
+//                endTime = Instant.now()
+//                startTime = convertUtcToInstant(syncTime)
+//            }
             if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
                 if (syncTime == "") {
                     val totalCaloroieResponse = mutableListOf<TotalCaloriesBurnedRecord>()
@@ -304,6 +322,8 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     val burnedCalories = record.energy.inKilocalories
                     val start = record.startTime
                     val end = record.endTime
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
                 }
             } else {
@@ -338,6 +358,10 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                     stepsRecord = stepsResponse.records
                 }
+                stepsRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
             } else {
                 stepsRecord = emptyList()
                 Log.d("HealthData", "Steps permission denied")
@@ -371,6 +395,10 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     heartRateRecord = response.records
                     Log.d("HealthData", "Total HR records fetched: ${response.records.size}")
                 }
+                heartRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
             }else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
@@ -383,12 +411,15 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 restingHeartRecord = restingHRResponse.records
-                Log.d("HealthData", "Fetched ${restingHeartRecord?.size ?: 0} resting heart rate records")
-            } else {
+                restingHeartRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
+                }
+            }else {
                 restingHeartRecord = emptyList()
-                Log.d("HealthData", "Resting heart rate permission denied")
+                Log.d("HealthData", "Resting Heart rate permission denied")
             }
-
             if (HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class) in grantedPermissions) {
                 val activeCalorieResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -397,12 +428,15 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 activeCalorieBurnedRecord = activeCalorieResponse.records
-                Log.d("HealthData", "Fetched ${activeCalorieBurnedRecord?.size ?: 0} active calorie records")
-            } else {
+                activeCalorieBurnedRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Active Calories Burn Rate: ${record.energy} kCal, Time: ${record.startTime}")
+                }
+            }else {
                 activeCalorieBurnedRecord = emptyList()
-                Log.d("HealthData", "Active calories permission denied")
+                Log.d("HealthData", "Active Calories burn permission denied")
             }
-
             if (HealthPermission.getReadPermission(BasalMetabolicRateRecord::class) in grantedPermissions) {
                 val basalMetabolic = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -411,12 +445,13 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 basalMetabolicRateRecord = basalMetabolic.records
-                Log.d("HealthData", "Fetched ${basalMetabolicRateRecord?.size ?: 0} basal metabolic rate records")
-            } else {
+                basalMetabolicRateRecord?.forEach { record ->
+                    Log.d("HealthData", "Basal Metabolic Rate: ${record.basalMetabolicRate}, Time: ${record.time}")
+                }
+            }else {
                 basalMetabolicRateRecord = emptyList()
-                Log.d("HealthData", "Basal metabolic rate permission denied")
+                Log.d("HealthData", "Basal Metabolic permission denied")
             }
-
             if (HealthPermission.getReadPermission(BloodPressureRecord::class) in grantedPermissions) {
                 val bloodPressure = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -425,12 +460,13 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 bloodPressureRecord = bloodPressure.records
-                Log.d("HealthData", "Fetched ${bloodPressureRecord?.size ?: 0} blood pressure records")
-            } else {
+                bloodPressureRecord?.forEach { record ->
+                    Log.d("HealthData", "Blood Pressure: ${record.systolic}, Time: ${record.time}")
+                }
+            }else {
                 bloodPressureRecord = emptyList()
-                Log.d("HealthData", "Blood pressure permission denied")
+                Log.d("HealthData", "Blood Pressure  permission denied")
             }
-
             if (HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class) in grantedPermissions) {
                 val restingVresponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -439,12 +475,15 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 heartRateVariability = restingVresponse.records
-                Log.d("HealthData", "Fetched ${heartRateVariability?.size ?: 0} heart rate variability records")
-            } else {
+                heartRateVariability?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Heart Rate Variability: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
+                }
+            }else {
                 heartRateVariability = emptyList()
-                Log.d("HealthData", "Heart rate variability permission denied")
+                Log.d("HealthData", "Heart rate Variability permission denied")
             }
-
             if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
                 val sleepResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -453,12 +492,15 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 sleepSessionRecord = sleepResponse.records
-                Log.d("HealthData", "Fetched ${sleepSessionRecord?.size ?: 0} sleep session records")
+                sleepSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
+                }
             } else {
                 sleepSessionRecord = emptyList()
                 Log.d("HealthData", "Sleep session permission denied")
             }
-
             if (HealthPermission.getReadPermission(ExerciseSessionRecord::class) in grantedPermissions) {
                 val exerciseResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -467,12 +509,15 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 exerciseSessionRecord = exerciseResponse.records
-                Log.d("HealthData", "Fetched ${exerciseSessionRecord?.size ?: 0} exercise session records")
+                exerciseSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
+                }
             } else {
                 exerciseSessionRecord = emptyList()
                 Log.d("HealthData", "Exercise session permission denied")
             }
-
             if (HealthPermission.getReadPermission(WeightRecord::class) in grantedPermissions) {
                 val weightResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -481,12 +526,13 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 weightRecord = weightResponse.records
-                Log.d("HealthData", "Fetched ${weightRecord?.size ?: 0} weight records")
+                weightRecord?.forEach { record ->
+                    Log.d("HealthData", "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}")
+                }
             } else {
                 weightRecord = emptyList()
                 Log.d("HealthData", "Weight permission denied")
             }
-
             if (HealthPermission.getReadPermission(BodyFatRecord::class) in grantedPermissions) {
                 val bodyFatResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -495,12 +541,13 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 bodyFatRecord = bodyFatResponse.records
-                Log.d("HealthData", "Fetched ${bodyFatRecord?.size ?: 0} body fat records")
+                bodyFatRecord?.forEach { record ->
+                    Log.d("HealthData", "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}")
+                }
             } else {
                 bodyFatRecord = emptyList()
-                Log.d("HealthData", "Body fat permission denied")
+                Log.d("HealthData", "Body Fat permission denied")
             }
-
             if (HealthPermission.getReadPermission(DistanceRecord::class) in grantedPermissions) {
                 val distanceResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -510,12 +557,11 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 )
                 distanceRecord = distanceResponse.records
                 val totalDistance = distanceRecord?.sumOf { it.distance.inMeters } ?: 0.0
-                Log.d("HealthData", "Fetched ${distanceRecord?.size ?: 0} distance records, Total: $totalDistance meters")
+                Log.d("HealthData", "Total Distance: $totalDistance meters")
             } else {
                 distanceRecord = emptyList()
                 Log.d("HealthData", "Distance permission denied")
             }
-
             if (HealthPermission.getReadPermission(OxygenSaturationRecord::class) in grantedPermissions) {
                 val oxygenSaturationResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -524,12 +570,13 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 oxygenSaturationRecord = oxygenSaturationResponse.records
-                Log.d("HealthData", "Fetched ${oxygenSaturationRecord?.size ?: 0} oxygen saturation records")
+                oxygenSaturationRecord?.forEach { record ->
+                    Log.d("HealthData", "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}")
+                }
             } else {
                 oxygenSaturationRecord = emptyList()
                 Log.d("HealthData", "Oxygen saturation permission denied")
             }
-
             if (HealthPermission.getReadPermission(RespiratoryRateRecord::class) in grantedPermissions) {
                 val respiratoryRateResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -538,7 +585,11 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 respiratoryRateRecord = respiratoryRateResponse.records
-                Log.d("HealthData", "Fetched ${respiratoryRateRecord?.size ?: 0} respiratory rate records")
+                respiratoryRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
+                }
             } else {
                 respiratoryRateRecord = emptyList()
                 Log.d("HealthData", "Respiratory rate permission denied")
@@ -562,19 +613,28 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     val deviceInfo = record.metadata.device
                     if (deviceInfo != null) {
                         if (deviceInfo.manufacturer != "") {
-                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(deviceInfo.manufacturer)
                             Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
                 Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
                             break
                         }else{
-                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(dataOrigin)
+                            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(dataOrigin)
                             break
                         }
                     } else {
-                        SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(dataOrigin)
+                        SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(dataOrigin)
                         break
                     }
                 }
+            }
+            if (recordsFound && latestModifiedTime != null) {
+                context?.let {
+                    SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(latestModifiedTime.toString())
+                }
+                Log.d("HealthSync", "✔ Saved new last sync time: $latestModifiedTime")
+
+            } else {
+                Log.d("HealthSync", "⚠ No new data found → NOT updating last sync time")
             }
             if (dataOrigin.equals("com.google.android.apps.fitness")){
                 storeHealthData()
@@ -595,6 +655,191 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             }
             Log.e("ActivitySyncBottomSheet", "Fetch error: ${e.message}", e)
         }
+    }
+
+    private suspend fun fetchAllHealthData() {
+        try {
+
+            val ctx = context ?: return
+            val client = healthConnectClient
+
+            val granted = try {
+                client.permissionController.getGrantedPermissions()
+            } catch (e: Exception) {
+                Log.e("HealthSync", "Permission fetch failed", e)
+                emptySet()
+            }
+
+            Log.d("HealthSync", "Granted permissions = $granted")
+
+            val now = Instant.now()
+
+            val savedSync = SharedPreferenceManager
+                .getInstance(ctx)
+                .moveRightSyncTime
+                .orEmpty()
+
+            val isFirstSync = savedSync.isBlank()
+
+            val defaultStart = now.minus(Duration.ofDays(30))
+            val lastSyncInstant = if (isFirstSync) null else runCatching {
+                Instant.parse(savedSync)
+            }.getOrNull()
+
+            // ✅ TIMEZONE SAFE
+            val todayStart = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+
+            val computedStartTime = when {
+                isFirstSync -> defaultStart
+                lastSyncInstant != null -> {
+                    if (lastSyncInstant.isAfter(todayStart)) todayStart else lastSyncInstant
+                }
+                else -> defaultStart
+            }
+
+            val endTime = now
+
+            Log.d("HealthSync", "StartTime = $computedStartTime")
+            Log.d("HealthSync", "EndTime   = $endTime")
+
+            var latestModified: Instant? = null
+            var foundNewData = false
+
+            fun markModified(record: Record) {
+                foundNewData = true
+                val modified = record.metadata.lastModifiedTime
+                if (latestModified == null || modified.isAfter(latestModified)) {
+                    latestModified = modified
+                }
+            }
+
+            suspend fun <T : Record> fetchChunk(type: KClass<T>): List<T> {
+                return try {
+                    if (isFirstSync) {
+                        fetchChunked(type, computedStartTime, endTime, 15)
+                    } else {
+                        client.readRecords(
+                            ReadRecordsRequest(
+                                type,
+                                TimeRangeFilter.between(computedStartTime, endTime)
+                            )
+                        ).records
+                    }
+                } catch (e: Exception) {
+                    Log.e("HealthSync", "Fetch failed for ${type.simpleName}", e)
+                    emptyList()
+                }
+            }
+
+            fun <T : Record> hasPermission(type: KClass<T>): Boolean {
+                val perm = HealthPermission.getReadPermission(type)
+                val grantedNow = perm in granted
+                if (!grantedNow) {
+                    Log.w("HealthSync", "Missing permission for ${type.simpleName}")
+                }
+                return grantedNow
+            }
+
+            suspend fun <T : Record> load(
+                type: KClass<T>,
+                assign: (List<T>) -> Unit
+            ) {
+                Log.d("HealthSync", "Loading ${type.simpleName}")
+
+                if (!hasPermission(type)) {
+                    assign(emptyList())
+                    return
+                }
+
+                val records = fetchChunk(type)
+                Log.d("HealthSync", "${type.simpleName} count = ${records.size}")
+
+                assign(records)
+                records.forEach { markModified(it) }
+            }
+
+            // ------------------------------
+            // FETCH
+            // ------------------------------
+            load(TotalCaloriesBurnedRecord::class) { totalCaloriesBurnedRecord = it }
+            load(StepsRecord::class) { stepsRecord = it }
+            load(HeartRateRecord::class) { heartRateRecord = it }
+            load(RestingHeartRateRecord::class) { restingHeartRecord = it }
+            load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
+            load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
+            load(SleepSessionRecord::class) { sleepSessionRecord = it }
+            load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+            load(WeightRecord::class) { weightRecord = it }
+            load(BodyFatRecord::class) { bodyFatRecord = it }
+            load(DistanceRecord::class) { distanceRecord = it }
+            load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
+            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+            load(BloodPressureRecord::class) { bloodPressureRecord = it }
+
+            // ------------------------------
+            // DEVICE DETECTION
+            // ------------------------------
+            val devicePackage =
+                stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName ?: "unknown"
+
+            val deviceManufacturer =
+                stepsRecord?.firstOrNull()?.metadata?.device?.manufacturer ?: devicePackage
+
+            SharedPreferenceManager.getInstance(ctx).saveDeviceName(deviceManufacturer)
+
+            // ------------------------------
+            // SAVE SYNC TIME
+            // ------------------------------
+            if (foundNewData && latestModified != null) {
+                SharedPreferenceManager
+                    .getInstance(ctx)
+                    .saveMoveRightSyncTime(latestModified.toString())
+
+                Log.d("HealthSync", "Updated lastSync = $latestModified")
+            } else {
+                Log.d("HealthSync", "No new data. Sync time unchanged")
+            }
+
+            // ------------------------------
+            // PUSH TO SERVER
+            // ------------------------------
+            when (devicePackage) {
+                "com.google.android.apps.fitness" -> storeHealthData()
+                "com.sec.android.app.shealth",
+                "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
+                else -> storeHealthData()
+            }
+
+        } catch (e: Exception) {
+            Log.e("HealthSync", "Fatal error", e)
+        } finally {
+           // hideLoaderSafe()
+        }
+    }
+
+    private suspend fun <T : Record> fetchChunked(
+        type: KClass<T>,
+        start: Instant,
+        end: Instant,
+        chunks: Int
+    ): List<T> {
+        val output = mutableListOf<T>()
+        val total = Duration.between(start, end)
+        val chunk = total.dividedBy(chunks.toLong())
+
+        var cursor = start
+        repeat(chunks) { i ->
+            val next = if (i == chunks - 1) end else cursor.plus(chunk)
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(type, TimeRangeFilter.between(cursor, next))
+            )
+            output.addAll(response.records)
+            cursor = next
+        }
+        return output
     }
 
     private suspend fun storeHealthData() {
@@ -655,12 +900,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US, "%.2f", safeKm),
                             source_name = deviceName
                         )
                     } else null
@@ -723,12 +970,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeKm = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = deviceName
                         )
                     } else null
@@ -737,12 +986,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = deviceName
                         )
                     } else null
@@ -775,12 +1026,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = deviceName
                         )
                     } else null
@@ -788,12 +1041,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 Log.d("ActivitySyncBottomSheet", "Prepared ${bodyMass.size} body mass records")
 
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToTargetFormat(record.time.toString()),
                         end_datetime = convertToTargetFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage.value * 100),
+                        value = String.format(Locale.US,"%.1f", safeKm * 100),
                         source_name = deviceName
                     )
                 } ?: emptyList()
@@ -855,6 +1110,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
                         WorkoutRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
@@ -863,7 +1119,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
                             calories_burned = "",
-                            distance = String.format("%.1f", distance),
+                            distance = String.format(Locale.US, "%.1f", safeDistance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
                             distance_unit = "km"
@@ -961,8 +1217,9 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+//                    context?.let {
+//                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+//                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -1023,12 +1280,14 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US,"%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
@@ -1081,24 +1340,28 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeKm = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
@@ -1125,23 +1388,27 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US,"%.1f",safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToSamsungFormat(record.time.toString()),
                         end_datetime = convertToSamsungFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage),
+                        value = String.format(Locale.US,"%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                     )
                 } ?: emptyList()
@@ -1200,6 +1467,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
                         WorkoutRequest(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
@@ -1208,7 +1476,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
                             calories_burned = "",
-                            distance = String.format("%.1f", distance),
+                            distance = String.format(Locale.US, "%.1f", safeDistance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
                             distance_unit = "km"
@@ -1302,8 +1570,9 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+//                    context?.let {
+//                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+//                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {

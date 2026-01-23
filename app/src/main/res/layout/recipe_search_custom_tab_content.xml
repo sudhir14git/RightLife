@@ -3,17 +3,18 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginStart="10dp"
+    android:id="@+id/contentTabLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/tab_background">
 
     <TextView
-        android:id="@+id/tabText"
+        android:id="@+id/contentTabText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="9dp"
         android:paddingVertical="5dp"
-        android:textSize="12sp"
+        android:textSize="10sp"
         android:maxLines="1"
         android:fontFamily="@font/dmsans_regular"
         android:textColor="@color/recipe_tab_color_selector"
@@ -24,15 +25,15 @@
 
     <ImageView
         android:id="@+id/iconClose"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="13dp"
+        android:layout_height="13dp"
         android:scaleType="fitXY"
         android:visibility="gone"
-        android:src="@drawable/icon_close_circle"
+        android:src="@drawable/ic_close_circle_recipe"
         android:layout_marginEnd="5dp"
         android:layout_marginStart="5dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tabText"
+        app:layout_constraintStart_toEndOf="@+id/contentTabText"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

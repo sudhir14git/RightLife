@@ -31,7 +31,7 @@
         android:layout_height="wrap_content">
 
 
-        <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillaryAnxietyLevelView
+        <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillarySleepQualityView
             android:id="@+id/sleep_quality_slider_view"
             android:layout_width="40dp"
             android:layout_centerInParent="true"
@@ -173,7 +173,7 @@
             android:fontFamily="@font/dmsans_bold"
             android:text="@string/str_continue"
             android:textColor="@color/white"
-            android:textSize="@dimen/textsize_large"
+            android:textSize="@dimen/textsize_large18sp"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 

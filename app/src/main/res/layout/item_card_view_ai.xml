@@ -12,8 +12,8 @@
 
         <ImageView
             android:id="@+id/workout_function_icon"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
             android:layout_marginStart="12dp"
             android:src="@drawable/workout_function_icon"
             app:layout_constraintStart_toStartOf="parent"
@@ -25,9 +25,10 @@
             android:layout_height="wrap_content"
             android:text="Functional Strength Training"
             android:textSize="14sp"
-            android:textColor="@color/black"
+            android:textColor="@color/black_no_meals"
             android:textStyle="normal"
             android:layout_marginStart="6dp"
+            android:fontFamily="@font/dmsans_regular"
             app:layout_constraintBottom_toBottomOf="@+id/workout_function_icon"
             app:layout_constraintStart_toEndOf="@id/workout_function_icon" />
 
@@ -70,8 +71,8 @@
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <ImageView
-                    android:layout_width="5dp"
-                    android:layout_height="5dp"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
                     android:src="@drawable/awesome"
                     app:layout_constraintTop_toTopOf="@+id/today_duration"
                     app:layout_constraintBottom_toBottomOf="@+id/today_duration"
@@ -125,8 +126,8 @@
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <ImageView
-                    android:layout_width="6dp"
-                    android:layout_height="7dp"
+                    android:layout_width="7dp"
+                    android:layout_height="8dp"
                     android:src="@drawable/calorie_burned_icon"
                     app:layout_constraintBottom_toBottomOf="@+id/calorie_burned"
                     app:layout_constraintTop_toTopOf="@+id/calorie_burned"
@@ -253,7 +254,7 @@
             <View
                 android:id="@+id/timeline_line1"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
+                android:layout_height="6dp"
                 android:background="#FF9999"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -301,7 +302,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphViewWorkout
             android:id="@+id/line_graph_workout"
             android:layout_width="166dp"
@@ -325,16 +325,16 @@
             <View
                 android:id="@+id/timeline_line"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="#FF9999"
+                android:layout_height="5dp"
+                android:background="#FFECEB"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <View
                 android:id="@+id/left_marker"
-                android:layout_width="1dp"
-                android:layout_height="6dp"
+                android:layout_width="2dp"
+                android:layout_height="5dp"
                 android:background="#FF0000"
                 app:layout_constraintTop_toTopOf="@id/timeline_line"
                 app:layout_constraintBottom_toBottomOf="@id/timeline_line"
@@ -342,8 +342,8 @@
 
             <View
                 android:id="@+id/right_marker"
-                android:layout_width="1dp"
-                android:layout_height="6dp"
+                android:layout_width="2dp"
+                android:layout_height="5dp"
                 android:background="#FF0000"
                 app:layout_constraintTop_toTopOf="@id/timeline_line"
                 app:layout_constraintBottom_toBottomOf="@id/timeline_line"

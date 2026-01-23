@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/white"
+    android:background="@color/gray_light_bg"
     android:layout_height="match_parent">
 
     <include layout="@layout/loader_layout" />
@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:visibility="invisible"
         android:orientation="horizontal">
 
         <ImageView
@@ -22,6 +23,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:gravity="center">
 
             <ImageView
@@ -49,22 +51,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/ll_header"
-        android:layout_margin="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/merriweather_bold"
-        android:text="@string/your_journey_your_way"
+        android:text="Choose Your Goals"
         android:textColor="@color/txt_color_header"
-        android:textSize="20sp" />
+        android:textSize="24sp" />
 
     <TextView
         android:id="@+id/tv_choose_str"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_ur_journey"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginHorizontal="20dp"
         android:fontFamily="@font/dmsans_regular"
-        android:text="@string/choose_goals"
+        android:text="Choose 2 to 4 goals you want to focus on, and we'll be with you every step of the way."
         android:textColor="@color/txt_color_header"
+        android:layout_marginTop="@dimen/margin_card_16dp"
         android:textSize="16sp" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -82,16 +85,15 @@
     <Button
         android:id="@+id/btn_continue"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="56dp"
         android:layout_marginStart="36dp"
         android:layout_marginEnd="36dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/str_continue"
-        android:textSize="@dimen/textsize_large"
+        android:text="Save"
+        android:textSize="@dimen/textsize_large20sp"
         android:fontFamily="@font/dmsans_bold"
         android:backgroundTint="@color/rightlife"
         android:textColor="@color/white"
-        android:enabled="false"
         android:layout_alignParentBottom="true" />
 
 

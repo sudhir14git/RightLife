@@ -47,6 +47,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 
 class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
 
@@ -78,6 +79,7 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
         fetchQuoteData()
 
         downloadView.setOnClickListener {
+            Toast.makeText(requireContext(), "start Report downloading...", Toast.LENGTH_SHORT).show()
             saveViewAsPdf(requireContext(),lytQuote,"Quote")
         }
 
@@ -135,22 +137,48 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
     }
 
     private fun postMindfullData() {
-        val mindfullRequest = MindfullRequest(type = "Quote", startDate = mStartDate, endDate = mEndDate)
+        val timeZoneId = TimeZone.getDefault().id
+        val mindfullRequest = MindfullRequest(type = "Quote", startDate = mStartDate, endDate = mEndDate,timeZoneId)
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.postMindFull(token,mindfullRequest)
         call.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
-                    navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle().apply {
+                        putString("ModuleName", "ThinkRight")
+                    }
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack(null)
+                        commit()
+                    }
                    // Toast.makeText(activity, "OK", Toast.LENGTH_SHORT).show()
                 } else {
-                    navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
-                  //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle().apply {
+                        putString("ModuleName", "ThinkRight")
+                    }
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack(null)
+                        commit()
+                    }                  //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
-                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
-              //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "ThinkRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }              //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -192,6 +220,7 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
             outputStream?.use {
                 document.writeTo(it)
                 success = true
+                Toast.makeText(requireContext(), "Report downloaded successfully", Toast.LENGTH_SHORT).show()
             }
 
         } catch (e: IOException) {

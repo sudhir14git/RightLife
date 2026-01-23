@@ -32,7 +32,7 @@ public class HappyToHaveYouActivity extends BaseActivity {
 
             if (sharedPreferenceManager.getAccessToken() != null && isLoggedIn) {
                 // User is logged in, proceed to main activity
-                Intent intent = new Intent(HappyToHaveYouActivity.this, WellnessFocusActivity.class);
+                Intent intent = new Intent(HappyToHaveYouActivity.this, WellnessFocusListActivity.class);
                 startActivity(intent);
                 finish();
             }

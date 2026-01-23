@@ -58,6 +58,8 @@ import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,7 +95,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
     private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var weightIntakeUnit : TextView
-    private lateinit var otherRecipeMightLikeWithData : LinearLayout
+    private lateinit var otherRecipeMightLikeWithData : ConstraintLayout
     private lateinit var newImprovementLayout : LinearLayout
     private  var newBoolean : Boolean = false
     private lateinit var appPreference : AppPreference
@@ -184,10 +186,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         null, null,false, :: onDinnerRegularRecipeDeleteItem, :: onDinnerRegularRecipeEditItem,
         :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, true, false) }
 
-    private val permissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            permissionManager.handlePermissionResult(result)
-        }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         newBoolean = true
@@ -286,11 +285,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
 
         fetchEatRecommendedData()
 
-        if (bottomSeatName.contentEquals("LogWeightEat")){
-            showLogWeightBottomSheet()
-        }else if (bottomSeatName.contentEquals("LogWaterIntakeEat")){
-            showWaterIntakeBottomSheet()
-        }
         lossNewWeightFilled.setOnClickListener {
             showLogWeightBottomSheet()
         }
@@ -330,10 +324,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         snapMealBtn.setOnClickListener {
-            permissionManager = PermissionManager(
-                activity = requireActivity(), // or just `this` in Activity
-                launcher = permissionLauncher,
-                onPermissionGranted = {
+//            permissionManager = PermissionManager(
+//                activity = requireActivity(), // or just `this` in Activity
+//                launcher = permissionLauncher,
+//                onPermissionGranted = {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         val mealSearchFragment = SnapMealFragment()
                         val args = Bundle()
@@ -343,13 +337,12 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         addToBackStack(null)
                         commit()
                     }
-                },
-                onPermissionDenied = {
-                    // ❌ Show user-facing message or disable features
-                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            )
-            permissionManager.checkAndRequestPermissions()
+//                },
+//                onPermissionDenied = {
+//                    // ❌ Show user-facing message or disable features
+//                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+//                }
+
         }
 
         imageBack.setOnClickListener {
@@ -381,10 +374,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         snapMealNoData.setOnClickListener {
-            permissionManager = PermissionManager(
-                activity = requireActivity(), // or just `this` in Activity
-                launcher = permissionLauncher,
-                onPermissionGranted = {
+//            permissionManager = PermissionManager(
+//                activity = requireActivity(), // or just `this` in Activity
+//                launcher = permissionLauncher,
+//                onPermissionGranted = {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         val mealSearchFragment = SnapMealFragment()
                         val args = Bundle()
@@ -394,16 +387,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         addToBackStack(null)
                         commit()
                     }
-                },
-                onPermissionDenied = {
-                    // ❌ Show user-facing message or disable features
-                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            )
-            permissionManager.checkAndRequestPermissions()
+//                },
+//                onPermissionDenied = {
+//                    // ❌ Show user-facing message or disable features
+//                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+//                }
+//            )
+//            permissionManager.checkAndRequestPermissions()
         }
 
         macroIc.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_REPORT_PAGE_OPEN)
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MacrosTabFragment()
                 val args = Bundle()
@@ -443,6 +437,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 val mealSearchFragment = YourMealLogsFragment()
                 val args = Bundle()
                 args.putString("ModuleName", "EatRightLandingWithoutPopup")
+               // args.putString("ModuleName", "EatRightLanding")
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
                 addToBackStack(null)
@@ -576,72 +571,58 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     }
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
-        if (isAdded  && view != null){
-          //  requireActivity().runOnUiThread {
-                showLoader(requireView())
-         //   }
-        }
+        if (!isAdded || view == null) return
+        showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedDate = currentDateTime.format(formatter)
-        val call = ApiClient.apiServiceFastApi.getMealLandingSummary(userId, formattedDate)
-        call.enqueue(object : Callback<EatRightLandingPageDataResponse> {
-            override fun onResponse(call: Call<EatRightLandingPageDataResponse>, response: Response<EatRightLandingPageDataResponse>) {
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                     //   requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                     //   }
-                    }
-                    landingPageResponse = response.body()!!
-                    setMealSummaryData(landingPageResponse, halfCurveProgressBar)
-                    getMealsLogList()
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
-                     //   requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                  //      }
+        val formattedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        ApiClient.apiServiceFastApiV2.getMealLandingSummary(userId, formattedDate)
+            .enqueue(object : Callback<EatRightLandingPageDataResponse> {
+                override fun onResponse(
+                    call: Call<EatRightLandingPageDataResponse>,
+                    response: Response<EatRightLandingPageDataResponse>
+                ) {
+                    if (!isAdded || view == null) return  // ✅ THE FIX
+                    dismissLoader(requireView())
+                    if (response.isSuccessful) {
+                        val body = response.body() ?: return
+                        landingPageResponse = body
+                        setMealSummaryData(body, halfCurveProgressBar)
+                        getMealsLogList()
+                    } else {
+                        Toast.makeText(requireContext(), "Something went wrong", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
-            override fun onFailure(call: Call<EatRightLandingPageDataResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
-                  //  requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-//}
+                override fun onFailure(call: Call<EatRightLandingPageDataResponse>, t: Throwable) {
+                    if (!isAdded || view == null) return  // ✅ THE FIX
+                    dismissLoader(requireView())
+                    Toast.makeText(requireContext(), "Failure", Toast.LENGTH_SHORT).show()
                 }
-            }
-        })
+            })
     }
 
     private fun fetchEatRecommendedData() {
+        if (!isAdded) return   // Fragment not attached
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","EAT_RIGHT")
+        val call = ApiClient.apiService.fetchThinkRecomended(token, "HOME", "EAT_RIGHT")
         call.enqueue(object : Callback<ThinkRecomendedResponse> {
-            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
-                if (response.isSuccessful) {
-                    // progressDialog.dismiss()
-                    thinkRecomendedResponse = response.body()!!
-                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
-                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-                        recomendationRecyclerView.adapter = recomendationAdapter
-                    }
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    // progressDialog.dismiss()F
+            override fun onResponse(
+                call: Call<ThinkRecomendedResponse>,
+                response: Response<ThinkRecomendedResponse>
+            ) {
+                if (!isAdded) return  // Safety again
+                val body = response.body()
+                if (!response.isSuccessful || body?.data?.contentList.isNullOrEmpty()) {
+                    // Show empty state UI if needed
+                    return
                 }
+                val list = body?.data!!.contentList
+                recomendationAdapter = RecommendedAdapterSleep(requireContext(), list)
+                recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                recomendationRecyclerView.adapter = recomendationAdapter
             }
             override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
+                if (!isAdded) return
                 Log.e("Error", "API call failed: ${t.message}")
-                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                //progressDialog.dismiss()
             }
         })
     }
@@ -661,7 +642,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             microValueTv.text = landingPageResponse.micros.value.toInt().toString()
             unitMicroTv.text = landingPageResponse.micros.unit
             energyTypeTv.text = landingPageResponse.micros.micros_name
-        }else{
+        }else {
+            if (landingPageResponse.insight != null){
+                macroTitle.text = landingPageResponse.insight.heading
+                macroOnTrackTextLine.text = landingPageResponse.insight.macros_message
+            }
             todayMacrosWithDataLayout.visibility = View.VISIBLE
             todayMacroNoDataLayout.visibility = View.GONE
             todayMicrosWithDataLayout.visibility = View.GONE
@@ -682,8 +667,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
 
         if(landingPageResponse.other_recipes_you_might_like.size > 0){
             logNextMealSuggestionLayout.visibility = View.GONE
-            otherRecipeMightLikeWithData.visibility = View.VISIBLE
-            otherRecipeRecyclerView.visibility = View.VISIBLE
+            otherRecipeMightLikeWithData.visibility = View.GONE
+            otherRecipeRecyclerView.visibility = View.GONE
         }else{
             logNextMealSuggestionLayout.visibility = View.GONE
             otherRecipeMightLikeWithData.visibility = View.GONE
@@ -718,11 +703,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             waterQuantityTv.text = "0"
         }
 
+        if (bottomSeatName.contentEquals("LogWeightEat")){
+            showLogWeightBottomSheet()
+        }else if (bottomSeatName.contentEquals("LogWaterIntakeEat")){
+            showWaterIntakeBottomSheet()
+        }
+
         if(landingPageResponse.last_weight_log != null){
             lastLoggedNoData.visibility = View.GONE
             weightIntake.visibility = View.VISIBLE
             weightIntakeUnit.visibility = View.VISIBLE
-            newImprovementLayout.visibility = View.VISIBLE
+            newImprovementLayout.visibility = View.GONE
             weightLastLogDateTv.visibility = View.VISIBLE
         }else{
             lastLoggedNoData.visibility = View.VISIBLE
@@ -741,7 +732,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         val convertedDate = convertDate(landingPageResponse.last_weight_log?.date.toString())
-        weightLastLogDateTv.text = convertedDate
+        weightLastLogDateTv.text = convertDateWithdMMMyyyy(convertedDate)
 
         if (landingPageResponse.total_protein.toInt() >  landingPageResponse.max_protein.toInt()) {
            // tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
@@ -825,10 +816,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     }
 
     fun formatValue(value: Double): String {
-        return if (value >= 1000) {
-            String.format("%.1fk", value / 1000) // 1 decimal ke saath
+        val safeValue = if (value.isFinite()) value else 0.0
+        return if (safeValue >= 1000) {
+            String.format(Locale.US, "%.1fk", safeValue / 1000)
         } else {
-            value.toInt().toString() // normal integer
+            safeValue.toInt().toString()
         }
     }
 
@@ -1054,7 +1046,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             lastLoggedNoData.visibility = View.GONE
             weightIntake.visibility = View.VISIBLE
             weightIntakeUnit.visibility = View.VISIBLE
-            newImprovementLayout.visibility = View.VISIBLE
+            newImprovementLayout.visibility = View.GONE
             weightLastLogDateTv.visibility = View.VISIBLE
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
@@ -1072,6 +1064,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                     response: Response<LogWeightResponse>
                 ) {
                     if (response.isSuccessful) {
+                        AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_LOGWEIGHT_CONTINUE_TAP)
                         val responseBody = response.body()
                         bottomSheetDialog.dismiss()
                         dialogBinding.rulerView.adapter = null
@@ -1165,6 +1158,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         glassWithWaterView.setImageResource(R.drawable.glass_image_0)
                     }
                 }
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_HYDRATION_LOG_CONFIRM_TAP)
             }
         }
         val args = Bundle()
@@ -1172,6 +1166,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         args.putString("BottomSeatName", bottomSeatName)
         waterIntakeBottomSheet.arguments = args
         waterIntakeBottomSheet.show(parentFragmentManager, WaterIntakeBottomSheet.TAG)
+    }
+
+    private fun convertDateWithdMMMyyyy(inputDate: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return try {
+            val date = inputFormat.parse(inputDate)
+            outputFormat.format(date!!)
+        } catch (e: Exception) {
+            "Invalid Date"
+        }
     }
 
     private fun milestoneFor(value: Int): Int {
@@ -1200,7 +1205,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
-        val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
+        val call = ApiClient.apiServiceFastApiV2.getMealsLogByDate(userId, formattedDate)
         call.enqueue(object : Callback<MealLogDataResponse> {
             override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                 if (response.isSuccessful) {

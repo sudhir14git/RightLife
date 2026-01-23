@@ -78,13 +78,14 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.FragmentThinkRightLandingBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
-import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
-import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditResultActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -94,9 +95,11 @@ import java.io.IOException
 import java.io.OutputStream
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.Locale.getDefault
 import kotlin.math.abs
 
 class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>() {
@@ -254,15 +257,16 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         viewPager = view.findViewById<ViewPager2>(R.id.assessmentViewPager)
         //    tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
         dotsLayout = view.findViewById(R.id.customDotsContainer)
-        fetchToolList()
-        fetchQuoteData()
-        fetchAssessmentResult()
-        fetchMindfulData()
-        fetchThinkRecomendedData()
         //getBreathingData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
-        tvWellnessDays.text = data.wellnessStreak.toString() + " days"
-
+        tvWellnessDays.text = if (data.wellnessStreak == 0) {
+            "${data.wellnessStreak} day"
+        }else if(data.wellnessStreak == 1){
+            "${data.wellnessStreak} day"
+        }else{
+            "${data.wellnessStreak} days"
+        }
+        //fetchMindfulData()
         // add_tools_think_right = view.findViewById(R.id.add_tools_think_right)
         instruction_your_mindfullness_review.setOnClickListener {
             val dialog = MindfulnessReviewDialog.newInstance()
@@ -307,9 +311,20 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             )
         }
         mindfullArrowBtn.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.TR_Report_PageOpen
+                )
+            }
             navigateToFragment(MindfulnessAnalysisFragment(), "MindfulnessAnalysis")
         }
         downloadView.setOnClickListener {
+            if (isAdded && view != null) {
+                requireActivity().runOnUiThread {
+                    showLoader(requireView())
+                }
+            }
+            Toast.makeText(context?.let { it }, "start Report downloading...", Toast.LENGTH_SHORT).show()
             saveViewAsPdf(requireContext(), mainView, "Journal")
         }
 
@@ -318,13 +333,35 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         }
 
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
-            startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
+            startActivity(Intent(context?.let { it }, PractiseAffirmationPlaylistActivity::class.java))
         }
         view.findViewById<LinearLayout>(R.id.play_now_mind_audit).setOnClickListener {
-            ActivityUtils.startMindAuditActivity(requireContext(), true)
+
+            //ActivityUtils.startMindAuditActivity(requireContext(), true)
+            if (isAdded && assessmentList.isNotEmpty()) {
+
+                val first = assessmentList.firstOrNull()
+                if (isAdded && first != null) {
+                    startActivity(Intent(requireContext(), MindAuditResultActivity::class.java).apply {
+                        putExtra("Assessment", first.assessment.uppercase(Locale.getDefault()))
+                    })
+                } else {
+                    context?.let { Toast.makeText(it, "No assessment to show", Toast.LENGTH_SHORT).show() }
+                }
+            } else {
+                context?.let { ctx -> ActivityUtils.startMindAuditActivity(ctx, true) }
+            }
         }
         reassessYourMental.setOnClickListener {
-            ActivityUtils.startMindAuditActivity(requireContext(), true)
+            //ActivityUtils.startMindAuditActivity(requireContext(), true)
+            val first = assessmentList.firstOrNull()
+            if (isAdded && first != null) {
+                startActivity(Intent(requireContext(), MindAuditResultActivity::class.java).apply {
+                    putExtra("Assessment", first.assessment.uppercase(Locale.getDefault()))
+                })
+            } else {
+                context?.let { Toast.makeText(it, "No assessment to show", Toast.LENGTH_SHORT).show() }
+            }
         }
         view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
             ActivityUtils.startJournalListActivity(requireContext(), true)
@@ -336,7 +373,20 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             ActivityUtils.startBreathWorkActivity(requireContext())
         }
         view.findViewById<ConstraintLayout>(R.id.lyt_top_header).setOnClickListener {
-            ActivityUtils.startMindAuditActivity(requireContext(), true)
+            //ActivityUtils.startMindAuditActivity(requireContext(), true)
+            if (isAdded && assessmentList.isNotEmpty()) {
+
+                val first = assessmentList.firstOrNull()
+                if (isAdded && first != null) {
+                    startActivity(Intent(requireContext(), MindAuditResultActivity::class.java).apply {
+                        putExtra("Assessment", first.assessment.uppercase(Locale.getDefault()))
+                    })
+                } else {
+                    context?.let { Toast.makeText(it, "No assessment to show", Toast.LENGTH_SHORT).show() }
+                }
+            } else {
+                context?.let { ctx -> ActivityUtils.startMindAuditActivity(ctx, true) }
+            }
         }
         view.findViewById<ImageView>(R.id.ivSetting).setOnClickListener {
             ActivityUtils.startTodaysAffirmationActivity(requireContext())
@@ -430,8 +480,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             })
 
         fetchToolGridData()
-        fetchJournalAnswerData()
-        fetchAffirmationsList()
 
         rightLifeReportCard.setOnClickListener {
             var dynamicReportId = ""
@@ -496,7 +544,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun setJournalAnswerData(journalData: JournalAnswerData?) {
         tvJournalDate.text = journalData?.createdAt?.let { formatDate(it) }
-        tvJournalTime.text = journalData?.createdAt?.let { formatTime(it) }
+        tvJournalTime.text = journalData?.createdAt?.let { formatTimeNew(it) }
         tvJournalDesc.text = journalData?.answer
         val tagAdapter = journalData?.tags?.let { TagAdapter(it) }
         recyclerViewTags.adapter = tagAdapter
@@ -509,7 +557,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         val parsedDate = ZonedDateTime.parse(isoDate, inputFormatter)
         return parsedDate.format(outputFormatter)
     }
-
+    fun formatTimeNew(isoDate: String): String {
+        return try {
+            val zonedDateTime = ZonedDateTime.parse(isoDate, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+            val localDateTime = zonedDateTime.withZoneSameInstant(ZoneId.systemDefault())
+            localDateTime.format(DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH))
+        } catch (e: Exception) {
+            "Invalid Time"
+        }
+    }
     fun formatTime(isoDate: String): String {
         val inputFormatter = DateTimeFormatter.ISO_ZONED_DATE_TIME
         val outputFormatter = DateTimeFormatter.ofPattern("h a", Locale.ENGLISH)
@@ -597,59 +653,82 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchMindfulData() {
-        if (isAdded && view != null) {
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
+        if (!isAdded || view == null) return
+
+        requireActivity().runOnUiThread {
+            showLoader(requireView())
         }
+
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val startDate = getYesterdayDate()
         val endDate = getCurrentDate()
-        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+
         val call = ApiClient.apiService.fetchMindFull(token, startDate, endDate)
+
         call.enqueue(object : Callback<MindfullResponse> {
-            override fun onResponse(
-                call: Call<MindfullResponse>,
-                response: Response<MindfullResponse>
-            ) {
-                if (response.isSuccessful) {
-                    mindfullNoDataCard.visibility = View.GONE
-                    mindfullDataCard.visibility = View.VISIBLE
-                    mindfullResponse = response.body()!!
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
+            override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
+                if (!isAdded || view == null) {
+                    // Fragment already destroyed → don't touch UI
+                    return
+                }
+
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (body != null) {
+                            mindfullResponse = body
+
+                            mindfullNoDataCard.visibility = View.GONE
+                            mindfullDataCard.visibility = View.VISIBLE
+
+                            // ── This is the corrected & safe update ──
+                            body.data?.formattedData?.lastOrNull()?.duration?.let { duration ->
+                                tvMindfullMinute.text = formatDuration(duration)
+                            } ?: run {
+                                tvMindfullMinute.text = "0 min"   // ← fallback when no data
+                            }
+                        } else {
+                            showNoDataState()
                         }
-                    }
-                    if (mindfullResponse.data?.formattedData?.isNotEmpty() == true) {
-                        mindfullResponse.data?.formattedData?.getOrNull(mindfullResponse.data?.formattedData?.size!! - 1)?.duration?.toString()
-                            .let { tvMindfullMinute.text = it + " min" }
-                    }
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    //               Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    mindfullNoDataCard.visibility = View.VISIBLE
-                    mindfullDataCard.visibility = View.GONE
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
+                    } else {
+                        showNoDataState()
+                        Log.e("Mindful", "API error: ${response.code()} - ${response.errorBody()?.string()}")
                     }
                 }
             }
 
             override fun onFailure(call: Call<MindfullResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                //              Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                mindfullNoDataCard.visibility = View.VISIBLE
-                mindfullDataCard.visibility = View.GONE
-                if (isAdded && view != null) {
-                    requireActivity().runOnUiThread {
-                        dismissLoader(requireView())
-                    }
+                if (!isAdded || view == null) return
+
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+                    showNoDataState()
+                    Log.e("Mindful", "API failed", t)
                 }
             }
+
+            private fun showNoDataState() {
+                mindfullNoDataCard.visibility = View.VISIBLE
+                mindfullDataCard.visibility = View.GONE
+                tvMindfullMinute.text = "0 min"   // or "--" or whatever you prefer
+            }
         })
+    }
+
+    fun formatDuration(totalMinutes: Int): String {
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+
+        val hrText = if (hours <= 1) "hr" else "hrs"
+        val minText = if (minutes <= 1) "min" else "mins"
+
+        return when {
+            hours > 0 && minutes > 0 -> "$hours $hrText $minutes $minText"
+            hours > 0 -> "$hours $hrText"
+            else -> "$minutes $minText"
+        }
     }
 
     fun getCurrentDate(): String {
@@ -699,7 +778,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     }
                 }
             }
-
             override fun onFailure(call: Call<ToolsGridResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -816,26 +894,47 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchToolList() {
+        Log.d("ToolList", "fetchToolList called")
         // progressDialog.show()
+
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        Log.d("ToolList", "Token retrieved: ${token?.take(20)}...")
+        Log.d("ToolList", "UserId retrieved: $userId")
+
         //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
+
         val call = ApiClient.apiService.getToolList(token, userId)
+        Log.d("ToolList", "API call initiated for userId: $userId")
+
         call.enqueue(object : Callback<ModuleResponse> {
             override fun onResponse(
                 call: Call<ModuleResponse>,
                 response: Response<ModuleResponse>
             ) {
+                Log.d("ToolList", "onResponse received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     // progressDialog.dismiss()
                     val toolResponse = response.body()
+                    Log.d("ToolList", "Response body received, success: ${toolResponse?.success}")
+
                     toolResponse?.let {
                         if (it.success == true) {
                             val tools = it.data
+                            Log.d("ToolList", "Tools data received, count: ${tools.size}")
+
                             toolsList.clear()
+                            Log.d("ToolList", "Cleared existing toolsList")
+
                             toolsList.addAll(tools)
+                            Log.d("ToolList", "Added tools to toolsList, total count: ${toolsList.size}")
+
                             toolAdapter.notifyDataSetChanged()
+                            Log.d("ToolList", "Adapter notified of data change")
+                            Log.d("ToolList", "Tool list fetched successfully")
                         } else {
+                            Log.w("ToolList", "Request failed with statusCode: ${it.statusCode}")
                             Toast.makeText(
                                 activity,
                                 "Request failed with status: ${it.statusCode}",
@@ -843,14 +942,24 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                             ).show()
                         }
                     }
+
+                    if (toolResponse == null) {
+                        Log.w("ToolList", "Response body is null")
+                    }
                 } else {
+                    Log.e("ToolList", "Response not successful: ${response.code()}")
+                    Log.e("ToolList", "Error body: ${response.errorBody()?.string()}")
                     /* Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                      Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                      progressDialog.dismiss()*/
                     //             Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
+
             override fun onFailure(call: Call<ModuleResponse>, t: Throwable) {
+                Log.e("ToolList", "API call failed: ${t.message}")
+                Log.e("ToolList", "Exception: ${t.javaClass.simpleName}")
+                t.printStackTrace()
                 /* Log.e("Error", "API call failed: ${t.message}")
                  Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
                  progressDialog.dismiss()*/
@@ -922,7 +1031,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun onToolItem(toolsData: ModuleData, position: Int, isRefresh: Boolean) {
         if (toolsData.title != null) {
-            if (toolsData.title?.contains("Breathing") == true) {
+            if (toolsData.title?.contains("Breathing") == true ||toolsData.title?.contains("Custom") == true) {
                 val breathingData = BreathingData().apply {
                     id = toolsData._id ?: ""
                     title = toolsData.title
@@ -1003,13 +1112,19 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         } else {
             rightLifeReportCard.visibility = View.GONE
         }
+        fetchToolList()
+        fetchQuoteData()
+        fetchAssessmentResult()
         fetchAffirmationsList()
+        fetchMindfulData()
         getBreathingData()
         fetchJournalAnswerData()
-        fetchToolList()
+        fetchThinkRecomendedData()
     }
 
     private fun fetchThinkRecomendedData() {
+        val act = activity ?: return   // ✅ safe
+        val ctx = context ?: return    // ✅ safe
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.fetchThinkRecomended(token, "HOME", "THINK_RIGHT")
         call.enqueue(object : Callback<ThinkRecomendedResponse> {
@@ -1017,16 +1132,20 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 call: Call<ThinkRecomendedResponse>,
                 response: Response<ThinkRecomendedResponse>
             ) {
+                val ctx = context ?: return  // ✅ recheck inside callback
+                val rootView = view ?: return
+                if (!isAdded) return         // ✅ fragment detached
                 if (response.isSuccessful) {
                     // progressDialog.dismiss()
-                    thinkRecomendedResponse = response.body()!!
-                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
+                    val body = response.body() ?: return
+                    thinkRecomendedResponse = body
+                    if (body.data?.contentList?.isNotEmpty() == true) {
                         recomendationAdapter = RecommendationAdapter(
-                            context!!,
+                            ctx,
                             thinkRecomendedResponse.data?.contentList!!
                         )
                         recomendationRecyclerView.layoutManager =
-                            LinearLayoutManager(requireContext())
+                            LinearLayoutManager(ctx)
                         recomendationRecyclerView.adapter = recomendationAdapter
                     }
                 } else {
@@ -1035,7 +1154,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     // progressDialog.dismiss()
                 }
             }
-
             override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -1046,9 +1164,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun fetchAffirmationsList() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
         val call = ApiClient.apiService.getAffirmationPlaylist(token)
-
         call.enqueue(object : Callback<AffirmationPlaylistResponse> {
             override fun onResponse(
                 call: Call<AffirmationPlaylistResponse>,
@@ -1065,7 +1181,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                 lytAffirmation1.visibility = View.VISIBLE
                                 lytAffirmation2.visibility = View.VISIBLE
                                 lytAffirmation3.visibility = View.VISIBLE
-                            } else if (count == 2) {
+                            }else{
+                                cardAffirmations.visibility = View.GONE
+                            }/*else if (count == 2) {
                                 lytAffirmation1.visibility = View.VISIBLE
                                 lytAffirmation2.visibility = View.VISIBLE
                                 lytAffirmation3.visibility = View.GONE
@@ -1073,7 +1191,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                 lytAffirmation1.visibility = View.VISIBLE
                                 lytAffirmation2.visibility = View.GONE
                                 lytAffirmation3.visibility = View.GONE
-                            }
+                            }*/
                         } else {
                             cardAffirmations.visibility = View.GONE
                         }
@@ -1106,30 +1224,32 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                             dataFilledMindAudit.visibility = View.VISIBLE
                             noDataMindAudit.visibility = View.GONE
                             reassessYourMental.visibility = View.VISIBLE
-                            assessmentList =
-                                parseAssessmentData(assessmentResponse.result) // replace with real parsing
+
+                            assessmentList = parseAssessmentData(assessmentResponse.result)
                             adapter = AssessmentPagerAdapter(assessmentList)
                             viewPager.adapter = adapter
+
                             val transformer = CompositePageTransformer().apply {
-                                // Space between pages
-                                addTransformer(MarginPageTransformer(16))  // <- Adjust this to your desired gap
-                                // Optional: slight shrink for visual depth
+                                addTransformer(MarginPageTransformer(16))
                                 addTransformer { page, position ->
-                                    val scale = 0.95f + (1 - abs(position)) * 0.05f
+                                    val scale = 0.95f + (1 - kotlin.math.abs(position)) * 0.05f
                                     page.scaleY = scale
                                 }
                             }
                             viewPager.setPageTransformer(transformer)
                             viewPager.offscreenPageLimit = 3
-                            viewPager.registerOnPageChangeCallback(object :
-                                ViewPager2.OnPageChangeCallback() {
+
+                            // YE 2 LINES ADD KI HAIN → PROBLEM YAHIN THI
+                            dotsLayout.removeAllViews()  // ← SABSE ZAROORI LINE
+                            itemCount = adapter.itemCount  // ← pehle set karo, baad mein loop
+
+                            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                                 override fun onPageSelected(position: Int) {
                                     for (i in 0 until itemCount) {
-                                        val dot = dotsLayout.getChildAt(i)
+                                        val dot = dotsLayout.getChildAt(i) ?: continue
                                         val isActive = i == position
                                         val layoutParams = dot.layoutParams
-                                        layoutParams.width =
-                                            if (isActive) 32.dpToPx() else dotSize.dpToPx()
+                                        layoutParams.width = if (isActive) 32.dpToPx() else 14.dpToPx()
                                         dot.layoutParams = layoutParams
                                         dot.background = ContextCompat.getDrawable(
                                             requireContext(),
@@ -1138,13 +1258,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                     }
                                 }
                             })
-                            itemCount = adapter.itemCount
+
                             dotSize = 14
                             dotMargin = 6
+
+                            // Dots banate waqt pehle clear kiya → ab duplicate nahi honge
                             for (i in 0 until itemCount) {
                                 val dot = View(requireContext()).apply {
                                     layoutParams = LinearLayout.LayoutParams(
-                                        if (i == 0) 32 else dotSize.dpToPx(),  // Active is pill
+                                        if (i == 0) 32.dpToPx() else dotSize.dpToPx(),
                                         dotSize.dpToPx()
                                     ).apply {
                                         setMargins(dotMargin.dpToPx(), 0, dotMargin.dpToPx(), 0)
@@ -1156,26 +1278,27 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                 }
                                 dotsLayout.addView(dot)
                             }
+
                         } else {
                             dataFilledMindAudit.visibility = View.GONE
                             noDataMindAudit.visibility = View.VISIBLE
                             reassessYourMental.visibility = View.GONE
+                            dotsLayout.removeAllViews()  // No data → dots bhi hata do
                         }
                     }
                 } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    //        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     dataFilledMindAudit.visibility = View.GONE
                     noDataMindAudit.visibility = View.VISIBLE
                     reassessYourMental.visibility = View.GONE
+                    dotsLayout.removeAllViews()
                 }
             }
+
             override fun onFailure(call: Call<AssessmentResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                //       Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 dataFilledMindAudit.visibility = View.GONE
                 noDataMindAudit.visibility = View.VISIBLE
                 reassessYourMental.visibility = View.GONE
+                dotsLayout.removeAllViews()
             }
         })
     }
@@ -1188,18 +1311,45 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
         for (assessmentResult in listData) {
             for (taken in assessmentResult.assessmentsTaken) {
-                for ((_, interpretation) in taken.interpretations) {
-                    resultList.add(
-                        AssessmentResultData(
-                            assessment = taken.assessment,
-                            score = interpretation.score,
-                            level = interpretation.level
-                        )
-                    )
+                when (taken.assessment) {
+                    "DASS-21" -> {
+                        // DASS-21 ke liye ek hi entry banani hai, teeno scores ke saath
+                        val depression = taken.interpretations["depression"]
+                        val anxiety = taken.interpretations["anxiety"]
+                        val stress = taken.interpretations["stress"]
+
+                        // Safe check (agar koi missing ho)
+                        if (depression != null && anxiety != null && stress != null) {
+                            val combinedInterpretation = "Depression"
+                            val combinedLevel = "${depression.level} | ${anxiety.level} | ${stress.level}"
+                            val combinedScore = "${depression.score} | ${anxiety.score} | ${stress.score}"
+
+                            resultList.add(
+                                AssessmentResultData(
+                                    assessment = "DASS-21",
+                                    interpretation = combinedInterpretation, // ya "Depression, Anxiety, Stress"
+                                    score = combinedScore,        // "26.0 | 24.0 | 26.0"
+                                    level = combinedLevel         // "Severe | Extremely Severe | Severe"
+                                )
+                            )
+                        }
+                    }
+                    else -> {
+                        // Baaki assessments (PHQ-9, GAD-7 etc.) ke liye normally add karo
+                        for ((interpretationName, interpretation) in taken.interpretations) {
+                            resultList.add(
+                                AssessmentResultData(
+                                    assessment = taken.assessment,
+                                    interpretation = interpretationName.capitalize(),
+                                    score = interpretation.score.toString(),
+                                    level = interpretation.level
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }
-
         return resultList
     }
 
@@ -1255,17 +1405,33 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             outputStream?.use {
                 document.writeTo(it)
                 success = true
+                Toast.makeText(context?.let { it }, "Report downloaded successfully", Toast.LENGTH_SHORT).show()
             }
 
         } catch (e: IOException) {
+            if (isAdded && view != null) {
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+                }
+            }
             e.printStackTrace()
         } finally {
             document.close()
             outputStream?.close()
+            if (isAdded && view != null) {
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+                }
+            }
         }
 
         if (success && fileUri != null) {
             showDownloadNotification(context, fileName, fileUri)
+            if (isAdded && view != null) {
+                requireActivity().runOnUiThread {
+                    dismissLoader(requireView())
+                }
+            }
         }
     }
 
@@ -1335,7 +1501,18 @@ class AssessmentPagerAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.tvAssessmentTitle)
-        val scoreText = itemView.findViewById<TextView>(R.id.tvScore)
+        val scoreText = itemView.findViewById<TextView>(R.id.score_result_text)
+        val scoreTextDepression = itemView.findViewById<TextView>(R.id.score_result_text_new)
+        val scoreTextStress = itemView.findViewById<TextView>(R.id.score_result_text_new_one)
+        val mind_audit_scale = itemView.findViewById<TextView>(R.id.mind_audit_scale_category)
+        val mind_audit_scale_dipression_level = itemView.findViewById<TextView>(R.id.mind_audit_scale_category_new)
+        val mind_audit_scale_stress_level = itemView.findViewById<TextView>(R.id.mind_audit_scale_category_new_one)
+        val mind_audit_scale_new = itemView.findViewById<TextView>(R.id.mind_audit_scale)
+        val mind_audit_scale_dipression = itemView.findViewById<TextView>(R.id.mind_audit_scale_new)
+        val mind_audit_scale_stress = itemView.findViewById<TextView>(R.id.mind_audit_scale_new_one)
+        val new_score_layout = itemView.findViewById<CardView>(R.id.new_score_layout)
+        val new_score_layout_new = itemView.findViewById<CardView>(R.id.new_score_layout_new)
+        val new_score_layout_new_one = itemView.findViewById<CardView>(R.id.new_score_layout_new_one)
         val scaleLayout = itemView.findViewById<LinearLayout>(R.id.scoreScaleLayout)
         val pointer = itemView.findViewById<FrameLayout>(R.id.lyt_score)
         val scoreScaleImage = itemView.findViewById<ImageView>(R.id.scoreScaleImage)
@@ -1352,39 +1529,170 @@ class AssessmentPagerAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = assessments[position]
         holder.title.text = item.assessment
-        val result = item.score.substringBefore(".")
-        holder.scoreText.text = "Your Score: ${result}"
+
+
         when (item?.assessment) {
             "DASS-21" -> {
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)
+                val scores = item.score.split("|").map { it.trim() }
+                val levels = item.level.split("|").map { it.trim() }
+
+                // Individual scores
+                val depressionScore = scores.getOrNull(0) ?: "0"
+                val anxietyScore = scores.getOrNull(1) ?: "0"
+                val stressScore = scores.getOrNull(2) ?: "0"
+
+                val score = anxietyScore.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                val dipressionscore = anxietyScore.toFloatOrNull() ?: 0f
+
+                val dipressionbackgroundColor = when {
+                    dipressionscore <= 4 -> "#06B27B"
+                    dipressionscore <= 9 -> "#54C8DB"
+                    dipressionscore <= 12 -> "#06B27B"
+                    dipressionscore <= 14 -> "#57A3FC"
+                    dipressionscore <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout_new.setCardBackgroundColor(Color.parseColor(dipressionbackgroundColor))
+                val stressscore = anxietyScore.toFloatOrNull() ?: 0f
+
+                val stressbackgroundColor = when {
+                    stressscore <= 4 -> "#06B27B"
+                    stressscore <= 9 -> "#54C8DB"
+                    stressscore <= 12 -> "#06B27B"
+                    stressscore <= 14 -> "#57A3FC"
+                    stressscore <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout_new_one.setCardBackgroundColor(Color.parseColor(stressbackgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.VISIBLE
+                holder.new_score_layout_new_one.visibility =View.VISIBLE
+                val anxietyResult = anxietyScore.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                val depressionResult = depressionScore.substringBefore(".")
+                holder.scoreTextDepression.text = depressionResult
+                val stressResult = stressScore.substringBefore(".")
+                holder.scoreTextStress.text = stressResult
+                holder.mind_audit_scale_new.text = "Anxiety"
+                holder.mind_audit_scale_dipression.text = "Depression"
+                holder.mind_audit_scale_stress.text = "Stress"
+                // Individual levels
+                val depressionLevel = levels.getOrNull(0) ?: ""
+                val anxietyLevel = levels.getOrNull(1) ?: ""
+                val stressLevel = levels.getOrNull(2) ?: ""
+                holder.mind_audit_scale.text = anxietyLevel
+                holder.mind_audit_scale_dipression_level.text = depressionLevel
+                holder.mind_audit_scale_stress_level.text = stressLevel
+
+
             }
             "GAD-7" -> {
+                val score = item.score.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.GONE
+                holder.new_score_layout_new_one.visibility =View.GONE
+                val anxietyResult = item.score.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                holder.mind_audit_scale.text = item.level
+                holder.mind_audit_scale_new.text = item.interpretation
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_gad7)
             }
             "OHQ" -> {
+                val score = item.score.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.GONE
+                holder.new_score_layout_new_one.visibility =View.GONE
+                val anxietyResult = item.score.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                holder.mind_audit_scale.text = item.level
+                holder.mind_audit_scale_new.text = item.interpretation
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_ohq)
             }
             "CAS" -> {
+                val score = item.score.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.GONE
+                holder.new_score_layout_new_one.visibility =View.GONE
+                val anxietyResult = item.score.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                holder.mind_audit_scale.text = item.level
+                holder.mind_audit_scale_new.text = item.interpretation
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_cas)
             }
             "PHQ-9" -> {
+                val score = item.score.toFloatOrNull() ?: 0f
+
+                val backgroundColor = when {
+                    score <= 4 -> "#06B27B"
+                    score <= 9 -> "#54C8DB"
+                    score <= 12 -> "#06B27B"
+                    score <= 14 -> "#57A3FC"
+                    score <= 19 -> "#FFBD44"
+                    else -> "#FC6656"
+                }
+
+                holder.new_score_layout.setCardBackgroundColor(Color.parseColor(backgroundColor))
+                holder.new_score_layout.visibility =View.VISIBLE
+                holder.new_score_layout_new.visibility = View.GONE
+                holder.new_score_layout_new_one.visibility =View.GONE
+                val anxietyResult = item.score.substringBefore(".")
+                holder.scoreText.text = anxietyResult
+                holder.mind_audit_scale.text = item.level
+                holder.mind_audit_scale_new.text = item.interpretation
                 holder.scoreScaleImage.setImageResource(R.drawable.ic_mind_dass)
             }
         }
         // Clear old views if recycled
       //  holder.scaleLayout.removeAllViews()
         val context = holder.itemView.context
-        val score = item.score.toFloatOrNull() ?: 0f
-        // Range and labels
-        val thresholds = listOf(0, 4, 9, 14, 19, 100)
-        val labels = listOf("Minimal", "Mild", "Moderate", "Severe", "Ext Severe")
-        val colors = listOf(
-            Color.parseColor("#2ECC71"), // Minimal - green
-            Color.parseColor("#1ABC9C"), // Mild - teal
-            Color.parseColor("#3498DB"), // Moderate - blue
-            Color.parseColor("#F39C12"), // Severe - orange
-            Color.parseColor("#E74C3C")  // Ext Severe - red
-        )
+
       //  holder.scaleLayout.removeAllViews()
 //        for (i in labels.indices) {
 //            val column = LinearLayout(context).apply {
@@ -1471,6 +1779,7 @@ class AssessmentPagerAdapter(
 
 data class AssessmentResultData(
     val assessment: String,
+    val interpretation: String,
     val score: String,
     val level: String
 )

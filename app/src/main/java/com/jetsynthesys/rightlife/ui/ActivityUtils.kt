@@ -19,13 +19,13 @@ import com.jetsynthesys.rightlife.ui.context_screens.SleepSoundsContextScreenAct
 import com.jetsynthesys.rightlife.ui.context_screens.TRSRAssessmentContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeEatRightContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeMoveRightContextScreenActivity
-import com.jetsynthesys.rightlife.ui.context_screens.WelcomeRightLifeContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeSleepRightContextScreenActivity
 import com.jetsynthesys.rightlife.ui.context_screens.WelcomeThinkRightContextScreenActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
+import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
-import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
@@ -46,7 +46,7 @@ object ActivityUtils {
                 }
             )
         } else {
-            context.startActivity(Intent(context, MindAuditActivity::class.java).apply {
+            context.startActivity(Intent(context, MindAuditFromActivity::class.java).apply {
                 putExtra("FROM_THINK_RIGHT", isFromThinkRight)
             })
         }
@@ -192,7 +192,7 @@ object ActivityUtils {
             sharedPreferenceManager.setFirstTimeView(SharedPreferenceConstants.FACE_SCAN_CONTEXT_SCREEN)
             context.startActivity(Intent(context, FaceScanContextScreenActivity::class.java))
         } else
-            context.startActivity(Intent(context, HealthCamActivity::class.java))
+            context.startActivity(Intent(context, HealthCamBasicDetailsNewActivity::class.java))
     }
 
     fun startMealScanActivity(context: Context, snapMealId: String = "") {
@@ -315,7 +315,7 @@ object ActivityUtils {
     }
 
     fun startRightLifeContextScreenActivity(context: Context) {
-        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        /*val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
 
         if (sharedPreferenceManager.getFirstTimeView(SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN)) {
             sharedPreferenceManager.setFirstTimeView(SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN)
@@ -325,8 +325,8 @@ object ActivityUtils {
                     WelcomeRightLifeContextScreenActivity::class.java
                 )
             )
-        } else
-            context.startActivity(Intent(context, HomeNewActivity::class.java))
+        } else*/
+        context.startActivity(Intent(context, HomeNewActivity::class.java))
     }
 
 }

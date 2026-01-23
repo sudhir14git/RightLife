@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -65,12 +66,15 @@ class CreateUsernameActivity : BaseActivity() {
             btnContinue.backgroundTintList = colorStateListSelected
             btnContinue.isEnabled = true
         } else {
-            tvError.visibility = VISIBLE
+            if (edtUsername.text.toString().isNotEmpty()){
+                tvError.visibility = VISIBLE
+                tvError.setText(R.string.error_username)
+            }
             btnContinue.backgroundTintList = colorStateList
             btnContinue.isEnabled = false
         }
 
-        "$charLeft/20 characters".also { tvCharLeft.text = it }
+        "$charLeft/20 Characters".also { tvCharLeft.text = it }
 
         edtUsername.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -79,13 +83,19 @@ class CreateUsernameActivity : BaseActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
                 val c = edtUsername.text.length
-                "$c/20 characters".also { tvCharLeft.text = it }
-                if (validateUsername(p0.toString())) {
+                "$c/20 Characters".also { tvCharLeft.text = it }
+                if (p0.toString().isNotEmpty()) {
+                    tvError.visibility = GONE
+                    if (validateUsername(p0.toString())) {
                     tvError.visibility = GONE
                     btnContinue.backgroundTintList = colorStateListSelected
                     btnContinue.isEnabled = true
                 } else {
                     tvError.visibility = VISIBLE
+                    btnContinue.backgroundTintList = colorStateList
+                    btnContinue.isEnabled = false
+                }
+                }else{
                     btnContinue.backgroundTintList = colorStateList
                     btnContinue.isEnabled = false
                 }
@@ -98,19 +108,35 @@ class CreateUsernameActivity : BaseActivity() {
         })
 
         btnContinue.setOnClickListener {
-            Utils.hideSoftKeyboard(this@CreateUsernameActivity)
-            sharedPreferenceManager.userName = edtUsername.text.toString()
-            val userdata = Userdata()
-            userdata.firstName = username
-            userdata.email = email
-            //updateUserData(userdata)
-            sharedPreferenceManager.createUserName = true
-            val intent = Intent(this, HappyToHaveYouActivity::class.java)
-            startActivity(intent)
+            if (edtUsername.text.isNotEmpty()) {
+                Utils.hideSoftKeyboard(this@CreateUsernameActivity)
+                sharedPreferenceManager.userName = edtUsername.text.toString()
+                username = edtUsername.text?.toString()
+                val userdata = Userdata()
+                userdata.firstName = username
+                userdata.email = email
+                updateUserData(userdata)
+                sharedPreferenceManager.createUserName = true
+                val intent = Intent(this, HappyToHaveYouActivity::class.java)
+                startActivity(intent)
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.NAMEPAGE_CONTINUE_TAP,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.USERNAME to edtUsername.text.toString(),
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
+            }else{
+                showCustomToast("Username should not be empty!")
+            }
         }
     }
 
     fun validateUsername(username: String): Boolean {
+        if (username.isEmpty()) {
+            return false
+        }
         // Check if the username only contains alphabetic characters
         val regex = "^[A-Za-z]+$".toRegex()
 
@@ -125,7 +151,7 @@ class CreateUsernameActivity : BaseActivity() {
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
-                    Log.d("AAAA", "Response = " + response.body())
+                    Log.d("TAG", "Response = " + response.body())
                 } else {
                     Toast.makeText(
                         this@CreateUsernameActivity,

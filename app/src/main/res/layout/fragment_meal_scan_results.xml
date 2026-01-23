@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="Meal Scan Results"
             android:textSize="18sp"
-            android:textStyle="bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textColor="@color/meal_log_title"
             android:layout_marginBottom="3dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,11 +50,23 @@
 
             <ImageView
                 android:id="@+id/imageFood"
-                android:layout_width="350dp"
+                android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_view_meal_place"
                 android:scaleType="centerCrop" />
+
+            <View
+                android:id="@+id/greenCircle"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="-35dp"
+                android:visibility="gone"
+                android:background="@drawable/green_circle"
+                app:layout_constraintBottom_toBottomOf="@id/imgFood"
+                app:layout_constraintStart_toStartOf="@id/imgFood"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -67,7 +79,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="45dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
                 android:padding="10dp"
@@ -78,13 +90,15 @@
                     android:id="@+id/foodNameEdit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
+                    android:textSize="17sp"
                     android:background="@null"
-                    android:text="Poha seb"
+                    android:text="Poha"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:maxLength="32"
                     android:fontFamily="@font/dmsans_bold"
                     android:layout_gravity="center"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="2dp"
                     android:textColor="@color/black_no_meals"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/editNameIC"
@@ -154,7 +168,7 @@
                     android:id="@+id/datePickerLayout"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="5dp"
                     android:layout_marginStart="15dp"
                     android:layout_weight="1"
                     android:background="@drawable/white_meal_date_bg"
@@ -165,7 +179,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="13 Feb 2025"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
                         android:layout_marginStart="7dp"
@@ -174,7 +188,7 @@
 
                     <ImageView
                         android:id="@+id/ivDatePicker"
-                        android:layout_width="20dp"
+                        android:layout_width="18dp"
                         android:layout_height="20dp"
                         android:layout_marginEnd="2dp"
                         android:layout_weight="0.1"
@@ -186,7 +200,7 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="15dp"
-                    android:layout_marginStart="7dp"
+                    android:layout_marginStart="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/white_meal_date_bg"
                     android:orientation="horizontal">
@@ -195,8 +209,7 @@
                         android:id="@+id/spinner"
                         android:layout_width="wrap_content"
                         android:layout_height="20dp"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
+                        android:textSize="13sp"
                         android:layout_weight="0.9"
                         android:background="@color/white"
                         android:layout_gravity="center"
@@ -215,10 +228,10 @@
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
                         android:layout_marginStart="15dp"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black_no_meals" />
 
                     <ImageView
-                        android:layout_width="20dp"
+                        android:layout_width="18dp"
                         android:layout_height="20dp"
                         android:layout_weight="0.1"
                         android:layout_marginEnd="2dp"
@@ -304,7 +317,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Macro Nutrients Breakdown"
+                        android:text="Macronutrient Breakdown"
                         android:layout_marginTop="5dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
@@ -350,7 +363,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/view_macro" />
 
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -367,27 +379,28 @@
                     android:id="@+id/layoutMicroTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:orientation="horizontal">
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/tv_micro_meal_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:layout_marginStart="10dp"
+                        android:layout_marginTop="5dp"
                         android:layout_marginEnd="10dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:textSize="14sp"
                         android:fontFamily="@font/dmsans_bold"
+                        android:text="Micro Nutrients Breakdown"
                         android:textColor="@color/meal_log_title"
-                        android:text="Micro Nutrients Breakdown" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
                         android:id="@+id/microUP"
@@ -395,9 +408,9 @@
                         android:layout_height="16dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="8dp"
-                        android:visibility="visible"
                         android:scaleType="center"
                         android:src="@drawable/ic_up"
+                        android:visibility="visible"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -410,7 +423,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:background="@color/view_border"
-                    app:layout_constraintTop_toBottomOf="@+id/layoutMicroTitle"></View>
+                    app:layout_constraintTop_toBottomOf="@+id/layoutMicroTitle">
+                </View>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerview_micro_item"
@@ -1029,8 +1043,8 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textSize="14sp"
-                android:textColor="@color/meal_log_title"
-                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/text_color_kcal"
+                android:fontFamily="@font/dmsans_regular"
                 android:text="Save Meal" />
 
             <CheckBox

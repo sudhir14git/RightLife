@@ -2,7 +2,11 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -19,6 +23,8 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
@@ -41,14 +47,20 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
+import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
 import com.jetsynthesys.rightlife.databinding.FragmentCarbsBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -84,6 +96,9 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private lateinit var goalLayout : LinearLayoutCompat
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
+    private lateinit var recomendationRecyclerView: RecyclerView
+    private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
+    private lateinit var recomendationAdapter: RecommendedAdapterSleep
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCarbsBinding
@@ -121,6 +136,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         totalCalorie = view.findViewById(R.id.totalCalorie)
         goalLayout = view.findViewById(R.id.goalLayout)
         averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
+        recomendationRecyclerView = view.findViewById(R.id.recommendationRecyclerView)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -258,6 +274,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             navigateToFragment(HomeBottomTabFragment(), "landingFragment")
         }
+
+        fetchEatRecommendedData()
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
@@ -430,7 +448,11 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
             avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
             avgStepsLine.textSize = 10f
             avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
-
+            barChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+                barChart.viewPortHandler,
+                barChart.axisLeft,
+                barChart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
             leftYAxis.removeAllLimitLines()
             leftYAxis.addLimitLine(totalStepsLine)
             leftYAxis.addLimitLine(avgStepsLine)
@@ -456,6 +478,9 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         // Legend
         val legend = barChart.legend
         legend.setDrawInside(false)
+
+        selectedItemDate.text = labelsDate.getOrNull(entries.size-1) ?: ""
+        selectedCalorieTv.text = entries.get(entries.size-1).y.toInt().toString()
 
         // Chart selection listener
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
@@ -543,7 +568,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                     }
                 }
                 // Proceed with API call
-                val response = ApiClient.apiServiceFastApi.getConsumedCarbs(
+                val response = ApiClient.apiServiceFastApiV2.getConsumedCarbs(
                     userId = userId,
                     period = period,
                     date = selectedDate
@@ -565,7 +590,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                         // Ensure all UI updates are on the main thread
                         withContext(Dispatchers.Main) {
                             carbs_description_heading.text = data.heading
-                            carbs_description_text.text = data.description
+                            carbs_description_text.text = formatMarkdownBold(data.description)
                             if (data.consumedCarbsTotals.size > 31) {
                                 barChart.visibility = View.GONE
                                 layoutLineChart.visibility = View.VISIBLE
@@ -934,6 +959,59 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private fun updateDateRangeLabel() {
         val sdf = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
         //   dateRangeLabel.text = "${sdf.format(viewModel.startDate)} - ${sdf.format(viewModel.endDate)}"
+    }
+    private fun formatMarkdownBold(input: String): SpannableStringBuilder {
+        val result = SpannableStringBuilder()
+        val regex = Regex("\\*\\*(.*?)\\*\\*") // matches text between ** **
+        var lastIndex = 0
+        regex.findAll(input).forEach { match ->
+            val range = match.range
+            val boldText = match.groupValues[1]
+            // Append text before the bold part
+            result.append(input.substring(lastIndex, range.first))
+            // Apply bold
+            val start = result.length
+            result.append(boldText)
+            result.setSpan(
+                StyleSpan(Typeface.BOLD),
+                start,
+                start + boldText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            lastIndex = range.last + 1
+        }
+        // Append remaining text after the last match
+        if (lastIndex < input.length) {
+            result.append(input.substring(lastIndex))
+        }
+        return result
+    }
+
+    private fun fetchEatRecommendedData() {
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","EAT_RIGHT")
+        call.enqueue(object : Callback<ThinkRecomendedResponse> {
+            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
+                if (response.isSuccessful) {
+                    // progressDialog.dismiss()
+                    thinkRecomendedResponse = response.body()!!
+                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
+                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        recomendationRecyclerView.adapter = recomendationAdapter
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    // progressDialog.dismiss()F
+                }
+            }
+            override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //progressDialog.dismiss()
+            }
+        })
     }
 
     fun showLoader(view: View) {

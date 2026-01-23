@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityBreathworkSessionBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.shawnlin.numberpicker.NumberPicker
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -151,17 +152,20 @@ class BreathworkSessionActivity : BaseActivity() {
                 sessionCount++
                 binding.tvSessionCount.text = sessionCount.toString()
                 calculateSessiontime()
+            }else{
+                Utils.showNewDesignToast(this, "You cannot select more than 100 sets.", false)
             }
         }
 
         binding.btnContinue.setOnClickListener {
-            val intent = Intent(this, BreathworkPracticeActivity::class.java)
-            intent.putExtra("sessionCount", sessionCount * 4)
-            intent.putExtra("BREATHWORK", breathingData)
-            intent.putExtra("StartDate", startDate)
-            //intent.putExtra("ITEM_DESCRIPTION", selectedItem.description)
+            val intent = Intent(this, BreathworkPracticeActivity::class.java).apply {
+                putExtra("sessionCount", sessionCount * 4)
+                putExtra("BREATHWORK", breathingData)
+                putExtra("StartDate", startDate)
+                putExtra("HAPTIC_FEEDBACK", binding.switchHaptic.isChecked)
+            }
             startActivity(intent)
-            finish()
+
         }
 
         binding.switchHaptic.setOnCheckedChangeListener { _, isChecked ->
@@ -231,7 +235,7 @@ class BreathworkSessionActivity : BaseActivity() {
         // Get the actual color value
         val mainColor = resources.getColor(colorResource, null)
         val textColor = resources.getColor(colorResourceText, null)
-        // Apply color to the Continue button
+// Apply color to the Continue button
         binding.btnContinue.backgroundTintList = ColorStateList.valueOf(mainColor)
         binding.btnContinue.setTextColor(resources.getColor(colorResourceText, null))
         binding.btnPlus.backgroundTintList = ColorStateList.valueOf(mainColor)

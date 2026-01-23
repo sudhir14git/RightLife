@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.breathwork
 
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -11,6 +12,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.ScaleAnimation
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -26,8 +28,16 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 class BreathworkPracticeActivity : BaseActivity() {
+    var breathInText = ""
+    var holdText = ""
+    var breathOutText = ""
+    var isLeftActive = false
+    var breathLeftText = ""
+    var breathRightText = ""
+    var alternateHoldText = ""
 
     private lateinit var binding: ActivityBreathworkPracticeBinding
+    var lastClickTime = 0L
 
     private var totalSets = 3
     private var currentSet = 1
@@ -49,6 +59,8 @@ class BreathworkPracticeActivity : BaseActivity() {
     private var holdSound: MediaPlayer? = null
     private var isSoundEnabled = true
     private var isPreparationPhase = true  // Starts as true
+    private var isHapticFeedBack = false
+    private var sessionTimer: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +71,9 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         // Retrieve the selected breathing practice from the intent
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
-        startDate = intent.getStringExtra("StartDate").toString()
-        if (startDate.isEmpty())
-            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-
         val sessionCount = intent.getIntExtra("sessionCount", 3)
         totalSets = sessionCount
+        isHapticFeedBack = intent.getBooleanExtra("HAPTIC_FEEDBACK", false)
         inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
         exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
         holdTime = breathingData?.breathHoldTime?.toLong()!! * 1000
@@ -80,13 +89,25 @@ class BreathworkPracticeActivity : BaseActivity() {
         sessionDurationSeconds = (totalSets * cycleDuration / 1000).toInt()
 
         // Set initial values
-        binding.setIndicator.text = "Set $currentSet/$totalSets"
+        binding.setIndicator.text = "Set $currentSet/${totalSets / 4}"
         updateSessionTimer(sessionDurationSeconds * 1000L)
 
         // Set click listeners
-        binding.backButton.setOnClickListener { onBackPressed() }
+        binding.backButton.setOnClickListener {
+            //onBackPressed()
+            if (binding.rlPracticeComplete.isVisible) {
+                showCompletedBottomSheet()
+                callPostMindFullDataAPI()
+            } else
+                showDeleteBottomSheet()
+        }
         binding.finishEarlyButton.setOnClickListener {
-            showDeleteBottomSheet()
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime > 500) { // 500ms debounce
+                lastClickTime = currentTime
+                showDeleteBottomSheet()
+            }
+
         }
 
         // Start the breathing session
@@ -95,8 +116,17 @@ class BreathworkPracticeActivity : BaseActivity() {
         // Start the preparation countdown
         startPreparationCountdown()
         setBreathingTypeColors()
+        setBreathingTexts(breathingData?.title ?: "Custom")
     }
 
+    override fun onBackPressed() {
+        //super.onBackPressed()
+        if (binding.rlPracticeComplete.isVisible) {
+            showCompletedBottomSheet()
+            callPostMindFullDataAPI()
+        } else
+            showDeleteBottomSheet()
+    }
 
     /**
      * Start the preparation countdown (3, 2, 1) before breathing begins
@@ -106,8 +136,10 @@ class BreathworkPracticeActivity : BaseActivity() {
         binding.circleView.visibility = View.GONE
         binding.circleViewbase.visibility = View.GONE
         // Hide breathing-specific UI elements during countdown
-        binding.setIndicator.alpha = 0.3f
-        binding.sessionTimer.alpha = 0.3f
+        binding.setIndicator.alpha = 0.1f
+        binding.sessionTimer.alpha = 0.1f
+        binding.setIndicator.visibility = View.GONE
+        binding.sessionTimer.visibility = View.GONE
 
         // Make the countdown very prominent
         binding.breathingPhase.text = "Get Ready"
@@ -120,7 +152,6 @@ class BreathworkPracticeActivity : BaseActivity() {
         } else {
             binding.tvPrepareMessage.text = "Relax and Settle In"
         }
-
 
 
         var countdownValue = 4
@@ -177,11 +208,15 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startBreathingSession() {
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         isPreparationPhase = false
 
         // Restore UI elements
         binding.setIndicator.alpha = 1.0f
         binding.sessionTimer.alpha = 1.0f
+        binding.setIndicator.visibility = View.VISIBLE
+        binding.sessionTimer.visibility = View.VISIBLE
         //binding.circleTimer.textSize = 48f // Reset to normal size
 
         // Start the breathing session
@@ -227,10 +262,12 @@ class BreathworkPracticeActivity : BaseActivity() {
                     stopAllSounds()
                     inhaleSound?.start()
                 }
+
                 BreathingPhase.EXHALE -> {
                     stopAllSounds()
                     exhaleSound?.start()
                 }
+
                 BreathingPhase.HOLD -> {
                     stopAllSounds()
                     holdSound?.start()
@@ -274,7 +311,10 @@ class BreathworkPracticeActivity : BaseActivity() {
 
 
     private fun startSessionTimer() {
-        object : CountDownTimer(sessionDurationSeconds * 1000L, 1000) {
+        // Cancel any existing timer to avoid multiple timers
+        sessionTimer?.cancel()
+
+        sessionTimer = object : CountDownTimer(sessionDurationSeconds * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 updateSessionTimer(millisUntilFinished)
             }
@@ -300,7 +340,13 @@ class BreathworkPracticeActivity : BaseActivity() {
                     AnalyticsParam.BREATHING_SESSION_DURATION to breathingData?.duration!!
                 )
             )
-            binding.setIndicator.text = "Set $currentSet/$totalSets"
+            //binding.setIndicator.text = "Set ${currentSet/4}/${totalSets/4}"
+            // Calculate the current "lap" of 4, starting from 1
+            val currentLap = ((currentSet - 1) / 4) + 1
+            val totalLaps = totalSets / 4
+
+            binding.setIndicator.text = "Set $currentLap/$totalLaps"
+
             startBreathIn()
         } else {
             //finish()
@@ -314,16 +360,51 @@ class BreathworkPracticeActivity : BaseActivity() {
                     AnalyticsParam.BREATHING_SESSION_DURATION to System.currentTimeMillis() - startTime
                 )
             )
+            logBreathingCompletEvent(breathingData)
         }
     }
 
+    private fun logBreathingCompletEvent(breathingData: BreathingData?) {
+        val breathingType = breathingData?.title?.trim() ?: ""
+
+// 🎯 Map breathing type → event name
+        val eventName = when (breathingType) {
+            "Box Breathing" -> AnalyticsEvent.TR_BoxBreathing_Completed
+            "Alternate Nostril Breathing" -> AnalyticsEvent.TR_AlternateNostril_Completed
+            "4-7-8 Breathing" -> AnalyticsEvent.TR_478Breathing_Completed
+            "Custom" -> AnalyticsEvent.TR_CustomBreathing_Completed
+            else -> AnalyticsEvent.TR_CustomBreathing_Completed // fallback
+        }
+
+// ✅ Example: log the breathing completion event
+        val duration = System.currentTimeMillis() - startTime
+        AnalyticsLogger.logEvent(
+            this,
+            eventName,
+            mapOf(
+                AnalyticsParam.BREATHING_TYPE_NAME to breathingType,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.TOTAL_DURATION to duration
+            )
+        )
+
+    }
+
     private fun showCompletedBottomSheetNew() {
+        callPostMindFullDataAPI()
         binding.rlPracticeComplete.visibility = View.VISIBLE
         binding.rlBreathingPracticeMain.visibility = View.GONE
-        binding.btnExit.setOnClickListener() {
+        binding.btnExit.setOnClickListener {
             showCompletedBottomSheet()
+            /*
+            if (isHapticFeedBack)
+                showCompletedBottomSheet()
+            else {
+                callPostMindFullDataAPI()
+                finish()
+            }*/
         }
-        binding.btnRepeat.setOnClickListener() {
+        binding.btnRepeat.setOnClickListener {
             // Reset for a new session
             currentSet = 1
             binding.rlPracticeComplete.visibility = View.GONE
@@ -332,23 +413,36 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startBreathIn() {
-        binding.breathingPhase.text = "Inhale"
+        setBreathingTexts(breathingData?.title ?: "Custom")
+        binding.breathingPhase.text = breathInText
         playSoundCue(BreathingPhase.INHALE) // Play inhale sound
         animateCircle(1f, 1.5f, inhaleTime)
-        startCountdown(inhaleTime) {
-            if (holdTime > 0) startHold() else startBreathOut()
+        // For Alternate Nostril Breathing, show nostril switch instruction 1 second early
+        if (breathingData?.title == "Alternate Nostril Breathing" && inhaleTime > 1000) {
+            startCountdownWithNostrilSwitch(inhaleTime) {
+                if (holdTime > 0) startHold() else startBreathOut()
+            }
+        } else {
+            startCountdown(inhaleTime) {
+                if (holdTime > 0) startHold() else startBreathOut()
+            }
         }
+        /*  startCountdown(inhaleTime) {
+              if (holdTime > 0) startHold() else startBreathOut()
+          }*/
     }
 
     private fun startHold() {
-        binding.breathingPhase.text = "Hold"
+        //setBreathingTexts(breathingData?.title ?: "Custom")
+        binding.breathingPhase.text = holdText
         playSoundCue(BreathingPhase.HOLD) // Play hold sound
         animateCircle(1.5f, 1.5f, holdTime)
         startCountdown(holdTime) { startBreathOut() }
     }
 
     private fun startBreathOut() {
-        binding.breathingPhase.text = "Exhale"
+        //setBreathingTexts(breathingData?.title ?: "Custom")
+        binding.breathingPhase.text = breathOutText
         playSoundCue(BreathingPhase.EXHALE) // Play exhale sound
         animateCircle(1.5f, 1f, exhaleTime)
         startCountdown(exhaleTime) {
@@ -362,6 +456,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     }
 
     private fun startFinalHold() {
+        //setBreathingTexts(breathingData?.title ?: "Custom")
         binding.breathingPhase.text = "Hold"
         playSoundCue(BreathingPhase.HOLD) // Play exhale sound
         animateCircle(1f, 1f, holdTime)
@@ -378,6 +473,31 @@ class BreathworkPracticeActivity : BaseActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 secondsLeft++
                 binding.circleTimer.text = secondsLeft.toString()
+            }
+
+            override fun onFinish() {
+                onFinish()
+            }
+        }.start()
+    }
+
+    // New method: Countdown with nostril switch instruction
+    private fun startCountdownWithNostrilSwitch(duration: Long, onFinish: () -> Unit) {
+        var secondsLeft = 0
+        val totalSeconds = (duration / 1000).toInt()
+        binding.breathingPhase.text.toString()
+
+        binding.circleTimer.text = secondsLeft.toString()
+
+        countDownTimer = object : CountDownTimer(duration, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                secondsLeft++
+                binding.circleTimer.text = secondsLeft.toString()
+
+                // Show nostril switch instruction 1 second before completion
+                if (secondsLeft == totalSeconds - 1) {
+                    binding.breathingPhase.text = alternateHoldText
+                }
             }
 
             override fun onFinish() {
@@ -471,9 +591,14 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         dialogBinding.btnYes.setOnClickListener {
             //deleteJournal(journalEntry)
+            countDownTimer?.cancel()
+            countDownTimer = null
+            sessionTimer?.cancel()
+            sessionTimer = null
             bottomSheetDialog.dismiss()
             callPostMindFullDataAPI()
-            finish()
+            //finish()
+            showCompletedBottomSheet()
         }
         bottomSheetDialog.show()
     }
@@ -498,7 +623,6 @@ class BreathworkPracticeActivity : BaseActivity() {
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
         }
-
         dialogBinding.tvTitle.text = "How do you feel after the exercise?"
         dialogBinding.tvDescription.text =
             "A few more minutes of breathing practise will make a world of difference."
@@ -508,12 +632,14 @@ class BreathworkPracticeActivity : BaseActivity() {
         dialogBinding.btnWorse.text = "worse than before"
 
         bottomSheetDialog.setOnDismissListener {
-            callPostMindFullDataAPI()
+            startActivity(
+                Intent(this, BreathworkActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
             finish()
         }
 
         bottomSheetDialog.setOnCancelListener {
-            callPostMindFullDataAPI()
             finish()
         }
 
@@ -527,11 +653,9 @@ class BreathworkPracticeActivity : BaseActivity() {
         }
 
         dialogBinding.btnSame.setOnClickListener {
-            //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
         }
         dialogBinding.btnWorse.setOnClickListener {
-            //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
         }
         bottomSheetDialog.show()
@@ -571,6 +695,13 @@ class BreathworkPracticeActivity : BaseActivity() {
             "Custom" -> R.color.custom_breathing_card_color
             else -> R.color.white
         }
+        val colorResourceText = when (breathingType) {
+            "Box Breathing" -> R.color.box_breathing_card_color_text
+            "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color_text
+            "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color_text
+            "Custom" -> R.color.custom_breathing_card_color_text
+            else -> R.color.alternate_breathing_card_color_text
+        }
 
         // Get the actual color value
         val mainColor = resources.getColor(colorResource, null)
@@ -582,6 +713,9 @@ class BreathworkPracticeActivity : BaseActivity() {
         // Apply the colors to the views
         binding.circleViewbase.backgroundTintList = ColorStateList.valueOf(baseColor)
         binding.circleView.backgroundTintList = ColorStateList.valueOf(mainColor)
+
+        binding.btnRepeat.backgroundTintList = ColorStateList.valueOf(mainColor)
+        binding.btnRepeat.setTextColor(resources.getColor(colorResourceText, null))
     }
 
     // Helper function to adjust color alpha (transparency)
@@ -599,6 +733,97 @@ class BreathworkPracticeActivity : BaseActivity() {
         val green = ((Color.green(color) * (1 - factor) + 255 * factor)).toInt()
         val blue = ((Color.blue(color) * (1 - factor) + 255 * factor)).toInt()
         return Color.argb(Color.alpha(color), red, green, blue)
+    }
+
+
+    // Function to set texts based on breathing type
+    fun setBreathingTexts(breathingType: String) {
+        when (breathingType) {
+            "Box Breathing" -> {
+                breathInText = "Breathe In"
+                holdText = "Hold"
+                breathOutText = "Breathe Out"
+            }
+
+            "Alternate Nostril Breathing" -> {
+                if (isLeftActive) {
+                    breathInText = "Inhale slowly through your left nostril..."
+                    alternateHoldText = "Now close your left nostril."
+                    holdText = "Hold"
+                    breathOutText = "Exhale through your right nostril.."
+                    isLeftActive = false
+                } else {
+                    breathInText = "Inhale slowly through your right nostril..."
+                    alternateHoldText = "Close the right nostril.."
+                    holdText = "Hold"
+                    breathOutText = "Exhale through your left nostril.."
+                    isLeftActive = true
+                }
+            }
+
+            "4-7-8 Breathing" -> {
+                breathInText = "Slow Inhale"
+                holdText = "Hold Breath"
+                breathOutText = "Long exhale"
+            }
+
+            "Custom" -> {
+                breathInText = "Breathe In"
+                holdText = "Hold"
+                breathOutText = "Breathe Out"
+            }
+
+            else -> {
+                breathInText = ""
+                holdText = ""
+                breathOutText = ""
+            }
+        }
+    }
+
+    /**
+     * Pauses all currently playing sounds without stopping or releasing them.
+     */
+    private fun pauseAllSounds() {
+        try {
+            if (inhaleSound?.isPlaying == true) {
+                inhaleSound?.pause()
+            }
+            if (exhaleSound?.isPlaying == true) {
+                exhaleSound?.pause()
+            }
+            if (holdSound?.isPlaying == true) {
+                holdSound?.pause()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        muteAllSounds(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        muteAllSounds(false)
+
+    }
+
+    /**
+     * Mutes or unmutes all MediaPlayer instances.
+     * @param isMuted True to mute (set volume to 0), false to unmute (set to default volume).
+     */
+    private fun muteAllSounds(isMuted: Boolean) {
+        try {
+            val volume = if (isMuted) 0f else 0.7f // 0f for mute, 0.7f for default volume
+            inhaleSound?.setVolume(volume, volume)
+            exhaleSound?.setVolume(volume, volume)
+            holdSound?.setVolume(volume, volume)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 }

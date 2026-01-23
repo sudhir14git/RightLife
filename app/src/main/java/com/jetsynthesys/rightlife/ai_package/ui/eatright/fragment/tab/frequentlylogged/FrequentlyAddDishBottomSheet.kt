@@ -22,12 +22,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
+import com.jetsynthesys.rightlife.ai_package.model.request.IngredientLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.RecipeLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,8 +39,8 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var flexboxLayout: FlexboxLayout
     private val ingredientsList = ArrayList<String>()
-    private  var snapDishLocalListModel : SnapDishLocalListModel? = null
-    private var dishLists : ArrayList<SearchResultItem> = ArrayList()
+    private  var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
+    private var dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
     private lateinit var mealType : String
     private lateinit var layoutTitle : LinearLayout
     private lateinit var btnLogMeal: LinearLayoutCompat
@@ -75,13 +75,13 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
 
         mealType = arguments?.getString("mealType").toString()
         val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
-            arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
+            arguments?.getParcelable("snapDishLocalListModel", RecipeDetailsLocalListModel::class.java)
         } else {
             arguments?.getParcelable("snapDishLocalListModel")
         }
         if (dishLocalListModels != null){
-            snapDishLocalListModel = dishLocalListModels
-            dishLists.addAll(snapDishLocalListModel!!.data)
+            recipeDetailsLocalListModel = dishLocalListModels
+            dishLists.addAll(recipeDetailsLocalListModel!!.data)
         }
         flexboxLayout.visibility = View.VISIBLE
         layoutTitle.visibility = View.VISIBLE
@@ -90,7 +90,7 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
 
         if (dishLists.size > 0){
             for (dishItem in dishLists) {
-                ingredientsList.add(dishItem.name!!)
+                ingredientsList.add(dishItem.recipe)
             }
             if (ingredientsList.size > 0){
                 updateIngredientChips()
@@ -131,36 +131,53 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun createDishLog(snapRecipeList : ArrayList<SearchResultItem>) {
+    private fun createDishLog(snapRecipeList : ArrayList<IngredientRecipeDetails>) {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        // val userId = "64763fe2fa0e40d9c0bc8264"
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
 
         val mealLogList : ArrayList<DishLog> = ArrayList()
-        val mealNamesString = snapRecipeList.map { it.name ?: "" }.joinToString(", ")
+        val recipes: ArrayList<RecipeLogRequest> = ArrayList()
+        val ingredients: ArrayList<IngredientLogRequest> = ArrayList()
+        val mealNamesString = snapRecipeList.map { it.recipe ?: "" }.joinToString(", ")
 
         snapRecipeList?.forEach { snapRecipe ->
-            val mealLogData = DishLog(
-                receipe_id = snapRecipe.id,
-                meal_quantity = 1.0,
-                unit = "g",
-                measure = "Bowl"
-            )
-            mealLogList.add(mealLogData)
+            if (snapRecipe.source.equals("recipe")){
+                val mealRecipeData = RecipeLogRequest(
+                    recipe_id = snapRecipe.id,
+                    selected_serving_type = snapRecipe.selected_serving?.type,
+                    selected_serving_value = snapRecipe.selected_serving?.value
+                )
+                recipes.add(mealRecipeData)
+            }
+            if (snapRecipe.source.equals("ingredient")){
+                val mealIngredientData = IngredientLogRequest(
+                    ingredient_id = snapRecipe.id,
+                    meal_quantity = snapRecipe.quantity,
+                    standard_serving_size = snapRecipe.selected_serving?.type
+                )
+                ingredients.add(mealIngredientData)
+            }
+//            val mealLogData = DishLog(
+//                receipe_id = snapRecipe.id,
+//                meal_quantity = 1.0,
+//                unit = "g",
+//                measure = "Bowl"
+//            )
+//            mealLogList.add(mealLogData)
         }
         val mealLogRequest = SaveDishLogRequest(
-            meal_type = mealType,
-            meal_log = mealLogList
+            meal_type = mealType ?: "dd",
+            recipes = recipes,
+            ingredients = ingredients
         )
-        val call = ApiClient.apiServiceFastApi.createSaveMealsToLog(userId, formattedDate, mealLogRequest)
+        val call = ApiClient.apiServiceFastApiV2.createSaveMealsToLog(userId, formattedDate, mealLogRequest)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {

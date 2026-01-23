@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="black_plain">#000000</color>
+    <color name="white_plain">#FFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="rightlife">#FD9493</color>
@@ -14,6 +16,7 @@
 
     <color name="border">#DDDDDD</color>
     <color name="menuselected">#FD6967</color>
+    <color name="new_background">#FFECEB</color>
 
 
     <color name="buttoncolorvc">#E5B62D</color>
@@ -77,6 +80,8 @@
     <color name="light_red">#FDD3D2</color>
     <color name="medium_red">#FFA8A5</color>
     <color name="dark_red">#FD6967</color>
+    <color name="helpline_card_bg">#FFA8A5</color>
+    <color name="helpline_card_bg_light">#FEB4B2</color>
 
     <color name="light_green">#A6E0CE</color>
     <color name="medium_green">#4ED6AC</color>
@@ -215,13 +220,14 @@
     <color name="sync_button_color">#FD6967</color>
     <color name="weight_loss_background">#FFECEB</color>
     <color name="pink">#FFC0CB</color>
+    <color name="recommendationText">#767676</color>
     <color name="progress_subtraction">#F8D6CA</color>
     <color name="progress_subtraction_fill">#EF8B6A</color>
     <color name="progress_baguette">#D8E3FC</color>
     <color name="progress_baguette_fill">#799CED</color>
     <color name="progress_dewpoint">#F7E6B7</color>
     <color name="progress_dewpoint_fill">#F5C560</color>
-    <!--<color name="light_green">#A7E1CE</color>-->
+    <color name="water_intek_border_green">#A7E1CE</color>
     <color name="new_fill">#F5F5F5</color>
     <color name="main_tab_background">#B0B0B0</color>
     <color name="eatright_text_color">#984C01</color>
@@ -295,6 +301,15 @@
     <color name="four_seven_breathing_card_color_text">#4A2E3A</color>
     <color name="custom_breathing_card_color_text">#3B4A36</color>
     <color name="dialog_status_bar">#883f49</color>
+    <color name="gray_past_price">#747474</color>
 
+    <color name="bullet_color">#BA2C2C</color>
+    <color name="free_form_color">#A15A13</color>
+    <color name="gratitude_color">#0E6047</color>
+    <color name="grief_color">#0E3869</color>
+
+    // challenge color
+    <color name="leaderboard_tabcolor_selected">#B2A7F6</color>
+    <color name="streak_completed_bg">#E6F8F2</color>
 
 </resources>

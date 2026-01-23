@@ -37,6 +37,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         val item = dataLists[position]
 
         holder.mealTitle.text = item.workoutType
+        holder.viewLine.visibility = View.GONE
         if (item.isSynced){
             holder.edit.visibility = View.GONE
             holder.delete.visibility = View.GONE
@@ -44,6 +45,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             holder.bpmUnit.visibility = View.VISIBLE
             holder.wearable.visibility = View.VISIBLE
             holder.bpmUnit.text = "bpm"
+
             holder.subtractionValue.text = item.averageHeartRate.toInt().toString()
             holder.subtraction.setImageResource(R.drawable.avg_heart_rate)
             if (item.averageHeartRate> 0){
@@ -264,10 +266,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         }else{
             holder.edit.visibility = View.VISIBLE
             holder.delete.visibility = View.VISIBLE
-            holder.tv_subtraction_value_Intensity.visibility = View.VISIBLE
+            holder.tv_subtraction_value_Intensity.visibility = View.GONE
             holder.wearable.visibility = View.GONE
             holder.bpmUnit.visibility = View.GONE
-            holder.subtractionValue.text = item.intensity
+            holder.subtractionValue.text = "${item.intensity} Intensity"
             holder.subtraction.setImageResource(R.drawable.intensity_meter)
             holder.layoutMain.isEnabled = false
             /*Glide.with(context)
@@ -483,6 +485,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 // Handle Wrestling
                 holder.main_heading_icon.setImageResource(R.drawable.wrestling)
             }
+            "Strength Training" -> {
+                // Handle Traditional Strength Training
+                holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
+            }
             "Yoga" -> {
                 // Handle Yoga
                 holder.main_heading_icon.setImageResource(R.drawable.yoga)
@@ -534,7 +540,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                         val fragment = WorkoutAnalyticsFragment().apply {
                             arguments = Bundle().apply {
                                 putString("YourActivity", "YourActivity")
-                                putSerializable("cardItem", cardItem)
+                                putParcelable("cardItem", cardItem)
                             }
                         }
                         (context as AppCompatActivity).supportFragmentManager.beginTransaction()
@@ -575,6 +581,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
+        val viewLine: View = itemView.findViewById(R.id.view)
         val layoutMain : androidx.constraintlayout.widget.ConstraintLayout = itemView.findViewById(R.id.layout_main)
     }
 
@@ -662,14 +669,14 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             spannable.setSpan(
-                AbsoluteSizeSpan(18, true), // 18sp
+                AbsoluteSizeSpan(14, true), // 18sp
                 0,
                 hours.toString().length,
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             // Style the "hr" unit (normal, 12sp, no bold)
             spannable.setSpan(
-                AbsoluteSizeSpan(12, true), // 12sp
+                AbsoluteSizeSpan(10, true), // 12sp
                 hours.toString().length,
                 hours.toString().length + 3, // " hr "
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -688,14 +695,14 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             spannable.setSpan(
-                AbsoluteSizeSpan(18, true), // 18sp
+                AbsoluteSizeSpan(14, true), // 18sp
                 minutesStart,
                 minutesEnd,
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             // Style the "mins" unit (normal, 12sp, no bold)
             spannable.setSpan(
-                AbsoluteSizeSpan(12, true), // 12sp
+                AbsoluteSizeSpan(10, true), // 12sp
                 minutesEnd,
                 formattedText.length, // " mins"
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE

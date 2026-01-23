@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:text="Purchase Plans"
             android:textSize="18sp"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textColor="@color/txt_color_mind"
             android:layout_marginStart="4dp" />
     </LinearLayout>

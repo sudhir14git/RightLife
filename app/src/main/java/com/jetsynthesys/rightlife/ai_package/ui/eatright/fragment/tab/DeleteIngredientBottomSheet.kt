@@ -1,13 +1,11 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
 
 import android.R.color.transparent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -15,10 +13,8 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import com.jetsynthesys.rightlife.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 
 class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
 
@@ -72,7 +68,7 @@ class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
             if (ingredientLocalListModels != null) {
                 if (ingredientLocalListModels.data.size > 0) {
                     for (item in ingredientLocalListModels.data) {
-                        if (item.ingredient_name.contentEquals(ingredientName)) {
+                        if (item.food_name.contentEquals(ingredientName)) {
                             ingredientLocalListModels.data.remove(item)
                             dismiss()
                             Toast.makeText(view.context, "Ingredient Removed", Toast.LENGTH_SHORT).show()

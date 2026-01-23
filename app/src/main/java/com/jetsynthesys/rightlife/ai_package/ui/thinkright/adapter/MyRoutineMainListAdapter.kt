@@ -17,6 +17,9 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteRoutineBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import kotlin.math.roundToInt
 
 class MyRoutineMainListAdapter(
@@ -65,6 +68,11 @@ class MyRoutineMainListAdapter(
             // Implement edit functionality
         }
         holder.addToWorkout.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MR_Routine_AddToLog
+                )
+            }
             onAddToLogButtonClick(item)
         }
         holder.layout_edit.setOnClickListener {

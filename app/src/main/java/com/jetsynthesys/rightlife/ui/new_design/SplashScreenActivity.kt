@@ -6,13 +6,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.VideoView
+import com.google.firebase.messaging.FirebaseMessaging
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -24,6 +28,9 @@ class SplashScreenActivity : BaseActivity() {
     private lateinit var rlview1: RelativeLayout
     private lateinit var imgview2: ImageView
     private val SPLASH_DELAY: Long = 3000 // 3 seconds
+    private var appConfig: AppConfigResponse? = null
+    private var configCallDone: Boolean = false
+    private var isNextActivityStarted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +38,15 @@ class SplashScreenActivity : BaseActivity() {
         videoView = findViewById(R.id.videoView)
         rlview1 = findViewById(R.id.rlview1)
         imgview2 = findViewById(R.id.imgview2)
+        fetchAppConfig()
+        try {
+            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
+                isNextActivityStarted = true
+                startNextActivity()
+            }
+        } catch (e: Exception) {
+            showCustomToast("Please check your internet connection and try again !!", false)
+        }
 
         // Need this Dark Mode selection logic for next phase
         /*val appMode = sharedPreferenceManager.appMode
@@ -41,14 +57,111 @@ class SplashScreenActivity : BaseActivity() {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }*/
+        logCurrentFCMToken()
+    }
+
+    private fun fetchAppConfig() {
+        // apiService is available from BaseActivity in your project (as you already use elsewhere)
+        val call = apiService.getAppConfig()
+        call.enqueue(object : retrofit2.Callback<okhttp3.ResponseBody?> {
+
+            override fun onResponse(
+                call: retrofit2.Call<okhttp3.ResponseBody?>,
+                response: retrofit2.Response<okhttp3.ResponseBody?>
+            ) {
+                configCallDone = true
+
+                if (response.isSuccessful && response.body() != null) {
+                    try {
+                        val json = response.body()!!.string()
+                        appConfig =
+                            com.google.gson.Gson().fromJson(json, AppConfigResponse::class.java)
+
+                        // OPTIONAL: store raw json if you want (only if you already have a pref method)
+                        sharedPreferenceManager.saveAppConfigJson(json)
+                        appConfig?.data?.forceUpdate?.let { fu ->
+                            sharedPreferenceManager.saveForceUpdateConfig(
+                                fu.enabled == true,
+                                fu.minAndroidVersion ?: "",
+                                fu.updateAndroidUrl ?: "",
+                                fu.message ?: ""
+                            )
+                            if (!isNextActivityStarted)
+                                startNextActivity()
+                        }
+                    } catch (e: Exception) {
+                        appConfig = null
+                        if (sharedPreferenceManager.appConfigJson.isNullOrBlank())
+                            showCustomToast(
+                                "Please check your internet connection and try again !!",
+                                false
+                            )
+                    }
+                } else {
+                    appConfig = null
+                    if (sharedPreferenceManager.appConfigJson.isNullOrBlank())
+                        showCustomToast(
+                            "Please check your internet connection and try again !!",
+                            false
+                        )
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<okhttp3.ResponseBody?>, t: Throwable) {
+                configCallDone = true
+                appConfig = null
+                // Don't block splash just because config failed
+                // If you want, log it:
+                if (sharedPreferenceManager.appConfigJson.isNullOrBlank())
+                    showCustomToast("Please check your internet connection and try again !!", false)
+                Log.e("SplashConfig", "Config API failed: ${t.message}")
+            }
+        })
+    }
 
 
+    private fun logCurrentFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                //Log.d("FCM_TOKEN", "Current token: $token")
+                //Log.d("FCM_TOKEN", "Token length: ${token?.length}")
+            } else {
+                // Log.e("FCM_TOKEN", "Failed to get token", task.exception)
+            }
+        }.addOnFailureListener { exception ->
+            //Log.e("FCM_TOKEN", "Token retrieval failed: ${exception.message}", exception)
+        }
+    }
+
+    private fun animateViews() {
+        val view1: View = findViewById(R.id.rlview1)
+        val view2: View = findViewById(R.id.imgview2)
+        // Fade out view1 and fade in view2
+        view1.animate()
+            .alpha(0.9f) // Fade out
+            .setDuration(2000) // Animation duration in ms
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    view1.visibility = View.GONE // Hide view1 after animation
+                    view2.visibility = View.VISIBLE // Show view2 before animation
+                    view2.alpha = 0f // Set initial alpha for fade in
+
+                    view2.animate()
+                        .alpha(1f) // Fade in
+                        .setDuration(1000) // Animation duration in ms
+                        .setListener(null)
+                }
+            })
+    }
+
+    private fun startNextActivity() {
         val authToken = sharedPreferenceManager.accessToken
         // Delay the transition to the next activity to allow the video to end properly
         Handler(Looper.getMainLooper()).postDelayed({
             if (authToken.isEmpty()) {
                 AnalyticsLogger.logEvent(
-                    AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
+                    AnalyticsEvent.SPLASH_SCREEN_FIRST_OPEN, mapOf(
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
                     )
                 )
@@ -70,7 +183,26 @@ class SplashScreenActivity : BaseActivity() {
                     }
                 }
 
-                AnalyticsLogger.logEvent(this, AnalyticsEvent.SPLASH_SCREEN_OPEN)
+                email = try {
+                    sharedPreferenceManager.userProfile.userdata.phoneNumber
+                } catch (e: NullPointerException) {
+                    sharedPreferenceManager.email
+                }
+                if (loggedInUser == null) {
+                    for (user in sharedPreferenceManager.loggedUserList) {
+                        if (email == user.email) {
+                            loggedInUser = user
+                        }
+                    }
+                }
+
+                AnalyticsLogger.logEvent(
+                    this,
+                    AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
 
                 if (loggedInUser?.isOnboardingComplete == true) {
                     val intent = Intent(this, HomeNewActivity::class.java)
@@ -85,7 +217,7 @@ class SplashScreenActivity : BaseActivity() {
                         || !sharedPreferenceManager.thirdFiller
                         || !sharedPreferenceManager.interest
                     ) {
-                        val intent = Intent(this, WellnessFocusActivity::class.java)
+                        val intent = Intent(this, WellnessFocusListActivity::class.java)
                         startActivity(intent)
                     } else if (!sharedPreferenceManager.allowPersonalization) {
                         val intent = Intent(this, PersonalisationActivity::class.java)
@@ -112,24 +244,4 @@ class SplashScreenActivity : BaseActivity() {
         animateViews()
     }
 
-    private fun animateViews() {
-        val view1: View = findViewById(R.id.rlview1)
-        val view2: View = findViewById(R.id.imgview2)
-        // Fade out view1 and fade in view2
-        view1.animate()
-            .alpha(0.9f) // Fade out
-            .setDuration(2000) // Animation duration in ms
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    view1.visibility = View.GONE // Hide view1 after animation
-                    view2.visibility = View.VISIBLE // Show view2 before animation
-                    view2.alpha = 0f // Set initial alpha for fade in
-
-                    view2.animate()
-                        .alpha(1f) // Fade in
-                        .setDuration(1000) // Animation duration in ms
-                        .setListener(null)
-                }
-            })
-    }
 }

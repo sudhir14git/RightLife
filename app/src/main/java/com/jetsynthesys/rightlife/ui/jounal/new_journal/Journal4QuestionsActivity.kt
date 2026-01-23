@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.jounal.new_journal
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
@@ -28,11 +31,15 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityJournalAnswerBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetAddTagBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
+import com.jetsynthesys.rightlife.databinding.CloseConfirmationBottomsheetBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -58,11 +65,14 @@ class Journal4QuestionsActivity : BaseActivity() {
     private var journalEntry: JournalEntry? = JournalEntry()
     private var startDate = ""
     var isFromThinkRight: Boolean = false
+    private var startTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalAnswerBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
+
+        startTime = System.currentTimeMillis()
 
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
 
@@ -78,11 +88,54 @@ class Journal4QuestionsActivity : BaseActivity() {
 
         //back button
         binding.btnBack.setOnClickListener {
-            closeActivity()
+            closeConfirmationBottomSheet()
         }
 
         onBackPressedDispatcher.addCallback {
-            closeActivity()
+            closeConfirmationBottomSheet()
+        }
+
+        binding.btnInfo.setOnClickListener {
+            it.disableViewForSeconds()
+            val htmlText = when (journalItem?.title) {
+                "Gratitude" -> {
+                    """
+    <p>This practice centers on noticing what’s going well—no matter how big or small.</p>
+    <p>Gratitude Journaling has been shown to boost mood, shift perspective, and build emotional resilience.</p>
+    <p>Even a few simple entries can help rewire your focus toward the positive.</p>
+""".trimIndent()
+                }
+
+                "Grief" -> {
+                    """
+    <p>Grief Journaling is a safe place to hold pain, memories, questions, or anger.</p>
+    <p>It’s for anyone navigating loss, change, or heartache.</p>
+    <p>There’s no right way to grieve—this space is here to let your feelings breathe, however they show up.</p>
+""".trimIndent()
+                }
+
+                "Bullet" -> {
+                    """
+    <p>Bullet Journaling helps organize your inner world in small, manageable pieces.</p>
+    <p>Use it to list your moods, wins, worries, intentions—or anything else on your mind.</p>
+    <p>It’s a great option when you don’t feel like writing full paragraphs but still want to check in with yourself.</p>
+""".trimIndent()
+                }
+
+                else -> {
+                    """
+        <p>Free Form Journaling is all about flow. There are no rules, no structure—just your thoughts, as they come.</p>
+        <p>You can write a few lines or fill a page. It’s your space to vent, dream, reflect, or ramble.</p>
+        <p>Let go of how it should sound and focus on what you feel.</p>
+    """.trimIndent()
+                }
+            }
+            journalItem?.title?.let { it1 ->
+                DialogUtils.showJournalCommonDialog(
+                    this,
+                    it1, htmlText
+                )
+            }
         }
 
         binding.tvEntryDate.text = DateTimeUtils.formatCurrentDate()
@@ -151,6 +204,7 @@ class Journal4QuestionsActivity : BaseActivity() {
         }
 
         binding.btnSave.setOnClickListener {
+            it.disableViewForSeconds()
             if (journalEntry == null) {
                 journalQuestionCreateRequest.tags?.addAll(selectedTags)
                 createJournal()
@@ -219,6 +273,7 @@ class Journal4QuestionsActivity : BaseActivity() {
         })
 
         dialogBinding.btnAdd.setOnClickListener {
+            it.disableViewForSeconds()
             if (dialogBinding.edtTag.text.isNullOrEmpty()) {
                 Toast.makeText(this, "Tag should not be empty", Toast.LENGTH_SHORT).show()
             } else {
@@ -283,7 +338,7 @@ class Journal4QuestionsActivity : BaseActivity() {
             bottomSheetDialog.dismiss()
         }
 
-        dialogBinding.btnYes.setOnClickListener {
+        dialogBinding.btnDelete.setOnClickListener {
             val journalDeleteTagRequest = JournalDeleteTagRequest()
             journalDeleteTagRequest.outerIndex = type - 1
             journalDeleteTagRequest.innerIndex = position
@@ -343,7 +398,7 @@ class Journal4QuestionsActivity : BaseActivity() {
 
         chip.textSize = 12f
 
-        val heightInDp = 60 // or whatever height you want
+        val heightInDp = 50 // or whatever height you want
         val heightInPx = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             heightInDp.toFloat(),
@@ -389,16 +444,16 @@ class Journal4QuestionsActivity : BaseActivity() {
             true
         }
 
-/*
-        chip.setOnClickListener { view ->
-            val position = chipGroup.indexOfChild(view) - 1
-            when (type) {
-                1 -> selectedTags.add(tagsList1[position])
-                2 -> selectedTags.add(tagsList2[position])
-                3 -> selectedTags.add(tagsList3[position])
-            }
-        }
-*/
+        /*
+                chip.setOnClickListener { view ->
+                    val position = chipGroup.indexOfChild(view) - 1
+                    when (type) {
+                        1 -> selectedTags.add(tagsList1[position])
+                        2 -> selectedTags.add(tagsList2[position])
+                        3 -> selectedTags.add(tagsList3[position])
+                    }
+                }
+        */
 
         chip.setOnClickListener { view ->
             val position = chipGroup.indexOfChild(view) - 1
@@ -406,9 +461,11 @@ class Journal4QuestionsActivity : BaseActivity() {
                 1 -> if (selectedTags.contains(tagsList1[position])) selectedTags.remove(tagsList1[position]) else selectedTags.add(
                     tagsList1[position]
                 )
+
                 2 -> if (selectedTags.contains(tagsList2[position])) selectedTags.remove(tagsList2[position]) else selectedTags.add(
                     tagsList2[position]
                 )
+
                 3 -> if (selectedTags.contains(tagsList3[position])) selectedTags.remove(tagsList3[position]) else selectedTags.add(
                     tagsList3[position]
                 )
@@ -437,11 +494,12 @@ class Journal4QuestionsActivity : BaseActivity() {
             )
             setTextColor(getColor(R.color.color_think_right))
             setOnClickListener {
+                it.disableViewForSeconds()
                 showAddEditBottomSheet(false, chipGroup, type, this, 0)
             }
         }
 
-        val heightInDp = 60 // or whatever height you want
+        val heightInDp = 50 // or whatever height you want
         val heightInPx = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             heightInDp.toFloat(),
@@ -682,11 +740,7 @@ class Journal4QuestionsActivity : BaseActivity() {
                 response: Response<ResponseBody>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        this@Journal4QuestionsActivity,
-                        response.message(),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showCustomToast("Journal Entry Created", true)
                     /* AnalyticsLogger.logEvent(
                          this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
                          mapOf(
@@ -694,6 +748,7 @@ class Journal4QuestionsActivity : BaseActivity() {
                              AnalyticsParam.JOURNAL_ID to journalItem?.id!!
                          )
                      )*/
+
                     val journalType = journalItem?.title
                     val journalId = journalEntry?.id
 
@@ -714,7 +769,7 @@ class Journal4QuestionsActivity : BaseActivity() {
                             )
                         )
                     }
-
+                    logCreateJournalEvent(journalItem?.title, journalEntry?.id)
                     closeActivity()
                 } else {
                     Toast.makeText(
@@ -731,6 +786,24 @@ class Journal4QuestionsActivity : BaseActivity() {
         })
     }
 
+    private fun logCreateJournalEvent(title: String?, id: String?) {
+        val eventName = when (journalItem?.title) {
+            "Gratitude" -> AnalyticsEvent.TR_Gratitude_Journal_Save_Tap
+            "Grief" -> AnalyticsEvent.TR_Grief_Journal_Save_Tap
+            "Bullet" -> AnalyticsEvent.TR_Bullet_Journal_Save_Tap
+            else -> AnalyticsEvent.TR_Freeform_Journal_Save_Tap
+        }
+        val duration = System.currentTimeMillis() - startTime
+        AnalyticsLogger.logEvent(
+            this,
+            eventName,
+            mapOf(
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.TOTAL_DURATION to duration
+            )
+        )
+    }
+
     private fun updateJournal() {
         val call =
             apiService.updateJournalEntry(
@@ -744,14 +817,8 @@ class Journal4QuestionsActivity : BaseActivity() {
                 response: Response<ResponseBody>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        this@Journal4QuestionsActivity,
-                        response.message(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-
+                    showCustomToast("Journal Entry Updated", true)
                     closeActivity()
-
                 } else {
                     Toast.makeText(
                         this@Journal4QuestionsActivity,
@@ -784,5 +851,42 @@ class Journal4QuestionsActivity : BaseActivity() {
     private fun callPostMindFullDataAPI() {
         val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
+    }
+
+    private fun closeConfirmationBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        // Inflate the BottomSheet layout
+        val binding = CloseConfirmationBottomsheetBinding.inflate(LayoutInflater.from(this))
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
+
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        binding.btnYes.setOnClickListener {
+            closeActivity()
+        }
+        binding.btnNo.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
     }
 }

@@ -19,17 +19,18 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/close_dialog_affirmation" />
+            android:src="@drawable/close_breathwork" />
 
         <TextView
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:text="Set Your Reminder"
             android:textColor="@color/txt_color_header"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:layout_marginTop="16dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -10,11 +10,15 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeSeriesTrackRequest
+import com.jetsynthesys.rightlife.showCustomToast
+import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils.getDeviceId
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -25,6 +29,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import java.util.TimeZone
 import kotlin.math.roundToInt
 
 
@@ -44,11 +49,10 @@ object CommonAPICall {
                 response: Response<CommonResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        context,
-                        response.body()!!.successMessage,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    if (isSelectedModule)
+                        context.showCustomToast("Added to toolkit.", true)
+                    else
+                        context.showCustomToast("Removed from toolkit.")
                 } else {
                     Toast.makeText(
                         context,
@@ -260,8 +264,6 @@ object CommonAPICall {
         val authToken = SharedPreferenceManager.getInstance(context).accessToken
         val apiService = ApiClient.getClient(context).create(ApiService::class.java)
 
-        //val episodeTrackRequest = EpisodeTrackRequest()
-
 
         val call = apiService.trackEpisode(
             authToken,
@@ -311,8 +313,9 @@ object CommonAPICall {
     }
 
     fun postMindFullData(context: Context, type: String, startDate: String, endDate: String) {
+        val timeZoneId = TimeZone.getDefault().id
         val mindFullRequest =
-            MindfullRequest(type = type, startDate = startDate, endDate = endDate)
+            MindfullRequest(type = type, startDate = startDate, endDate = endDate,timeZoneId)
         val authToken = SharedPreferenceManager.getInstance(context).accessToken
         val apiService = ApiClient.getClient(context).create(ApiService::class.java)
         val call = apiService.postMindFull(authToken, mindFullRequest)
@@ -349,5 +352,139 @@ object CommonAPICall {
         })
     }
 
+    fun postVideoPlayedProgress(
+        context: Context,
+        duration: Double,
+        contentId: String,
+        watchDuration: Double,
+        moduleId: String,
+        contentType: String
+    ) {
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val authToken = sharedPreferenceManager.accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val contentRequest = EpisodeTrackRequest(
+            sharedPreferenceManager.userId,
+            moduleId,
+            contentId,
+            duration.toString(),
+            watchDuration.toString(),
+            contentType
+        )
+        val call = apiService.trackEpisode(authToken, contentRequest)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("API_RESPONSE", "View Count content: ")
+            }
 
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("API_RESPONSE", "View Count content: ")
+            }
+
+        })
+    }
+
+    fun postSeriesContentPlayedProgress(
+        context: Context,
+        duration: Double,
+        contentId: String,
+        watchDuration: Double,
+        moduleId: String,
+        contentType: String,
+        episodeId: String
+    ) {
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val authToken = sharedPreferenceManager.accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val contentRequest = EpisodeSeriesTrackRequest(
+            watchDuration.toString(),
+            episodeId,
+            contentId,
+            sharedPreferenceManager.userId,
+            moduleId,
+            duration.toString(),
+            contentType
+        )
+        val call = apiService.trackSeriesEpisode(authToken, contentRequest)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                Log.d("API_RESPONSE", "View Count content: ")
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("API_RESPONSE", "View Count content: ")
+            }
+
+        })
+    }
+
+    fun contentBookMark(
+        context: Context,
+        contentId: String,
+        isBookmark: Boolean,
+        episodeId: String = "",
+        contentType: String,
+        onResult: (Boolean, String) -> Unit
+    ) {
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val request = ArticleBookmarkRequest(contentId, isBookmark, episodeId, contentType)
+        val call = apiService.ArticleBookmarkRequest(
+            sharedPreferenceManager.accessToken,
+            request
+        )
+
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                onResult(response.isSuccessful, response.message())
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                onResult(false, "Error: ${t.localizedMessage}")
+            }
+        })
+    }
+
+//
+ fun sendTokenToServer(context: Context,token: String) {
+    try {
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val authToken = sharedPreferenceManager.accessToken
+        if (authToken.isNullOrEmpty()) {
+            Log.w("FCM_TOKEN", "No auth token available")
+            return
+        }
+
+        val deviceId = getDeviceId(context)
+        val requestBody = hashMapOf(
+                "deviceId" to deviceId,
+                "deviceToken" to token
+        )
+
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        apiService.updateDeviceToken(authToken, requestBody)
+                .enqueue(object : Callback<CommonResponse> {
+                    override fun onResponse(
+                            call: Call<CommonResponse>,
+                            response: Response<CommonResponse>
+                    ) {
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            Log.d("FCM_TOKEN", "Token updated successfully: ${response.body()?.successMessage}")
+                            // Clear retry count on success
+//                            sharedPreferenceManager.setInt("token_retry_count", 0)
+                        } else {
+                            Log.e("FCM_TOKEN", "Failed to update token: ${response.code()}")
+
+                        }
+                    }
+
+                    override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
+                        Log.e("FCM_TOKEN", "Network error updating token: ${t.message}", t)
+
+                    }
+                })
+    } catch (e: Exception) {
+        Log.e("FCM_TOKEN", "Error sending token to server", e)
+    }
+}
 }

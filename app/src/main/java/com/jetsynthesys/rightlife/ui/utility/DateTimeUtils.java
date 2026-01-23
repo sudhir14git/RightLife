@@ -97,6 +97,30 @@ public class DateTimeUtils {
         return date;
     }
 
+    public static String convertAPIDateMonthFormatWithTimeFS(String date) {
+        if (date == null) return date;
+
+        try {
+            // Input format (from API, in UTC)
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            Date parsedDate = inputFormat.parse(date);
+
+            // Desired output format: 7 Jan, 2024 | 10:00 PM
+            SimpleDateFormat outputFormat = new SimpleDateFormat("d MMM, yyyy | h:mm a", Locale.getDefault());
+            outputFormat.setTimeZone(TimeZone.getDefault());
+
+            return outputFormat.format(parsedDate).toUpperCase(Locale.getDefault());
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date;
+        }
+    }
+
+
+
     public static String formatCurrentDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd | hh:mm a", Locale.ENGLISH);
         return dateFormat.format(new Date());

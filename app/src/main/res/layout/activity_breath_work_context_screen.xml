@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:padding="16dp"
         android:layout_alignParentTop="true">
 
         <ImageView
             android:id="@+id/icon_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_back" />
+            android:src="@drawable/ic_back_interestscreen" />
 
     </LinearLayout>
 
@@ -47,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Breathe Deeper, Feel Better"
-                android:textSize="20sp"
+                android:textSize="@dimen/textsize_large24sp"
                 android:layout_marginTop="24dp"
                 android:gravity="center_horizontal"
                 android:fontFamily="@font/dmsans_bold"
@@ -71,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Practice 4 guided breathing techniques in real-time with visual inhale/exhale cues."
-                    android:textSize="14sp"
+                    android:textSize="@dimen/textsize_large"
                     android:layout_marginHorizontal="12dp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/txt_color_journal_date"/>
@@ -95,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Add your favorites to your daily tools for progress tracking and routine calm."
-                    android:textSize="14sp"
+                    android:textSize="@dimen/textsize_large"
                     android:layout_marginHorizontal="12dp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/txt_color_journal_date"/>
@@ -120,7 +121,7 @@
         <Button
             android:id="@+id/btnNext"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:text="Next"
             android:textSize="14sp"
             android:layout_marginTop="16dp"

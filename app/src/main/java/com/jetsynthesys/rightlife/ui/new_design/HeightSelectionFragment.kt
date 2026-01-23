@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -58,9 +60,9 @@ class HeightSelectionFragment : Fragment() {
         val gender =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
         selectedHeight = if (gender == "Male" || gender == "M")
-            "5 Ft 8 In"
+            "5 ft 8 in"
         else
-            "5 Ft 4 In"
+            "5 ft 4 in"
 
         feetOption.setBackgroundResource(R.drawable.bg_left_selected)
         feetOption.setTextColor(Color.WHITE)
@@ -110,9 +112,9 @@ class HeightSelectionFragment : Fragment() {
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
         val gender = onboardingQuestionRequest.gender
         selectedHeight = if (gender == "Male" || gender == "M")
-            "5 Ft 8 In"
+            "5 ft 8 in"
         else
-            "5 Ft 4 In"
+            "5 ft 4 in"
 
         selected_number_text!!.text = selectedHeight
 
@@ -137,9 +139,9 @@ class HeightSelectionFragment : Fragment() {
             selectedLabel = " feet"
 
             selectedHeight = if (gender == "Male" || gender == "M")
-                "5 Ft 8 In"
+                "5 ft 8 in"
             else
-                "5 Ft 4 In"
+                "5 ft 4 in"
             setFtIn()
 
             rulerView.post {
@@ -159,12 +161,12 @@ class HeightSelectionFragment : Fragment() {
             feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
             feetOption.setTextColor(Color.BLACK)
 
-            selectedLabel = " cms"
+            selectedLabel = " cm"
 
             selectedHeight = if (gender == "Male" || gender == "M")
-                "173 cms"
+                "173 cm"
             else
-                "163 cms"
+                "163 cm"
             setCms()
 
             rulerView.post {
@@ -178,6 +180,7 @@ class HeightSelectionFragment : Fragment() {
         }
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
+
         btnContinue.setOnClickListener {
             if (validateInput()) {
                 btnContinue.disableViewForSeconds()
@@ -204,7 +207,14 @@ class HeightSelectionFragment : Fragment() {
                     )
                 )
 
-                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    // Add null safety check
+                    activity?.let { act ->
+                        if (act is OnboardingQuestionnaireActivity && isAdded) {
+                            act.submitAnswer(onboardingQuestionRequest)
+                        }
+                    }
+                }, 500)
             }
         }
 
@@ -242,7 +252,7 @@ class HeightSelectionFragment : Fragment() {
                                 if (h.size > 1) {
                                     inch = h[1]
                                 }
-                                selected_number_text!!.text = "$ft Ft $remainingInches In"
+                                selected_number_text!!.text = "$ft ft $remainingInches in"
                             }
                             selectedHeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
@@ -267,12 +277,18 @@ class HeightSelectionFragment : Fragment() {
         }
 
         rulerView.post {
-            if (gender == "Male" || gender == "M") {
-                rulerView.scrollToPosition(68)
-            } else {
-                rulerView.scrollToPosition(64)
-            }
+            val layoutManager = rulerView.layoutManager as LinearLayoutManager
+            val targetPosition = if (gender == "Male" || gender == "M") 68 else 64
+
+            // Compute the vertical center offset
+            val viewHeight = rulerView.height
+            val itemView = layoutManager.findViewByPosition(targetPosition)
+            val itemHeight = itemView?.height ?: 0
+            val offset = (viewHeight / 2) - (itemHeight / 2)
+
+            layoutManager.scrollToPositionWithOffset(targetPosition, offset)
         }
+
 
         return view
     }
@@ -301,7 +317,7 @@ class HeightSelectionFragment : Fragment() {
                 returnValue = false
                 Toast.makeText(
                     requireActivity(),
-                    "Height should be in between 120 Cms to 220 cms",
+                    "Height should be in between 120 cm to 220 cm",
                     Toast.LENGTH_SHORT
                 ).show()
             }

@@ -38,6 +38,7 @@ import androidx.annotation.RequiresPermission
 import androidx.cardview.widget.CardView
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.widget.NestedScrollView
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
@@ -50,6 +51,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
 import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
@@ -62,6 +64,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -83,6 +86,7 @@ import com.github.mikephil.charting.utils.MPPointF
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
 import com.jetsynthesys.rightlife.ai_package.model.BodyFatPercentage
 import com.jetsynthesys.rightlife.ai_package.model.BodyMass
@@ -113,6 +117,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.SleepInfoDia
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil.Companion.dismissLoader
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -142,7 +148,9 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import java.time.ZoneId
 import kotlin.math.floor
+import kotlin.math.round
 import kotlin.math.roundToInt
+import kotlin.reflect.KClass
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>() {
 
@@ -256,9 +264,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private var mEditWakeTime = ""
     private lateinit var rightLifeReportCard : FrameLayout
     private lateinit var recomendationRecyclerView: RecyclerView
+    private lateinit var swipeRefreshLayout : SwipeRefreshLayout
+    private lateinit var nestedScrollView : NestedScrollView
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
     private var isRepeat : Boolean = false
+    private var isBottomSheetOpening = false
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -368,11 +379,31 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
         rightLifeReportCard = view.findViewById(R.id.rightLifeReportCard)
 
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
+        nestedScrollView = view.findViewById(R.id.nestedScrollView)
+
+        swipeRefreshLayout.setOnRefreshListener {
+            // Call your API or refresh function
+            fetchDataFromApi()
+        }
+
+// Optional: Scroll to top to enable swipe-to-refresh again (when loading more at bottom)
+        nestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            swipeRefreshLayout.isEnabled = scrollY == 0
+        }
+
         fetchThinkRecomendedData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
+            val ctx = context ?: return
+            // ✅ Safe guard
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
+            }
             val dialog = LogYourNapDialogFragment(
-                requireContext = requireContext(),
+                requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
                     override fun onLogTimeSelected(time: String) {
                         fetchSleepLandingData()
@@ -430,8 +461,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         logYourNap.setOnClickListener {
+            val ctx = context ?: return@setOnClickListener
+            // ✅ Safe guard
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
+            }
             val dialog = LogYourNapDialogFragment(
-                requireContext = requireContext(),
+                requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
                     override fun onLogTimeSelected(time: String) {
                         fetchSleepLandingData()
@@ -469,6 +507,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         sleepPerformBtn.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_Report_PageOpen
+                )
+            }
             navigateToFragment(SleepPerformanceFragment(), "SleepPerformanceFragment")
         }
 
@@ -497,10 +540,26 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         fetchWakeupData()
 
         editWakeup.setOnClickListener {
+            if (isBottomSheetOpening) return@setOnClickListener  // Ignore agar pehle se chal raha ho
+
+            isBottomSheetOpening = true
             openBottomSheet()
+
+            // Thodi der baad flag reset kar do (jaise 500ms)
+            editWakeup.postDelayed({
+                isBottomSheetOpening = false
+            }, 500)
         }
         img_edit_wakeup_time_top.setOnClickListener {
+            if (isBottomSheetOpening) return@setOnClickListener  // Ignore agar pehle se chal raha ho
+
+            isBottomSheetOpening = true
             openBottomSheet()
+
+            // Thodi der baad flag reset kar do (jaise 500ms)
+            editWakeup.postDelayed({
+                isBottomSheetOpening = false
+            }, 500)
         }
 
         restorativeChart = view.findViewById(R.id.restorativeChart)
@@ -535,7 +594,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         try {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
-                fetchAllHealthData()
+                lifecycleScope.launch {
+                    fetchAllHealthData()
+                }
                 /*val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
                 if (getVisit == "") {
                     fetchSecondChunk()
@@ -556,14 +617,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private val requestPermissionsLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
         lifecycleScope.launch {
             if (granted.containsAll(allReadPermissions)) {
-                fetchAllHealthData()
-               /* val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
-                if (getVisit == "") {
-                    fetchSecondChunk()
-                    fetchThirdChunk()
-                    fetchForthChunk()
-                    SharedPreferenceManager.getInstance(requireContext()).saveSyncFirstVisit("1")
-                }*/
+                lifecycleScope.launch {
+                    fetchAllHealthData()
+                }
+                /* val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
+                 if (getVisit == "") {
+                     fetchSecondChunk()
+                     fetchThirdChunk()
+                     fetchForthChunk()
+                     SharedPreferenceManager.getInstance(requireContext()).saveSyncFirstVisit("1")
+                 }*/
 //                storeHealthData()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
@@ -572,7 +635,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 withContext(Dispatchers.Main) {
                  //   Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
                 }
-                fetchAllHealthData()
+                lifecycleScope.launch {
+                    fetchAllHealthData()
+                }
                 /*val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
                 if (getVisit == "") {
                     fetchSecondChunk()
@@ -594,20 +659,44 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 //        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
 //    }
 
-    private suspend fun fetchAllHealthData() {
+    private suspend fun fetchAllHealthDatas() {
         try {
-            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
-            var endTime = Instant.now()
-            var startTime = Instant.now()
-            val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
-            if (syncTime == "") {
-                endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(30))
-            }else{
-                endTime = Instant.now()
-                startTime = convertUtcToInstant(syncTime)
-                btnSync.visibility = View.GONE
+            if (isAdded  && view != null){
+                requireActivity().runOnUiThread {
+                    showLoader(requireView())
+                }
             }
+            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+            val now = Instant.now()
+            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime.orEmpty()
+            val startTime: Instant = if (syncTime.isBlank()) {
+                // First-time sync: pull last 30 days
+                now.minus(Duration.ofDays(30))
+            } else {
+                // Next sync: only fetch new data
+                Instant.parse(syncTime)
+            }
+            val endTime: Instant = now
+            // Trackers for incremental sync
+            var latestModifiedTime: Instant? = null
+            var recordsFound = false
+
+            // Update function for lastModifiedTime
+            fun updateLastSync(record: Record) {
+                val modified = record.metadata.lastModifiedTime
+                if (latestModifiedTime == null || modified.isAfter(latestModifiedTime)) {
+                    latestModifiedTime = modified
+                }
+            }
+//            var startTime = Instant.now()
+//            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime ?: ""
+//            if (syncTime == "") {
+//                endTime = Instant.now()
+//                startTime = endTime.minus(Duration.ofDays(30))
+//            }else{
+//                endTime = Instant.now()
+//                startTime = convertUtcToInstant(syncTime)
+//            }
             if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
                 if (syncTime == "") {
                     val totalCaloroieResponse = mutableListOf<TotalCaloriesBurnedRecord>()
@@ -641,6 +730,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val burnedCalories = record.energy.inKilocalories
                     val start = record.startTime
                     val end = record.endTime
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
                 }
             } else {
@@ -675,6 +766,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     )
                     stepsRecord = stepsResponse.records
                 }
+                stepsRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
             } else {
                 stepsRecord = emptyList()
                 Log.d("HealthData", "Steps permission denied")
@@ -708,6 +803,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     heartRateRecord = response.records
                     Log.d("HealthData", "Total HR records fetched: ${response.records.size}")
                 }
+                heartRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
             }else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
@@ -721,6 +820,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 )
                 restingHeartRecord = restingHRResponse.records
                 restingHeartRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
                 }
             }else {
@@ -736,11 +837,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 )
                 activeCalorieBurnedRecord = activeCalorieResponse.records
                 activeCalorieBurnedRecord?.forEach { record ->
-                    Log.d("HealthData", "Active Calories Burned: ${record.energy} kCal, Time: ${record.startTime}")
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Active Calories Burn Rate: ${record.energy} kCal, Time: ${record.startTime}")
                 }
             }else {
                 activeCalorieBurnedRecord = emptyList()
-                Log.d("HealthData", "Active Calories Burned permission denied")
+                Log.d("HealthData", "Active Calories burn permission denied")
             }
             if (HealthPermission.getReadPermission(BasalMetabolicRateRecord::class) in grantedPermissions) {
                 val basalMetabolic = healthConnectClient.readRecords(
@@ -770,7 +873,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }else {
                 bloodPressureRecord = emptyList()
-                Log.d("HealthData", "Blood Pressure permission denied")
+                Log.d("HealthData", "Blood Pressure  permission denied")
             }
             if (HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class) in grantedPermissions) {
                 val restingVresponse = healthConnectClient.readRecords(
@@ -781,11 +884,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 )
                 heartRateVariability = restingVresponse.records
                 heartRateVariability?.forEach { record ->
-                    Log.d("HealthData", "Heart Rate Variability Rmssd: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d("HealthData", "Heart Rate Variability: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
                 }
             }else {
                 heartRateVariability = emptyList()
-                Log.d("HealthData", "Heart rate Variability Rmssd permission denied")
+                Log.d("HealthData", "Heart rate Variability permission denied")
             }
             if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
                 val sleepResponse = healthConnectClient.readRecords(
@@ -796,6 +901,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 )
                 sleepSessionRecord = sleepResponse.records
                 sleepSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
                 }
             } else {
@@ -811,13 +918,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 )
                 exerciseSessionRecord = exerciseResponse.records
                 exerciseSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
                 }
             } else {
                 exerciseSessionRecord = emptyList()
                 Log.d("HealthData", "Exercise session permission denied")
             }
-
             if (HealthPermission.getReadPermission(WeightRecord::class) in grantedPermissions) {
                 val weightResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -886,6 +994,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 )
                 respiratoryRateRecord = respiratoryRateResponse.records
                 respiratoryRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
                 }
             } else {
@@ -903,21 +1013,30 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 for (record in stepsResponse.records) {
                     dataOrigin = record.metadata.dataOrigin.packageName
                     val deviceInfo = record.metadata.device
-                    if (deviceInfo != null && deviceInfo.manufacturer != "null") {
+                    if (deviceInfo != null) {
                         if (deviceInfo.manufacturer != "") {
-                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(deviceInfo.manufacturer)
                             Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                        Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
                             break
                         }else{
-                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(dataOrigin)
+                            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(dataOrigin)
                             break
                         }
                     } else {
-                        SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(dataOrigin)
+                        SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(dataOrigin)
                         break
                     }
                 }
+            }
+            if (recordsFound && latestModifiedTime != null) {
+                context?.let {
+                    SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(latestModifiedTime.toString())
+                }
+                Log.d("HealthSync", "✔ Saved new last sync time: $latestModifiedTime")
+
+            } else {
+                Log.d("HealthSync", "⚠ No new data found → NOT updating last sync time")
             }
             if (dataOrigin.equals("com.google.android.apps.fitness")){
                 storeHealthData()
@@ -931,18 +1050,358 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+                // Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
-               //     requireActivity().runOnUiThread {
+                    requireActivity().runOnUiThread {
                         dismissLoader(requireView())
-              //      }
+                    }
                 }
             }
         }
     }
 
+    private suspend fun fetchAllHealthData() {
+        try {
+            showLoaderSafe()
+
+            val ctx = context ?: return
+            val client = healthConnectClient
+
+            val granted = try {
+                client.permissionController.getGrantedPermissions()
+            } catch (e: Exception) {
+                Log.e("HealthSync", "Permission fetch failed", e)
+                emptySet()
+            }
+
+            Log.d("HealthSync", "Granted permissions = $granted")
+
+            val now = Instant.now()
+
+            val savedSync = SharedPreferenceManager
+                .getInstance(ctx)
+                .moveRightSyncTime
+                .orEmpty()
+
+            val isFirstSync = savedSync.isBlank()
+
+            val defaultStart = now.minus(Duration.ofDays(30))
+            val lastSyncInstant = if (isFirstSync) null else runCatching {
+                Instant.parse(savedSync)
+            }.getOrNull()
+
+            // ✅ TIMEZONE SAFE
+            val todayStart = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+
+            val computedStartTime = when {
+                isFirstSync -> defaultStart
+                lastSyncInstant != null -> {
+                    if (lastSyncInstant.isAfter(todayStart)) todayStart else lastSyncInstant
+                }
+                else -> defaultStart
+            }
+
+            val endTime = now
+
+            Log.d("HealthSync", "StartTime = $computedStartTime")
+            Log.d("HealthSync", "EndTime   = $endTime")
+
+            var latestModified: Instant? = null
+            var foundNewData = false
+
+            fun markModified(record: Record) {
+                foundNewData = true
+                val modified = record.metadata.lastModifiedTime
+                if (latestModified == null || modified.isAfter(latestModified)) {
+                    latestModified = modified
+                }
+            }
+
+            suspend fun <T : Record> fetchChunk(type: KClass<T>): List<T> {
+                return try {
+                    if (isFirstSync) {
+                        fetchChunked(type, computedStartTime, endTime, 15)
+                    } else {
+                        client.readRecords(
+                            ReadRecordsRequest(
+                                type,
+                                TimeRangeFilter.between(computedStartTime, endTime)
+                            )
+                        ).records
+                    }
+                } catch (e: Exception) {
+                    Log.e("HealthSync", "Fetch failed for ${type.simpleName}", e)
+                    emptyList()
+                }
+            }
+
+            fun <T : Record> hasPermission(type: KClass<T>): Boolean {
+                val perm = HealthPermission.getReadPermission(type)
+                val grantedNow = perm in granted
+                if (!grantedNow) {
+                    Log.w("HealthSync", "Missing permission for ${type.simpleName}")
+                }
+                return grantedNow
+            }
+
+            suspend fun <T : Record> load(
+                type: KClass<T>,
+                assign: (List<T>) -> Unit
+            ) {
+                Log.d("HealthSync", "Loading ${type.simpleName}")
+
+                if (!hasPermission(type)) {
+                    assign(emptyList())
+                    return
+                }
+
+                val records = fetchChunk(type)
+                Log.d("HealthSync", "${type.simpleName} count = ${records.size}")
+
+                assign(records)
+                records.forEach { markModified(it) }
+            }
+
+            // ------------------------------
+            // FETCH
+            // ------------------------------
+            load(TotalCaloriesBurnedRecord::class) { totalCaloriesBurnedRecord = it }
+            load(StepsRecord::class) { stepsRecord = it }
+            load(HeartRateRecord::class) { heartRateRecord = it }
+            load(RestingHeartRateRecord::class) { restingHeartRecord = it }
+            load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
+            load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
+            load(SleepSessionRecord::class) { sleepSessionRecord = it }
+            load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+            load(WeightRecord::class) { weightRecord = it }
+            load(BodyFatRecord::class) { bodyFatRecord = it }
+            load(DistanceRecord::class) { distanceRecord = it }
+            load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
+            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+            load(BloodPressureRecord::class) { bloodPressureRecord = it }
+
+            // ------------------------------
+            // DEVICE DETECTION
+            // ------------------------------
+            val devicePackage =
+                stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName ?: "unknown"
+
+            val deviceManufacturer =
+                stepsRecord?.firstOrNull()?.metadata?.device?.manufacturer ?: devicePackage
+
+            SharedPreferenceManager.getInstance(ctx).saveDeviceName(deviceManufacturer)
+
+            // ------------------------------
+            // SAVE SYNC TIME
+            // ------------------------------
+            if (foundNewData && latestModified != null) {
+                SharedPreferenceManager
+                    .getInstance(ctx)
+                    .saveMoveRightSyncTime(latestModified.toString())
+
+                Log.d("HealthSync", "Updated lastSync = $latestModified")
+            } else {
+                Log.d("HealthSync", "No new data. Sync time unchanged")
+            }
+
+            // ------------------------------
+            // PUSH TO SERVER
+            // ------------------------------
+            when (devicePackage) {
+                "com.google.android.apps.fitness" -> storeHealthData()
+                "com.sec.android.app.shealth",
+                "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
+                else -> storeHealthData()
+            }
+
+        } catch (e: Exception) {
+            Log.e("HealthSync", "Fatal error", e)
+        } finally {
+            hideLoaderSafe()
+        }
+    }
+
+
+//    private suspend fun fetchAllHealthData() {
+//        try {
+//            showLoaderSafe()
+//            val client = healthConnectClient
+//            val granted = client.permissionController.getGrantedPermissions()
+//            val now = Instant.now()
+//            // ------------------------------
+//            // 1) Load last sync time
+//            // ------------------------------
+//            val savedSync = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime.orEmpty()
+//            val isFirstSync = savedSync.isBlank()
+//            // FIRST SYNC → last 30 days
+//            val defaultStart = now.minus(Duration.ofDays(30))
+//            // Next sync starts from last modified time
+//            val lastSyncInstant = if (isFirstSync) null else Instant.parse(savedSync)
+//            // ------------------------------
+//            // 2) Always re-sync TODAY (Fix for Fitbit/Samsung)
+//            // ------------------------------
+//            val todayStart = LocalDate.now()
+//                .atStartOfDay()
+//                .toInstant(ZoneOffset.UTC)
+//
+//            val computedStartTime = when {
+//                isFirstSync -> defaultStart
+//                lastSyncInstant != null -> {
+//                    // If lastSyncInstant lies inside today,
+//                    // force resync whole today
+//                    if (lastSyncInstant.isAfter(todayStart))
+//                        todayStart
+//                    else
+//                        lastSyncInstant
+//                }
+//                else -> defaultStart
+//            }
+//            val endTime = now
+//            Log.d("HealthSync", "StartTime = $computedStartTime")
+//            Log.d("HealthSync", "EndTime   = $endTime")
+//            var latestModified: Instant? = null
+//            var foundNewData = false
+//
+//            // Update latest modified
+//            fun markModified(record: Record) {
+//                foundNewData = true
+//                val modified = record.metadata.lastModifiedTime
+//                if (latestModified == null || modified.isAfter(latestModified))
+//                    latestModified = modified
+//            }
+//            // ------------------------------
+//            // 3) Chunked reading for first sync
+//            // ------------------------------
+//            suspend fun <T : Record> fetchChunk(type: KClass<T>): List<T> {
+//                return if (isFirstSync)
+//                    fetchChunked(type, computedStartTime, endTime, 15)
+//                else
+//                    client.readRecords(
+//                        ReadRecordsRequest(
+//                            type,
+//                            TimeRangeFilter.between(computedStartTime, endTime)
+//                        )
+//                    ).records
+//            }
+//            // ------------------------------
+//            // 4) Permission check
+//            // ------------------------------
+//            fun <T : Record> hasPermission(type: KClass<T>) =
+//                HealthPermission.getReadPermission(type) in granted
+//            // ------------------------------
+//            // 5) Loader & assignment helper
+//            // ------------------------------
+//            suspend fun <T : Record> load(
+//                type: KClass<T>,
+//                assign: (List<T>) -> Unit
+//            ) {
+//                if (!hasPermission(type)) {
+//                    Log.w("HealthSync", "Permission missing for ${type.simpleName}")
+//                    assign(emptyList())
+//                    return
+//                }
+//                val records = fetchChunk(type)
+//                assign(records)
+//                records.forEach { markModified(it) }
+//            }
+//            // ------------------------------
+//            // 6) Fetch all record types
+//            // ------------------------------
+//            load(TotalCaloriesBurnedRecord::class) { totalCaloriesBurnedRecord = it }
+//            load(StepsRecord::class) { stepsRecord = it }
+//            load(HeartRateRecord::class) { heartRateRecord = it }
+//            load(RestingHeartRateRecord::class) { restingHeartRecord = it }
+//            load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
+//            load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
+//            load(SleepSessionRecord::class) { sleepSessionRecord = it }
+//            load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+//            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+//            load(WeightRecord::class) { weightRecord = it }
+//            load(BodyFatRecord::class) { bodyFatRecord = it }
+//            load(DistanceRecord::class) { distanceRecord = it }
+//            load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
+//            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+//            load(BloodPressureRecord::class) { bloodPressureRecord = it }
+//            // ------------------------------
+//            // 7) Device origin detection
+//            // ------------------------------
+//            val devicePackage =
+//                stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName ?: "unknown"
+//            val deviceManufacturer =
+//                stepsRecord?.firstOrNull()?.metadata?.device?.manufacturer ?: devicePackage
+//            SharedPreferenceManager.getInstance(context?.let { it }).saveDeviceName(deviceManufacturer)
+//            // ------------------------------
+//            // 8) Save updated sync time
+//            // ------------------------------
+//            if (foundNewData && latestModified != null) {
+//                SharedPreferenceManager.getInstance(context?.let { it }).saveMoveRightSyncTime(latestModified.toString())
+//                Log.d("HealthSync", "Updated lastSync = $latestModified")
+//            } else {
+//                Log.d("HealthSync", "No new data. Sync time unchanged")
+//            }
+//            // ------------------------------
+//            // 9) Push to your server
+//            // ------------------------------
+//            when (devicePackage) {
+//                "com.google.android.apps.fitness" -> storeHealthData()
+//                "com.sec.android.app.shealth",
+//                "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
+//                else -> storeHealthData()
+//            }
+//
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        } finally {
+//            hideLoaderSafe()
+//        }
+//    }
+
+    private fun <T : androidx.health.connect.client.records.Record> hasPermission(
+        granted: Set<String>,
+        type: KClass<T>
+    ): Boolean {
+        return HealthPermission.getReadPermission(type) in granted
+    }
+
+    private suspend fun <T : Record> fetchChunked(
+        type: KClass<T>,
+        start: Instant,
+        end: Instant,
+        chunks: Int
+    ): List<T> {
+        val output = mutableListOf<T>()
+        val total = Duration.between(start, end)
+        val chunk = total.dividedBy(chunks.toLong())
+
+        var cursor = start
+        repeat(chunks) { i ->
+            val next = if (i == chunks - 1) end else cursor.plus(chunk)
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(type, TimeRangeFilter.between(cursor, next))
+            )
+            output.addAll(response.records)
+            cursor = next
+        }
+        return output
+    }
+
+    private fun showLoaderSafe() {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread { showLoader(requireView()) }
+        }
+    }
+
+    private fun hideLoaderSafe() {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread { dismissLoader(requireView()) }
+        }
+    }
+
     private fun storeHealthData() {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -986,12 +1445,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US, "%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
@@ -1044,24 +1505,28 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeRate = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US,"%.1f", safeRate),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
@@ -1088,23 +1553,27 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US,"%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToTargetFormat(record.time.toString()),
                         end_datetime = convertToTargetFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage),
+                        value = String.format(Locale.US,"%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                     )
                 } ?: emptyList()
@@ -1163,6 +1632,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
                         WorkoutRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
@@ -1171,7 +1641,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
                             calories_burned = "",
-                            distance = String.format("%.1f", distance),
+                            distance = String.format(Locale.US, "%.1f", safeDistance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
                             distance_unit = "km"
@@ -1266,14 +1736,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+//                    context?.let {
+//                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+//                    }
                     isRepeat = true
                     fetchSleepLandingData()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context?.let { it }, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     isRepeat = true
                     if (isAdded && view != null) dismissLoader(requireView())
                 }
@@ -1282,10 +1753,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun storeSamsungHealthData() {
-        CoroutineScope(Dispatchers.IO).launch {
+        // Capture context safely
+        val ctx = context ?: return
+        val activity = activity ?: return
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val deviceName = SharedPreferenceManager.getInstance(ctx).deviceName ?: "samsung"
                 var activeEnergyBurned : List<EnergyBurnedRequest>? = null
                 if (activeCalorieBurnedRecord!!.isNotEmpty()){
                     activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
@@ -1296,7 +1771,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireContext()).deviceName
+                                source_name = deviceName
                             )
                         } else null
                     } ?: emptyList()
@@ -1309,7 +1784,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireContext()).deviceName
+                                source_name = deviceName
                             )
                         } else null
                     } ?: emptyList()
@@ -1321,18 +1796,20 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "BasalMetabolic",
                         unit = "power",
                         value = record.basalMetabolicRate.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            value = String.format(Locale.US,"%.2f", safeKm),
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
@@ -1344,7 +1821,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
@@ -1357,7 +1834,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "HeartRate",
                                 unit = "bpm",
                                 value = sample.beatsPerMinute.toInt().toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = deviceName
                             )
                         } else null
                     }
@@ -1369,7 +1846,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "HeartRateVariability",
                         unit = "double",
                         value = record.heartRateVariabilityMillis.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val restingHeartRate = restingHeartRecord?.map { record ->
@@ -1379,30 +1856,34 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "RestingHeartRate",
                         unit = "bpm",
                         value = record.beatsPerMinute.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeKm = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            value = String.format(Locale.US,"%.1f", safeKm),
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            value = String.format(Locale.US,"%.1f", safeKm),
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
@@ -1413,7 +1894,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "BloodPressureSystolic",
                         unit = "millimeterOfMercury",
                         value = record.systolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val bloodPressureDiastolic = bloodPressureRecord?.mapNotNull { record ->
@@ -1423,29 +1904,33 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         record_type = "BloodPressureDiastolic",
                         unit = "millimeterOfMercury",
                         value = record.diastolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            value = String.format(Locale.US,"%.1f", safeKm),
+                            source_name = deviceName
                         )
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToSamsungFormat(record.time.toString()),
                         end_datetime = convertToSamsungFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        value = String.format(Locale.US,"%.1f", safeKm),
+                        source_name = deviceName
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
@@ -1458,7 +1943,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = "Asleep",
                                 unit = "stage",
                                 value = "Asleep",
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = deviceName
                             )
                         )
                     } else {
@@ -1503,6 +1988,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
                         WorkoutRequest(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
@@ -1511,7 +1997,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
                             calories_burned = "",
-                            distance = String.format("%.1f", distance),
+                            distance = String.format(Locale.US, "%.1f", safeDistance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
                             distance_unit = "km"
@@ -1606,16 +2092,18 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) dismissLoader(requireView())
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+//                    context?.let {
+//                        SharedPreferenceManager.getInstance(it).saveMoveRightSyncTime(Instant.now().toString())
+//                    }
                     isRepeat = true
                     fetchSleepLandingData()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (!isAdded) return@withContext
+                    Toast.makeText(ctx, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (view != null) dismissLoader(requireView())
                     isRepeat = true
-                    if (isAdded && view != null) dismissLoader(requireView())
                 }
             }
         }
@@ -1633,7 +2121,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             .filter { record ->
                 val recordStart = record.startTime
                 val recordEnd = record.endTime
-                // Only include records within workout time range
                 !recordStart.isBefore(startInstant) && !recordEnd.isAfter(endInstant)
             }
             .sumOf { it.energy.inKilocalories}
@@ -1651,6 +2138,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 if (response.isSuccessful) {
                     sleepSoundResponse = response.body()!!
                     if (sleepSoundResponse.sleepSoundData != null){
+                        val ctx = context ?: return@onResponse
                         if (sleepSoundResponse.sleepSoundData?.services!!.size > 0){
                             btnSleepSound.visibility = View.GONE
                             sleepSoundCardView.visibility = View.VISIBLE
@@ -1660,36 +2148,36 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 soundPlay1.visibility = View.VISIBLE
                                 soundPlay2.visibility = View.GONE
                                 soundPlay3.visibility = View.GONE
-                                Glide.with(requireContext())
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                Glide.with(ctx)
+                                    .load(BuildConfig.CDN_URL +sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
                             }else if (sleepSoundResponse.sleepSoundData?.services?.size == 2){
                                 soundPlay1.visibility = View.VISIBLE
                                 soundPlay2.visibility = View.VISIBLE
                                 soundPlay3.visibility = View.GONE
-                                Glide.with(requireContext())
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                Glide.with(ctx)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
-                                Glide.with(requireContext())
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                Glide.with(ctx)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay2)
                             }else if (sleepSoundResponse.sleepSoundData?.services?.size == 3){
                                 soundPlay1.visibility = View.VISIBLE
                                 soundPlay2.visibility = View.VISIBLE
                                 soundPlay3.visibility = View.VISIBLE
-                                Glide.with(requireContext())
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                Glide.with(ctx)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay1)
-                                Glide.with(requireContext())
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                Glide.with(ctx)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay2)
-                                Glide.with(requireContext())
-                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
+                                Glide.with(ctx)
+                                    .load(BuildConfig.CDN_URL + sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
                                     .placeholder(R.drawable.sleep_pillow)
                                     .into(soundPlay3)
                             }
@@ -1795,38 +2283,39 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
-        var result = "0"
-        if (hoursDecimal == 0.0 || hoursDecimal == null){
-            val totalMinutes = (hoursDecimal * 60).toInt()
-            val hours = totalMinutes / 60
-            val minutes = totalMinutes % 60
-            result = "0 mins"
-        }else {
-           // val totalMinutes = (hoursDecimal * 60).toInt()
-            val minutesDecimal = hoursDecimal * 60
-            val totalMinutes = if (minutesDecimal - floor(minutesDecimal) > 0.5) {
-                floor(minutesDecimal).toInt() + 1
-            } else {
-                floor(minutesDecimal).toInt()
-            }
-            val hours = totalMinutes / 60
-            val minutes = totalMinutes % 60
-            result = String.format("%02dhr %02dmins", hours, minutes)
-        }
-        return result
-    }
 
-    fun convertDecimalMinutesToHrMinFormat(decimalMinutes: Double): String {
-        val totalMinutes = decimalMinutes.toInt()
+        if (hoursDecimal <= 0.0) return "0 mins"
+
+        // STEP 1: hours → total minutes
+        val totalMinutes = kotlin.math.round(hoursDecimal * 60).toInt()
+
+        // STEP 2: minutes → hr + min
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
 
         return when {
-            hours > 0 && minutes > 0 -> "${hours} hr ${minutes} min"
-            hours > 0 -> "${hours} hr"
-            else -> "${minutes} min"
+            hours > 0 && minutes > 0 -> "$hours hr $minutes mins"
+            hours > 0 -> "$hours hr"
+            else -> "$minutes mins"
         }
     }
+
+
+    private fun convertDecimalMinutesToHrMinFormat(decimalMinutes: Double): String {
+
+        if (decimalMinutes <= 0.0) return "0 min"
+
+        val totalMinutes = kotlin.math.round(decimalMinutes).toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+
+        return when {
+            hours > 0 && minutes > 0 -> "$hours hr $minutes min"
+            hours > 0 -> "$hours hr"
+            else -> "$minutes min"
+        }
+    }
+
 
     fun formatIsoTo12Hour(timeStr: String): String {
         val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -1868,33 +2357,31 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchSleepLandingData() {
-        if (isAdded  && view != null){
-        //    requireActivity().runOnUiThread {
-                showLoader(requireView())
-         //   }
-        }
+        if (!isAdded || view == null) return
+        view?.let { showLoader(it) }
+        val ctx = context ?: return
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
+        //val userId = "6903b1c535dd33137383dedc"
+        //val date = "2025-12-17"
         val date = getCurrentDate()
         val source = "android"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
         call.enqueue(object : Callback<SleepLandingResponse> {
             override fun onResponse(call: Call<SleepLandingResponse>, response: Response<SleepLandingResponse>) {
+                if (!isAdded || view == null) return
+                view?.let { dismissLoader(it) }
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                    //    requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                    //    }
-                    }
-                    landingPageResponse = response.body()!!
-                    setSleepRightLandingData(landingPageResponse)
+                    val body = response.body() ?: return
+                    landingPageResponse = body
+                    setSleepRightLandingData(body)
                 }else if(response.code() == 400){
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
-                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, "Record Not Found", Toast.LENGTH_SHORT).show()
                     stageNoDataCardView.visibility = View.VISIBLE
                     sleepStagesView.visibility = View.GONE
                     performNoDataCardView.visibility = View.VISIBLE
@@ -1908,6 +2395,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     consistencySleep.visibility = View.GONE
                     sleepConsistencyChart.visibility = View.GONE
                     if (!bottomSeatName.contentEquals("LogLastNightSleep") && !isRepeat){
+                        context?.let { it1 ->
+                            AnalyticsLogger.logEvent(
+                                it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                            )
+                        }
                         val dialog = LogYourNapDialogFragment(
                             requireContext = requireContext(),
                             listener = object : OnLogYourNapSelectedListener {
@@ -1942,6 +2434,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepConsistencyChart.visibility = View.GONE
                     sleepStageCardView.visibility = View.GONE
                     if (!bottomSeatName.contentEquals("LogLastNightSleep") && !isRepeat){
+                        context?.let { it1 ->
+                            AnalyticsLogger.logEvent(
+                                it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                            )
+                        }
                         val dialog = LogYourNapDialogFragment(
                             requireContext = requireContext(),
                             listener = object : OnLogYourNapSelectedListener {
@@ -1965,7 +2462,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             requestPermissionsAndReadAllData()
                         }
                     } else {
-                        Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(ctx, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -1989,9 +2486,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 consistencySleep.visibility = View.GONE
                 sleepConsistencyChart.visibility = View.GONE
                 if (!isRepeat){
-                    val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                    val ctx = context ?: return
+                    val availabilityStatus = HealthConnectClient.getSdkStatus(ctx)
                     if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-                        healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                        healthConnectClient = HealthConnectClient.getOrCreate(ctx)
                         lifecycleScope.launch {
                             requestPermissionsAndReadAllData()
                         }
@@ -2111,7 +2609,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
         }
-
     }
 
     private fun setIdealGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
@@ -2244,10 +2741,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             granularity = 1f
             textSize = 12f
         }
-
         // Y Axis Right
         lineChart.axisRight.isEnabled = false
-
         // Chart Settings
         lineChart.description.isEnabled = false
         lineChart.legend.textSize = 12f
@@ -2259,6 +2754,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lineChart.isDragEnabled = true // Enable drag for better interaction
         lineChart.isHighlightPerTapEnabled = true // Enable touch highlighting
         lineChart.setTouchEnabled(true) // Explicitly enable touch
+        lineChart.legend.isEnabled = false
 
         // Multi-line X axis labels
         lineChart.setXAxisRenderer(
@@ -2281,7 +2777,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val (actualHours, actualMinutes) = actualValue.toHoursAndMinutes()
                     Log.d("TouchEvent", "Selected: xIndex=$xIndex, idealValue=$idealValue, actualValue=$actualValue")
 
-                    tvIdealTime.text = String.format("%d hr %d mins", idealHours, idealMinutes)
+                  //  tvIdealTime.text = String.format("%d hr %d mins", idealHours, idealMinutes)
+                    val safeHours = idealHours ?: 0
+                    val safeMinutes = idealMinutes ?: 0
+                    tvIdealTime.text = String.format("%d hr %d mins", safeHours, safeMinutes)
                     tvActualTime.text = convertDecimalHoursToHrMinFormat(actualEntries.getOrNull(xIndex)?.y?.toDouble()!!)//String.format("%d hr %d mins", actualHours, actualMinutes)
                     Log.d("TouchEvent", "Setting tvIdealTime to ${tvIdealTime.text}, tvActualTime to ${tvActualTime.text}")
 
@@ -2299,7 +2798,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     Log.d("TouchEvent", "Entry or Highlight is null")
                 }
             }
-
             override fun onNothingSelected() {
               //  tvActualTime.text = ""
                // tvIdealTime.text = ""
@@ -2307,7 +2805,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 Log.d("TouchEvent", "Nothing selected, cleared TextViews")
             }
         })
-
         lineChart.invalidate()
     }
     // Helper function to convert float (hours) to hours and minutes
@@ -2390,34 +2887,33 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             var totalDeepDuration = 0f
 
             for (i in 0 until sleepStageResponse.size) {
-                val startDateTime =
-                    LocalDateTime.parse(sleepStageResponse[i].startDatetime, formatters)
+                val startDateTime = LocalDateTime.parse(sleepStageResponse[i].startDatetime, formatters)
                 val endDateTime = LocalDateTime.parse(sleepStageResponse[i].endDatetime, formatters)
-                val duration = Duration.between(startDateTime, endDateTime).toMinutes()
-                    .toFloat() / 60f // Convert to hours
+
+                // Include seconds to get accurate duration
+                val durationInSeconds = Duration.between(startDateTime, endDateTime).seconds
+                val durationInHours = durationInSeconds.toDouble() / 3600.0 // Convert seconds → hours
 
                 when (sleepStageResponse[i].stage) {
                     "REM Sleep" -> {
-                        remData.add(duration)
-                        totalRemDuration += duration
+                        remData.add(durationInHours.toFloat())
+                        totalRemDuration += durationInHours.toFloat()
                     }
-
                     "Deep Sleep" -> {
-                        deepData.add(duration)
-                        totalDeepDuration += duration
+                        deepData.add(durationInHours.toFloat())
+                        totalDeepDuration += durationInHours.toFloat()
                     }
-
                     "Light Sleep" -> {
-                        coreData.add(duration)
-                        totalCoreDuration += duration
+                        coreData.add(durationInHours.toFloat())
+                        totalCoreDuration += durationInHours.toFloat()
                     }
-
                     "Awake" -> {
-                        awakeData.add(duration)
-                        totalAwakeDuration += duration
+                        awakeData.add(durationInHours.toFloat())
+                        totalAwakeDuration += durationInHours.toFloat()
                     }
                 }
             }
+
             val timeCore = formatDuration(totalCoreDuration)
             val hourRegex = Regex("(\\d+)\\s*hr")
             val minRegex = Regex("(\\d+)\\s*mins")
@@ -2440,7 +2936,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val remMinutes = minRegex.find(timeRem)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
             tvStageRemTimeHr.text = remHours.toString()
             tvStageRemTimeMin.text = remMinutes.toString()
-
             setStageGraph(sleepStageResponse)
         }else{
             stageNoDataCardView.visibility = View.VISIBLE
@@ -2450,14 +2945,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun formatDuration(durationHours: Float): String {
-        val hours = durationHours.toInt()
-        val minutes = ((durationHours - hours) * 60).toInt()
-        return if (hours > 0) {
-            "$hours hr $minutes mins"
-        } else {
-            "$minutes mins"
-        }
+        if (durationHours <= 0f) return "0 mins"
+
+        // Convert hours → total minutes and round to nearest minute
+        val totalMinutes = (durationHours * 60).roundToInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+
+        return if (hours > 0) "$hours hr $minutes mins" else "$minutes mins"
     }
+
 
     private fun fetchThinkRecomendedData() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
@@ -2468,8 +2965,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     // progressDialog.dismiss()
                     thinkRecomendedResponse = response.body()!!
                     if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        recomendationAdapter = RecommendedAdapterSleep(requireContext(), thinkRecomendedResponse.data?.contentList!!)
-                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        val ctx = context ?: return@onResponse
+                        recomendationAdapter = RecommendedAdapterSleep(ctx, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationRecyclerView.layoutManager = LinearLayoutManager(ctx)
                         recomendationRecyclerView.adapter = recomendationAdapter
                     }
                 } else {
@@ -2512,7 +3010,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             sleepData.add(SleepSegmentModel(start, end, color, 110f))
             currentPosition += duration
         }
-
         sleepStagesView.setSleepData(sleepData)
     }
 
@@ -2525,8 +3022,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 performCardView.visibility = View.VISIBLE
                 tvPerformStartTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
                 tvPerformWakeTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
+            val ctx = context ?: return   // ✅ Safe guard
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
+            }
             val dialog = LogYourNapDialogFragment(
-                requireContext = requireContext(),
+                requireContext = ctx,
                 listener = object : OnLogYourNapSelectedListener {
                     override fun onLogTimeSelected(time: String) {
                         fetchSleepLandingData()
@@ -2544,8 +3047,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 sleepPerformBtn.visibility = View.VISIBLE
                 tvPerformStartTime.visibility = View.GONE
                 tvPerformWakeTime.visibility = View.GONE
-                tvSleepPerformTitle.text = "SleepRight"
-                imgSleepTimeIcon.setImageResource(R.drawable.ic_db_sleepright)
+                tvSleepPerformTitle.text = "Sleep Performance"
+                imgSleepTimeIcon.setImageResource(R.drawable.sleep_timer_icon)
                 if (sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours == null) {
                     tvPerformSleepDuration.text = "0 hr"
                 }
@@ -2556,6 +3059,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val args = Bundle()
                     args.putString("BottomSeatName", bottomSeatName)
                     dialog.arguments = args
+                   // dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+                    if (!isAdded || parentFragmentManager.isStateSaved) return
                     dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
                 }
             }else{
@@ -2614,8 +3119,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 imgSleepPerformIcon.visibility = View.GONE
                 imgWakeTimeIcon.visibility = View.GONE
                 sleepPerformBtn.visibility = View.VISIBLE
-                tvSleepPerformTitle.text = "SleepRight"
-                imgSleepTimeIcon.setImageResource(R.drawable.ic_db_sleepright)
+                tvSleepPerformTitle.text = "Sleep Performance"
+                imgSleepTimeIcon.setImageResource(R.drawable.sleep_timer_icon)
                 if (sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours == null) {
                     tvPerformSleepDuration.text = "0 hr"
                 }
@@ -2624,15 +3129,24 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
             if (!isRepeat) {
+                val ctx = context ?: return
+                context?.let { it1 ->
+                    AnalyticsLogger.logEvent(
+                        it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                    )
+                }
+                // ✅ Safe guard
                 val dialog = LogYourNapDialogFragment(
-                    requireContext = requireContext(),
+                    requireContext = ctx,
                     listener = object : OnLogYourNapSelectedListener {
                         override fun onLogTimeSelected(time: String) {
                             fetchSleepLandingData()
                         }
                     }
                 )
-                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+               // dialog.show(parentFragmentManager, "LogYourNapDialog")
+                if (!isAdded || parentFragmentManager.isStateSaved) return
+                dialog.show(parentFragmentManager, "LogYourNapDialog")
             }
         }
     }
@@ -2655,7 +3169,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         convertTo12HourZoneFormat(sleepRestorativeDetail.sleepEndTime!!)
                 }
                 if (sleepRestorativeDetail?.sleepStagesData != null) {
-                    restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData!!)
+                    sleepRestorativeDetail.sleepStartTime?.let {
+                        sleepRestorativeDetail.sleepEndTime?.let { it1 ->
+                            restorativeChart.setSleepData(
+                                sleepRestorativeDetail.sleepStagesData!!,
+                                it,
+                                it1
+                            )
+                        }
+                    }
                 }
             } else {
                 //  restroNoDataCardView.visibility = View.VISIBLE
@@ -2723,7 +3245,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val dur = Duration.ofMinutes((entry.durationHrs * 60).roundToInt().toLong())
             val hrs = dur.toHours()
             val mins = dur.minusHours(hrs).toMinutes()
-            tvConsistencyTime.text = "${hrs}hr ${mins}mins"
+            tvConsistencyTime.text = String.format("%02dhr %02dmins", hrs, mins)
         }
         /*val result = async {
             parseSleepData(parseSleepData)
@@ -2781,7 +3303,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 // Try next format
             }
         }
-
         return "" // Unable to parse
     }
 
@@ -2977,6 +3498,29 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         loadingOverlay?.visibility = View.GONE
     }
 
+    private fun fetchDataFromApi() {
+        swipeRefreshLayout.isRefreshing = true
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val ctx = context ?: return@launch
+
+                val availabilityStatus = HealthConnectClient.getSdkStatus(ctx)
+                if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                    healthConnectClient = HealthConnectClient.getOrCreate(ctx)
+                    requestPermissionsAndReadAllData()
+                } else {
+                    Toast.makeText(ctx,"Please install or update Health Connect", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                // ❗ STOP refresh ONLY AFTER ALL WORK IS DONE
+                swipeRefreshLayout.isRefreshing = false
+            }
+        }
+    }
+
     companion object{
         var dialogStartTime : LocalTime = LocalTime.of(22, 0)
         var dialogEndTime : LocalTime = LocalTime.of(6, 30)
@@ -3146,62 +3690,149 @@ class SleepMarkerView(context: Context, private val data: List<SleepGraphData>) 
     }
 }
 
-class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
+class SleepRestoChartView(
+    context: Context,
+    attrs: AttributeSet? = null
+) : View(context, attrs) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val sleepSegments = mutableListOf<Segment>()
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    private val timelineSegments = mutableListOf<TimelineSegment>()
+    private val dateFormat =
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
-    private data class Segment(
-        val position: Position1,
-        val widthFraction: Float,
-        val color: Int
+    private val segmentSpacing = 4f
+
+    private data class TimelineSegment(
+        val startTime: Long,
+        val endTime: Long,
+        val position: Position1?,
+        val color: Int?
     )
 
-    fun setSleepData(data: List<SleepStagesData>) {
-        sleepSegments.clear()
+    /**
+     * 🔹 MAIN METHOD
+     * Graph poora sleepStartTime → sleepEndTime ka banega
+     */
+    fun setSleepData(
+        data: List<SleepStagesData>,
+        sleepStartTime: String,
+        sleepEndTime: String
+    ) {
+        timelineSegments.clear()
         if (data.isEmpty()) return
-        // Parse timestamps and calculate total duration
+
+        val overallStart = dateFormat.parse(sleepStartTime)?.time ?: return
+        val overallEnd = dateFormat.parse(sleepEndTime)?.time ?: return
+
+        // Parse & sort stage data
         val parsedData = data.mapNotNull {
             try {
                 val start = dateFormat.parse(it.startDatetime)?.time ?: return@mapNotNull null
                 val end = dateFormat.parse(it.endDatetime)?.time ?: return@mapNotNull null
-                val durationMinutes = TimeUnit.MILLISECONDS.toMinutes(end - start).toInt()
-                Triple(it.stage, durationMinutes, getPositionForRecordType(it.stage!!))
+                Triple(start, end, it.stage)
             } catch (e: Exception) {
                 null
             }
+        }.sortedBy { it.first }
+
+        var currentTime = overallStart
+
+        // Build timeline with gaps
+        parsedData.forEach { (start, end, stage) ->
+
+            // gap before stage
+            if (currentTime < start) {
+                timelineSegments.add(
+                    TimelineSegment(currentTime, start, null, null)
+                )
+            }
+
+            val position = getPositionForRecordType(stage!!)
+            val color = getColorForRecordType(stage)
+
+            timelineSegments.add(
+                TimelineSegment(start, end, position, color)
+            )
+
+            currentTime = end
         }
 
-        val totalMinutes = parsedData.sumOf { it.second }
-
-        parsedData.forEach { (recordType, duration, position) ->
-            val fraction = duration.toFloat() / max(totalMinutes, 1)
-            val color = getColorForRecordType(recordType!!)
-            sleepSegments.add(Segment(position, fraction, color))
+        // gap after last stage till sleep end
+        if (currentTime < overallEnd) {
+            timelineSegments.add(
+                TimelineSegment(currentTime, overallEnd, null, null)
+            )
         }
+
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
         val w = width.toFloat()
         val h = height.toFloat()
-        // Set the background color (replace with desired color)
-        canvas.drawColor(Color.parseColor("#F5F9FF")) // Example: light gray
-        val barHeight = h * 0.25f
+
+        canvas.drawColor(Color.parseColor("#F5F9FF"))
+
+        if (timelineSegments.isEmpty()) return
+
+        val barHeight = h * 0.35f
         val cornerRadius = barHeight / 4
+        val verticalGap = h * 0.05f
+
+        val totalDuration =
+            timelineSegments.last().endTime - timelineSegments.first().startTime
+
+        val totalSpacing = segmentSpacing * (timelineSegments.size - 1)
+        val availableWidth = w - totalSpacing
+
         var currentX = 0f
-        sleepSegments.forEach { segment ->
-            paint.color = segment.color
-            val top = when (segment.position) {
-                Position1.UPPER -> h * 0.1f
-                Position1.LOWER -> h * 0.35f
+
+        timelineSegments.forEach { segment ->
+            val duration = segment.endTime - segment.startTime
+            val segmentWidth =
+                (duration.toFloat() / totalDuration) * availableWidth
+
+            if (segment.position != null && segment.color != null) {
+                paint.color = segment.color
+
+                val top = when (segment.position) {
+                    Position1.UPPER -> h * 0.1f
+                    Position1.LOWER -> h * 0.1f + barHeight + verticalGap
+                }
+
+                val bottom = top + barHeight
+                val right = currentX + segmentWidth
+
+                canvas.drawRoundRect(
+                    RectF(currentX, top, right, bottom),
+                    cornerRadius,
+                    cornerRadius,
+                    paint
+                )
             }
-            val bottom = top + barHeight
-            val right = currentX + (segment.widthFraction * w)
-            canvas.drawRoundRect(RectF(currentX, top, right, bottom), cornerRadius, cornerRadius, paint)
-            currentX = right
+
+            currentX += segmentWidth + segmentSpacing
+        }
+
+        // ---- RULER ----
+        val rulerY = h * 0.95f
+        val tickHeight = 10f
+        val tickSpacing = w / 12f
+
+        paint.color = Color.BLACK
+        paint.strokeWidth = 2f
+
+        for (i in 0..12) {
+            val x = i * tickSpacing
+            canvas.drawLine(
+                x,
+                rulerY - tickHeight / 2,
+                x,
+                rulerY + tickHeight / 2,
+                paint
+            )
         }
     }
 
@@ -3221,6 +3852,7 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
         }
     }
 }
+
 
 enum class Position1 {
     UPPER, LOWER

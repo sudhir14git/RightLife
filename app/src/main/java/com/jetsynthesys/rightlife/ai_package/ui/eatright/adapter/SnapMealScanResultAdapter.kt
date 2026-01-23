@@ -9,16 +9,13 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 
-class SnapMealScanResultAdapter(private val context: Context, private var dataLists: ArrayList<SearchResultItem>,
-                                private var clickPos: Int, private var mealLogListData : SearchResultItem?,
-                                private var isClickView : Boolean, val onMenuEditItem: (SearchResultItem, Int, Boolean) -> Unit,
-                                val onMenuDeleteItem: (SearchResultItem, Int, Boolean) -> Unit) :
+class SnapMealScanResultAdapter(private val context: Context, private var dataLists: ArrayList<IngredientRecipeDetails>,
+                                private var clickPos: Int, private var mealLogListData : IngredientRecipeDetails?,
+                                private var isClickView : Boolean, val onMenuEditItem: (IngredientRecipeDetails, Int, Boolean) -> Unit,
+                                val onMenuDeleteItem: (IngredientRecipeDetails, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<SnapMealScanResultAdapter.ViewHolder>() {
-
-    private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_meal_scan_results_ai, parent, false)
@@ -28,21 +25,17 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        if (item.mealQuantity?.toInt() != 0){
-            var unit = ""
-            if (item.unit != null){
-                unit = item.unit
-            }
-            holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + " Serving"
-        }else{
-            if (item.servings > 0){
-                holder.mealQuantityTv.text = item.servings?.toInt().toString() + " Serving"
+        if (item.selected_serving != null){
+            if (item.selected_serving.value != null && item.selected_serving.type != null){
+                holder.mealQuantityTv.text = item.selected_serving.value?.toInt().toString() + " "  + item.selected_serving.type
             }else{
                 holder.mealQuantityTv.text = "1 Serving"
             }
+        }else{
+            holder.mealQuantityTv.text = "1 Serving"
         }
 
-        val capitalized = item.name.toString().replaceFirstChar { it.uppercase() }
+        val capitalized = item.food_name.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
 //        Glide.with(context)
 //            .load(item.url)
@@ -53,19 +46,19 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
         if (item != null){
          //   holder.servesCount.text = "1"
             var value : Double = 0.0
-            if (item.mealQuantity != null){
-                if (item.mealQuantity > 0.0){
-                    value = item.mealQuantity
+            if (item.quantity != null){
+                if (item.quantity > 0.0){
+                    value = item.quantity
                 }else{
                     value = 1.0
                 }
             }else{
                 value = 1.0
             }
-            holder.calValue.text = String.format("%.1f", item.nutrients.macros.Calories)
-            holder.proteinValue.text = String.format("%.1f", item.nutrients.macros.Protein)
-            holder.cabsValue.text = String.format("%.1f", item.nutrients.macros.Carbs)
-            holder.fatsValue.text = String.format("%.1f", item.nutrients.macros.Fats)
+            holder.calValue.text = String.format("%.1f", item.calories_kcal)
+            holder.proteinValue.text = String.format("%.1f", item.protein_g)
+            holder.cabsValue.text = String.format("%.1f", item.carbs_g)
+            holder.fatsValue.text = String.format("%.1f", item.fat_g)
         }else{
           //  holder.servesCount.text = "NA"
             holder.calValue.text = "NA"
@@ -192,7 +185,7 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(item : ArrayList<SearchResultItem>?, pos: Int, mealLogItem : SearchResultItem?, isClick : Boolean) {
+    fun addAll(item : ArrayList<IngredientRecipeDetails>?, pos: Int, mealLogItem : IngredientRecipeDetails?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

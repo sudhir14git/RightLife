@@ -65,6 +65,8 @@
             android:textColor="@color/txt_color_header"
             android:textSize="30sp"
             android:singleLine="true"
+            android:paddingHorizontal="20dp"
+            android:text=""
             android:imeOptions="actionDone"/>
 
     </LinearLayout>
@@ -74,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="5/20 characters"
+        android:text="5/20 Ch"
         android:textSize="11sp"
         android:gravity="center"
         android:fontFamily="@font/dmsans_medium"
@@ -83,12 +85,12 @@
     <Button
         android:id="@+id/btn_continue"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="56dp"
         android:layout_margin="36dp"
         android:text="@string/str_continue"
-        android:textSize="@dimen/textsize_large"
+        android:textSize="@dimen/textsize_large20sp"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/white"
-        android:backgroundTint="@color/menuselected"/>
+        android:backgroundTint="@color/rightlife"/>
 
 </LinearLayout>

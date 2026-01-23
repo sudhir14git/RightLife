@@ -8,8 +8,11 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -17,6 +20,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -34,10 +38,12 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.core.view.isVisible
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeDetailsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.Serving
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
 
 class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
@@ -66,14 +72,20 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var backButton : ImageView
     private lateinit var ivEdit : ImageView
     private lateinit var tvMeasure :TextView
-    private var dishLists : ArrayList<SearchResultItem> = ArrayList()
-    private lateinit var snapDishLocalListModel : SnapDishLocalListModel
+    private lateinit var spinner: Spinner
+    private var measureType : String = ""
+    private var selectedDefaultValue : Double? = 0.0
+    private var dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+    private lateinit var recipeDetailsLocalListModel : RecipeDetailsLocalListModel
     private var mealLogRequests : SelectedMealLogList? = null
     private var snapMealLogRequests : SelectedMealLogList? = null
     private lateinit var mealType : String
     private var snapMealRequestLocalListModel : SnapMealRequestLocalListModel? = null
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
+    private var isSpinnerInitialized = false
+    private var defaultServing: Serving? = null
+    private var userSelectedServing: Serving? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -109,20 +121,22 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
         quantityEdit = view.findViewById(R.id.quantityEdit)
         ivEdit = view.findViewById(R.id.ivEdit)
         backButton = view.findViewById(R.id.backButton)
+        spinner = view.findViewById(R.id.spinner)
 
         moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
+
         val searchResultItem = if (Build.VERSION.SDK_INT >= 33) {
-            arguments?.getParcelable("searchResultItem", SearchResultItem::class.java)
+            arguments?.getParcelable("ingredientRecipeDetails", IngredientRecipeDetails::class.java)
         } else {
-            arguments?.getParcelable("searchResultItem")
+            arguments?.getParcelable("ingredientRecipeDetails")
         }
 
-        val snapDishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
-            arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
+        val recipeDetailsLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("snapDishLocalListModel", RecipeDetailsLocalListModel::class.java)
         } else {
             arguments?.getParcelable("snapDishLocalListModel")
         }
@@ -157,23 +171,22 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
             snapMealLogRequests = selectedSnapMealLogListModels
         }
 
-        if (snapDishLocalListModels != null){
-            snapDishLocalListModel = snapDishLocalListModels
+        if (recipeDetailsLocalListModels != null){
+            recipeDetailsLocalListModel = recipeDetailsLocalListModels
 
             if (searchResultItem != null){
-                val data = searchResultItem
-                if (snapDishLocalListModel.data.size > 0){
-                    dishLists.addAll(snapDishLocalListModel.data)
+                if (recipeDetailsLocalListModel.data.size > 0){
+                    dishLists.addAll(recipeDetailsLocalListModel.data)
                 }
-                dishLists.add(data)
-                snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+              //  dishLists.add(searchResultItem)
+                recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
             }
         }else{
-            if (searchResultItem != null) {
-                val data = searchResultItem
-                dishLists.add(data)
-                snapDishLocalListModel = SnapDishLocalListModel(dishLists)
-            }
+//            if (searchResultItem != null) {
+//             //   val data = searchResultItem
+//                dishLists.add(searchResultItem)
+//                recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
+//            }
         }
 
         layoutMacroTitle.setOnClickListener {
@@ -211,6 +224,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     val fragment = HomeBottomTabFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
                     args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -219,15 +233,31 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                         commit()
                     }
                 }else{
-                    val fragment = SearchDishToLogFragment()
-                    val args = Bundle()
-                    args.putString("ModuleName", moduleName)
-                    args.putString("selectedMealDate", selectedMealDate)
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
+                    if (searchType.contentEquals("Frequently")){
+                        val fragment = HomeTabMealFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        args.putString("tabType", "null")
+                        fragment.arguments = args
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flFragment, fragment, "landing")
+                            addToBackStack("landing")
+                            commit()
+                        }
+                    }else{
+                        val fragment = SearchDishToLogFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        fragment.arguments = args
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flFragment, fragment, "landing")
+                            addToBackStack("landing")
+                            commit()
+                        }
                     }
                 }
             }
@@ -238,6 +268,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
                 args.putString("selectedMealDate", selectedMealDate)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -246,15 +277,31 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     commit()
                 }
             }else{
-                val fragment = SearchDishToLogFragment()
-                val args = Bundle()
-                args.putString("ModuleName", moduleName)
-                args.putString("selectedMealDate", selectedMealDate)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
+                if (searchType.contentEquals("Frequently")){
+                    val fragment = HomeTabMealFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
+                    args.putString("selectedMealDate", selectedMealDate)
+                    args.putString("tabType", "null")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }else{
+                    val fragment = SearchDishToLogFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
+                    args.putString("selectedMealDate", selectedMealDate)
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
                 }
             }
         }
@@ -267,21 +314,21 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                         if (searchResultItem != null){
                             setDishData(searchResultItem, true)
                             var ingredientQuantity = 0.0
-                            if (searchResultItem.mealQuantity != null && searchResultItem.mealQuantity > 0.0){
-                                ingredientQuantity = searchResultItem.mealQuantity
+                            if (selectedDefaultValue != null && selectedDefaultValue!! > 0.0){
+                                ingredientQuantity = selectedDefaultValue!!
                             }else{
                                 ingredientQuantity = 1.0
                             }
                             onMacroNutrientsList(searchResultItem, ingredientQuantity, targetValue)
                             onMicroNutrientsList(searchResultItem, ingredientQuantity, targetValue)
                         }else{
-                            if (snapDishLocalListModel != null){
-                                for (item in snapDishLocalListModel.data) {
-                                    if (item.name.contentEquals(snapRecipeName)) {
+                            if (recipeDetailsLocalListModel != null){
+                                for (item in recipeDetailsLocalListModel.data) {
+                                    if (item.recipe.contentEquals(snapRecipeName)) {
                                         setDishData(item, true)
                                         var ingredientQuantity = 0.0
-                                        if (item.mealQuantity != null && item.mealQuantity > 0.0){
-                                            ingredientQuantity = item.mealQuantity
+                                        if (selectedDefaultValue != null && selectedDefaultValue!! > 0.0){
+                                            ingredientQuantity = selectedDefaultValue!!
                                         }else{
                                             ingredientQuantity = 1.0
                                         }
@@ -308,13 +355,88 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
             setDishData(searchResultItem, false)
             onMacroNutrientsList(searchResultItem, 1.0, 1.0)
             onMicroNutrientsList(searchResultItem, 1.0, 1.0)
+            setupSpinner(searchResultItem.available_serving, searchResultItem.selected_serving)
         }
 
         addToTheMealLayout.setOnClickListener {
 
             if (quantityEdit.text.toString().isNotEmpty() && quantityEdit.text.toString() != "."){
                 if (quantityEdit.text.toString().toDouble() > 0.0){
-                    if (snapDishLocalListModel?.data != null){
+                    if (searchResultItem != null){
+                        val foodData = searchResultItem
+                        var targetValue = 0.0
+                        if (quantityEdit.text.toString().toDouble() > 0.0){
+                            targetValue = quantityEdit.text.toString().toDouble()
+                        }else{
+                            targetValue = 0.0
+                        }
+                        var ingredientQuantity = 0.0
+                        if (selectedDefaultValue != null && selectedDefaultValue!! > 0.0){
+                            ingredientQuantity = selectedDefaultValue!!
+                        }else{
+                            ingredientQuantity = 1.0
+                        }
+                        val selectedServing = Serving(
+                            type = measureType,
+                            value = quantityEdit.text.toString().toDouble())
+                        val ingredientData = IngredientRecipeDetails(
+                            id = foodData.id,
+                            recipe_id = foodData.recipe_id,
+                            food_code = foodData.food_code,
+                            food_name = foodData.food_name,
+                            recipe = foodData.recipe,
+                            meal_type = foodData.meal_type,
+                            cuisine = foodData.cuisine,
+                            regional_split = foodData.regional_split,
+                            category = foodData.category,
+                            food_category = foodData.food_category,
+                            flag = foodData.flag,
+                            serving_size_for_calorific_breakdown = foodData.serving_size_for_calorific_breakdown,
+                            standard_serving_size = foodData.standard_serving_size,
+                            calories_kcal = calculateValue(foodData.calories_kcal, ingredientQuantity, targetValue),
+                            carbs_g = calculateValue(foodData.carbs_g, ingredientQuantity, targetValue),
+                            fiber_g = calculateValue(foodData.fiber_g, ingredientQuantity, targetValue),
+                            sugars_g = calculateValue(foodData.sugars_g, ingredientQuantity, targetValue),
+                            vit_b6_mg = calculateValue(foodData.vit_b6_mg, ingredientQuantity, targetValue),
+                            vit_b12_mcg = calculateValue(foodData.vit_b12_mcg, ingredientQuantity, targetValue),
+                            protein_g = calculateValue(foodData.protein_g, ingredientQuantity, targetValue),
+                            fat_g = calculateValue(foodData.fat_g, ingredientQuantity, targetValue),
+                            vit_a_mcg = calculateValue(foodData.vit_a_mcg, ingredientQuantity, targetValue),
+                            vit_c_mg = calculateValue(foodData.vit_c_mg, ingredientQuantity, targetValue),
+                            vit_d_mcg = calculateValue(foodData.vit_d_mcg, ingredientQuantity, targetValue),
+                            vit_e_mg = calculateValue(foodData.vit_e_mg, ingredientQuantity, targetValue),
+                            folate_b9_mcg = calculateValue(foodData.folate_b9_mcg, ingredientQuantity, targetValue),
+                            vit_k_mcg = calculateValue(foodData.vit_k_mcg, ingredientQuantity, targetValue),
+                            thiamin_b1_mg = calculateValue(foodData.thiamin_b1_mg, ingredientQuantity, targetValue),
+                            riboflavin_b2_mg = calculateValue(foodData.riboflavin_b2_mg, ingredientQuantity, targetValue),
+                            niacin_b3_mg = calculateValue(foodData.niacin_b3_mg, ingredientQuantity, targetValue),
+                            iron_mg = calculateValue(foodData.iron_mg, ingredientQuantity, targetValue),
+                            calcium_mg = calculateValue(foodData.calcium_mg, ingredientQuantity, targetValue),
+                            magnesium_mg = calculateValue(foodData.magnesium_mg, ingredientQuantity, targetValue),
+                            zinc_mg = calculateValue(foodData.zinc_mg, ingredientQuantity, targetValue),
+                            potassium_mg = calculateValue(foodData.potassium_mg, ingredientQuantity, targetValue),
+                            sodium_mg = calculateValue(foodData.sodium_mg, ingredientQuantity, targetValue),
+                            phosphorus_mg = calculateValue(foodData.phosphorus_mg, ingredientQuantity, targetValue),
+                            omega3_g = calculateValue(foodData.omega3_g, ingredientQuantity, targetValue),
+                            ingredients = foodData.ingredients,
+                            preparation_notes = foodData.preparation_notes,
+                            active_cooking_time_min = foodData.active_cooking_time_min,
+                            allergy_groups_restricted_from_consuming = foodData.allergy_groups_restricted_from_consuming,
+                            tags = foodData.tags,
+                            typical_1person_serving = foodData.typical_1person_serving,
+                            household_measure_1_serving = foodData.household_measure_1_serving,
+                            photo_url = foodData.photo_url,
+                            selected_serving = selectedServing,
+                            default_serving = foodData.default_serving,
+                            available_serving = foodData.available_serving,
+                            source = foodData.source,
+                            quantity =  quantityEdit.text.toString().toDouble(),
+                            servings = foodData.servings
+                        )
+                        dishLists.add(ingredientData)
+                        recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
+                    }
+                    if (recipeDetailsLocalListModel?.data != null){
                         val fragment = HomeTabMealFragment()
                         val args = Bundle()
                         args.putString("mealQuantity", quantityEdit.text.toString())
@@ -322,7 +444,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                         args.putString("searchType","DishToLog")
                         args.putString("mealType", mealType)
                         args.putString("selectedMealDate", selectedMealDate)
-                        args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                        args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
                         args.putParcelable("selectedMealLogList", mealLogRequests)
                         args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
                         args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
@@ -342,25 +464,13 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
         }
     }
 
-    private fun setDishData(snapRecipeData: SearchResultItem,  isEdit: Boolean) {
+    private fun setDishData(snapRecipeData: IngredientRecipeDetails,  isEdit: Boolean) {
         if (searchType.contentEquals("createRecipe")){
             addToTheMealTV.text = "Proceed"
         }else{
             addToTheMealTV.text = "Proceed"
-            val capitalized = snapRecipeData.name.toString().replaceFirstChar { it.uppercase() }
+            val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
             tvMealName.text = capitalized
-            if (snapRecipeData.unit != null){
-                tvMeasure.text = snapRecipeData.unit
-            }
-            if (!isEdit){
-                if (snapRecipeData.mealQuantity != null ){
-                    if (snapRecipeData.mealQuantity > 0.0){
-                        quantityEdit.setText(snapRecipeData.mealQuantity.toInt().toString())
-                    }else{
-                        quantityEdit.setText("1")
-                    }
-                }
-            }
             var imageUrl : String? = ""
             imageUrl = if (snapRecipeData.photo_url.contains("drive.google.com")) {
                 getDriveImageUrl(snapRecipeData.photo_url)
@@ -375,12 +485,49 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
         }
     }
 
-    private fun onMacroNutrientsList(mealDetails: SearchResultItem, defaultValue: Double, targetValue: Double) {
+    private fun setupSpinner(servingsList: List<Serving>, default: Serving?) {
+        val adapter =
+            ArrayAdapter(requireActivity(), R.layout.snap_mealtype_spinner,  servingsList.map {it.type })
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+        spinner.adapter = adapter
+        // Store default serving
+        defaultServing = default
+        // Pre-select default serving in spinner
+        val defaultIndex = servingsList.indexOfFirst {
+            it.type == default?.type
+        }
+        val safeIndex = if (defaultIndex >= 0) defaultIndex else 0
+        spinner.setSelection(safeIndex)
+        val defaultSelectedServing = servingsList[safeIndex]
+        measureType = defaultSelectedServing.type.toString()
+        selectedDefaultValue = defaultSelectedServing.value
+        quantityEdit.setText(defaultSelectedServing.value.toString())
+        // Listener
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                if (!isSpinnerInitialized) {
+                    isSpinnerInitialized = true
+                    return
+                }
+                val selectedServing = servingsList[position]
+                userSelectedServing = selectedServing  // ✅ track user choice
+                val newQuantity = selectedServing.value.toString()
+                if (quantityEdit.text.toString() != newQuantity) {
+                    measureType = selectedServing.type.toString()
+                    selectedDefaultValue = selectedServing.value
+                    quantityEdit.setText(newQuantity)
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+    }
 
-        val calories = calculateValue(mealDetails.nutrients.macros.Calories, defaultValue, targetValue)
-        val protein = calculateValue(mealDetails.nutrients.macros.Protein, defaultValue, targetValue)
-        val carbs = calculateValue(mealDetails.nutrients.macros.Carbs, defaultValue, targetValue)
-        val fats = calculateValue(mealDetails.nutrients.macros.Fats, defaultValue, targetValue)
+    private fun onMacroNutrientsList(mealDetails: IngredientRecipeDetails, defaultValue: Double, targetValue: Double) {
+
+        val calories = calculateValue(mealDetails.calories_kcal, defaultValue, targetValue)
+        val protein = calculateValue(mealDetails.protein_g, defaultValue, targetValue)
+        val carbs = calculateValue(mealDetails.carbs_g, defaultValue, targetValue)
+        val fats = calculateValue(mealDetails.fat_g, defaultValue, targetValue)
         val calories_kcal : String = calories.toInt().toString()?: "NA"
         val protein_g : String = protein.toInt().toString()?: "NA"
         val carb_g : String = carbs.toInt().toString()?: "NA"
@@ -399,113 +546,132 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
         macroNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMicroNutrientsList(mealDetails: SearchResultItem, defaultValue: Double, targetValue: Double) {
+    private fun onMicroNutrientsList(mealDetails: IngredientRecipeDetails, defaultValue: Double, targetValue: Double) {
 
-        val cholesterol = if (mealDetails.nutrients.micros.Cholesterol != null){
-            calculateValue( mealDetails.nutrients.micros.Cholesterol, defaultValue, targetValue).toInt().toString()
+//        val cholesterol = if (mealDetails.cholesterol != null){
+//            calculateValue( mealDetails.cholesterol, defaultValue, targetValue).toInt().toString()
+//        }else{
+//            "0.0"
+//        }
+
+        val vitamin_A = if (mealDetails.vit_a_mcg != null){
+            calculateValue( mealDetails.vit_a_mcg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val vitamin_A = if (mealDetails.nutrients.micros.Vitamin_A != null){
-            calculateValue( mealDetails.nutrients.micros.Vitamin_A, defaultValue, targetValue).toInt().toString()
+        val vitamin_C = if (mealDetails.vit_c_mg != null){
+            calculateValue( mealDetails.vit_c_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val vitamin_C = if (mealDetails.nutrients.micros.Vitamin_C != null){
-            calculateValue( mealDetails.nutrients.micros.Vitamin_C, defaultValue, targetValue).toInt().toString()
+        val vitamin_k = if (mealDetails.vit_k_mcg != null){
+            calculateValue( mealDetails.vit_k_mcg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val vitamin_k = if (mealDetails.nutrients.micros.Vitamin_K != null){
-            calculateValue( mealDetails.nutrients.micros.Vitamin_K, defaultValue, targetValue).toInt().toString()
+        val vitaminD = if (mealDetails.vit_d_mcg != null){
+            calculateValue( mealDetails.vit_d_mcg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val vitaminD = if (mealDetails.nutrients.micros.Vitamin_D != null){
-            calculateValue( mealDetails.nutrients.micros.Vitamin_D, defaultValue, targetValue).toInt().toString()
+        val folate = if (mealDetails.folate_b9_mcg != null){
+            calculateValue( mealDetails.folate_b9_mcg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val folate = if (mealDetails.nutrients.micros.Folate != null){
-            calculateValue( mealDetails.nutrients.micros.Folate, defaultValue, targetValue).toInt().toString()
+        val iron_mg = if (mealDetails.iron_mg != null){
+            calculateValue( mealDetails.iron_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val iron_mg = if (mealDetails.nutrients.micros.Iron != null){
-            calculateValue( mealDetails.nutrients.micros.Iron, defaultValue, targetValue).toInt().toString()
+        val calcium = if (mealDetails.calcium_mg != null){
+            calculateValue( mealDetails.calcium_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val calcium = if (mealDetails.nutrients.micros.Calcium != null){
-            calculateValue( mealDetails.nutrients.micros.Calcium, defaultValue, targetValue).toInt().toString()
+        val magnesium = if (mealDetails.magnesium_mg != null){
+            calculateValue( mealDetails.magnesium_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val magnesium = if (mealDetails.nutrients.micros.Magnesium != null){
-            calculateValue( mealDetails.nutrients.micros.Magnesium, defaultValue, targetValue).toInt().toString()
+        val potassium_mg = if (mealDetails.potassium_mg != null){
+            calculateValue( mealDetails.potassium_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val potassium_mg = if (mealDetails.nutrients.micros.Potassium != null){
-            calculateValue( mealDetails.nutrients.micros.Potassium, defaultValue, targetValue).toInt().toString()
+//        val fiber_mg = if (mealDetails.fiber != null){
+//            calculateValue( mealDetails.fiber, defaultValue, targetValue).toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+        val zinc = if (mealDetails.zinc_mg != null){
+            calculateValue( mealDetails.zinc_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val fiber_mg = if (mealDetails.nutrients.micros.Fiber != null){
-            calculateValue( mealDetails.nutrients.micros.Fiber, defaultValue, targetValue).toInt().toString()
+        val sodium = if (mealDetails.sodium_mg != null){
+            calculateValue( mealDetails.sodium_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val zinc = if (mealDetails.nutrients.micros.Zinc != null){
-            calculateValue( mealDetails.nutrients.micros.Zinc, defaultValue, targetValue).toInt().toString()
+//        val sugar_mg = if (mealDetails.sugar != null){
+//            calculateValue( mealDetails.sugar, defaultValue, targetValue).toInt().toString()
+//        }else{
+//            "0.0"
+//        }
+
+        val vitB6 = if (mealDetails.vit_b6_mg != null){
+            calculateValue( mealDetails.vit_b6_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val sodium = if (mealDetails.nutrients.micros.Sodium != null){
-            calculateValue( mealDetails.nutrients.micros.Sodium, defaultValue, targetValue).toInt().toString()
+        val vitB12 = if (mealDetails.vit_b12_mcg != null){
+            calculateValue( mealDetails.vit_b12_mcg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
-        val sugar_mg = if (mealDetails.nutrients.micros.Sugar != null){
-            calculateValue( mealDetails.nutrients.micros.Sugar, defaultValue, targetValue).toInt().toString()
+        val phosphorus = if (mealDetails.phosphorus_mg != null){
+            calculateValue( mealDetails.phosphorus_mg, defaultValue, targetValue).toString()
         }else{
-            "0"
+            "0.0"
         }
 
         val mealLogs = listOf(
-            MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
-            MicroNutrientsModel(vitamin_A, "mg", "Vitamin A", R.drawable.ic_fats),
+            //   MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
+            MicroNutrientsModel(vitamin_A, "mcg", "Vitamin A", R.drawable.ic_fats),
             MicroNutrientsModel(vitamin_C, "mg", "Vitamin C", R.drawable.ic_fats),
-            MicroNutrientsModel(vitamin_k, "mg", "Vitamin K", R.drawable.ic_fats),
-            MicroNutrientsModel(vitaminD, "mg", "Vitamin D", R.drawable.ic_fats),
-            MicroNutrientsModel(folate, "mg", "Folate", R.drawable.ic_fats),
+            MicroNutrientsModel(vitamin_k, "mcg", "Vitamin K", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminD, "mcg", "Vitamin D", R.drawable.ic_fats),
+            MicroNutrientsModel(vitB6, "mg", "Vitamin B6", R.drawable.ic_fats),
+            MicroNutrientsModel(vitB12, "mcg", "Vitamin B12", R.drawable.ic_fats),
+            MicroNutrientsModel(folate, "mcg", "Folate", R.drawable.ic_fats),
             MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_fats),
             MicroNutrientsModel(calcium, "mg", "Calcium", R.drawable.ic_fats),
             MicroNutrientsModel(magnesium, "mg", "Magnesium", R.drawable.ic_fats),
             MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
-            MicroNutrientsModel(fiber_mg, "mg", "Fiber", R.drawable.ic_fats),
+            //       MicroNutrientsModel(fiber_mg, "mg", "Fiber", R.drawable.ic_fats),
             MicroNutrientsModel(zinc, "mg", "Zinc", R.drawable.ic_fats),
             MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
-            MicroNutrientsModel(sugar_mg, "g", "Sugar", R.drawable.ic_fats)
+            //        MicroNutrientsModel(sugar_mg, "g", "Sugar", R.drawable.ic_fats)
+            MicroNutrientsModel(phosphorus, "mg", "Phosphorus", R.drawable.ic_fats)
         )
-
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
-        //  valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
         for (item in mealLogs){
-            if (item.nutrientsValue != "0"){
+            if (item.nutrientsValue != "0.0"){
                 valueLists.add(item)
             }
         }

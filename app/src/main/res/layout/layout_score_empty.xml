@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/scoreCard"
+    android:layout_height="270dp"
+    android:layout_marginTop="16dp">
+
+    <com.jetsynthesys.rightlife.ui.GlowGradientCardView
+        android:id="@+id/gradientBorder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:id="@+id/imgChallenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/img_daily_score" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/imgChallenge"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Your Daily Score"
+                android:textColor="@color/menuselected"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/imgInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/info_challenge" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_lock_challenge" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="Available when challenge starts"
+                android:textColor="@color/txt_color_header"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

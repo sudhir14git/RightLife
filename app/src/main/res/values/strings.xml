@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Right Life</string>
+    <string name="app_name">RightLife</string>
     <string name="title_activity_homepage">HomepageActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -200,7 +200,7 @@ We’ll never share your data with anyone outside RightLife and our trusted part
 
 We also use device identifiers to improve analytics and tailor your in-app experience.</string>
 
-    <string name="data_control_desc1">Your health data stays with us safe, secure, and used only to personalize your experience on RightLife.\n\nWe’ll never share your data with anyone outside RightLife and our trusted partners. You can manage or delete your data anytime from your profile.\n\nWe also use device identifiers to improve analytics and tailor your in-app experience.\n\n</string>
+    <string name="data_control_desc1">Your health data stays with us safe, secure, and used only to personalize your experience on RightLife.\n\nWe’ll never share your data with anyone outside RightLife and our trusted partners. You can manage or delete your data anytime from your profile.\n\nWe also use device identifiers to improve analytics and tailor your in-app experience.\n</string>
 
     <string name="str_continue">Continue</string>
     <string name="continue_google">Continue With Google</string>
@@ -208,10 +208,13 @@ We also use device identifiers to improve analytics and tailor your in-app exper
     <!--<string name="know_each_other">Let’s get to know each other</string>-->
     <string name="know_each_other">Let’s get to know you.</string>
     <!--<string name="know_your_name">We’d love to know \nyour name!</string>-->
-    <string name="know_your_name">What should we call you?</string>
+    <string name="know_your_name">What should we \ncall you?</string>
     <!--<string name="error_username">Invalid user name, do not use number, special characters</string>-->
     <string name="error_username">Invalid name. Please use letters only (no numbers or symbols).</string>
     <string name="happy_to_share">Happy to have you here,</string>
+    <string name="welcome_sub_text">
+    This is your space to build\nhealthier habits.\n<i>One step at a time</i>
+</string>
     <string name="wellness_focus">What’s your wellness focus?</string>
     <string name="pick_up_goal">Pick one goal. We’ll take care of the rest.</string>
     <string name="str_think_right">ThinkRight</string>
@@ -321,6 +324,16 @@ We also use device identifiers to improve analytics and tailor your in-app exper
         ✅ <b>Monitor Trends</b> – Use consistency scores and trend arrows.\n\n
         Better sleep = <b>better recovery, sharper focus, improved performance</b>.
     </string>
+    <!--<string name="facebook_app_id">175146955089289</string>-->
+    <string name="facebook_app_id">854647517263575</string>
+    <!--<string name="facebook_client_token">e6b3688449411d8e23741468c7bf7a66</string>-->
+    <string name="facebook_client_token">72b5ef62f4169bb4551d00f2d45bc568</string>
+
+    <string name="change_plan_underlined">Change plan</string>
+    <string name="change_pack_underlined">Change pack</string>
+
+
+    <string name="change_text"><u>Change</u></string>
 
 
 </resources>

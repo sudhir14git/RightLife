@@ -5,76 +5,91 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_color_background_workout">
 
+    <!-- TOOLBAR - BAHAR, FIXED -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_meal_log_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Add Workout"
+            android:textColor="@color/text_color"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- SCROLLABLE CONTENT -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/layout_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_toolbar"
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/workoutNameLayout"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/back_button"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="20dp"
+                    android:id="@+id/workoutIcon"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/back"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:src="@drawable/workout_function_icon" />
 
                 <TextView
-                    android:id="@+id/tv_meal_log_title"
+                    android:id="@+id/workoutName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:paddingEnd="5dp"
                     android:fontFamily="@font/dmsans_bold"
-                    android:text="Add Workout"
-                    android:textColor="@color/text_color"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <ImageView
-                android:id="@+id/workoutIcon"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/workout_function_icon"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layout_toolbar" />
-
-            <TextView
-                android:id="@+id/workoutName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:paddingEnd="5dp"
-                android:fontFamily="@font/dmsans_bold"
-                android:text="Functional Strength Training"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                app:layout_constraintBottom_toBottomOf="@+id/workoutIcon"
-                app:layout_constraintStart_toEndOf="@+id/workoutIcon"
-                app:layout_constraintTop_toTopOf="@+id/workoutIcon"
-                app:layout_constraintEnd_toEndOf="parent" />
+                    android:text="Functional Strength Training"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    app:layout_constraintBottom_toBottomOf="@+id/workoutIcon"
+                    app:layout_constraintStart_toEndOf="@+id/workoutIcon"
+                    app:layout_constraintTop_toTopOf="@+id/workoutIcon"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <TextView
                 android:id="@+id/calories_text"
@@ -87,7 +102,7 @@
                 android:textSize="64dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/workoutName" />
+                app:layout_constraintTop_toBottomOf="@+id/workoutNameLayout" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -191,14 +206,16 @@
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/hourPicker"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:textSize="25sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="hr"
-                            android:textColor="@android:color/black"
-                            android:textSize="24sp"
+                            android:textColor="@color/dotted_red"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/dmsans_regular"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="8dp"
                             android:paddingEnd="16dp" />
@@ -206,14 +223,16 @@
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/minutePicker"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:textSize="25sp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="min"
-                            android:textColor="@android:color/black"
-                            android:textSize="24sp"
+                            android:text="mins"
+                            android:textColor="@color/dotted_red"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/dmsans_regular"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="8dp" />
                     </LinearLayout>
@@ -273,7 +292,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/layout_btn_log_meal"
                 android:layout_width="300dp"
@@ -313,13 +331,9 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.core.widget.NestedScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

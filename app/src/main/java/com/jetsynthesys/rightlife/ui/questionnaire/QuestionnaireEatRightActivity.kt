@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.questionnaire
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.viewpager2.widget.ViewPager2
@@ -15,6 +16,8 @@ import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.QuestionnaireEatRightPagerAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -85,7 +88,11 @@ class QuestionnaireEatRightActivity : BaseActivity() {
         val progressPercentage =
             (((fragmentIndex + 1) / questionnairePagerAdapter.itemCount.toDouble()) * 100).toInt()
         binding.progressQuestionnaire.progress = progressPercentage
-        binding.tvFragmentCount.text = "${fragmentIndex + 1}/${questionnairePagerAdapter.itemCount}"
+        //binding.tvFragmentCount.text = "${fragmentIndex + 1}/${questionnairePagerAdapter.itemCount}"
+        if (questionnairePagerAdapter.itemCount == 11 && fragmentIndex >= 8)
+            binding.tvFragmentCount.text = "${fragmentIndex + 4}/14"
+        else
+            binding.tvFragmentCount.text = "${fragmentIndex + 1}/14"
     }
 
 
@@ -105,6 +112,7 @@ class QuestionnaireEatRightActivity : BaseActivity() {
         fun navigateToNextPage() {
             if (viewPager.currentItem < questionnairePagerAdapter.itemCount - 1) {
                 viewPager.currentItem += 1
+                Log.d("navigateToNextPage: ", "navigateToNextPage: " + viewPager.currentItem)
             }
         }
 
@@ -121,6 +129,7 @@ class QuestionnaireEatRightActivity : BaseActivity() {
                         "You’re All Set",
                         "Your fitness and food patterns are now part of your plan."
                     )
+                    AnalyticsLogger.logEvent(it , AnalyticsEvent.Checklist_MRER_Completed)
                 }
             }
 

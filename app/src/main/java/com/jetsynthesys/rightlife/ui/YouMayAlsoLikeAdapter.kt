@@ -2,13 +2,11 @@ package com.jetsynthesys.rightlife.ui
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
@@ -17,93 +15,137 @@ import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
-import com.jetsynthesys.rightlife.ui.utility.Utils
 
 class YouMayAlsoLikeAdapter(
     private val context: Context,
-    private val contentList: List<Like>? = null
+    private val contentList: List<Like>
 ) :
-    RecyclerView.Adapter<YouMayAlsoLikeAdapter.YouMayAlsoLikeViewHolder>() {
+    RecyclerView.Adapter<YouMayAlsoLikeAdapter.LikeViewHolder>() {
 
-    inner class YouMayAlsoLikeViewHolder(val binding: RowYouMayAlsoLikeBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    inner class LikeViewHolder(val binding: RowYouMayAlsoLikeBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Like, position: Int) {
+            // Load image using Glide
+            Glide.with(binding.root.context)
+                .load(ApiClient.CDN_URL_QA + (item.thumbnail?.url ?: ""))
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
+                .into(binding.itemImage)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): YouMayAlsoLikeViewHolder {
+            binding.itemText.text = item.contentType ?: "Untitled"
+            binding.tvTitle.text = item.title
+
+            /*Log.d("Type-------", ""+getTextAccording(item.contentType))
+            binding.tvLeftTime.text = "${item.leftDuration ?: ""} ${getTextAccording(item.contentType)}"*/
+
+            //binding.tvLeftTime.text = item.leftDuration
+            binding.tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item.createdAt)
+            binding.tvLeftTime.text = getFormattedLeftText(item)
+
+            binding.tvName.text = item.categoryName
+
+            binding.imgIconview.setImageResource(
+                if ("VIDEO".equals(item.contentType, ignoreCase = true))
+                    R.drawable.video_jump_back_in
+                else if ("AUDIO".equals(item.contentType, ignoreCase = true))
+                    R.drawable.audio_jump_back_in
+                else if ("TEXT".equals(item.contentType, ignoreCase = true))
+                    R.drawable.text_jump_back_in
+                else
+                    R.drawable.series_jump_back_in
+            )
+
+            // Click listener
+            binding.root.setOnClickListener {
+                if (item.contentType.equals(
+                        "TEXT",
+                        ignoreCase = true
+                    ) || item.contentType.equals("Articles", ignoreCase = true)
+                ) {
+                    context.startActivity(
+                        Intent(
+                            context,
+                            ArticlesDetailActivity::class.java
+                        ).apply {
+                            putExtra("contentId", item.id)
+                        })
+                } else if (item.contentType.equals(
+                        "VIDEO",
+                        ignoreCase = true
+                    ) || item.contentType
+                        .equals("AUDIO", ignoreCase = true)
+                ) {
+                    context.startActivity(
+                        Intent(
+                            context,
+                            ContentDetailsActivity::class.java
+                        ).apply {
+                            putExtra("contentId", item.id)
+                        })
+                } else if (item.contentType.equals("SERIES", ignoreCase = true)) {
+                    /*context.startActivity(Intent(context, NewSeriesDetailsActivity::class.java).apply {
+                            putExtra("seriesId", item.episodeDetails?.contentId)
+                            putExtra("episodeId", item.episodeDetails?.id)
+                        })*/
+                    context.startActivity(
+                        Intent(
+                            context,
+                            SeriesListActivity::class.java
+                        ).apply {
+                            putExtra("contentId", item.id)
+                        })
+                }
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LikeViewHolder {
         val binding =
-            RowYouMayAlsoLikeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return YouMayAlsoLikeViewHolder(binding)
+            RowYouMayAlsoLikeBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        return LikeViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = contentList!!.size
+    override fun getItemCount(): Int = contentList.size
 
-    override fun onBindViewHolder(holder: YouMayAlsoLikeViewHolder, position: Int) {
-        val item = contentList?.get(position)
-        with(holder.binding) {
-            if (item?.thumbnail?.url != null && item.thumbnail?.url?.isNotEmpty() == true) {
-                Glide.with(context)
-                    .load(ApiClient.CDN_URL_QA + item.thumbnail.url)
-                    .transform(RoundedCorners(24))
-                    .into(itemImage)
-            }
-            tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item?.createdAt)
-            tvModuleName.text = Utils.getModuleText(item?.moduleName)
-            val color = Utils.getModuleColor(context, item?.moduleId)
-            imageModuleTag.imageTintList = ColorStateList.valueOf(color)
-            tvName.text = item?.categoryName
-            tvHeader.text = item?.title
-            /*tvName.text =
-                if (item?.artist != null && item.artist?.size!! > 0) item.artist?.get(0)?.firstName + " " + item.artist?.get(
-                    0
-                )?.lastName else ""*/
+    override fun onBindViewHolder(holder: LikeViewHolder, position: Int) {
+        holder.bind(contentList[position], position)
+    }
 
-            //Module Name
-            val moduleId = item?.moduleId
-            if (moduleId.equals("EAT_RIGHT", ignoreCase = true)) {
-                imgModule.setImageResource(R.drawable.ic_db_eatright)
-            } else if (moduleId.equals("THINK_RIGHT", ignoreCase = true)) {
-                imgModule.setImageResource(R.drawable.ic_db_thinkright)
-            } else if (moduleId.equals("SLEEP_RIGHT", ignoreCase = true)) {
-                imgModule.setImageResource(R.drawable.ic_db_sleepright)
-            } else if (moduleId.equals("MOVE_RIGHT", ignoreCase = true)) {
-                imgModule.setImageResource(R.drawable.ic_db_moveright)
-            }
-
-            if (item?.contentType.equals("TEXT", ignoreCase = true)) {
-                imageContentType.setImageResource(R.drawable.ic_text_content)
-                tvLeftTime.text = (item?.readingTime ?: "0").toString()+ " min read"
-            } else if (item?.contentType.equals("VIDEO", ignoreCase = true)) {
-                imageContentType.setImageResource(R.drawable.ic_video_content)
-                tvLeftTime.text = DateTimeUtils.formatDuration(item?.meta?.duration ?: 0)
-            } else if (item?.contentType.equals("SERIES", ignoreCase = true)) {
-                imageContentType.setImageResource(R.drawable.ic_series_content)
-                tvLeftTime.text = (item?.episodeCount ?: "0").toString()+ " Epi"
-            } else {
-                imageContentType.setImageResource(R.drawable.ic_audio_content)
-                tvLeftTime.text = DateTimeUtils.formatDuration(item?.meta?.duration ?: 0)
-            }
+    private fun getTextAccording(contentType: String?): String {
+        // Use 'when' for better readability and safety.
+        return when {
+            "VIDEO".equals(contentType, ignoreCase = true) -> " left"
+            "AUDIO".equals(contentType, ignoreCase = true) -> " left"
+            "TEXT".equals(contentType, ignoreCase = true) -> "min read"
+            "SERIES".equals(contentType, ignoreCase = true) -> ""
+            else -> "" // Return an empty string for unknown types to avoid showing "null"
         }
+    }
 
-        holder.itemView.setOnClickListener {
-            if (item?.contentType.equals("TEXT", ignoreCase = true)) {
-                context.startActivity(Intent(context, ArticlesDetailActivity::class.java).apply {
-                    putExtra("contentId", item?.id)
-                })
-            } else if (item?.contentType
-                    .equals("VIDEO", ignoreCase = true) || item?.contentType
-                    .equals("AUDIO", ignoreCase = true)
-            ) {
-                context.startActivity(
-                    Intent(
-                        holder.itemView.context,
-                        ContentDetailsActivity::class.java
-                    ).apply {
-                        putExtra("contentId", item?.id)
-                    })
-            } else if (item?.contentType.equals("SERIES", ignoreCase = true)) {
-                context.startActivity(Intent(context, SeriesListActivity::class.java).apply {
-                    putExtra("contentId", item?.id)
-                })
+    private fun getFormattedLeftText(item: Like): String {
+        return when {
+            item.contentType.equals("SERIES", ignoreCase = true) -> {
+                "${item.episodeCount ?: 0} ep"
+            }
+
+            item.contentType.equals("TEXT", ignoreCase = true) -> {
+                "${item.readingTime ?: 0} min read"
+            }
+
+            else -> {
+                formatDuration(item.meta?.duration ?: 0)
             }
         }
     }
+
+    private fun formatDuration(totalSeconds: Int): String {
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
 }

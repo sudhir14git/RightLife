@@ -33,6 +33,9 @@ import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CustomProgressBar
 import com.jetsynthesys.rightlife.databinding.FragmentAddWorkoutSearchBinding
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
@@ -137,6 +140,15 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
         }
 
         addLog.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MR_Workout_AddToLog,
+                    mapOf(
+                        AnalyticsParam.WORKOUT_NAME to workout?.title.toString(),
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
+            }
             val hours = hourPicker.value
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
@@ -157,9 +169,10 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
             } else {
                 workout?.let { workout ->
                     if (durationMinutes > 0) {
+                        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                         val normalizedIntensity = normalizeIntensity(selectedIntensity)
                         val newWorkoutRecord = WorkoutSessionRecord(
-                            userId = "64763fe2fa0e40d9c0bc8264",
+                            userId = userId,
                             activityId = workout._id,
                             durationMin = durationMinutes,
                             intensity = normalizedIntensity,
@@ -331,7 +344,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
+                    ?: ""
 
                 val request = CalculateCaloriesRequest(
                     userId = userId,
@@ -444,7 +457,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
+                    ?: ""
 
                 val currentDate = getCurrentDate()
                 val request = workoutSession?.let {
@@ -475,7 +488,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                                 addToBackStack("YourActivityFragment")
                                 commit()
                             }
-                            Toast.makeText(requireContext(), "Workout Created Successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Workout Saved Successfully", Toast.LENGTH_SHORT).show()
                         } ?: Toast.makeText(
                             requireContext(),
                             "Empty response",
@@ -506,7 +519,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
+                    ?: ""
 
                 val request = CalculateCaloriesRequest(
                     userId = userId,
@@ -598,7 +611,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
             } catch (e: Exception) {
                 lastWorkoutRecord = workout?.let {
                     WorkoutSessionRecord(
-                        userId = "64763fe2fa0e40d9c0bc8264",
+                        userId = "",
                         activityId = activityId,
                         durationMin = durationMinutes,
                         intensity = selectedIntensity,
@@ -625,8 +638,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
-
+                    ?: ""
                 val currentDate = getCurrentDate()
                 val request = UpdateCaloriesRequest(
                     userId = userId,
@@ -635,9 +647,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                     sessions = 1,
                     date = currentDate
                 )
-
                 val response = ApiClient.apiServiceFastApi.updateCalories(calorieId, request)
-
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val responseBody = response.body()
@@ -657,7 +667,7 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                     } else {
                         Toast.makeText(
                             requireContext(),
-                            "Error updating calories: ${response.code()} - ${response.message()}",
+                            "Error: ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

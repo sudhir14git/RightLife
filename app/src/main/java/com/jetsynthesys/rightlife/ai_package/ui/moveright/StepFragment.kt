@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.SpannableString
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
@@ -47,6 +49,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.Basi
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.SimpleProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
+import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
 import com.jetsynthesys.rightlife.databinding.FragmentStepBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -82,7 +85,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var heart_rate_description_heading: TextView
     private lateinit var step_discreption: TextView
     private lateinit var selectHeartRateLayout: CardView
-    private lateinit var layout_btn_log_meal: LinearLayoutCompat
+    private lateinit var layoutSetGoal: LinearLayoutCompat
     private lateinit var selectedCalorieTv: TextView
     private lateinit var averageBurnCalorie: TextView
     private lateinit var averageHeading: TextView
@@ -93,6 +96,9 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var valuePreviousWeek : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var iconEdit : ImageView
+    private lateinit var tvSetGoal : TextView
+    private lateinit var description_progressbar_layout : TextView
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
     private lateinit var customProgressPreviousWeek : BasicProgressBar
@@ -118,7 +124,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         percentageTv = view.findViewById(R.id.percentageTv)
         heart_rate_description_heading = view.findViewById(R.id.heart_rate_description_heading)
         step_discreption = view.findViewById(R.id.step_discreption)
-        layout_btn_log_meal = view.findViewById(R.id.layout_btn_log_meal)
+        layoutSetGoal = view.findViewById(R.id.layoutSetGoal)
         averageBurnCalorie = view.findViewById(R.id.averageBurnCalorie)
         averageHeading = view.findViewById(R.id.averageHeading)
         percentageIc = view.findViewById(R.id.percentageIc)
@@ -131,8 +137,12 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         customProgressPreviousWeek = view.findViewById(R.id.customProgressPreviousWeek)
         customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
         dottedLine = view.findViewById(R.id.dottedLineView1)
+        iconEdit = view.findViewById(R.id.iconEdit)
+        tvSetGoal = view.findViewById(R.id.tvSetGoal)
+        description_progressbar_layout = view.findViewById(R.id.description_progressbar_layout)
 
-        layout_btn_log_meal.setOnClickListener {
+
+        layoutSetGoal.setOnClickListener {
             val args = Bundle().apply {
                 // Add your arguments here
                 putInt("currentGoal", currentGoal) // Example: String argument
@@ -157,7 +167,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
 
         // Update heading to reflect steps
-        averageHeading.text = "Average Steps"
+        averageHeading.text = "Average"
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -181,7 +191,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 R.id.rbSixMonths -> fetchStepDetails("last_six_months")
             }
         }
-
 
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
@@ -340,6 +349,8 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         dataSet.setDrawValues(entries.size <= 7)
         dataSet.barShadowColor = Color.TRANSPARENT
         dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
+        val typeface = ResourcesCompat.getFont(requireContext(), R.font.dmsans_bold)
+        dataSet.valueTypeface = typeface
 
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
@@ -399,23 +410,31 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
         avgStepsLine.lineWidth = 1f
         avgStepsLine.enableDashedLine(10f, 10f, 0f)
-        avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+        avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
         avgStepsLine.textSize = 10f
         avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
-// Goal Steps Line बनाएं
+        if (stepData.stepsGoal > 0){
+            iconEdit.visibility = View.VISIBLE
+            tvSetGoal.text = "Edit Your Step Goal"
+            layoutSetGoal.setBackgroundResource(R.drawable.edit_step_gaol_background)
+            tvSetGoal?.setTextColor(ContextCompat.getColor(requireContext(), R.color.dotted_red))
+        }else{
+            iconEdit.visibility = View.GONE
+            tvSetGoal.text = "Set Up A Step Goal"
+            layoutSetGoal.setBackgroundResource(R.drawable.add_cart_button_background)
+            tvSetGoal?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        }
         val goalStepsLine = LimitLine(stepData.stepsGoal.toFloat(), "G")
-        goalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_text)
+        goalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_minimal)
         goalStepsLine.lineWidth = 1f
         goalStepsLine.enableDashedLine(10f, 10f, 0f)
-        goalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.green_text)
+        goalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
         goalStepsLine.textSize = 10f
         goalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
-// सभी पुरानी lines हटाएं सिर्फ एक बार
         leftYAxis.removeAllLimitLines()
 
-// दोनों lines add करें
         leftYAxis.addLimitLine(avgStepsLine)
         leftYAxis.addLimitLine(goalStepsLine)
         currentGoal = stepData.stepsGoal
@@ -482,6 +501,12 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         legend.form = Legend.LegendForm.NONE // Remove the box, keep labels if any
         legend.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals) // Match text color
 
+        barChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+            barChart.viewPortHandler,
+            barChart.axisLeft,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
+
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
@@ -532,11 +557,12 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private fun fetchStepDetails(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                if (isAdded  && view != null){
+                if (isAdded && view != null) {
                     requireActivity().runOnUiThread {
                         showLoader(requireView())
                     }
                 }
+
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -553,22 +579,16 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 } else if (period.contentEquals("last_monthly")) {
                     if (selectedMonthDate.contentEquals("")) {
                         selectedDate = currentDateTime.format(formatter)
-//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-//                        selectedDate = firstDateOfMonth
                         selectedMonthDate = selectedDate
                     } else {
-                      //  val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
                         selectedDate = selectedMonthDate
                     }
                     setSelectedDateMonth(selectedMonthDate, "Month")
                 } else {
                     if (selectedHalfYearlyDate.contentEquals("")) {
                         selectedDate = currentDateTime.format(formatter)
-//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-//                        selectedDate = firstDateOfMonth
                         selectedHalfYearlyDate = selectedDate
                     } else {
-                        //val firstDateOfMonth = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
                         selectedDate = selectedHalfYearlyDate
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
@@ -579,15 +599,18 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     period = period,
                     date = selectedDate
                 )
+
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     val stepTrackerResponse = response.body()
                     if (stepTrackerResponse?.statusCode == 200 && stepTrackerResponse.data.isNotEmpty()) {
-                        val stepData = stepTrackerResponse.data[0] // Assuming single data entry
+                        val stepData = stepTrackerResponse.data[0]
+
                         withContext(Dispatchers.Main) {
                             if (period == "last_six_months") {
                                 barChart.visibility = View.GONE
@@ -599,20 +622,36 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                                 val (entries, labels, labelsDate) = when (period) {
                                     "last_weekly" -> processWeeklyData(stepData, selectedDate)
                                     "last_monthly" -> processMonthlyData(stepData, selectedDate)
-                                    else -> processWeeklyData(stepData, selectedDate) // Fallback
+                                    else -> processWeeklyData(stepData, selectedDate)
                                 }
                                 updateChart(entries, labels, labelsDate, stepData)
                             }
-                            // Update average and comparison UI
-                            setStepStats(stepData, period)
-                            heart_rate_description_heading.text = stepTrackerResponse.data.get(0).heading.toString()
-                            step_discreption.text = stepTrackerResponse.data.get(0).description.toString()
 
+                            // Update stats
+                            setStepStats(stepData, period)
+
+                            // Heading
+                            heart_rate_description_heading.text = stepData.heading
+
+                            // Description + Comparison Message (Yahi change kiya hai)
+                            val description = stepData.description
+                            val comparisonMessage = stepData.comparison.comparisonMessage
+
+                            val fullText = if (comparisonMessage.isNotBlank()) {
+                                "$comparisonMessage"
+                            } else {
+                                description
+                            }
+
+                            // Beautiful formatting: comparison message bold + green
+
+
+                            description_progressbar_layout.text = fullText
                         }
                     } else {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(requireContext(), "No step data available", Toast.LENGTH_SHORT).show()
-                            if (isAdded  && view != null){
+                            if (isAdded && view != null) {
                                 requireActivity().runOnUiThread {
                                     dismissLoader(requireView())
                                 }
@@ -621,10 +660,10 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Step data  ${response.message()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Step data ${response.message()}", Toast.LENGTH_SHORT).show()
                         barChart.visibility = View.GONE
                         averageBurnCalorie.text = "0"
-                        if (isAdded  && view != null){
+                        if (isAdded && view != null) {
                             requireActivity().runOnUiThread {
                                 dismissLoader(requireView())
                             }
@@ -634,7 +673,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }

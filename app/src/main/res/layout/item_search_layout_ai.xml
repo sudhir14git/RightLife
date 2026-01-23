@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:padding="3dp">
 
     <ImageView
         android:id="@+id/iconUrl"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
+        android:layout_width="13dp"
+        android:layout_height="17dp"
         android:src="@drawable/athelete_search"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textTitle"
@@ -32,7 +32,7 @@
     <ImageView
         android:id="@+id/imageRightArrow"
         android:layout_width="7dp"
-        android:layout_height="12dp"
+        android:layout_height="14dp"
         android:src="@drawable/forward_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -40,10 +40,10 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/border_line"
-        android:layout_marginTop="3dp"
-        android:visibility="gone"
+        android:layout_height="1dp"
+        android:background="#C5DEF9"
+        android:layout_marginTop="12dp"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@+id/textTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

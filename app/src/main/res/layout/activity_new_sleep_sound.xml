@@ -1,200 +1,287 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutParent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".ui.NewSleepSounds.NewSleepSoundActivity"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <!-- Back Arrow and Title -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:fontFamily="@font/merriweather_bold"
+            android:text="Sleep"
+            android:textColor="@color/txt_color_mind"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/bg_search_box"
+        android:elevation="2dp">
+
+        <ImageView
+            android:id="@+id/ivSearchIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginStart="12dp"
+            android:src="@drawable/search_new" />
+
+        <EditText
+            android:id="@+id/etSearch"
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:fontFamily="@font/dmsans_regular"
+            android:hint="Search"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:paddingVertical="8dp"
+            android:paddingStart="36dp"
+            android:singleLine="true"
+            android:textColor="@color/txt_color_header"
+            android:textColorHint="#747474"
+            android:textSize="16sp" />
+    </FrameLayout>
 
-            <!-- Back Arrow and Title -->
-            <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:overScrollMode="never"
+        android:paddingHorizontal="16dp"
+        android:visibility="gone" />
+
+
+    <LinearLayout
+        android:id="@+id/mainSleepSoundLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            android:overScrollMode="never" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            android:overScrollMode="never">
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingBottom="16dp">
+                android:layout_height="match_parent">
 
-                <ImageView
-                    android:id="@+id/icon_back"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/ll_music_home"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/layoutPlaylist"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvYourPlayList"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Your Playlist"
+                                    android:textSize="18sp"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recycler_view_play_list"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="16dp"
+                                android:orientation="horizontal"
+                                android:overScrollMode="never" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/layoutNewRelease"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvNewRelease"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="New Release"
+                                    android:textSize="18sp" />
+                            </LinearLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recycler_view_new_release"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="16dp"
+                                android:orientation="horizontal"
+                                android:overScrollMode="never" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/linearLayoutContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+
+                        <LinearLayout
+                            android:id="@+id/layouthorizontalMusicList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/categorytTitleHorizontal"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text=""
+                                    android:textSize="18sp" />
+                            </LinearLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recycler_view_horizontal_list"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="16dp"
+                                android:orientation="horizontal"
+                                android:overScrollMode="never" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutVerticalCategoryList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/categorytTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="Sleep Stories"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/categorytTitleDesciption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="@dimen/textsize_medium" />
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_view_vertical_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="16dp"
+                            android:nestedScrollingEnabled="false"
+                            android:orientation="horizontal"
+                            android:overScrollMode="never" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <include layout="@layout/loader_layout" />
+
+                <LinearLayout
+                    android:id="@+id/ll_no_data"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_back" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sleep"
-                    android:textSize="18sp"
-                    android:fontFamily="@font/merriweather_bold"
-                    android:textColor="@color/txt_color_mind"
-                    android:layout_marginStart="4dp" />
-            </LinearLayout>
-            <!-- Category RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:overScrollMode="never"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/ll_music_home"
-                android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/layoutPlaylist"
-                android:visibility="visible"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="250dp"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:layout_height="wrap_content">
+                    android:visibility="gone">
 
                     <TextView
-                        android:id="@+id/tvYourPlayList"
                         android:layout_width="wrap_content"
-                        android:text="Your Playlist"
+                        android:layout_height="wrap_content"
                         android:fontFamily="@font/dmsans_bold"
-                        android:textSize="@dimen/textsize_large24sp"
-                        android:visibility="gone"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view_play_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:overScrollMode="never"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="16dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/layoutNewRelease"
-                android:visibility="visible"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
+                        android:text="Build your perfect sleep playlist."
+                        android:textSize="@dimen/textsize_large18sp" />
 
                     <TextView
-                        android:id="@+id/tvNewRelease"
                         android:layout_width="wrap_content"
-                        android:text="New Release"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:textSize="@dimen/textsize_large24sp"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view_new_release"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:overScrollMode="never"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="16dp" />
-            </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/linearLayoutContainer"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/layouthorizontalMusicList"
-                android:visibility="visible"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/categorytTitleHorizontal"
-                        android:layout_width="wrap_content"
-                        android:text=""
-                        android:fontFamily="@font/dmsans_bold"
-                        android:textSize="@dimen/textsize_large24sp"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view_horizontal_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:overScrollMode="never"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="16dp" />
-            </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/layoutVerticalCategoryList"
-                android:visibility="gone"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/categorytTitle"
-                        android:layout_width="wrap_content"
-                        android:text="Sleep Stories"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:textSize="@dimen/textsize_large24sp"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/categorytTitleDesciption"
-                        android:layout_width="wrap_content"
-                        android:layout_alignParentEnd="true"
+                        android:layout_height="wrap_content"
                         android:fontFamily="@font/dmsans_regular"
-                        android:textSize="@dimen/textsize_medium"
-                        android:layout_height="wrap_content" />
+                        android:text="Add any track by tapping the + at the top right."
+                        android:textSize="@dimen/textsize_medium" />
                 </LinearLayout>
+            </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view_vertical_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:overScrollMode="never"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="16dp" />
-            </LinearLayout>
-        </LinearLayout>
-        <!-- Next: Other Content Below -->
-        <include layout="@layout/loader_layout" />
-    </RelativeLayout>
+    </LinearLayout>
 
-</ScrollView>
+
+</LinearLayout>

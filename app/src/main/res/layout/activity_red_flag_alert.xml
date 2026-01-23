@@ -35,6 +35,7 @@
         android:layout_height="match_parent"
         android:layout_below="@id/llTopBar"
         android:layout_above="@id/btnImFine"
+        android:paddingHorizontal="5dp"
         android:layout_marginVertical="8dp">
 
         <LinearLayout
@@ -47,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:text="If you or someone you know is struggling, help is just a call away. You're not alone."
                 android:gravity="center_horizontal"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_mind" />
 
@@ -90,7 +91,7 @@
                     android:id="@+id/tvCountry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="India"
+                    android:text="United Kingdom"
                     android:gravity="center_horizontal"
                     android:textSize="16sp"
                     android:fontFamily="@font/dmsans_regular"
@@ -104,9 +105,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:layout_marginTop="-10dp"
+                android:layout_marginTop="-4dp"
                 android:backgroundTint="@color/light_red"
-                android:background="@drawable/roundedcornerbutton_medium" />
+                android:background="@drawable/roundedcornerbottomshape" />
 
             <RelativeLayout
                 android:id="@+id/rlStateHelpLine"
@@ -146,14 +147,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:layout_marginTop="-10dp"
-                android:backgroundTint="@color/light_red"
-                android:background="@drawable/roundedcornerbutton_medium" />
+                android:layout_marginTop="-4dp"
+                android:backgroundTint="@color/helpline_card_bg_light"
+                android:background="@drawable/roundedcornerbottomshape" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Remember, there's always someone ready to listen and support you.\nYour well-being matters."
+                android:text="Remember, there's always someone\nready to listen and support you.\nYour well-being matters."
                 android:gravity="center_horizontal"
                 android:textSize="14sp"
                 android:layout_margin="12dp"

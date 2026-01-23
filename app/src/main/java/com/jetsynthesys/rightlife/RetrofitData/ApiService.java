@@ -5,6 +5,7 @@ import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest;
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse;
 import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest;
 import com.jetsynthesys.rightlife.apimodel.CheckRegistrationResponse;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeSeriesTrackRequest;
 import com.jetsynthesys.rightlife.apimodel.LoginRequest;
 import com.jetsynthesys.rightlife.apimodel.LoginResponse;
 import com.jetsynthesys.rightlife.apimodel.LoginResponseMobile;
@@ -23,6 +24,8 @@ import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQu
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
+import com.jetsynthesys.rightlife.subscriptions.pojo.OrderRequestRazorpay;
+import com.jetsynthesys.rightlife.subscriptions.pojo.OrderResponseRazorpay;
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentIntentResponse;
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest;
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse;
@@ -74,8 +77,10 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestResponse;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.UserInterestResponse;
 import com.jetsynthesys.rightlife.ui.payment.PaymentCardResponse;
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpEmailRequest;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse;
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpEmailRequest;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest;
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest;
 import com.jetsynthesys.rightlife.ui.scan_history.ScanHistoryResponse;
@@ -120,7 +125,7 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("auth/mobile/generate-otp?type=signup")
         // Assume the API endpoint is /login
-    Call<LoginResponse> generateOtpSignup(@Body SignupOtpRequest request); // Send the request body
+    Call<ResponseBody> generateOtpSignup(@Body SignupOtpRequest request); // Send the request body
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -151,7 +156,7 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("auth/mobile/login")
     // Assume the API endpoint is /login
-    Call<LoginResponseMobile> submitOtpLogin(@Body SubmitLoginOtpRequest request); // Send the request body
+    Call<GoogleLoginTokenResponse> submitOtpLogin(@Body SubmitLoginOtpRequest request); // Send the request body
 
     //Home Page
     // submit OTP Login
@@ -168,6 +173,14 @@ public interface ApiService {
             @Query("appId") String appId,
             @Query("userId") String userId,
             @Query("position") String position
+    );
+
+    @GET("promotionWeekly")
+    Call<JsonElement> getPromotionListWeekly(
+            @Header("Authorization") String authToken,
+            @Query("appId") String appId,
+            @Query("position") String userId,
+            @Query("userId") String position
     );
 
     //ModuleService Pane
@@ -792,7 +805,6 @@ public interface ApiService {
     );
 
     @Headers({
-            "x-forwarded-for: 60.254.127.250",
             "Content-Type: application/json"
     })
     @POST("auth/google/login")
@@ -886,7 +898,7 @@ public interface ApiService {
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @PUT("promotions/viewCount")
+    @PUT("promotionWeekly/viewCount")
         // for update banner view count on home
     Call<ResponseBody> UpdateBannerViewCount(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
@@ -1257,6 +1269,144 @@ public interface ApiService {
     Call<ResponseBody> getDeviceInfo(
             @Query("deviceId") String deviceId,
             @Query("email") String emailId
+
+    );
+
+    @GET("user/device")
+    Call<ResponseBody> getDeviceInfoMobile(
+            @Query("deviceId") String deviceId,
+            @Query("phoneNumber") String phoneNumber
+    );
+
+    @GET("continue")
+    Call<ResponseBody> getContinueData(
+            @Header("Authorization") String authToken,
+            @Query("pageType") String pageType,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("contentType") String contentType
+    );
+
+    @POST("userWellnessTrack")
+    Call<ResponseBody> trackSeriesEpisode(
+            @Header("Authorization") String authToken,
+            @Body EpisodeSeriesTrackRequest request);
+
+    @GET("content/bookmark/data")
+    Call<ResponseBody> getBookmarkedContent(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip
+    );
+
+    @GET("content/list")
+    Call<ResponseBody> fetchCategoryList(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("moduleId") String moduleId,
+            @Query("contentType") String contentType
+    );
+
+    @GET("content/list")
+    Call<ResponseBody> fetchCategoryList(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("moduleId") String moduleId,
+            @Query("categoryId") String categoryId,
+            @Query("contentType") String contentType
+    );
+
+    @GET("user/get-mind-audit-details")
+    Call<ResponseBody> getMindAuditDays(
+            @Header("Authorization") String authToken
+    );
+
+    @GET("activityMaster")
+    Call<ResponseBody> getPhysicalActivities(
+            @Header("Authorization") String authToken
+    );
+
+    @GET("sleepSound/search")
+    Call<ResponseBody> searchSleepSounds(
+            @Header("Authorization") String authToken,
+            @Query("title") String searchText
+    );
+
+    // Razorpay api
+    @POST("payment/order")
+    Call<OrderResponseRazorpay> createPaymentOrder(
+            @Header("Authorization") String authToken,
+            @Body OrderRequestRazorpay request);
+
+
+    // Firebase Token update
+    @Headers("Content-Type: application/json")
+    @PUT("user/device")
+    Call<CommonResponse> updateDeviceToken(
+            @Header("Authorization") String authToken,
+            @Body Map<String, String> requestBody
+    );
+
+    @POST("auth/email/generate-otp")
+    Call<ResponseBody> generateEmailOtp(
+            @Header("Authorization") String authToken,
+            @Body OtpEmailRequest otpEmailRequest);
+
+    @POST("auth/email/verify-with-otp")
+    Call<ResponseBody> verifyOtpForEmail(
+            @Header("Authorization") String authToken,
+            @Body VerifyOtpEmailRequest verifyOtpEmailRequest
+    );
+
+    // NEW APP CONFIG API
+    @Headers("Content-Type: application/json")
+    @GET("config")
+    Call<ResponseBody> getAppConfig();
+
+    @GET("challengeStart")
+    Call<ResponseBody> getChallengeStart(
+            @Header("Authorization") String authToken
+    );
+
+    @POST("challengeStart")
+    Call<CommonResponse> postChallengeStart(
+            @Header("Authorization") String authToken
+    );
+
+    @GET("challengeStart/dailyScore")
+    Call<ResponseBody> dailyScore(
+            @Header("Authorization") String authToken,
+            @Query("date") String date
+    );
+
+    @GET("challengeStart/dailyTask")
+    Call<ResponseBody> dailyTask(
+            @Header("Authorization") String authToken,
+            @Query("date") String date
+    );
+
+    @GET("challengeStart/dailyChallengeData")
+    Call<ResponseBody> dailyChallengeData(
+            @Header("Authorization") String authToken,
+            @Query("date") String date
+    );
+
+
+
+
+
+    @GET("challengeStart/leaderboard")
+    Call<ResponseBody> getLeaderboard(
+            @Header("Authorization") String authToken,
+            @Query("type") String type
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("challengeStart/streak")
+    Call<ResponseBody> getChallengeStreak(
+            @Header("Authorization") String authToken
     );
 
 }

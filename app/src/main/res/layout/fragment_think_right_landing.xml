@@ -50,6 +50,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginEnd="12dp"
+            android:visibility="gone"
             android:id="@+id/view_download_icon"
             android:src="@drawable/eatright_download_icon"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -189,7 +190,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:paddingBottom="10dp"
@@ -209,8 +209,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/eatright_text_color"
-                        android:text="Mindfulness Metric"
-                        android:fontFamily="@font/dmsans_medium"
+                        android:text="Mindfulness"
+                        android:fontFamily="@font/dmsans_semibold"
                         android:textSize="16sp"
                         android:layout_marginStart="6dp"
                         app:layout_constraintBottom_toBottomOf="@+id/balance_icon"
@@ -225,6 +225,17 @@
                         android:layout_marginEnd="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+                    <View
+                        android:id="@+id/view_mindfull_matrix"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/gray"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/img_mindfull_arrow"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginEnd="30dp"/>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/noDataMindFullnessMetric"
@@ -232,7 +243,7 @@
                         android:layout_height="wrap_content"
                         android:visibility="gone"
                         android:layout_marginTop="10dp"
-                        app:layout_constraintTop_toBottomOf="@+id/img_mindfull_arrow"
+                        app:layout_constraintTop_toBottomOf="@+id/view_mindfull_matrix"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
                         <TextView
@@ -267,7 +278,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"
-                        app:layout_constraintTop_toBottomOf="@id/img_mindfull_arrow"
+                        app:layout_constraintTop_toBottomOf="@id/view_mindfull_matrix"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:weightSum="10"
@@ -298,19 +309,19 @@
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/tv_mindfull_minute"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="1 hr 03 mins"
-                                    android:id="@+id/tv_mindfull_minute"
-                                    android:textSize="20sp"
-                                    android:fontFamily="@font/dmsans_bold"
                                     android:layout_gravity="center"
-                                    android:textColor="@color/eatright_text_color" />
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text=""
+                                    android:textColor="@color/eatright_text_color"
+                                    android:textSize="20sp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="practised today"
+                                    android:text="Practised today"
                                     android:textSize="10sp"
                                     android:fontFamily="@font/dmsans_regular"
                                     android:layout_gravity="center"
@@ -348,7 +359,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="03 days"
+                                    android:text=""
                                     android:id="@+id/tv_wellness_days"
                                     android:textSize="20sp"
                                     android:fontFamily="@font/dmsans_bold"
@@ -406,7 +417,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/eatright_text_color"
                         android:text="Mindfulness Metric"
-                        android:fontFamily="@font/dmsans_medium"
+                        android:fontFamily="@font/dmsans_bold"
                         android:textSize="16sp"
                         android:layout_marginStart="6dp"
                         app:layout_constraintBottom_toBottomOf="@id/img_mindfull_icon"
@@ -518,11 +529,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-Author Name"
-                        android:fontFamily="@font/merriweather_bold"
+                        android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/eatright_text_color"
                         android:textSize="16sp"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tv_quote_desc" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -882,6 +895,7 @@
                         app:layout_constraintTop_toBottomOf="@id/lyt_smiley_text" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/emotionCard"
                 android:layout_width="match_parent"
@@ -1001,8 +1015,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:paddingBottom="20dp"
+                android:layout_marginTop="10dp"
+                android:paddingBottom="10dp"
                 android:orientation="vertical">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -1018,7 +1032,7 @@
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/eatright_text_color"
                         android:textSize="18sp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginStart="20dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -1040,7 +1054,7 @@
                     android:layout_marginStart="15dp"
                     android:id="@+id/card_add_tools"
                     android:visibility="gone"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp"
                     android:padding="16dp">
@@ -1063,14 +1077,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp">
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/add_tools_think_right"
                         android:layout_marginEnd="10dp"
                         android:layout_width="100dp"
-                        android:layout_marginTop="22dp"
+                        android:layout_marginTop="10dp"
                         app:cardCornerRadius="10dp"
                         android:visibility="visible"
                         android:layout_height="140dp"
@@ -1090,8 +1104,7 @@
                             android:clipChildren="false"
                             android:clipToPadding="false"
                             android:paddingEnd="20dp"
-                            android:paddingBottom="10dp"
-                            android:layout_marginTop="10dp"/>
+                           />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -1101,8 +1114,10 @@
                     android:layout_height="wrap_content"
                     android:visibility="visible"
                     android:scrollbars="none"
-                    android:layout_marginTop="10dp"
-                    android:padding="16dp"
+                   android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -1111,7 +1126,6 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:visibility="visible"
                     android:orientation="horizontal">
 
@@ -1123,7 +1137,7 @@
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/eatright_text_color"
                         android:textSize="18sp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginStart="20dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -1284,8 +1298,9 @@
                             app:layout_constraintTop_toBottomOf="@id/lyt_quote_icon">
 
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="17dp"
+                                android:layout_height="12dp"
+                                android:layout_marginTop="3dp"
                                 android:src="@drawable/practice_icon" />
 
                             <TextView
@@ -1538,10 +1553,11 @@
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:paddingBottom="10dp"
                                 android:background="@drawable/white_grey_meal_bg"
                                 android:layout_weight="5"
+                                android:layout_marginEnd="5dp"
                                 android:id="@+id/lyt_breathing_1"
                                 android:orientation="vertical">
 
@@ -1569,9 +1585,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
                                     android:id="@+id/tv_breathing_title1"
-                                    android:minLines="2"
-                                    android:maxLines="2"
+                                    android:maxLines="1"
                                     android:ellipsize="end"
                                     app:layout_constraintTop_toBottomOf="@id/img_box_breathing"
                                     app:layout_constraintStart_toStartOf="parent"
@@ -1590,6 +1606,7 @@
                                     android:layout_marginStart="10dp"
                                     android:layout_marginEnd="10dp"
                                     android:orientation="horizontal">
+
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -1641,7 +1658,7 @@
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:paddingBottom="10dp"
                                 android:layout_marginStart="5dp"
                                 android:background="@drawable/white_grey_meal_bg"
@@ -1673,15 +1690,15 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
                                     android:id="@+id/tv_breathing_title2"
-                                    android:minLines="2"
-                                    android:maxLines="2"
+                                    android:maxLines="1"
                                     android:ellipsize="end"
                                     app:layout_constraintTop_toBottomOf="@id/img_numbers"
                                     app:layout_constraintStart_toStartOf="parent"
                                     android:text="4 - 7 - 8"
                                     android:fontFamily="@font/dmsans_medium"
-                                    android:textSize="16sp"
+                                    android:textSize="13sp"
                                     android:textColor="@color/eatright_text_color" />
 
                                 <LinearLayout
@@ -1924,12 +1941,22 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/lyt_top_header"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:paddingTop="16dp">
+                           >
+
+                            <ImageView
+                                android:id="@+id/img_mind_icon"
+                                android:layout_width="17dp"
+                                android:layout_height="17dp"
+                                android:src="@drawable/think_mind_icon"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
                             <TextView
                                 android:id="@+id/tv_mind_audit"
@@ -1939,29 +1966,30 @@
                                 android:fontFamily="@font/dmsans_medium"
                                 android:textColor="@color/eatright_text_color"
                                 android:textSize="16sp"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginStart="20dp"
+                                android:layout_marginStart="15dp"
                                 app:layout_constraintStart_toEndOf="@id/img_mind_icon"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:layout_marginEnd="10dp"
-                                android:layout_marginTop="10dp"
                                 android:src="@drawable/forward_icon"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent" />
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_marginStart="10dp"
-                                android:id="@+id/img_mind_icon"
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/gray_light_bg"
                                 android:layout_marginTop="10dp"
-                                android:src="@drawable/think_mind_icon"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
+                                app:layout_constraintTop_toBottomOf="@+id/tv_mind_audit"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                >
+                            </View>
+
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <androidx.constraintlayout.widget.ConstraintLayout
@@ -1969,6 +1997,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:visibility="gone"
+                            android:layout_marginTop="10dp"
                             app:layout_constraintTop_toBottomOf="@+id/lyt_top_header"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent">
@@ -1977,9 +2006,9 @@
                                 android:id="@+id/no_data_mind_audit_heading"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18dp"
+                                android:textSize="21sp"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:textColor="@color/black"
+                                android:textColor="@color/black_no_meals"
                                 android:text="Your Mental Vitals Matter"
                                 android:layout_marginStart="20dp"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -1990,8 +2019,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:padding="20dp"
+                                android:textSize="16sp"
                                 android:fontFamily="@font/dmsans_regular"
-                                android:textColor="@color/black"
+                                android:textColor="@color/black_no_meals"
                                 android:text="Anxiety, anger, stress —our clinical tools can help you track it all. Try one and take a real check-in."
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -2013,9 +2043,9 @@
                                 app:layout_constraintTop_toBottomOf="@id/no_data_mind_audit_description">
 
                                 <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/practice_icon" />
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:src="@drawable/checkbox_outline" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -2023,7 +2053,7 @@
                                     android:text="Assess your mental health"
                                     android:textSize="14sp"
                                     android:textColor="@color/eatright_text_color"
-                                    android:textStyle="bold"
+                                    android:fontFamily="@font/dmsans_bold "
                                     android:paddingStart="8dp" />
                             </LinearLayout>
 
@@ -2101,6 +2131,7 @@
                             android:layout_marginTop="15dp"
                             android:gravity="center"
                             android:background="@drawable/yellow_btn_bg"
+                            android:backgroundTint="@color/think_tab_background"
                             android:orientation="horizontal">
 
                             <ImageView
@@ -2131,7 +2162,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
-                    app:layout_constraintTop_toBottomOf="@id/img_macro_arrow"
+
                     android:weightSum="6"
                     android:padding="8dp"
                     android:orientation="horizontal">
@@ -2277,6 +2308,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="15dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

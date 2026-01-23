@@ -21,6 +21,7 @@ import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse
 import com.jetsynthesys.rightlife.databinding.ActivitySeriesListBinding
 import com.jetsynthesys.rightlife.shortVibrate
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall.updateViewCount
@@ -155,7 +156,7 @@ class SeriesListActivity : BaseActivity() {
                 .into(binding.imgContentview)
 
             setModuleColor(contentResponseObj.data.moduleId)
-            binding.category.text = contentResponseObj.data.tags.get(0).name
+            binding.category.text = contentResponseObj.data.categoryName
 
             setReadMoreView(contentResponseObj.data.desc)
 
@@ -165,17 +166,21 @@ class SeriesListActivity : BaseActivity() {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
                     contentResponseObj.data.like = false
                     postContentLike(contentResponseObj.data.id, false)
+                    val newCount: Int = getCurrentCount() - 1
+                    binding.txtLikeCount.text = getLikeText(newCount)
                 } else {
                     binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
                     contentResponseObj.data.like = true
                     postContentLike(contentResponseObj.data.id, true)
+                    val newCount: Int = getCurrentCount() - 1
+                    binding.txtLikeCount.text = getLikeText(newCount)
                 }
             }
             if (contentResponseObj.data.like) {
                 binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
             }
             binding.imageShareArticle.setOnClickListener { shareIntent() }
-            binding.txtLikeCount.text = contentResponseObj.data.likeCount.toString()
+            binding.txtLikeCount.text = getLikeText(contentResponseObj.data.likeCount)
 
 
             binding.icBookmark.setOnClickListener {
@@ -183,11 +188,23 @@ class SeriesListActivity : BaseActivity() {
                     if (contentResponseObj.data.bookmarked) {
                         contentResponseObj.data.bookmarked = false
                         binding.icBookmark.setImageResource(R.drawable.ic_save_article)
-                        postArticleBookMark(contentResponseObj.data.id, false)
+                        postArticleBookMark(
+                            contentResponseObj.data.id,
+                            false,
+                            contentResponseObj.data.contentType
+                        )
+                        val newCount: Int = getCurrentCount() - 1
+                        binding.txtLikeCount.text = getLikeText(newCount)
                     } else {
                         contentResponseObj.data.bookmarked = true
                         binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
-                        postArticleBookMark(contentResponseObj.data.id, true)
+                        postArticleBookMark(
+                            contentResponseObj.data.id,
+                            true,
+                            contentResponseObj.data.contentType
+                        )
+                        val newCount: Int = getCurrentCount() + 1
+                        binding.txtLikeCount.text = getLikeText(newCount)
                     }
                 }
             }
@@ -196,6 +213,22 @@ class SeriesListActivity : BaseActivity() {
             }
         }
 
+    }
+
+    private fun getLikeText(count: Int): String = when (count) {
+        0 -> "0 like"
+        1 -> "1 like"
+        else -> "$count likes"
+    }
+
+    private fun getCurrentCount(): Int {
+        try {
+            val countText = binding.txtLikeCount.text.toString()
+            val numbersOnly = countText.replace("[^0-9]".toRegex(), "")
+            return if (numbersOnly.isEmpty()) 0 else numbersOnly.toInt()
+        } catch (e: java.lang.Exception) {
+            return 0
+        }
     }
 
 
@@ -265,8 +298,8 @@ class SeriesListActivity : BaseActivity() {
 
 
     // post Bookmark api
-    private fun postArticleBookMark(contentId: String, isBookmark: Boolean) {
-        val request = ArticleBookmarkRequest(contentId, isBookmark)
+    private fun postArticleBookMark(contentId: String, isBookmark: Boolean, contentType: String) {
+        val request = ArticleBookmarkRequest(contentId, isBookmark, "", contentType)
         // Make the API call
         val call = apiService.ArticleBookmarkRequest(sharedPreferenceManager.accessToken, request)
         call.enqueue(object : Callback<ResponseBody?> {
@@ -279,7 +312,12 @@ class SeriesListActivity : BaseActivity() {
                     )
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
-                    Utils.showCustomToast(this@SeriesListActivity, response.message())
+                    val message = if (isBookmark) {
+                        "Added To Your Saved Items"
+                    } else {
+                        "Removed From Saved Items"
+                    }
+                    showCustomToast(message, isBookmark)
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -318,10 +356,11 @@ class SeriesListActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
 
-        val shareText = "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
-                "Check it out here. " +
-                "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
-                "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
+        val shareText =
+            "Saw this on RightLife and thought of you, it’s got health tips that actually make sense. " +
+                    "Check it out here. " +
+                    "\nPlay Store Link https://play.google.com/store/apps/details?id=${packageName} " +
+                    "\nApp Store Link https://apps.apple.com/app/rightlife/id6444228850"
 
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText)
@@ -351,7 +390,11 @@ class SeriesListActivity : BaseActivity() {
                         gson.fromJson(jsonResponse, SeriesResponse::class.java)
                     //Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
-                    setupEpisodeListData(seriesResponseModel.data.episodes)
+                    setupEpisodeListData(
+                        seriesResponseModel.data.episodes,
+                        seriesResponseModel.data.categoryName,
+                        seriesResponseModel.data.moduleId
+                    )
                     setupArtistList(seriesResponseModel)
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -378,8 +421,12 @@ class SeriesListActivity : BaseActivity() {
         binding.recyclerArtists.adapter = adapter
     }
 
-    private fun setupEpisodeListData(contentList: ArrayList<Episode>) {
-        val adapter = SeriesListAdapter(this, contentList)
+    private fun setupEpisodeListData(
+        contentList: ArrayList<Episode>,
+        categoryName: String,
+        moduleId: String
+    ) {
+        val adapter = SeriesListAdapter(this, contentList, categoryName, moduleId)
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerViewSerieslist.setLayoutManager(horizontalLayoutManager)
         binding.recyclerViewSerieslist.setAdapter(adapter)

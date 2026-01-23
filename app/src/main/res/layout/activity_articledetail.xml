@@ -308,6 +308,7 @@
                                 android:paddingEnd="30dp"
                                 android:text="Key Takeaways"
                                 android:textColor="@color/txt_color_header"
+                                android:visibility="gone"
                                 android:textSize="@dimen/textsize_large" />
 
                         </RelativeLayout>
@@ -325,9 +326,8 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/merriweather_regular"
                                 android:gravity="center_vertical"
-                                android:paddingStart="32dp"
-                                android:paddingEnd="30dp"
-                                android:paddingBottom="10dp"
+                                android:paddingHorizontal="30dp"
+                                android:paddingVertical="@dimen/margin_card_16dp"
                                 android:text="In This Article"
 
                                 android:textSize="@dimen/textsize_medium"
@@ -353,9 +353,9 @@
                             android:id="@+id/txtAlsolikeHeader"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/merriweather_bold"
+                            android:fontFamily="@font/dmsans_bold"
                             android:padding="16dp"
-                            android:text="You May Also Like"
+                            android:text="Recommended For You"
                             android:textColor="@color/text_color_app"
                             android:textSize="16sp"
                             android:layout_alignParentStart="true" />
@@ -517,7 +517,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="center"
                 android:layout_margin="16dp"
-                android:background="@drawable/rounded_corder_border_gray"
+                android:background="@drawable/rounded_corner_article_gray"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:visibility="visible">

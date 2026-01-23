@@ -91,7 +91,7 @@ class HeartRateAdapter(
         //if (holder.bindingAdapterPosition != 2) {}
 
             binding.heartRateChart.visibility = android.view.View.VISIBLE
-            setupChart(binding.heartRateChart, item?.data)
+            setupChart(binding.heartRateChart, item?.data,item?.key.toString())
             binding.barChart.visibility = android.view.View.GONE
          /*else {
             binding.barChart.visibility = android.view.View.VISIBLE
@@ -153,8 +153,34 @@ class HeartRateAdapter(
            "MSI" -> R.drawable.ic_db_report_stresslevel
            "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
            "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
-           "HEALTH_SCORE" -> R.drawable.ic_wellness_man
+           "HEALTH_SCORE" -> R.drawable.ic_wellness_man_small
            else -> R.drawable.ic_db_report_heart_rate
+       }
+   }
+   /* private fun getChartColorByType(type: String): Int {
+        return when (type) {
+            "BMI_CALC" -> Color.parseColor("#E91E63")
+            "BP_RPP" -> Color.parseColor("#E91E63")       // Purple
+            "BP_SYSTOLIC", "BP_DIASTOLIC" -> Color.parseColor("#E91E63") // Red
+            "BP_CVD" -> Color.parseColor("#E91E63")       // Brown
+            "MSI" -> Color.parseColor("#E91E63")          // Light Blue
+            "BR_BPM" -> Color.parseColor("#E91E63")       // Green
+            "HRV_SDNN" -> Color.parseColor("#E91E63")     // Blue
+            "HEALTH_SCORE" -> Color.parseColor("#E91E63") // Light Green
+            else -> Color.parseColor("#E91E63")           // Pink (default)
+        }
+    }*/
+   private fun getChartColorByType(type: String): Int {
+       return when (type) {
+           "BMI_CALC" -> Color.parseColor("#634848")
+           "BP_RPP" -> Color.parseColor("#994C01")
+           "BP_SYSTOLIC", "BP_DIASTOLIC" -> Color.parseColor("#FB2611")
+           "BP_CVD" -> Color.parseColor("#8B7207")
+           "MSI" -> Color.parseColor("#707070")
+           "BR_BPM" -> Color.parseColor("#1292E5")
+           "HRV_SDNN" -> Color.parseColor("#645F83")
+           "HEALTH_SCORE" -> Color.parseColor("#8BC34A") // Light Green
+           else -> Color.parseColor("#E91E63")           // Pink (default)
        }
    }
 
@@ -190,7 +216,43 @@ class HeartRateAdapter(
         }
     }
 
-    private fun setupChart(chart: LineChart, trendData: ArrayList<ScanData>?) {
+    private fun setupChart(chart: LineChart, trendData: ArrayList<ScanData>?, type: String) {
+        val entries = mutableListOf<Entry>()
+        trendData?.forEachIndexed { index, data ->
+            entries.add(Entry(index.toFloat(), data.value?.toFloat() ?: 1f))
+        }
+
+        val chartColor = getChartColorByType(type)
+
+        val dataSet = LineDataSet(entries, "Trend Data").apply {
+            color = chartColor
+            valueTextColor = Color.BLACK
+            lineWidth = 2f
+            setDrawCircles(true)
+            setCircleColor(chartColor)
+            setDrawValues(false)
+        }
+
+        chart.apply {
+            data = LineData(dataSet)
+            xAxis.setDrawGridLines(false)
+            axisLeft.setDrawGridLines(false)
+            axisRight.isEnabled = false
+            xAxis.setDrawLabels(false)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            description.isEnabled = false
+            legend.isEnabled = false
+            setTouchEnabled(false)
+            setPinchZoom(false)
+            xAxis.isEnabled = false
+            axisLeft.isEnabled = false
+            axisRight.isEnabled = false
+            setNoDataText("")
+            invalidate()
+        }
+    }
+
+    /*private fun setupChart(chart: LineChart, trendData: ArrayList<ScanData>?) {
         val entries = mutableListOf<Entry>()
         if (trendData != null) {
             for ((index, data) in trendData.withIndex()) {
@@ -224,7 +286,7 @@ class HeartRateAdapter(
             setNoDataText("")
             invalidate()
         }
-    }
+    }*/
 
     override fun getItemCount() = heartRateList?.let { it.size }?:0
 }

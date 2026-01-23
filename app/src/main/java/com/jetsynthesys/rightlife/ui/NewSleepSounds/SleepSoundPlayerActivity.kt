@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -21,14 +20,19 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivitySleepSoundPlayerBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.bottomplaylist.PlaylistBottomSheetDialogFragment
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.max
+import kotlin.math.min
 
 class SleepSoundPlayerActivity : BaseActivity() {
 
@@ -40,6 +44,7 @@ class SleepSoundPlayerActivity : BaseActivity() {
     private var isSeekBarUpdating = false
     private var isFromUserPlayList = false
     private var isListUpdated = false
+    private var isRepeatEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,22 +66,22 @@ class SleepSoundPlayerActivity : BaseActivity() {
         if (isFromUserPlayList) {
             binding.playlistButton.visibility = View.VISIBLE
             binding.myPlaylist.visibility = View.VISIBLE
-            showBalloonWithDim(
+            /*showBalloonWithDim(
                 binding.playlistButton,
                 "Tap to view the queue.",
                 "SleepSoundPlayList",
                 xOff = -200,
                 yOff = 20
-            )
+            )*/
             binding.imageAddToPlayList.visibility = View.GONE
         } else {
-            showBalloonWithDim(
+            /*showBalloonWithDim(
                 binding.imageAddToPlayList,
                 "Tap to add to your playlist.",
                 "SleepSoundPlayListAddButton",
                 xOff = -200,
                 yOff = 20
-            )
+            )*/
             binding.imageAddToPlayList.visibility = View.VISIBLE
             updateAddButtonUI(soundList[selectedPosition])
         }
@@ -129,35 +134,75 @@ class SleepSoundPlayerActivity : BaseActivity() {
             updatePlayPauseButton()
         }
 
+        binding.prev10secButton.setOnClickListener {
+            animateButton(it)
+            val current = player.currentPosition
+            val seekTo = max(current - 10_000, 0)
+            player.seekTo(seekTo)
+        }
+
+        binding.next10secButton.setOnClickListener {
+            animateButton(it)
+            val current = player.currentPosition
+            val duration = player.duration
+            val seekTo = min(current + 10_000, duration)
+            player.seekTo(seekTo)
+        }
+
 
         // Previous Button
         binding.prevButton.setOnClickListener {
+            animateButton(it)
+            isRepeatEnabled = false
+            player.repeatMode = Player.REPEAT_MODE_OFF
             player.seekToPrevious()
             updateUI()
+            updateRepeatOnButtonUI()
         }
 
         // Next Button
         binding.nextButton.setOnClickListener {
-            /*player.seekToNext()
-            updateUI()*/
+            animateButton(it)
             if (player.currentMediaItemIndex == soundList.size - 1) {
-                Toast.makeText(this, "This is the last song", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "No more tracks available.", Toast.LENGTH_SHORT).show()
+                Utils.showNewDesignToast(this, "No more tracks available.", false)
             } else {
+                isRepeatEnabled = false
+                player.repeatMode = Player.REPEAT_MODE_OFF
                 player.seekToNext()
                 updateUI()
+                updateRepeatOnButtonUI()
             }
         }
+
+
+        binding.castButton.setOnClickListener {
+            animateButton(it)
+
+            isRepeatEnabled = !isRepeatEnabled
+            updateRepeatOnButtonUI()
+        }
+
         binding.shareButton.setOnClickListener {
             shareIntent()
         }
         binding.shuffleButton.setOnClickListener {
-            if (player.shuffleModeEnabled) {
-                player.shuffleModeEnabled = false
-                Toast.makeText(this, "Shuffle Disabled", Toast.LENGTH_SHORT).show()
-            } else {
-                player.shuffleModeEnabled = true
-                Toast.makeText(this, "Shuffle Enabled", Toast.LENGTH_SHORT).show()
-            }
+            animateButton(it)
+            player.shuffleModeEnabled = !player.shuffleModeEnabled
+
+            val isShuffleOn = player.shuffleModeEnabled
+
+            binding.shuffleButton.setImageResource(
+                if (isShuffleOn) R.drawable.ic_shuffle_player_on
+                else R.drawable.ic_shuffle_player
+            )
+
+            Toast.makeText(
+                this,
+                if (isShuffleOn) "Shuffle Enabled" else "Shuffle Disabled",
+                Toast.LENGTH_SHORT
+            ).show()
+
         }
 
         // Set up SeekBar
@@ -205,7 +250,7 @@ class SleepSoundPlayerActivity : BaseActivity() {
                     binding.totalTime.text = formatDuration(player.duration)
                     startSeekBarUpdate()
                     if (player.isPlaying) {
-                        binding.playPauseButton.setImageResource(R.drawable.ic_pause_pause)
+                        binding.playPauseButton.setImageResource(R.drawable.ic_pause_player_new)
                     } else {
                         binding.playPauseButton.setImageResource(R.drawable.ic_play_player)
                     }
@@ -242,7 +287,11 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             playlistSheet.show(supportFragmentManager, "PlaylistBottomSheet")
         }
 
-
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.SR_SleepSound_Player_Opened,
+            mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+        )
     }
 
     private fun startSeekBarUpdate() {
@@ -266,6 +315,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         val currentMediaItem = player.currentMediaItem ?: return
         val service = currentMediaItem.localConfiguration?.tag as? Service ?: return
         binding.songTitle.text = service.title
+        binding.songCategory.text = service.catagoryName
         binding.songDuration.text = formatDuration(player.duration)
         Glide.with(this)
             .load(ApiClient.CDN_URL_QA + service.image)
@@ -281,6 +331,16 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             binding.songDuration.text = formatDuration(player.duration)
         }
         updateAddButtonUI(service)
+    }
+
+    private fun updateRepeatOnButtonUI() {
+        if (isRepeatEnabled) {
+            player.repeatMode = Player.REPEAT_MODE_ONE
+            binding.castButton.setImageResource(R.drawable.ic_cast_repeat_on)
+        } else {
+            player.repeatMode = Player.REPEAT_MODE_OFF
+            binding.castButton.setImageResource(R.drawable.ic_cast_player)
+        }
     }
 
 
@@ -302,30 +362,22 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
 
     override fun onStart() {
         super.onStart()
-        if (Util.SDK_INT > 23) {
-            player.playWhenReady = true
-        }
+        player.playWhenReady = true
     }
 
     override fun onResume() {
         super.onResume()
-        if (Util.SDK_INT <= 23) {
-            player.playWhenReady = true
-        }
+        player.playWhenReady = true
     }
 
     override fun onPause() {
         super.onPause()
-        if (Util.SDK_INT <= 23) {
-            player.playWhenReady = false
-        }
+        player.playWhenReady = false
     }
 
     override fun onStop() {
         super.onStop()
-        if (Util.SDK_INT > 23) {
-            player.playWhenReady = false
-        }
+        player.playWhenReady = false
     }
 
     override fun onDestroy() {
@@ -354,14 +406,14 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
     }
 
     private fun updateAddButtonUI(service: Service) {
-        binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
+        binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.playlist_plus_icon)
         binding.imageAddToPlayList.setOnClickListener {
             if (service.isActive)
                 removeFromPlaylist(service._id)
             else
                 addToPlaylist(service._id)
             service.isActive = !service.isActive
-            binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
+            binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.playlist_plus_icon)
         }
     }
 
@@ -376,7 +428,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     isListUpdated = true
-                    showToast(response.body()?.successMessage ?: "Added to Playlist!")
+                    showCustomToast("Added To Playlist", true)
                 } else {
                     showToast("Failed to add to playlist: ${response.code()}")
                 }
@@ -398,7 +450,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     isListUpdated = true
-                    showToast(response.body()?.successMessage ?: "Song removed from Playlist!")
+                    showCustomToast("Removed From Playlist", false)
                 } else {
                     showToast("try again!: ${response.code()}")
                 }
@@ -415,7 +467,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun handleBackPressed(){
+    private fun handleBackPressed() {
         if (isListUpdated) {
             val returnIntent = Intent()
             val list = ArrayList<Service>()
@@ -426,5 +478,21 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         }
         finish()
     }
+
+    private fun animateButton(view: View) {
+        view.animate()
+            .scaleX(1.2f)
+            .scaleY(1.2f)
+            .setDuration(120)
+            .withEndAction {
+                view.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(120)
+                    .start()
+            }
+            .start()
+    }
+
 }
 

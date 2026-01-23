@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.ui.settings
 
+import android.app.DownloadManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionHistoryBinding
+import com.jetsynthesys.rightlife.ui.settings.adapter.PastSubscriptionHistoryAdapter
 import com.jetsynthesys.rightlife.ui.settings.adapter.SubscriptionHistoryAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.PurchaseHistoryResponse
 import com.jetsynthesys.rightlife.ui.settings.pojo.Subscription
@@ -17,7 +19,7 @@ import retrofit2.Response
 
 class SubscriptionHistoryActivity : BaseActivity() {
     private lateinit var binding: ActivitySubscriptionHistoryBinding
-    private lateinit var pastSubscriptionAdapter: SubscriptionHistoryAdapter
+    private lateinit var pastSubscriptionAdapter: PastSubscriptionHistoryAdapter
     private lateinit var activeSubscriptionAdapter: SubscriptionHistoryAdapter
     private val activeSubscriptions = ArrayList<Subscription>()
     private val pastSubscriptions = ArrayList<Subscription>()
@@ -34,13 +36,19 @@ class SubscriptionHistoryActivity : BaseActivity() {
         }
 
         pastSubscriptionAdapter =
-            SubscriptionHistoryAdapter(pastSubscriptions) { subscription -> // code here for selected item from past subscriptions
+            PastSubscriptionHistoryAdapter(pastSubscriptions) { subscription -> // code here for selected item from past subscriptions
+                subscription.invoice?.url?.let { url ->
+                    downloadInvoiceFile(url, subscription.invoice?.id ?: "invoice")
+                } ?: showToast("No invoice available for this plan")
             }
         binding.rvPastSubscription.layoutManager = LinearLayoutManager(this)
         binding.rvPastSubscription.adapter = pastSubscriptionAdapter
 
         activeSubscriptionAdapter =
             SubscriptionHistoryAdapter(activeSubscriptions) { subscription -> // code here for selected item from active subscriptions
+                subscription.invoice?.url?.let { url ->
+                    downloadInvoiceFile(url, subscription.invoice?.id ?: "invoice")
+                } ?: showToast("No invoice available for this plan")
             }
         binding.rvActiveSubscription.layoutManager = LinearLayoutManager(this)
         binding.rvActiveSubscription.adapter = activeSubscriptionAdapter
@@ -101,4 +109,27 @@ class SubscriptionHistoryActivity : BaseActivity() {
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+
+    // downloading invice using url.pdf
+    private fun downloadInvoiceFile(url: String, fileName: String) {
+        try {
+            val request = DownloadManager.Request(android.net.Uri.parse(url))
+            request.setTitle("Downloading Invoice")
+            request.setDescription("Downloading your invoice PDF...")
+            request.setDestinationInExternalPublicDir(
+                android.os.Environment.DIRECTORY_DOWNLOADS,
+                "$fileName.pdf"
+            )
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            request.setAllowedOverMetered(true)
+            request.setAllowedOverRoaming(true)
+            val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+            downloadManager.enqueue(request)
+            Toast.makeText(this, "Invoice download started", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Failed to start download", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }

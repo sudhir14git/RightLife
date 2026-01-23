@@ -5,10 +5,10 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowJournalNewBinding
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 
 class JournalAdapter(
     private val context: Context,
@@ -28,14 +28,14 @@ class JournalAdapter(
 
     override fun onBindViewHolder(holder: JournalViewHolder, position: Int) {
 
-        if (position == 0) {
+        /*if (position == 0) {
             context.showBalloonWithDim(
                 holder.binding.imageViewAdd,
                 "Tap to add this journaling type to your toolkit.",
                 "JournalAdapter",
                 xOff = -200
             )
-        }
+        }*/
 
         val item = items[position]
         with(holder.binding) {
@@ -52,6 +52,8 @@ class JournalAdapter(
                     imageViewAdd.setImageResource(
                         if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_free_form
                     )
+                    titleText.setTextColor(ContextCompat.getColor(context, R.color.free_form_color))
+                    descText.setTextColor(ContextCompat.getColor(context, R.color.free_form_color))
                 }
 
                 "Bullet" -> {
@@ -60,6 +62,8 @@ class JournalAdapter(
                     imageViewAdd.setImageResource(
                         if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_bullet
                     )
+                    titleText.setTextColor(ContextCompat.getColor(context, R.color.bullet_color))
+                    descText.setTextColor(ContextCompat.getColor(context, R.color.bullet_color))
                 }
 
                 "Gratitude" -> {
@@ -68,6 +72,8 @@ class JournalAdapter(
                     imageViewAdd.setImageResource(
                         if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_gratitude
                     )
+                    titleText.setTextColor(ContextCompat.getColor(context, R.color.gratitude_color))
+                    descText.setTextColor(ContextCompat.getColor(context, R.color.gratitude_color))
                 }
 
                 else -> {
@@ -76,6 +82,8 @@ class JournalAdapter(
                     imageViewAdd.setImageResource(
                         if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_grief
                     )
+                    titleText.setTextColor(ContextCompat.getColor(context, R.color.grief_color))
+                    descText.setTextColor(ContextCompat.getColor(context, R.color.grief_color))
                 }
             }
 

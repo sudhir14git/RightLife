@@ -1,225 +1,452 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="#F7F7F7"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F7F7F7">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="85dp">
+        android:layout_marginBottom="80dp">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="80dp">
-
-            <LinearLayout
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <!--//header layout-->
+            <RelativeLayout
+                android:id="@+id/rl_header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#F7F7F7"
-                android:orientation="vertical">
+                android:layout_height="70dp"
+                android:background="@drawable/bg_home_gradient_new"
+                android:paddingHorizontal="@dimen/margin_card_16dp"
+                android:paddingTop="20dp">
 
                 <RelativeLayout
-                    android:id="@+id/rl_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginHorizontal="16dp">
+                    android:id="@+id/relative_profileImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp">
+                    <!-- Profile Image -->
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profileImage"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentStart="true"
+                        android:background="@drawable/rounded_image"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/rl_profile"
+                        android:tint="@color/txt_color_header" />
 
-                    <RelativeLayout
-                        android:id="@+id/relative_profileImage"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp">
-                        <!-- Profile Image -->
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/profileImage"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_alignParentStart="true"
-                            android:background="@drawable/rounded_image"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/profile_man"
-                            android:tint="@color/txt_color_header" />
-
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/img_green_dot"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_margin="12dp"
-                            android:background="@drawable/circle_shape"
-                            android:backgroundTint="@color/white"
-                            android:padding="2dp"
-                            android:src="@drawable/rounded_image"
-                            app:tint="@color/dark_green" />
-
-                    </RelativeLayout>
-
-
-                    <!-- Greeting Text -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toEndOf="@id/relative_profileImage"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/greetingText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/dmsans_bold"
-                            android:gravity="center"
-                            android:text="Good Morning,"
-                            android:textColor="@color/txt_color_header"
-                            android:textSize="@dimen/textsize_medium" />
-
-                        <TextView
-                            android:id="@+id/userName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/dmsans_bold"
-                            android:gravity="center"
-                            android:textColor="@color/txt_color_header"
-                            android:textSize="@dimen/textsize_medium" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/llCountDown"
-                        android:layout_width="wrap_content"
-                        android:orientation="horizontal"
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/img_green_dot"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="20dp"
-                        android:padding="6dp"
-                        android:gravity="center_vertical"
-                        android:background="@drawable/roundedcornerborderred"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:src="@drawable/ic_db_flash"
-                            android:layout_height="wrap_content"
-                            app:tint="@color/days_border_trialdays" />
-
-                        <TextView
-                            android:id="@+id/tvCountDown"
-                            android:layout_width="wrap_content"
-                            android:text="1/7"
-                            android:fontFamily="@font/dmsans_semibold"
-                            android:textSize="@dimen/textsize_large"
-                            android:textColor="@color/days_border_trialdays"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:text="days"
-                            android:layout_marginEnd="5dp"
-                            android:textColor="@color/days_border_trialdays"
-                            android:textSize="@dimen/textsize_extrasmall"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                        android:layout_alignParentBottom="true"
+                        android:layout_margin="12dp"
+                        android:background="@drawable/circle_shape"
+                        android:backgroundTint="@color/white"
+                        android:padding="2dp"
+                        android:src="@drawable/rounded_image"
+                        android:visibility="gone"
+                        app:tint="@color/dark_green" />
 
                 </RelativeLayout>
 
-                <FrameLayout
-                    android:id="@+id/rightLifeReportCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginStart="16dp"
-                    android:visibility="gone"
-                    android:layout_marginBottom="@dimen/margin_card_16dp"
-                    android:layout_marginEnd="16dp">
 
-                    <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
-                        android:id="@+id/gradientBorder"
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp"
-                        android:layout_gravity="center" />
+                <!-- Greeting Text -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/llCountDown"
+                    android:layout_toEndOf="@id/relative_profileImage"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/greetingText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:text="Good Morning,"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <TextView
+                        android:id="@+id/userName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:maxLength="20"
+                        android:singleLine="true"
+                        android:text=""
+                        android:layout_marginEnd="2dp"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="@dimen/textsize_medium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llCountDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/roundedcornerborderred"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="5dp"
+                    android:paddingVertical="2dp"
+                    android:visibility="visible">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp"
+                        android:id="@+id/countdownLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="10dp"
-                        android:background="@android:color/transparent"
-                        android:gravity="center_vertical"
-                        android:clipToPadding="false"
-                        android:layout_gravity="center">
+                        android:paddingHorizontal="8dp">
 
-                        <ImageView
-                            android:id="@+id/iconImageView"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/logo_ai_report" />
-
+                        <!-- Days -->
                         <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="12dp"
+                            android:gravity="center"
                             android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/titleTextView"
+                                android:id="@+id/tvDays"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginEnd="16dp"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:maxLines="1"
-                                android:text="Your RightLife Report Is In"
-                                android:textColor="@color/txt_color_header"
-                                android:textSize="@dimen/textsize_medium" />
+                                android:text="06"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_large" />
 
                             <TextView
-                                android:id="@+id/subtitleTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginEnd="16dp"
-                                android:layout_marginTop="4dp"
-                                android:ellipsize="end"
-                                android:maxLines="2"
-                                android:text="See how your habits are shaping your health."
-                                android:textColor="@color/txt_color_header"
-                                android:textSize="@dimen/textsize_small" />
+                                android:text="days"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_smallest" />
                         </LinearLayout>
 
-                        <ImageView
-                            android:id="@+id/arrowImageView"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/arrow_right" />
+                        <!-- Hours -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="12dp"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvHours"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="23"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_large" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="hours"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_smallest" />
+                        </LinearLayout>
+
+                        <!-- Minutes -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvMinutes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="59"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_large" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="mins"
+                                android:textColor="@android:color/black"
+                                android:textSize="@dimen/textsize_smallest" />
+                        </LinearLayout>
+
                     </LinearLayout>
-                </FrameLayout>
-                <!-- Fragment Container -->
-                <include
-                    android:id="@id/trialExpiredLayout"
-                    layout="@layout/layout_subscription_dashboard" />
 
-                <FrameLayout
-                    android:id="@+id/fragmentContainer"
-                    android:layout_width="match_parent"
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llFreeTrailExpired"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#F7F7F7" />
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/rounded_corner_border_red"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="22dp"
+                    android:paddingVertical="6dp"
+                    android:visibility="gone">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Free Trial Expired"
+                        android:textColor="@color/menuselected"
+                        android:textSize="10sp" />
 
-        </androidx.core.widget.NestedScrollView>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center_horizontal"
+                        android:text="Upgrade To Continue"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="8sp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="#F7F7F7"
+                    android:orientation="vertical">
+
+                    <include
+                        android:id="@+id/layoutRegisterChallenge"
+                        layout="@layout/layout_register_challenge" />
+
+                    <include
+                        android:id="@+id/layoutUnlockChallenge"
+                        layout="@layout/layout_unlock_challenge" />
+
+                    <include
+                        android:id="@+id/layoutChallengeToCompleteChecklist"
+                        layout="@layout/layout_challenge_to_complete_checklist" />
+
+                    <include
+                        android:id="@+id/layoutChallengeCountDownDays"
+                        layout="@layout/layout_challenge_countdown_timer" />
+
+                    <include
+                        android:id="@+id/layoutChallengeDailyScore"
+                        layout="@layout/layout_challenge_daily_score" />
+
+                    <include
+                        android:id="@+id/layoutChallengeCompleted"
+                        layout="@layout/layout_challenge_completed" />
+
+                    <FrameLayout
+                        android:id="@+id/rightLifeReportCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="@dimen/margin_card_16dp"
+                        android:visibility="gone">
+
+                        <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
+                            android:id="@+id/gradientBorder"
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            android:layout_gravity="center" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            android:layout_gravity="center"
+                            android:background="@android:color/transparent"
+                            android:clipToPadding="false"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="10dp">
+
+                            <ImageView
+                                android:id="@+id/iconImageView"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/logo_ai_report" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/titleTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginEnd="16dp"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:maxLines="1"
+                                    android:text="Your RightLife Report Is In"
+                                    android:textColor="@color/txt_color_header"
+                                    android:textSize="@dimen/textsize_medium" />
+
+                                <TextView
+                                    android:id="@+id/subtitleTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="16dp"
+                                    android:ellipsize="end"
+                                    android:maxLines="2"
+                                    android:text="See how your habits are shaping your health."
+                                    android:textColor="@color/txt_color_header"
+                                    android:textSize="@dimen/textsize_small" />
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/arrowImageView"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/arrow_right" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/flFreeTrial"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginVertical="16dp"
+                        android:visibility="gone">
+
+                        <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
+                            android:layout_width="match_parent"
+                            android:layout_height="142dp"
+                            android:layout_gravity="center" />
+
+                        <LinearLayout
+                            android:id="@+id/llFreeTrial"
+                            android:layout_width="match_parent"
+                            android:layout_height="136dp"
+                            android:layout_gravity="center"
+                            android:layout_marginHorizontal="4dp"
+                            android:background="@drawable/roundedcornerbutton_medium"
+                            android:backgroundTint="@color/white"
+                            android:clipToPadding="false"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="16dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginVertical="8dp">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:src="@drawable/img_rightlife_pro" />
+
+                                <ImageView
+                                    android:id="@+id/nextArrowFreeTrial"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:src="@drawable/forward_arrow_free_trial" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/dmsans_medium"
+                                android:text="Experience how RightLife can truly improve your health with a 7 day free trial."
+                                android:textColor="@color/txt_color_header"
+                                android:textSize="@dimen/textsize_small" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginVertical="1dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvZero"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="₹0"
+                                    android:textColor="@color/txt_color_header"
+                                    android:textSize="32sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_striketroughPrice"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="8dp"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/dmsans_medium"
+                                    android:text="₹3,499"
+                                    android:textColor="#767676"
+                                    android:textSize="@dimen/textsize_small" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="No Payment Details Needed"
+                                    android:textColor="#0B9C6B"
+                                    android:textSize="@dimen/textsize_small" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <include
+                        android:id="@id/trialExpiredLayout"
+                        layout="@layout/layout_subscription_dashboard" />
+
+                    <!-- Fragment Container -->
+                    <FrameLayout
+                        android:id="@+id/fragmentContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#F7F7F7" />
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </LinearLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include
-        layout="@layout/home_bottomsheet"
         android:id="@+id/includedhomebottomsheet"
-        android:layout_height="match_parent"
+        layout="@layout/home_bottomsheet"
         android:layout_width="match_parent"
-        android:layout_marginBottom="77dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:layout_alignParentBottom="true" />
+        android:layout_marginBottom="77dp"
+        android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -231,8 +458,10 @@
         android:elevation="10dp"
         android:src="@drawable/icon_quicklink_plus"
         app:backgroundTint="@color/rightlife"
+        app:fabCustomSize="54dp"
         app:layout_anchor="@id/bottom_menu"
-        app:layout_anchorGravity="top|center" />
+        app:layout_anchorGravity="top|center"
+        app:maxImageSize="22dp" />
 
     <LinearLayout
         android:id="@+id/bottom_menu"
@@ -284,7 +513,7 @@
                 android:id="@+id/icon_explore"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/homemenu" />
+                android:src="@drawable/my_health_menu" />
 
             <TextView
                 android:id="@+id/label_explore"
@@ -292,7 +521,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:padding="5dp"
-                android:text="Explore"
+                android:text="My health"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>

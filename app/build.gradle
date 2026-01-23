@@ -1,11 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.gms.services)
+    alias(libs.plugins.firebase.crashlytics)
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
-    //id("com.google.dagger.hilt.android") version "2.48" apply false
-    id("com.google.gms.google-services") version "4.4.2" apply false
-    id 'com.google.firebase.crashlytics' version '2.9.9' apply false
+
+
+
+
+
 
 }
 
@@ -17,13 +21,12 @@ android {
         applicationId "com.jetsynthesys.rightlife"
         minSdk 26
         targetSdk 35
-        versionCode 311
-        versionName "112"
+        versionCode 314
+        versionName "1.1.15"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
 
-        buildConfigField 'String', 'MOENGAGE_ID', "\"92IVJGEL525OCZB74IUIHYHS\""
         buildConfigField 'String', 'DFX_REST_URL', "\"https://api.deepaffex.ai\""
         buildConfigField 'String', 'DFX_WS_URL', "\"wss://api.deepaffex.ai\""
         buildConfigField 'String', 'DFX_LICENSE_KEY', "\"f39ff2b6-d684-4340-8e71-701aa9d9ea49\""
@@ -61,11 +64,14 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            buildConfigField "boolean", "ENABLE_CRASHLYTICS", "false"
         }
         release {
             signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "ENABLE_CRASHLYTICS", "true"
+
         }
     }
 
@@ -103,28 +109,51 @@ android {
             buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com\""
             buildConfigField("String", "BASE_URL", "\"https://qa.rightlife.com/api/app/api/\"")
 
-            // buildConfigField("String", "BASE_URL", "\"https://"")
-
             buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com\""
             buildConfigField("String", "BASE_URL_AI", "\"https://ai-qa.rightlife.com/\"")
-            buildConfigField("String", "CDN_URL", "\"https://d1sacaybzizpm5.cloudfront.net/\"")
-            buildConfigField("String", "VIDEO_CDN_URL", "\"https://jetsynthesisqa-us-east-1.s3-accelerate.amazonaws.com/\"")
-            // buildConfigField("String", "BASE_URL", "\"https://"")
+            buildConfigField("String", "BASE_URL_AI_V2", "\"https://ai-qa.rightlife.com/v2/\"")
+            //buildConfigField("String", "CDN_URL", "\"https://d1sacaybzizpm5.cloudfront.net/\"")
+            //buildConfigField("String", "VIDEO_CDN_URL", "\"https://jetsynthesisqa-us-east-1.s3-accelerate.amazonaws.com/\"")
+            buildConfigField "String", "CDN_URL", "\"https://d1uxs9zd0apq85.cloudfront.net/\""
+            buildConfigField("String", "VIDEO_CDN_URL", "\"https://rightlife-prod-us-east-1.s3-accelerate.amazonaws.com/\"")
+            manifestPlaceholders = [ deeplinkHost: "qa.rightlife.com" ,deeplinkHost_new: "app.rightlife.com"]
+            buildConfigField "String", "RAZORPAY_KEY_ID", "\"rzp_test_RqEmfR1seJQbMB\""
+
         }
 
         create("production") {
             dimension = "environment"
             buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"468192274227-0ptrdeff84u6b01ak5fmaiipbds91s4c.apps.googleusercontent.com\""
             buildConfigField "String", "BASE_URL", "\"https://app.rightlife.com/api/app/api/\""
-            buildConfigField "String", "CDN_URL", "\"https://d1uxs9zd0apq85.cloudfront.net/\""
             buildConfigField("String", "BASE_URL_AI", "\"https://ai.rightlife.com/\"")
+            buildConfigField("String", "BASE_URL_AI_V2", "\"https://ai.rightlife.com/v2/\"")
+            buildConfigField "String", "CDN_URL", "\"https://d1uxs9zd0apq85.cloudfront.net/\""
             buildConfigField("String", "VIDEO_CDN_URL", "\"https://rightlife-prod-us-east-1.s3-accelerate.amazonaws.com/\"")
+            manifestPlaceholders = [ deeplinkHost: "rightlife.com" , deeplinkHost_new: "app.rightlife.com"]
+            buildConfigField "String", "RAZORPAY_KEY_ID", "\"rzp_live_S0CunrlrmrIF8U\""
 
         }
+    }
+
+    lint {
+        disable "NullSafeMutableLiveData"
     }
 }
 
 dependencies {
+
+    // ✅ Anura Core SDK dependencies from Maven
+    def anuraSdkVersion   = "2.4.10.103"
+    def dfxVersion        = "4.14.11"
+    def dfxExtrasVersion  = "0.1.9"
+    def mediaPipeVersion  = "0.10.26-29"
+    def opencvVersion     = "4.12.0"
+
+    implementation "ai.nuralogix:anurasdk:${anuraSdkVersion}@aar"
+    implementation "ai.nuralogix.dfx:dfxsdk:${dfxVersion}"
+    implementation "ai.nuralogix.dfx.extras:dfxextras:${dfxExtrasVersion}"
+    implementation "ai.nuralogix:mediapipe-facemesh-android:${mediaPipeVersion}"
+    implementation "ai.nuralogix:anura-opencv:${opencvVersion}"
 
     implementation libs.appcompat
     implementation libs.material
@@ -186,15 +215,15 @@ dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar','sonde_edge_sdk_v1.1.0_prod.aar'])
     //implementation(name: 'anura-core-sdk-2.4.6.90', ext: 'aar')
     //implementation(name: 'anura-opencv-4.5.1', ext: 'aar')
-    implementation files('libs/anura-core-sdk-2.4.6.90.aar')
-    implementation files('libs/anura-opencv-4.5.1.aar')
-    implementation files('libs/sonde_edge_sdk_v1.1.0_prod.aar')
+    /*implementation files('libs/anura-core-sdk-2.4.6.90.aar')
+    implementation files('libs/anura-opencv-4.5.1.aar')*/
+    //implementation files('libs/sonde_edge_sdk_v1.1.0_prod.aar')
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
 
-    implementation ("com.google.mediapipe:solution-core:0.10.9")
-    implementation("com.google.mediapipe:facemesh:0.10.9")
+    /*implementation ("com.google.mediapipe:solution-core:0.10.9")
+    implementation("com.google.mediapipe:facemesh:0.10.9")*/
     implementation "org.java-websocket:Java-WebSocket:1.4.1"
 
 
@@ -214,7 +243,7 @@ dependencies {
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
-
+    implementation(libs.firebase.crashlytics.sdk)
     implementation("com.google.android.gms:play-services-auth:20.4.0") // Or a newer version
 
     //onboarding libs
@@ -224,7 +253,9 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1' // Or latest version
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
-    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.2'
+
+        implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0'
+
     implementation 'androidx.media3:media3-exoplayer:1.5.1'
     implementation 'androidx.media3:media3-ui:1.5.1'
 
@@ -274,11 +305,36 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:8.0.0")
 
     //remote config
-    implementation 'com.google.firebase:firebase-config:21.6.0'
-    implementation 'com.google.firebase:firebase-analytics:21.5.0'
-    apply plugin: 'com.google.gms.google-services'
+
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-config-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+
+
 
     implementation 'com.google.android.exoplayer:exoplayer-core:2.19.1' // Or your latest stable version
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.19.1'
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.19.1'
+
+
+//facebook anndroid sdk
+    // Meta SDK (Facebook SDK)
+    implementation("com.facebook.android:facebook-android-sdk:17.0.0")
+
+    // Optional: For advanced features
+    implementation("com.facebook.android:facebook-core:17.0.0")
+    implementation("com.facebook.android:facebook-login:17.0.0")
+    implementation("com.facebook.android:facebook-share:17.0.0")
+// Notification
+    implementation "com.google.firebase:firebase-messaging"
+
+    //razorPay
+    implementation 'com.razorpay:checkout:1.6.33'
+// Auto read sms
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
+
+
+
 }

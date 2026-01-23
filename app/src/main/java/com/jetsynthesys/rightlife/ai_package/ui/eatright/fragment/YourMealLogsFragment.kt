@@ -30,17 +30,14 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealLogData
 import com.jetsynthesys.rightlife.ai_package.model.response.FullDaySummary
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMealHistory
-import com.jetsynthesys.rightlife.ai_package.model.response.Macros
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetailsLog
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealNutritionSummary
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
-import com.jetsynthesys.rightlife.ai_package.model.response.Micros
-import com.jetsynthesys.rightlife.ai_package.model.response.Nutrients
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
-import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogWeeklyDayAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
@@ -50,7 +47,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLo
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourMorningSnackMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentYourMealLogsBinding
@@ -294,6 +291,16 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                         addToBackStack("landing")
                         commit()
                     }
+                }else if (moduleName.contentEquals("EatRightLandingWithoutPopup")){
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", "EatRight")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
                 }else if (moduleName.contentEquals("HomeDashboard")){
                     activity?.finish()
                 }else{
@@ -420,6 +427,16 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         backButton.setOnClickListener {
 
             if (moduleName.contentEquals("EatRightLanding")){
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else if (moduleName.contentEquals("EatRightLandingWithoutPopup")){
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
                 args.putString("ModuleName", "EatRight")
@@ -648,6 +665,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         if (mealLogHistory.size > 0 && weekList.isNotEmpty()){
             mealLogHistory.forEach { mealLog ->
                 for (item in weekList){
+                    val todayDateTime = LocalDateTime.now()
+                    val todayDate = todayDateTime.format(formatter)
+                    if (item.fullDate.toString() == todayDate){
+                        nextWeekBtn.setImageResource(R.drawable.right_arrow_grey)
+                    }
                     if (item.fullDate.toString() == mealLog.date){
                         if (mealLog.isAvailable == true){
                            item.is_available = true
@@ -702,10 +724,46 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val maxCarbs = SharedPreferenceManager.getInstance(requireActivity()).maxCarbs
             val maxProtein = SharedPreferenceManager.getInstance(requireActivity()).maxProtein
             val maxFats = SharedPreferenceManager.getInstance(requireActivity()).maxFats
-            calValue.text = dailyRecipe?.calories?.let { round(it).toInt().toString() }
-            carbsValue.text = dailyRecipe?.carbs?.let { round(it)?.toInt().toString() }
-            proteinsValue.text = dailyRecipe?.protein?.let { round(it)?.toInt().toString() }
-            fatsValue.text = dailyRecipe?.fats?.let { round(it)?.toInt().toString() }
+            val currentCal = dailyRecipe?.calories_kcal?.let { round(it).toInt() } ?: 0
+
+// Check if current calories is greater than max
+            if (currentCal > maxCalorie) {
+                calValue.setTextColor(Color.parseColor("#B50200"))
+            } else {
+                calValue.setTextColor(Color.BLACK)
+            }
+
+            calValue.text = currentCal.toString()
+            val currentCarbs = dailyRecipe?.carbs_g?.let { round(it)?.toInt() } ?: 0
+
+// Check if current carbs is greater than max
+            if (currentCarbs > maxCarbs) {
+                carbsValue.setTextColor(Color.parseColor("#B50200"))
+            } else {
+                carbsValue.setTextColor(Color.BLACK)
+            }
+
+            carbsValue.text = currentCarbs.toString()
+            val currentProtein = dailyRecipe?.protein_g?.let { round(it)?.toInt() } ?: 0
+
+// Check if current protein is greater than max
+            if (currentProtein > maxProtein) {
+                proteinsValue.setTextColor(Color.parseColor("#B50200"))
+            } else {
+                proteinsValue.setTextColor(Color.BLACK)
+            }
+
+            proteinsValue.text = currentProtein.toString()
+            val currentFats = dailyRecipe?.fat_g?.let { round(it)?.toInt() } ?: 0
+
+// Check if current fats is greater than max
+            if (currentFats > maxFats) {
+                fatsValue.setTextColor(Color.parseColor("#B50200"))
+            } else {
+                fatsValue.setTextColor(Color.BLACK)
+            }
+
+            fatsValue.text = currentFats.toString()
             maxCalUnit.text = " / " + maxCalorie.toString() + " kCal"
             maxCarbUnit.text = " / " + maxCarbs.toString() + " g"
             maxProteinUnit.text = " / " + maxProtein.toString() + " g"
@@ -716,7 +774,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                     caloriesProgressBar.viewTreeObserver.removeOnGlobalLayoutListener(this)
                     val progressBarWidth = caloriesProgressBar.width.toFloat()
                     val overlayPosition = 0.7f * progressBarWidth
-                    val progress = dailyRecipe?.calories?.toInt()
+                    val progress = dailyRecipe?.calories_kcal?.toInt()
                     caloriesProgressBar.progress = progress!!
                     val progressPercentage = caloriesProgressBar.max
                     caloriesProgressBar.max = maxCalorie
@@ -740,15 +798,15 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             })
             // Set progress programmatically
             carbsProgressBar.max = maxCarbs  // Set maximum value
-            carbsProgressBar.progress = dailyRecipe?.carbs!!.toInt()
+            carbsProgressBar.progress = dailyRecipe?.carbs_g!!.toInt()
 
             // Set progress programmatically
             proteinsProgressBar.max = maxProtein  // Set maximum value
-            proteinsProgressBar.progress = dailyRecipe?.protein!!.toInt()
+            proteinsProgressBar.progress = dailyRecipe?.protein_g!!.toInt()
 
             // Set progress programmatically
             fatsProgressBar.max = maxFats  // Set maximum value
-            fatsProgressBar.progress = dailyRecipe?.fats!!.toInt()
+            fatsProgressBar.progress = dailyRecipe?.fat_g!!.toInt()
         }
     }
 
@@ -760,7 +818,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (breakfastCombinedList.size > 0) {
                 breakfastListLayout.visibility = View.VISIBLE
                 if (breakfastMealNutritionSummary.size > 0) {
-                    calValueTv.text = breakfastMealNutritionSummary.get(0).calories.toInt().toString()
+                    calValueTv.text = breakfastMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
                 breakfastMealLogsAdapter.updateList(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
             } else {
@@ -774,7 +832,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 morningSnackMealLogsAdapter.addAll(morningSnackCombinedList, -1, regularRecipeData, snapMealData, false)
                 if (morningSnackMealNutritionSummary.size > 0) {
                     calValueMorningSnackTv.text =
-                        morningSnackMealNutritionSummary.get(0).calories.toInt().toString()
+                        morningSnackMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
             } else {
                 morningSnackListLayout.visibility = View.GONE
@@ -786,7 +844,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 lunchMealLogsAdapter.addAll(lunchCombinedList, -1, regularRecipeData, snapMealData, false)
                 if (lunchMealNutritionSummary.size > 0) {
                     calValueLunchTv.text =
-                        lunchMealNutritionSummary.get(0).calories.toInt().toString()
+                        lunchMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
             } else {
                 lunchListLayout.visibility = View.GONE
@@ -798,7 +856,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 eveningSnacksMealLogsAdapter.addAll(eveningSnacksCombinedList, -1, regularRecipeData, snapMealData, false)
                 if (eveningSnacksMealNutritionSummary.size > 0) {
                     calValueEveningSnacksTv.text =
-                        eveningSnacksMealNutritionSummary.get(0).calories.toInt().toString()
+                        eveningSnacksMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
             } else {
                 eveningSnacksListLayout.visibility = View.GONE
@@ -809,7 +867,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 dinnerListLayout.visibility = View.VISIBLE
                 dinnerMealLogsAdapter.addAll(dinnerCombinedList, -1, regularRecipeData, snapMealData, false)
                 if (dinnerMealNutritionSummary.size > 0){
-                    calValueDinnerTv.text = dinnerMealNutritionSummary.get(0).calories.toInt().toString()
+                    calValueDinnerTv.text = dinnerMealNutritionSummary.get(0).calories_kcal.toInt().toString()
                 }
             }else{
                 dinnerListLayout.visibility = View.GONE
@@ -823,37 +881,18 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onBreakFastRegularRecipeEditItem(foodData: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
-             var snapDishLocalListModel : SnapDishLocalListModel? = null
-             val dishLists : ArrayList<SearchResultItem> = ArrayList()
+             var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
+             val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
             val fragment = DishLogEditFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("mealId", foodData.meal_id)
-            args.putString("recipeId", foodData.receipe._id)
+            args.putString("recipeId", foodData.recipe.id)
             args.putString("mealType", "breakfast")
-            args.putString("snapRecipeName", foodData.receipe.recipe_name)
-            val macrosData = Macros(
-                Calories =  foodData.receipe.calories, Carbs = foodData.receipe.carbs, Fats = foodData.receipe.fat,
-                Protein = foodData.receipe.protein)
-            val microsData = Micros(
-                Cholesterol = foodData.receipe.cholesterol, Vitamin_A = 0.0, Vitamin_C = 0.0, Vitamin_K = 0.0,
-                Vitamin_D = 0.0, Folate = 0.0, Iron = 0.0, Calcium = 0.0, Magnesium = 0.0, Potassium = foodData.receipe.potassium,
-                Fiber = foodData.receipe.fiber, Zinc = 0.0, Sodium = foodData.receipe.sodium, Sugar = foodData.receipe.sugar,
-                b12_mcg = 0.0, b1_mg = 0.0, b2_mg = 0.0, b5_mg = 0.0, b3_mg = 0.0, b6_mg = 0.0, vitamin_e_mg = 0.0,
-                omega_3_fatty_acids_g = 0.0, omega_6_fatty_acids_g = 0.0, copper_mg = 0.0, phosphorus_mg = 0.0,
-                saturated_fats_g = foodData.receipe.saturated_fat, selenium_mcg = 0.0,
-                trans_fats_g = foodData.receipe.trans_fat, polyunsaturated_g = 0.0, is_beverage = false, mass_g = 0.0,
-                monounsaturated_g = 0.0, percent_fruit = 0.0, percent_vegetable = 0.0, percent_legume_or_nuts = 0.0, source_urls = emptyList())
-            val nutrientsData =  Nutrients(
-                macros = macrosData, micros =  microsData)
-            val snapRecipeData = SearchResultItem(
-                id = foodData.receipe._id, name = foodData.receipe.recipe_name, category = "", photo_url = foodData.receipe.photo_url,
-                servings = foodData.receipe.servings, cooking_time_in_seconds = foodData.receipe.time_in_seconds,
-                calories = foodData.receipe.calories, nutrients = nutrientsData, source = foodData.receipe.author,
-                unit = "serving", mealQuantity = foodData.quantity.toDouble())
-            dishLists.add(snapRecipeData)
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putString("snapRecipeName", foodData.recipe.recipe)
+            dishLists.add(foodData.recipe)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             replace(R.id.flFragment, fragment, "Steps")
             addToBackStack(null)
@@ -867,74 +906,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onBreakFastSnapMealEditItem(snapMealDetail: SnapMeal, position: Int, isRefresh: Boolean) {
         if (snapMealDetail != null){
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
             val dishList = snapMealDetail.dish
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
-            dishList?.forEach { foodData ->
-                val macrosData = Macros(
-                    Calories = foodData.calories_kcal,
-                    Carbs = foodData.carb_g,
-                    Fats = foodData.fat_g,
-                    Protein = foodData.protein_g
-                )
-                val microsData = Micros(
-                    Cholesterol = foodData.cholesterol_mg,
-                    Vitamin_A = foodData.vitamin_a_mcg,
-                    Vitamin_C = foodData.vitamin_c_mg,
-                    Vitamin_K = foodData.vitamin_k_mcg,
-                    Vitamin_D = foodData.vitamin_d_iu,
-                    Folate = foodData.folate_mcg,
-                    Iron = foodData.iron_mg,
-                    Calcium =foodData.calcium_mg,
-                    Magnesium = foodData.magnesium_mg,
-                    Potassium = foodData.potassium_mg,
-                    Fiber = foodData.fiber_g,
-                    Zinc = foodData.zinc_mg,
-                    Sodium = foodData.sodium_mg,
-                    Sugar = foodData.sugar_g,
-                    b12_mcg = foodData.b12_mcg,
-                    b1_mg = foodData.b1_mg,
-                    b2_mg = foodData.b2_mg,
-                    b5_mg = 0.0,
-                    b3_mg = foodData.b3_mg,
-                    b6_mg = foodData.b6_mg,
-                    vitamin_e_mg = foodData.vitamin_e_mg,
-                    omega_3_fatty_acids_g = foodData.omega_3_fatty_acids_g,
-                    omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
-                    copper_mg = foodData.copper_mg,
-                    phosphorus_mg = foodData.phosphorus_mg,
-                    saturated_fats_g = foodData.saturated_fats_g,
-                    selenium_mcg = foodData.selenium_mcg,
-                    trans_fats_g = 0.0,
-                    polyunsaturated_g = foodData.polyunsaturated_g,
-                    is_beverage = false,
-                    mass_g = foodData.mass_g,
-                    monounsaturated_g = foodData.monounsaturated_g,
-                    percent_fruit = foodData.percent_fruit,
-                    percent_vegetable = foodData.percent_vegetable,
-                    percent_legume_or_nuts = foodData.percent_legume_or_nuts,
-                    source_urls = foodData.source_urls
-                )
-                val nutrientsData = Nutrients(
-                    macros = macrosData,
-                    micros = microsData
-                )
-                val snapRecipeData = SearchResultItem(
-                    id = foodData._id?: "",
-                    name = foodData.name,
-                    category = "",
-                    photo_url = "",
-                    servings = foodData.servings,
-                    cooking_time_in_seconds = 0,
-                    calories = foodData.calories_kcal,
-                    nutrients = nutrientsData,
-                    source = "",
-                    unit = "serving",
-                    mealQuantity = foodData.mealQuantity
-                )
-                dishLists.add(snapRecipeData)
-            }
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+            dishLists.addAll(dishList!!)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
             val fragment = MealScanResultFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
@@ -943,7 +919,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("snapMealLog", "snapMealLog")
             args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -959,37 +935,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onMSRegularRecipeEditItem(foodData: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
             val fragment = DishLogEditFragment()
             val args = Bundle()
+            val mealNames = foodData.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?: foodData.recipe.food_name
             args.putString("ModuleName", moduleName)
             args.putString("mealId", foodData.meal_id)
-            args.putString("recipeId", foodData.receipe._id)
+            args.putString("recipeId", foodData.recipe.id)
             args.putString("mealType", "morning_snack")
-            args.putString("snapRecipeName", foodData.receipe.recipe_name)
-            val macrosData = Macros(
-                Calories =  foodData.receipe.calories, Carbs = foodData.receipe.carbs, Fats = foodData.receipe.fat,
-                Protein = foodData.receipe.protein)
-            val microsData = Micros(
-                Cholesterol = foodData.receipe.cholesterol, Vitamin_A = 0.0, Vitamin_C = 0.0, Vitamin_K = 0.0,
-                Vitamin_D = 0.0, Folate = 0.0, Iron = 0.0, Calcium = 0.0, Magnesium = 0.0, Potassium = foodData.receipe.potassium,
-                Fiber = foodData.receipe.fiber, Zinc = 0.0, Sodium = foodData.receipe.sodium, Sugar = foodData.receipe.sugar,
-                b12_mcg = 0.0, b1_mg = 0.0, b2_mg = 0.0, b5_mg = 0.0, b3_mg = 0.0, b6_mg = 0.0, vitamin_e_mg = 0.0,
-                omega_3_fatty_acids_g = 0.0, omega_6_fatty_acids_g = 0.0, copper_mg = 0.0, phosphorus_mg = 0.0,
-                saturated_fats_g = foodData.receipe.saturated_fat, selenium_mcg = 0.0,
-                trans_fats_g = foodData.receipe.trans_fat, polyunsaturated_g = 0.0, is_beverage = false, mass_g = 0.0,
-                monounsaturated_g = 0.0, percent_fruit = 0.0, percent_vegetable = 0.0, percent_legume_or_nuts = 0.0, source_urls = emptyList())
-            val nutrientsData =  Nutrients(
-                macros = macrosData, micros =  microsData)
-            val snapRecipeData = SearchResultItem(
-                id = foodData.receipe._id, name = foodData.receipe.recipe_name, category = "", photo_url = foodData.receipe.photo_url,
-                servings = foodData.receipe.servings, cooking_time_in_seconds = foodData.receipe.time_in_seconds,
-                calories = foodData.receipe.calories, nutrients = nutrientsData, source = foodData.receipe.author,
-                unit = "serving", mealQuantity = foodData.quantity.toDouble())
-            dishLists.add(snapRecipeData)
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putString("snapRecipeName", mealNames)
+            dishLists.add(foodData.recipe)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             replace(R.id.flFragment, fragment, "Steps")
             addToBackStack(null)
@@ -1003,74 +961,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onMSSnapMealEditItem(snapMealDetail: SnapMeal, position: Int, isRefresh: Boolean) {
         if (snapMealDetail != null){
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
             val dishList = snapMealDetail.dish
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
-            dishList?.forEach { foodData ->
-                val macrosData = Macros(
-                    Calories = foodData.calories_kcal,
-                    Carbs = foodData.carb_g,
-                    Fats = foodData.fat_g,
-                    Protein = foodData.protein_g
-                )
-                val microsData = Micros(
-                    Cholesterol = foodData.cholesterol_mg,
-                    Vitamin_A = foodData.vitamin_a_mcg,
-                    Vitamin_C = foodData.vitamin_c_mg,
-                    Vitamin_K = foodData.vitamin_k_mcg,
-                    Vitamin_D = foodData.vitamin_d_iu,
-                    Folate = foodData.folate_mcg,
-                    Iron = foodData.iron_mg,
-                    Calcium =foodData.calcium_mg,
-                    Magnesium = foodData.magnesium_mg,
-                    Potassium = foodData.potassium_mg,
-                    Fiber = foodData.fiber_g,
-                    Zinc = foodData.zinc_mg,
-                    Sodium = foodData.sodium_mg,
-                    Sugar = foodData.sugar_g,
-                    b12_mcg = foodData.b12_mcg,
-                    b1_mg = foodData.b1_mg,
-                    b2_mg = foodData.b2_mg,
-                    b5_mg = 0.0,
-                    b3_mg = foodData.b3_mg,
-                    b6_mg = foodData.b6_mg,
-                    vitamin_e_mg = foodData.vitamin_e_mg,
-                    omega_3_fatty_acids_g = foodData.omega_3_fatty_acids_g,
-                    omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
-                    copper_mg = foodData.copper_mg,
-                    phosphorus_mg = foodData.phosphorus_mg,
-                    saturated_fats_g = foodData.saturated_fats_g,
-                    selenium_mcg = foodData.selenium_mcg,
-                    trans_fats_g = 0.0,
-                    polyunsaturated_g = foodData.polyunsaturated_g,
-                    is_beverage = false,
-                    mass_g = foodData.mass_g,
-                    monounsaturated_g = foodData.monounsaturated_g,
-                    percent_fruit = foodData.percent_fruit,
-                    percent_vegetable = foodData.percent_vegetable,
-                    percent_legume_or_nuts = foodData.percent_legume_or_nuts,
-                    source_urls = foodData.source_urls
-                )
-                val nutrientsData = Nutrients(
-                    macros = macrosData,
-                    micros = microsData
-                )
-                val snapRecipeData = SearchResultItem(
-                    id = foodData._id?: "",
-                    name = foodData.name,
-                    category = "",
-                    photo_url = "",
-                    servings = foodData.servings,
-                    cooking_time_in_seconds = 0,
-                    calories = foodData.calories_kcal,
-                    nutrients = nutrientsData,
-                    source = "",
-                    unit = "serving",
-                    mealQuantity = foodData.mealQuantity
-                )
-                dishLists.add(snapRecipeData)
-            }
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+            dishLists.addAll(dishList!!)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
             val fragment = MealScanResultFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
@@ -1079,7 +974,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("snapMealLog", "snapMealLog")
             args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -1095,37 +990,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onLunchRegularRecipeEditItem(foodData: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
             val fragment = DishLogEditFragment()
             val args = Bundle()
+            val mealNames = foodData.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?: foodData.recipe.food_name
             args.putString("ModuleName", moduleName)
             args.putString("mealId", foodData.meal_id)
-            args.putString("recipeId", foodData.receipe._id)
+            args.putString("recipeId", foodData.recipe.id)
             args.putString("mealType", "lunch")
-            args.putString("snapRecipeName", foodData.receipe.recipe_name)
-            val macrosData = Macros(
-                Calories =  foodData.receipe.calories, Carbs = foodData.receipe.carbs, Fats = foodData.receipe.fat,
-                Protein = foodData.receipe.protein)
-            val microsData = Micros(
-                Cholesterol = foodData.receipe.cholesterol, Vitamin_A = 0.0, Vitamin_C = 0.0, Vitamin_K = 0.0,
-                Vitamin_D = 0.0, Folate = 0.0, Iron = 0.0, Calcium = 0.0, Magnesium = 0.0, Potassium = foodData.receipe.potassium,
-                Fiber = foodData.receipe.fiber, Zinc = 0.0, Sodium = foodData.receipe.sodium, Sugar = foodData.receipe.sugar,
-                b12_mcg = 0.0, b1_mg = 0.0, b2_mg = 0.0, b5_mg = 0.0, b3_mg = 0.0, b6_mg = 0.0, vitamin_e_mg = 0.0,
-                omega_3_fatty_acids_g = 0.0, omega_6_fatty_acids_g = 0.0, copper_mg = 0.0, phosphorus_mg = 0.0,
-                saturated_fats_g = foodData.receipe.saturated_fat, selenium_mcg = 0.0,
-                trans_fats_g = foodData.receipe.trans_fat, polyunsaturated_g = 0.0, is_beverage = false, mass_g = 0.0,
-                monounsaturated_g = 0.0, percent_fruit = 0.0, percent_vegetable = 0.0, percent_legume_or_nuts = 0.0, source_urls = emptyList())
-            val nutrientsData =  Nutrients(
-                macros = macrosData, micros =  microsData)
-            val snapRecipeData = SearchResultItem(
-                id = foodData.receipe._id, name = foodData.receipe.recipe_name, category = "", photo_url = foodData.receipe.photo_url,
-                servings = foodData.receipe.servings, cooking_time_in_seconds = foodData.receipe.time_in_seconds,
-                calories = foodData.receipe.calories, nutrients = nutrientsData, source = foodData.receipe.author,
-                unit = "serving", mealQuantity = foodData.quantity.toDouble())
-            dishLists.add(snapRecipeData)
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putString("snapRecipeName", mealNames)
+            dishLists.add(foodData.recipe)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             replace(R.id.flFragment, fragment, "Steps")
             addToBackStack(null)
@@ -1140,74 +1017,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onLunchSnapMealEditItem(snapMealDetail: SnapMeal, position: Int, isRefresh: Boolean) {
         if (snapMealDetail != null){
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
             val dishList = snapMealDetail.dish
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
-            dishList?.forEach { foodData ->
-                val macrosData = Macros(
-                    Calories = foodData.calories_kcal,
-                    Carbs = foodData.carb_g,
-                    Fats = foodData.fat_g,
-                    Protein = foodData.protein_g
-                )
-                val microsData = Micros(
-                    Cholesterol = foodData.cholesterol_mg,
-                    Vitamin_A = foodData.vitamin_a_mcg,
-                    Vitamin_C = foodData.vitamin_c_mg,
-                    Vitamin_K = foodData.vitamin_k_mcg,
-                    Vitamin_D = foodData.vitamin_d_iu,
-                    Folate = foodData.folate_mcg,
-                    Iron = foodData.iron_mg,
-                    Calcium =foodData.calcium_mg,
-                    Magnesium = foodData.magnesium_mg,
-                    Potassium = foodData.potassium_mg,
-                    Fiber = foodData.fiber_g,
-                    Zinc = foodData.zinc_mg,
-                    Sodium = foodData.sodium_mg,
-                    Sugar = foodData.sugar_g,
-                    b12_mcg = foodData.b12_mcg,
-                    b1_mg = foodData.b1_mg,
-                    b2_mg = foodData.b2_mg,
-                    b5_mg = 0.0,
-                    b3_mg = foodData.b3_mg,
-                    b6_mg = foodData.b6_mg,
-                    vitamin_e_mg = foodData.vitamin_e_mg,
-                    omega_3_fatty_acids_g = foodData.omega_3_fatty_acids_g,
-                    omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
-                    copper_mg = foodData.copper_mg,
-                    phosphorus_mg = foodData.phosphorus_mg,
-                    saturated_fats_g = foodData.saturated_fats_g,
-                    selenium_mcg = foodData.selenium_mcg,
-                    trans_fats_g = 0.0,
-                    polyunsaturated_g = foodData.polyunsaturated_g,
-                    is_beverage = false,
-                    mass_g = foodData.mass_g,
-                    monounsaturated_g = foodData.monounsaturated_g,
-                    percent_fruit = foodData.percent_fruit,
-                    percent_vegetable = foodData.percent_vegetable,
-                    percent_legume_or_nuts = foodData.percent_legume_or_nuts,
-                    source_urls = foodData.source_urls
-                )
-                val nutrientsData = Nutrients(
-                    macros = macrosData,
-                    micros = microsData
-                )
-                val snapRecipeData = SearchResultItem(
-                    id = foodData._id?: "",
-                    name = foodData.name,
-                    category = "",
-                    photo_url = "",
-                    servings = foodData.servings,
-                    cooking_time_in_seconds = 0,
-                    calories = foodData.calories_kcal,
-                    nutrients = nutrientsData,
-                    source = "",
-                    unit = "serving",
-                    mealQuantity = foodData.mealQuantity
-                )
-                dishLists.add(snapRecipeData)
-            }
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+             dishLists.addAll(dishList!!)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
             val fragment = MealScanResultFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
@@ -1216,7 +1030,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("snapMealLog", "snapMealLog")
             args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -1232,37 +1046,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onESRegularRecipeEditItem(foodData: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
             val fragment = DishLogEditFragment()
             val args = Bundle()
+            val mealNames = foodData.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?: foodData.recipe.food_name
             args.putString("ModuleName", moduleName)
             args.putString("mealId", foodData.meal_id)
-            args.putString("recipeId", foodData.receipe._id)
+            args.putString("recipeId", foodData.recipe.id)
             args.putString("mealType", "evening_snack")
-            args.putString("snapRecipeName", foodData.receipe.recipe_name)
-            val macrosData = Macros(
-                Calories =  foodData.receipe.calories, Carbs = foodData.receipe.carbs, Fats = foodData.receipe.fat,
-                Protein = foodData.receipe.protein)
-            val microsData = Micros(
-                Cholesterol = foodData.receipe.cholesterol, Vitamin_A = 0.0, Vitamin_C = 0.0, Vitamin_K = 0.0,
-                Vitamin_D = 0.0, Folate = 0.0, Iron = 0.0, Calcium = 0.0, Magnesium = 0.0, Potassium = foodData.receipe.potassium,
-                Fiber = foodData.receipe.fiber, Zinc = 0.0, Sodium = foodData.receipe.sodium, Sugar = foodData.receipe.sugar,
-                b12_mcg = 0.0, b1_mg = 0.0, b2_mg = 0.0, b5_mg = 0.0, b3_mg = 0.0, b6_mg = 0.0, vitamin_e_mg = 0.0,
-                omega_3_fatty_acids_g = 0.0, omega_6_fatty_acids_g = 0.0, copper_mg = 0.0, phosphorus_mg = 0.0,
-                saturated_fats_g = foodData.receipe.saturated_fat, selenium_mcg = 0.0,
-                trans_fats_g = foodData.receipe.trans_fat, polyunsaturated_g = 0.0, is_beverage = false, mass_g = 0.0,
-                monounsaturated_g = 0.0, percent_fruit = 0.0, percent_vegetable = 0.0, percent_legume_or_nuts = 0.0, source_urls = emptyList())
-            val nutrientsData =  Nutrients(
-                macros = macrosData, micros =  microsData)
-            val snapRecipeData = SearchResultItem(
-                id = foodData.receipe._id, name = foodData.receipe.recipe_name, category = "", photo_url = foodData.receipe.photo_url,
-                servings = foodData.receipe.servings, cooking_time_in_seconds = foodData.receipe.time_in_seconds,
-                calories = foodData.receipe.calories, nutrients = nutrientsData, source = foodData.receipe.author,
-                unit = "serving", mealQuantity = foodData.quantity.toDouble())
-            dishLists.add(snapRecipeData)
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putString("snapRecipeName", mealNames)
+            dishLists.add(foodData.recipe)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             replace(R.id.flFragment, fragment, "Steps")
             addToBackStack(null)
@@ -1276,74 +1072,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onESSnapMealEditItem(snapMealDetail: SnapMeal, position: Int, isRefresh: Boolean) {
         if (snapMealDetail != null){
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
             val dishList = snapMealDetail.dish
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
-            dishList?.forEach { foodData ->
-                val macrosData = Macros(
-                    Calories = foodData.calories_kcal,
-                    Carbs = foodData.carb_g,
-                    Fats = foodData.fat_g,
-                    Protein = foodData.protein_g
-                )
-                val microsData = Micros(
-                    Cholesterol = foodData.cholesterol_mg,
-                    Vitamin_A = foodData.vitamin_a_mcg,
-                    Vitamin_C = foodData.vitamin_c_mg,
-                    Vitamin_K = foodData.vitamin_k_mcg,
-                    Vitamin_D = foodData.vitamin_d_iu,
-                    Folate = foodData.folate_mcg,
-                    Iron = foodData.iron_mg,
-                    Calcium =foodData.calcium_mg,
-                    Magnesium = foodData.magnesium_mg,
-                    Potassium = foodData.potassium_mg,
-                    Fiber = foodData.fiber_g,
-                    Zinc = foodData.zinc_mg,
-                    Sodium = foodData.sodium_mg,
-                    Sugar = foodData.sugar_g,
-                    b12_mcg = foodData.b12_mcg,
-                    b1_mg = foodData.b1_mg,
-                    b2_mg = foodData.b2_mg,
-                    b5_mg = 0.0,
-                    b3_mg = foodData.b3_mg,
-                    b6_mg = foodData.b6_mg,
-                    vitamin_e_mg = foodData.vitamin_e_mg,
-                    omega_3_fatty_acids_g = foodData.omega_3_fatty_acids_g,
-                    omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
-                    copper_mg = foodData.copper_mg,
-                    phosphorus_mg = foodData.phosphorus_mg,
-                    saturated_fats_g = foodData.saturated_fats_g,
-                    selenium_mcg = foodData.selenium_mcg,
-                    trans_fats_g = 0.0,
-                    polyunsaturated_g = foodData.polyunsaturated_g,
-                    is_beverage = false,
-                    mass_g = foodData.mass_g,
-                    monounsaturated_g = foodData.monounsaturated_g,
-                    percent_fruit = foodData.percent_fruit,
-                    percent_vegetable = foodData.percent_vegetable,
-                    percent_legume_or_nuts = foodData.percent_legume_or_nuts,
-                    source_urls = foodData.source_urls
-                )
-                val nutrientsData = Nutrients(
-                    macros = macrosData,
-                    micros = microsData
-                )
-                val snapRecipeData = SearchResultItem(
-                    id = foodData._id?: "",
-                    name = foodData.name,
-                    category = "",
-                    photo_url = "",
-                    servings = foodData.servings,
-                    cooking_time_in_seconds = 0,
-                    calories = foodData.calories_kcal,
-                    nutrients = nutrientsData,
-                    source = "",
-                    unit = "serving",
-                    mealQuantity = foodData.mealQuantity
-                )
-                dishLists.add(snapRecipeData)
-            }
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+            dishLists.addAll(dishList!!)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
             val fragment = MealScanResultFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
@@ -1352,7 +1085,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("snapMealLog", "snapMealLog")
             args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -1368,37 +1101,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onDinnerRegularRecipeEditItem(foodData: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
             val fragment = DishLogEditFragment()
             val args = Bundle()
+            val mealNames = foodData.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?: foodData.recipe.food_name
             args.putString("ModuleName", moduleName)
             args.putString("mealId", foodData.meal_id)
-            args.putString("recipeId", foodData.receipe._id)
+            args.putString("recipeId", foodData.recipe.id)
             args.putString("mealType", "dinner")
-            args.putString("snapRecipeName", foodData.receipe.recipe_name)
-            val macrosData = Macros(
-                Calories =  foodData.receipe.calories, Carbs = foodData.receipe.carbs, Fats = foodData.receipe.fat,
-                Protein = foodData.receipe.protein)
-            val microsData = Micros(
-                Cholesterol = foodData.receipe.cholesterol, Vitamin_A = 0.0, Vitamin_C = 0.0, Vitamin_K = 0.0,
-                Vitamin_D = 0.0, Folate = 0.0, Iron = 0.0, Calcium = 0.0, Magnesium = 0.0, Potassium = foodData.receipe.potassium,
-                Fiber = foodData.receipe.fiber, Zinc = 0.0, Sodium = foodData.receipe.sodium, Sugar = foodData.receipe.sugar,
-                b12_mcg = 0.0, b1_mg = 0.0, b2_mg = 0.0, b5_mg = 0.0, b3_mg = 0.0, b6_mg = 0.0, vitamin_e_mg = 0.0,
-                omega_3_fatty_acids_g = 0.0, omega_6_fatty_acids_g = 0.0, copper_mg = 0.0, phosphorus_mg = 0.0,
-                saturated_fats_g = foodData.receipe.saturated_fat, selenium_mcg = 0.0,
-                trans_fats_g = foodData.receipe.trans_fat, polyunsaturated_g = 0.0, is_beverage = false, mass_g = 0.0,
-                monounsaturated_g = 0.0, percent_fruit = 0.0, percent_vegetable = 0.0, percent_legume_or_nuts = 0.0, source_urls = emptyList())
-            val nutrientsData =  Nutrients(
-                macros = macrosData, micros =  microsData)
-            val snapRecipeData = SearchResultItem(
-                id = foodData.receipe._id, name = foodData.receipe.recipe_name, category = "", photo_url = foodData.receipe.photo_url,
-                servings = foodData.receipe.servings, cooking_time_in_seconds = foodData.receipe.time_in_seconds,
-                calories = foodData.receipe.calories, nutrients = nutrientsData, source = foodData.receipe.author,
-                unit = "serving", mealQuantity = foodData.quantity.toDouble())
-            dishLists.add(snapRecipeData)
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putString("snapRecipeName", mealNames)
+            dishLists.add(foodData.recipe)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             replace(R.id.flFragment, fragment, "Steps")
             addToBackStack(null)
@@ -1412,74 +1127,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onDinnerSnapMealEditItem(snapMealDetail: SnapMeal, position: Int, isRefresh: Boolean) {
         if (snapMealDetail != null){
-            var snapDishLocalListModel : SnapDishLocalListModel? = null
+            var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
             val dishList = snapMealDetail.dish
-            val dishLists : ArrayList<SearchResultItem> = ArrayList()
-            dishList?.forEach { foodData ->
-                val macrosData = Macros(
-                    Calories = foodData.calories_kcal,
-                    Carbs = foodData.carb_g,
-                    Fats = foodData.fat_g,
-                    Protein = foodData.protein_g
-                )
-                val microsData = Micros(
-                    Cholesterol = foodData.cholesterol_mg,
-                    Vitamin_A = foodData.vitamin_a_mcg,
-                    Vitamin_C = foodData.vitamin_c_mg,
-                    Vitamin_K = foodData.vitamin_k_mcg,
-                    Vitamin_D = foodData.vitamin_d_iu,
-                    Folate = foodData.folate_mcg,
-                    Iron = foodData.iron_mg,
-                    Calcium =foodData.calcium_mg,
-                    Magnesium = foodData.magnesium_mg,
-                    Potassium = foodData.potassium_mg,
-                    Fiber = foodData.fiber_g,
-                    Zinc = foodData.zinc_mg,
-                    Sodium = foodData.sodium_mg,
-                    Sugar = foodData.sugar_g,
-                    b12_mcg = foodData.b12_mcg,
-                    b1_mg = foodData.b1_mg,
-                    b2_mg = foodData.b2_mg,
-                    b5_mg = 0.0,
-                    b3_mg = foodData.b3_mg,
-                    b6_mg = foodData.b6_mg,
-                    vitamin_e_mg = foodData.vitamin_e_mg,
-                    omega_3_fatty_acids_g = foodData.omega_3_fatty_acids_g,
-                    omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
-                    copper_mg = foodData.copper_mg,
-                    phosphorus_mg = foodData.phosphorus_mg,
-                    saturated_fats_g = foodData.saturated_fats_g,
-                    selenium_mcg = foodData.selenium_mcg,
-                    trans_fats_g = 0.0,
-                    polyunsaturated_g = foodData.polyunsaturated_g,
-                    is_beverage = false,
-                    mass_g = foodData.mass_g,
-                    monounsaturated_g = foodData.monounsaturated_g,
-                    percent_fruit = foodData.percent_fruit,
-                    percent_vegetable = foodData.percent_vegetable,
-                    percent_legume_or_nuts = foodData.percent_legume_or_nuts,
-                    source_urls = foodData.source_urls
-                )
-                val nutrientsData = Nutrients(
-                    macros = macrosData,
-                    micros = microsData
-                )
-                val snapRecipeData = SearchResultItem(
-                    id = foodData._id?: "",
-                    name = foodData.name,
-                    category = "",
-                    photo_url = "",
-                    servings = foodData.servings,
-                    cooking_time_in_seconds = 0,
-                    calories = foodData.calories_kcal,
-                    nutrients = nutrientsData,
-                    source = "",
-                    unit = "serving",
-                    mealQuantity = foodData.mealQuantity
-                )
-                dishLists.add(snapRecipeData)
-            }
-            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
+             dishLists.addAll(dishList!!)
+            recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
             val fragment = MealScanResultFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
@@ -1488,7 +1140,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("snapMealLog", "snapMealLog")
             args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
-            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -1503,7 +1155,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         deleteBottomSheetFragment.isCancelable = true
         val args = Bundle()
         args.putString("mealId", mealItem.meal_id)
-        args.putString("recipeId", mealItem.receipe._id)
+        args.putString("recipeId", mealItem.recipe.id)
         args.putString("deleteType", deleteType)
         deleteBottomSheetFragment.arguments = args
         parentFragment.let { deleteBottomSheetFragment.show(childFragmentManager, "DeleteLogDishBottomSheet") }
@@ -1553,32 +1205,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 //        }, 3000)
     }
 
-    fun showLoader(view: View) {
-        loadingOverlay = view.findViewById(R.id.loading_overlay)
-        loadingOverlay?.visibility = View.VISIBLE
-    }
-    fun dismissLoader(view: View) {
-        loadingOverlay = view.findViewById(R.id.loading_overlay)
-        loadingOverlay?.visibility = View.GONE
-    }
-
     private fun getMealsLogList(formattedDate: String) {
-        if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
-                showLoader(requireView())
-            }
+        if (isAdded && view != null) {
+            context?.let { showLoader(requireView()) }
         }
         lifecycleScope.launch(Dispatchers.IO) {
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-            val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
+            val call = ApiClient.apiServiceFastApiV2.getMealsLogByDate(userId, formattedDate)
             call.enqueue(object : Callback<MealLogDataResponse> {
                 override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
-                    if (response.isSuccessful) {
-                        if (isAdded  && view != null){
-                            requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
-                            }
-                        }
+                    if (!isAdded || view == null) return
+                    val ctx = context ?: return
+                    dismissLoader(requireView())
+                    if (response.isSuccessful && response.body()?.data != null) {
                         if (response.body()?.data != null){
                             selectedDate = response.body()?.data!!.date
                             val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
@@ -1713,13 +1352,21 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                             val fullDaySummary = response.body()?.data!!.full_day_summary
 
                             requireActivity()?.runOnUiThread {
-                                if (fullDaySummary.calories != null){
+                                if (fullDaySummary.calories_kcal != null){
                                     noMealLogsLayout.visibility = View.GONE
                                     dailyCalorieGraphLayout.visibility = View.VISIBLE
                                     setGraphValue(fullDaySummary)
                                     if (response.body()?.data!!.meal_detail.isNotEmpty()){
                                         logMealTv.text = "Log New Meal"
                                         setDayLogsList()
+                                    }else{
+                                        noMealLogsLayout.visibility = View.VISIBLE
+                                        dailyCalorieGraphLayout.visibility = View.GONE
+                                        breakfastListLayout.visibility = View.GONE
+                                        morningSnackListLayout.visibility = View.GONE
+                                        lunchListLayout.visibility = View.GONE
+                                        eveningSnacksListLayout.visibility = View.GONE
+                                        dinnerListLayout.visibility = View.GONE
                                     }
                                 }else{
                                     noMealLogsLayout.visibility = View.VISIBLE
@@ -1734,32 +1381,27 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                         }
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                        activity?.runOnUiThread {
-                            Toast.makeText(activity, "No meal logs found for this user", Toast.LENGTH_SHORT).show()
-                            dailyCalorieGraphLayout.visibility = View.GONE
-                            breakfastListLayout.visibility = View.GONE
-                            morningSnackListLayout.visibility = View.GONE
-                            lunchListLayout.visibility = View.GONE
-                            eveningSnacksListLayout.visibility = View.GONE
-                            dinnerListLayout.visibility = View.GONE
-                            noMealLogsLayout.visibility = View.VISIBLE
-                            logMealTv.text = "Log Your Meal"
+                          //  val ctx = context ?: return
+                            Toast.makeText(ctx, "No meal logs found for this user", Toast.LENGTH_SHORT).show()
                             if (isAdded  && view != null){
-                                requireActivity().runOnUiThread {
-                                    dismissLoader(requireView())
-                                }
+                                dismissLoader(requireView())
+                                dailyCalorieGraphLayout.visibility = View.GONE
+                                breakfastListLayout.visibility = View.GONE
+                                morningSnackListLayout.visibility = View.GONE
+                                lunchListLayout.visibility = View.GONE
+                                eveningSnacksListLayout.visibility = View.GONE
+                                dinnerListLayout.visibility = View.GONE
+                                noMealLogsLayout.visibility = View.VISIBLE
+                                logMealTv.text = "Log Your Meal"
                             }
-                        }
                     }
                 }
                 override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
-                    Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
+                    if (!isAdded || view == null) return
+                    val ctx = context ?: return
+                    Toast.makeText(ctx, "Failure", Toast.LENGTH_SHORT).show()
+                    dismissLoader(requireView())
                 }
             })
         }
@@ -1772,7 +1414,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val call = ApiClient.apiServiceFastApi.getMealsLogHistory(userId, formattedDate)
+        val call = ApiClient.apiServiceFastApiV2.getMealsLogHistory(userId, formattedDate)
         call.enqueue(object : Callback<MealLogsHistoryResponse> {
             override fun onResponse(call: Call<MealLogsHistoryResponse>, response: Response<MealLogsHistoryResponse>) {
                 if (response.isSuccessful) {
@@ -1833,10 +1475,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
-        selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
-        selectedMealDate = formattedDate
-        getMealsLogHistory(formattedDate)
+//        selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
+        //selectedMealDate = formattedDate
+        getMealsLogHistory(selectedDate)
         getMealsLogList(selectedDate)
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 
     override fun onMealTypeSelected(mealType: String) {

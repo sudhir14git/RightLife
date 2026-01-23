@@ -25,7 +25,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:text="Delete Account"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textSize="18sp"
             android:textColor="@color/txt_color_mind"
             android:layout_weight="1"
@@ -39,12 +39,58 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/headerLayout"
         android:layout_margin="16dp"
-        android:text="We're sorry to see you go! Before proceeding with account deletion, please let us know why you’re leaving. Your feedback helps us improve our services."
-        android:textSize="14sp"
+        android:text="Can you please share what didn’t work for you? We are fixing bugs as soon as we spot them. If something slipped through our fingers, we’d be grateful to be aware of it and fix it."
+        android:textSize="16sp"
         android:fontFamily="@font/dmsans_regular"
         android:textColor="@color/txt_color_mind" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/messageCard"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginHorizontal="@dimen/margin_card_16dp"
+        app:cardCornerRadius="12dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="2dp"
+        android:layout_below="@id/descriptionText">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="0dp">
+
+            <EditText
+                android:id="@+id/etMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="300dp"
+                android:background="@color/white"
+                android:gravity="top|start"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/txt_color_mind"
+                android:hint="Here’s what could have made my experience better..."
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLength="1000"
+                android:overScrollMode="always"
+                android:scrollbars="vertical"
+                android:paddingBottom="32dp" />  <!-- space so text doesn’t sit under the counter -->
+
+            <TextView
+                android:id="@+id/tvCharCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="8dp"
+                android:text="0/1000 Ch"
+                android:textSize="12sp"
+                android:textColor="@color/txt_color_mind" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!--<androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
@@ -62,9 +108,10 @@
         android:textSize="14sp"
         android:fontFamily="@font/dmsans_regular"
         android:textColor="@color/txt_color_mind"
-        android:hint="Please add your concern"/>
+        android:hint="Here’s what could have made my experience better…
+ "/>
 
-    </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>-->
 
     <!-- Bottom Buttons -->
     <LinearLayout

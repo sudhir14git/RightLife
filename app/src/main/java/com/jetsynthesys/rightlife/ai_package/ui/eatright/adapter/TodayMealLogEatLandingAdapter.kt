@@ -28,13 +28,19 @@ class TodayMealLogEatLandingAdapter(private val context: Context, private var da
         val item = dataLists[position]
 
         holder.mealTitle.text = "Dinner"
-        holder.mealName.text = item.receipe.recipe_name
-        holder.servesCount.text = item.receipe.servings.toString()
-        holder.calValue.text = item.receipe.calories.toInt().toString()
-        holder.subtractionValue.text = item.receipe.protein.toInt().toString()
-        holder.baguetteValue.text = item.receipe.carbs.toInt().toString()
-        holder.dewpointValue.text = item.receipe.fat.toInt().toString()
-        val imageUrl = getDriveImageUrl(item.receipe.photo_url)
+        val mealNames =  item.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?:  item.recipe.food_name
+        holder.mealName.text = mealNames
+        holder.servesCount.text = item.recipe.servings.toString()
+        holder.calValue.text = item.recipe.calories_kcal?.toInt().toString()
+        holder.subtractionValue.text = item.recipe.protein_g?.toInt().toString()
+        holder.baguetteValue.text = item.recipe.carbs_g?.toInt().toString()
+        holder.dewpointValue.text = item.recipe.fat_g?.toInt().toString()
+        var imageUrl : String? = ""
+        imageUrl = if (item.recipe.photo_url.contains("drive.google.com")) {
+            getDriveImageUrl(item.recipe.photo_url)
+        }else{
+            item.recipe.photo_url
+        }
         Glide.with(context)
             .load(imageUrl)
             .placeholder(R.drawable.ic_breakfast)

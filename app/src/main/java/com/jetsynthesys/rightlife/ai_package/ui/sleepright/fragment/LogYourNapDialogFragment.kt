@@ -11,9 +11,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -22,6 +24,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.LogNapRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -54,6 +58,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
     var startMinute = 0
     var endHour = 6
     var endMinute = 30
+    private var currentToast: Toast? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -148,6 +153,14 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.SR_LogYourSleep_Yesterday_Save
+                )
+            }
             val duration = tvDuration.text.toString()
             var hasNegative = false
             var totalDuration = 0
@@ -163,9 +176,11 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
             }
 
             if (hasNegative) {
-                Toast.makeText(context, "Sleep duration cannot be negative", Toast.LENGTH_SHORT).show()
+                showCustomToastNew(requireContext,"Sleep Time Must Be After Wake Time!")
+                //Toast.makeText(context, "Sleep duration cannot be negative", Toast.LENGTH_SHORT).show()
             } else if (totalDuration == 0) {
-                Toast.makeText(context, "Sleep duration cannot be 0", Toast.LENGTH_SHORT).show()
+                showCustomToastNew(requireContext,"Sleep Time Must Be After Wake Time!")
+                //Toast.makeText(context, "Sleep duration cannot be 0", Toast.LENGTH_SHORT).show()
             } else {
                 val sleepTime = tvStartTime.text.toString()
                 val inputFmt  = DateTimeFormatter.ofPattern("hh:mm a")
@@ -192,7 +207,6 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                 val endSleepTime  = istOdt1.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
                 logNap(startSleepTime,endSleepTime)
             }
-
         }
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
             if (bottomSeatName.contentEquals("LogLastNightSleep")){
@@ -369,21 +383,78 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         call.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(mContext, "Log Saved Successfully!", Toast.LENGTH_SHORT).show()
+                    context?.let {
+                        showCustomToast(it, "Sleep Logged Successfully")
+                    }
+                    //Toast.makeText(mContext, "Log Saved Successfully!", Toast.LENGTH_SHORT).show()
                     listener.onLogTimeSelected("OK")
                     dismiss()
 
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(mContext, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    context?.let {
+                        Toast.makeText(it, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(mContext, "Failure", Toast.LENGTH_SHORT).show()
+                context?.let {
+                    Toast.makeText(it, "Failure", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
+
+    private fun showCustomToast(context: Context, message: String?) {
+        // Cancel any old toast
+        currentToast?.cancel()
+        val inflater = LayoutInflater.from(context)
+        val toastLayout = inflater.inflate(R.layout.custom_toast_ai_eat, null)
+        val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+        // ✅ Wrap layout inside FrameLayout to apply margins
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val marginInPx = (20 * context.resources.displayMetrics.density).toInt()
+        params.setMargins(marginInPx, 0, marginInPx, 0)
+        toastLayout.layoutParams = params
+        container.addView(toastLayout)
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = container
+        toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 100)
+        currentToast = toast
+        toast.show()
+    }
+    private fun showCustomToastNew(context: Context, message: String?) {
+        // Cancel any old toast
+        currentToast?.cancel()
+        val inflater = LayoutInflater.from(context)
+        val toastLayout = inflater.inflate(R.layout.custom_toast_ai_sleep, null)
+        val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+        // ✅ Wrap layout inside FrameLayout to apply margins
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val marginInPx = (20 * context.resources.displayMetrics.density).toInt()
+        params.setMargins(marginInPx, 0, marginInPx, 0)
+        toastLayout.layoutParams = params
+        container.addView(toastLayout)
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = container
+        toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 100)
+        currentToast = toast
+        toast.show()
+    }
+
 
     fun getTodayDate(): LocalDate {
         return LocalDate.now()
@@ -420,7 +491,9 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                 tvDate.text = SleepRightLandingFragment.dialogSleepDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
             }
         }else{
-            Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+            context?.let {
+                Toast.makeText(it,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -434,7 +507,9 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         if (duration <= Duration.ofHours(15)) {
             tvDuration.text = "$hours hr $minutes mins"
         }else{
-            Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+            context?.let {
+                Toast.makeText(it,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

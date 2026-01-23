@@ -29,7 +29,8 @@
             android:layout_margin="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_edittext_gray">
+            android:background="@drawable/rounded_corder_border_gray_radius_small"
+            android:backgroundTint="#F2F2F2">
 
             <EditText
                 android:id="@+id/inputTimes"
@@ -40,6 +41,7 @@
                 android:background="@android:color/transparent"
                 android:gravity="center"
                 android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
                 android:padding="8dp"
                 android:maxLength="2"
                 android:focusable="true"

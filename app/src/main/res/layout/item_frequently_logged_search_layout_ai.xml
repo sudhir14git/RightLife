@@ -207,18 +207,25 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:gravity="left"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view">
 
+            <!-- Time Section -->
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:id="@+id/layout_time"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:gravity="center">
+                app:layout_constraintEnd_toStartOf="@+id/layout_calories"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintHorizontal_bias="0"
+                android:layout_marginEnd="15dp">
 
                 <ImageView
                     android:id="@+id/image_serve"
@@ -241,6 +248,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
+                    android:visibility="gone"
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
@@ -251,6 +259,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:textSize="17sp"
+                    android:visibility="gone"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
                     android:text="30" />
@@ -261,22 +270,24 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:textSize="10sp"
+                    android:visibility="gone"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
                     android:text="min" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <!-- Calories Section -->
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:id="@+id/layout_calories"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toEndOf="@+id/layout_time"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                app:layout_constraintEnd_toStartOf="@+id/layout_intensity"
+                android:layout_marginEnd="15dp">
 
                 <ImageView
                     android:id="@+id/image_cal"
@@ -301,62 +312,24 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:textSize="10sp"
+                    android:visibility="gone"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
                     android:text="cal" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <!-- Intensity Section -->
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/layout_btn_log"
-                android:layout_width="wrap_content"
+                android:id="@+id/layout_intensity"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:visibility="gone"
-                android:gravity="center"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/add_cart_button_background">
-
-                <ImageView
-                    android:id="@+id/icon_plus"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:visibility="visible"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/icon_feather_plus"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_log_meal_one"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="3dp"
-                    android:layout_gravity="center"
-                    android:textSize="10sp"
-                    android:textColor="@color/white"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="Add to log" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center_vertical"
                 android:visibility="visible"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                app:layout_constraintStart_toEndOf="@+id/layout_calories"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/image_subtraction"
@@ -388,16 +361,52 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <!-- Log Button Layout -->
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layout_btn_log"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                android:gravity="center"
+                android:background="@drawable/add_cart_button_background">
+
+                <ImageView
+                    android:id="@+id/icon_plus"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_feather_plus" />
+
+                <TextView
+                    android:id="@+id/tv_log_meal_one"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_marginStart="3dp"
+                    android:layout_gravity="center"
+                    android:textSize="10sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="Add to log" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <!-- Baguette Section (GONE by default) -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layout_baguette"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_time"
                 android:gravity="center"
                 android:visibility="gone"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_marginTop="10dp">
 
                 <ImageView
                     android:id="@+id/image_baguette"
@@ -428,15 +437,18 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <!-- Dewpoint Section (GONE by default) -->
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layout_dewpoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/layout_baguette"
+                app:layout_constraintTop_toBottomOf="@+id/layout_calories"
                 android:gravity="center"
                 android:visibility="gone"
-                android:layout_marginStart="10dp">
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp">
 
                 <ImageView
                     android:id="@+id/image_dewpoint"
@@ -466,9 +478,7 @@
                     android:text="g" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,20 +1,16 @@
 package com.jetsynthesys.rightlife.newdashboard
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ItemHealthCardBinding
-import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
-import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
-import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
-class HealthCardAdapter(private val cardList: List<DiscoverDataItem>?) :
+class HealthCardAdapter(
+    private val cardList: List<DiscoverDataItem>?,
+    val onItemClick: (DiscoverDataItem?) -> Unit
+) :
     RecyclerView.Adapter<HealthCardAdapter.HealthCardViewHolder>() {
 
     inner class HealthCardViewHolder(val binding: ItemHealthCardBinding) :
@@ -48,17 +44,7 @@ class HealthCardAdapter(private val cardList: List<DiscoverDataItem>?) :
                 .into(imageGraph)*/
 
             btnDiscover.setOnClickListener {
-                val context = holder.itemView.context
-                val intent = if (DashboardChecklistManager.facialScanStatus) {
-                    Intent(context, NewHealthCamReportActivity::class.java)
-                } else {
-                    Intent(context, HealthCamActivity::class.java)
-                }
-                AnalyticsLogger.logEvent(
-                    context, AnalyticsEvent.DISCOVER_CLICK,
-                    mapOf(AnalyticsParam.DISCOVER_TYPE to item?.parameter!!)
-                )
-                context.startActivity(intent)
+                onItemClick(item)
             }
         }
     }

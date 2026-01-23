@@ -47,7 +47,7 @@ class GeneralInformationActivity : BaseActivity() {
         val settingsItems = listOf(
             SettingItem("About Us"),
             SettingItem("Terms & Conditions"),
-            SettingItem("Policies")
+            SettingItem("Privacy Policy")
         )
 
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
@@ -63,20 +63,26 @@ class GeneralInformationActivity : BaseActivity() {
     private fun startNextActivity(title: String) {
         val intent = Intent(this, HtmlTextActivity::class.java)
         when (title) {
-            "About Us" ->
+            "About Us" -> {
                 intent.putExtra("GeneralInformation", generalInformationResponse?.data?.aboutus)
+                intent.putExtra("title","About Us")
+            }
 
-            "Terms & Conditions" ->
+            "Terms & Conditions" -> {
                 intent.putExtra(
                     "GeneralInformation",
                     generalInformationResponse?.data?.termsConditions
                 )
+                intent.putExtra("title","Terms & Conditions")
+            }
 
-            "Policies" ->
+            "Privacy Policy" -> {
                 intent.putExtra(
                     "GeneralInformation",
                     generalInformationResponse?.data?.privacyPolicy
                 )
+                intent.putExtra("title","Privacy Policy")
+            }
         }
         startActivity(intent)
     }

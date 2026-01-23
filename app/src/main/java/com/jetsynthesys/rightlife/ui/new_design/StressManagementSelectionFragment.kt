@@ -1,6 +1,8 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -12,24 +14,24 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
-import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.StressManagement
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
-import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class StressManagementSelectionFragment : Fragment() {
+    private var submitJob: Job? = null
+
     private lateinit var llSelectedStressManagement: LinearLayout
     private lateinit var rlStressManagement: RelativeLayout
     private lateinit var tvSelectedStressManagementHeader: TextView
@@ -40,7 +42,6 @@ class StressManagementSelectionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: StressManagementAdapter
     private val stressManagementList = ArrayList<StressManagement>()
-    private lateinit var header: String
 
     companion object {
         fun newInstance(pageIndex: Int, header: String): StressManagementSelectionFragment {
@@ -85,11 +86,6 @@ class StressManagementSelectionFragment : Fragment() {
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
 
-        header = arguments?.getString("HEADER").toString()
-
-        if (header.isNullOrEmpty()) {
-            header = SharedPreferenceManager.getInstance(requireContext()).selectedWellnessFocus
-        }
 
         recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
 
@@ -102,10 +98,7 @@ class StressManagementSelectionFragment : Fragment() {
                 btnContinue.backgroundTintList = colorStateList
             }
 
-        if (header.isNullOrEmpty())
-            getModuleList()
-        else
-            setList()
+        setList()
 
         recyclerView.adapter = adapter
 
@@ -140,53 +133,45 @@ class StressManagementSelectionFragment : Fragment() {
                 )
             )
 
-            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+         /*   Handler(Looper.getMainLooper()).postDelayed({
+                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            }, 500)*/
+            // cancel any pending submit
+            submitJob?.cancel()
+
+            // launch lifecycle-aware delayed submit
+            submitJob = viewLifecycleOwner.lifecycleScope.launch {
+                delay(500)
+                // only submit if we’re still at least STARTED (i.e., not backing away)
+                if (!isAdded || !lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return@launch
+                (activity as? OnboardingQuestionnaireActivity)?.submitAnswer(onboardingQuestionRequest)
+            }
         }
 
         return view
     }
 
+/*    override fun onPause() {
+        super.onPause()
+        llSelectedStressManagement.visibility = GONE
+        rlStressManagement.visibility = VISIBLE
+    }*/
+
     override fun onPause() {
         super.onPause()
+        // ensure pending submit won't fire after back
+        submitJob?.cancel()
         llSelectedStressManagement.visibility = GONE
         rlStressManagement.visibility = VISIBLE
     }
 
-    private fun getModuleList() {
-        val authToken = SharedPreferenceManager.getInstance(requireContext()).accessToken
-        val apiService = ApiClient.getClient(requireContext()).create(ApiService::class.java)
-
-        val call = apiService.getOnboardingModule(authToken)
-
-        call.enqueue(object : Callback<OnBoardingModuleResponse> {
-            override fun onResponse(
-                call: Call<OnBoardingModuleResponse>,
-                response: Response<OnBoardingModuleResponse>
-            ) {
-                if (response.isSuccessful && response.body() != null) {
-                    val apiResponse = response.body()
-                    // Access the 'data' and 'services' fields
-                    val data = apiResponse?.data
-                    data?.services?.forEach { item ->
-                        if (item.isSelected) {
-                            header = item.moduleName.toString()
-                            setList()
-                            return
-                        }
-                    }
-
-                }
-            }
-
-            override fun onFailure(call: Call<OnBoardingModuleResponse>, t: Throwable) {
-
-            }
-
-        })
+    override fun onDestroyView() {
+        super.onDestroyView()
+        submitJob?.cancel()
     }
 
     private fun setList() {
-        when (header) {
+        /*when (header) {
             AppConstants.EAT_RIGHT, "EAT_RIGHT" -> {
                 tvStressManagementHeader.text = "How would you describe your current eating?"
                 stressManagementList.add(
@@ -332,7 +317,43 @@ class StressManagementSelectionFragment : Fragment() {
             else -> {
 
             }
-        }
+        }*/
+
+
+        tvStressManagementHeader.text = "How confident are you in improving your health habits?"
+
+        stressManagementList.add(
+            StressManagement(
+                "Beginner",
+                "I’m unsure how to start and often feel stuck.",
+                R.drawable.beginer
+            )
+        )
+
+        stressManagementList.add(
+            StressManagement(
+                "Intermediate",
+                "I believe I can improve but need more guidance.",
+                R.drawable.intermediate
+            )
+        )
+
+        stressManagementList.add(
+            StressManagement(
+                "Advanced",
+                "I feel confident about making progress with the right tools.",
+                R.drawable.advance
+            )
+        )
+
+        stressManagementList.add(
+            StressManagement(
+                "Expert",
+                "I’m very confident and motivated to keep improving my health habits.",
+                R.drawable.expert
+            )
+        )
+
         adapter.notifyDataSetChanged()
     }
 }

@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.healthcam.basicdetails
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,16 +14,17 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -37,15 +39,19 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Option
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamSubmitResponse
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
 import com.jetsynthesys.rightlife.ui.sdkpackage.HealthCamRecorderActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -82,7 +88,17 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        binding.infoIcon.setOnClickListener {
+            it.disableViewForSeconds()
+            DialogUtils.showCommonBottomSheetDialog(
+                this,
+                header = "Gender At Birth",
+                description = "We support all forms of gender expression. However, we need this information to calculate the most actionable body metrics for you."
+            )
+        }
+
         binding.edtAge.setOnClickListener {
+            it.disableViewForSeconds()
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
@@ -92,6 +108,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtHeight.setOnClickListener {
+            it.disableViewForSeconds()
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
@@ -101,6 +118,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtWeight.setOnClickListener {
+            it.disableViewForSeconds()
             hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
@@ -110,18 +128,21 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtGender.setOnClickListener {
+            it.disableViewForSeconds()
             showOptionPopup(binding.edtGender, genderOptions, "Select Gender") { option: Option ->
                 binding.edtGender.setText(option.optionText)
             }
         }
 
         binding.edtBloodPressure.setOnClickListener {
+            it.disableViewForSeconds()
             showOptionPopup(binding.edtBloodPressure, bpMedicationOptions) { option: Option ->
                 binding.edtBloodPressure.setText(option.optionText)
             }
         }
 
         binding.edtSmoke.setOnClickListener {
+            it.disableViewForSeconds()
             showOptionPopup(binding.edtSmoke, smokeOptions) { option: Option ->
                 binding.edtSmoke.setText(option.optionText)
             }
@@ -134,6 +155,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.btnProceed.setOnClickListener {
+            it.disableViewForSeconds()
             val name = binding.edtName.text.toString()
             val height = binding.edtHeight.text.toString()
             val weight = binding.edtWeight.text.toString()
@@ -143,22 +165,12 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             val bpMedication = binding.edtBloodPressure.text.toString()
             val diabetic = binding.edtDiabetic.text.toString()
 
-            if (name.isEmpty())
-                showCustomToast("Name is Required")
-            else if (height.isEmpty())
-                showCustomToast("Please select Height")
-            else if (weight.isEmpty())
-                showCustomToast("Please select Weight")
-            else if (age.isEmpty())
-                showCustomToast("Please select Age")
-            else if (gender.isEmpty())
-                showCustomToast("Please select Gender")
-            else if (smoke.isEmpty())
-                showCustomToast("Please select Smoking Habit")
-            else if (bpMedication.isEmpty())
-                showCustomToast("Please select Blood Pressure Medication")
-            else if (diabetic.isEmpty())
-                showCustomToast("Please select Diabetic Level")
+            if (name.isEmpty() || height.isEmpty() || weight.isEmpty() || age.isEmpty()
+                || gender.isEmpty() || smoke.isEmpty() || bpMedication.isEmpty() || diabetic.isEmpty()
+            )
+                showCustomToast("Please fill all required fields before proceeding.")
+            else if (age.split(" ")[0].toInt() !in 13..80)
+                showCustomToast("Face Scan is available only for users aged 13–80.")
             else {
                 val answerFaceScans = ArrayList<AnswerFaceScan>()
 
@@ -234,14 +246,14 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     CommonAPICall.convertFeetInchToCmWithIndex(height).cmIndex.toString()
 
 
-          /*      val weightInKg =
-                    if (weightWithUnit[1].equals(
-                            "kgs",
-                            ignoreCase = true
-                        )
-                    ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
-                        weightWithUnit[0]
-                    )*/
+                /*      val weightInKg =
+                          if (weightWithUnit[1].equals(
+                                  "kgs",
+                                  ignoreCase = true
+                              )
+                          ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
+                              weightWithUnit[0]
+                          )*/
 
                 val unit = listOfNotNull(
                     weightWithUnit.getOrNull(1),
@@ -268,6 +280,13 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     weightInKg,
                     age.split(" ")[0]
                 )
+                AnalyticsLogger.logEvent(
+                        this,
+                        AnalyticsEvent.FaceScan_ProceedtoScan_Tap,
+                        mapOf(
+                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        )
+                )
             }
         }
     }
@@ -275,6 +294,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun showAgeSelectionBottomSheet() {
+        var selectedAge =  "27 years"
+        binding.edtAge.setText(selectedAge)
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
 
@@ -362,47 +383,9 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             "78 years",
             "79 years",
             "80 years",
-            "81 years",
-            "82 years",
-            "83 years",
-            "84 years",
-            "85 years",
-            "86 years",
-            "87 years",
-            "88 years",
-            "89 years",
-            "90 years",
-            "91 years",
-            "92 years",
-            "93 years",
-            "94 years",
-            "95 years",
-            "96 years",
-            "97 years",
-            "98 years",
-            "99 years",
-            "100 years",
-            "101 years",
-            "102 years",
-            "103 years",
-            "104 years",
-            "105 years",
-            "106 years",
-            "107 years",
-            "108 years",
-            "109 years",
-            "110 years",
-            "111 years",
-            "112 years",
-            "113 years",
-            "114 years",
-            "115 years",
-            "116 years",
-            "117 years",
-            "118 years",
-            "119 years",
-            "120 years"
-        )
+            )
+
+
         val selectedAgeArray = binding.edtAge.text.toString().split(" ")
         val selectedAgeFromUi =
             if (selectedAgeArray.isNotEmpty() && selectedAgeArray[0].toInt() >= 13) {
@@ -421,7 +404,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             wheelItemCount = 7
         }
 
-        var selectedAge = if (selectedAgeFromUi.isNotEmpty())
+         selectedAge = if (selectedAgeFromUi.isNotEmpty())
             years[years.indexOf(selectedAgeFromUi)]
         else years[14]
 
@@ -443,12 +426,14 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     startY = event.y
                     isScrolling = false
                 }
+
                 MotionEvent.ACTION_MOVE -> {
                     // If finger moved enough vertically, mark as scrolling
                     if (Math.abs(event.y - startY) > picker.height / 20) {
                         isScrolling = true
                     }
                 }
+
                 MotionEvent.ACTION_UP -> {
                     if (!isScrolling) {
                         val height = picker.height
@@ -470,10 +455,23 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
 
         dialogBinding.btnConfirm.setOnClickListener {
+            it.disableViewForSeconds()
             bottomSheetDialog.dismiss()
             binding.edtAge.setText(selectedAge)
         }
 
+        // 👇 ADD THIS BLOCK TO FORCE EXPANDED STATE
+        bottomSheetDialog.setOnShowListener { dialog ->
+            val d = dialog as BottomSheetDialog
+            // Get the bottom sheet internal view
+            val bottomSheet = d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as? FrameLayout
+
+            if (bottomSheet != null) {
+                val behavior = BottomSheetBehavior.from(bottomSheet)
+                // Force the sheet to expand to its full WRAP_CONTENT height
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
         bottomSheetDialog.show()
     }
 
@@ -522,7 +520,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
         dialogBinding.rulerView.adapter = adapterWeight
 
-        if (selectedLabel == " kg"){
+        if (selectedLabel == " kg" || selectedLabel == " kgs" || selectedLabel == " KGS") {
             dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.kgOption.setTextColor(Color.WHITE)
 
@@ -531,7 +529,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             setKgsValue()
 
             dialogBinding.selectedNumberText.text = selectedWeight
-        }else{
+        } else {
             dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
             dialogBinding.lbsOption.setTextColor(Color.WHITE)
 
@@ -543,6 +541,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.kgOption.setOnClickListener {
+            it.disableViewForSeconds()
             dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.kgOption.setTextColor(Color.WHITE)
 
@@ -561,6 +560,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.lbsOption.setOnClickListener {
+            it.disableViewForSeconds()
             dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
             dialogBinding.lbsOption.setTextColor(Color.WHITE)
 
@@ -622,6 +622,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.btnConfirm.setOnClickListener {
+            it.disableViewForSeconds()
             bottomSheetDialog.dismiss()
             dialogBinding.rulerView.adapter = null
             binding.edtWeight.setText(selectedWeight)
@@ -631,7 +632,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
     private fun showHeightSelectionBottomSheet(gender: String) {
-        var selectedHeight = "5 Ft 10 In"
+        var selectedHeight = "5 ft 10 in"
         var selectedLabel = " feet"
         // Create and configure BottomSheetDialog
         val decimalFormat = DecimalFormat("###.##")
@@ -660,29 +661,50 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
         dialogBinding.rulerView.adapter = adapterHeight
 
+        // ⬇️ ADD THIS SECTION — just before you read from edtHeight
+        binding.edtHeight.clearFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.edtHeight.windowToken, 0)
         selectedHeight = binding.edtHeight.text.toString()
         if (selectedHeight.isEmpty()) {
-            selectedHeight = "5 Ft 10 In"
+            selectedHeight = "5 ft 10 in"
         } else {
+            dialogBinding.selectedNumberText.text = selectedHeight
             val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1].equals("cms", ignoreCase = true))
-                " cms"
+            selectedLabel = if (h[1].equals("cm", ignoreCase = true) || h[1].equals("cms", ignoreCase = true) ||h[1].equals(" CM", ignoreCase = true))
+                " cm"
             else
                 " feet"
-            if (selectedLabel == " feet"){
+            if (selectedLabel == " feet") {
                 dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
                 dialogBinding.feetOption.setTextColor(Color.WHITE)
 
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
                 dialogBinding.cmsOption.setTextColor(Color.BLACK)
                 setFtIn()
-            }else{
+            } else {
+                setCms()
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
                 dialogBinding.cmsOption.setTextColor(Color.WHITE)
 
                 dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
                 dialogBinding.feetOption.setTextColor(Color.BLACK)
                 setCms()
+                selectedLabel = " cm"
+
+                selectedHeight = if (gender == "Male" || gender == "M")
+                    "173 cm"
+                else
+                    "163 cm"
+                setCms()
+
+                dialogBinding.rulerView.post {
+                    if (gender == "Male" || gender == "M") {
+                        dialogBinding.rulerView.scrollToPosition(173 + 8)
+                    } else {
+                        dialogBinding.rulerView.scrollToPosition(163 + 8)
+                    }
+                }
             }
         }
 
@@ -690,6 +712,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
 
         dialogBinding.feetOption.setOnClickListener {
+            it.disableViewForSeconds()
             dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.feetOption.setTextColor(Color.WHITE)
 
@@ -699,9 +722,9 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             selectedLabel = " feet"
 
             selectedHeight = if (gender == "Male" || gender == "M")
-                "5 Ft 8 In"
+                "5 ft 8 in"
             else
-                "5 Ft 4 In"
+                "5 ft 4 in"
             setFtIn()
 
             dialogBinding.rulerView.post {
@@ -715,18 +738,19 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.cmsOption.setOnClickListener {
+            it.disableViewForSeconds()
             dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
             dialogBinding.cmsOption.setTextColor(Color.WHITE)
 
             dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
             dialogBinding.feetOption.setTextColor(Color.BLACK)
 
-            selectedLabel = " cms"
+            selectedLabel = " cm"
 
             selectedHeight = if (gender == "Male" || gender == "M")
-                "173 cms"
+                "173 cm"
             else
-                "163 cms"
+                "163 cm"
             setCms()
 
             dialogBinding.rulerView.post {
@@ -739,7 +763,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             dialogBinding.selectedNumberText.text = selectedHeight
         }
 
-        if (selectedLabel == " cms") {
+        if (selectedLabel == " cm") {
             setCms()
         } else {
             setFtIn()
@@ -769,7 +793,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                                 val h = (feet).toString().split(".")
                                 val ft = h[0]
                                 dialogBinding.selectedNumberText.text =
-                                    "$ft Ft $remainingInches In"
+                                    "$ft ft $remainingInches in"
                             }
                             selectedHeight = dialogBinding.selectedNumberText.text.toString()
                         }
@@ -798,8 +822,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 selectedHeight = "5 Ft 10 In"
             } else {
                 val h = selectedHeight.split(" ")
-                selectedLabel = if (h[1].equals("cms", ignoreCase = true))
-                    " cms"
+                selectedLabel = if (h[1].equals("cm", ignoreCase = true) || h[1].equals("cms", ignoreCase = true) ||h[1].equals(" CM", ignoreCase = true))
+                    " cm"
                 else
                     " feet"
             }
@@ -820,6 +844,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         dialogBinding.btnConfirm.setOnClickListener {
+            it.disableViewForSeconds()
             if (validateInput(selectedLabel, selectedHeight)) {
                 bottomSheetDialog.dismiss()
                 dialogBinding.rulerView.adapter = null
@@ -848,7 +873,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 returnValue = true
             } else {
                 returnValue = false
-                showToast("Height should be in between 120 cms to 220 cms")
+                showToast("Height should be in between 120 cm to 220 cm")
             }
 
         }
@@ -958,7 +983,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
     private fun setData() {
-        val userdata = sharedPreferenceManager.userProfile.userdata
+        val userdata = sharedPreferenceManager.userProfile.userdata ?: return
         for (question in responseObj!!.questionData.questionList) {
             when (question.question) {
                 "first_name" -> {
@@ -969,20 +994,22 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     if (userdata.height != null)
                         if (userdata.heightUnit == "FT_AND_INCHES") {
                             val height = userdata.height.toString().split(".")
-                            binding.edtHeight.setText("${height[0]} Ft ${height[1]} In")
+                            binding.edtHeight.setText("${height[0]} ft ${height[1]} in")
                         } else {
-                            binding.edtHeight.setText("${userdata.height} cms")
+                            binding.edtHeight.setText("${userdata.height} cm")
                         }
                 }
 
                 "weight" -> {
                     if (userdata.weight != null) {
-                        binding.edtWeight.setText("${userdata.weight} ${userdata.weightUnit}")
+                        binding.edtWeight.setText("${userdata.weight} ${userdata.weightUnit.lowercase(
+                            Locale.getDefault()
+                        )}")
                     }
                 }
 
 
-                "age" -> {
+             /*   "age" -> {
                     binding.edtAge.setText(userdata.age.toString() + " years")
                 }
 
@@ -994,6 +1021,24 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                         )
                     ) binding.edtGender.setText("Male")
                     else binding.edtGender.setText("Female")
+                }*/
+                "age" -> {
+                    // Check if age is NOT null and NOT zero before setting
+                    if (userdata.age != null && userdata.age != 0) {
+                        binding.edtAge.setText(userdata.age.toString() + " years")
+                    } else {
+                        binding.edtAge.setText("") // Set empty if null or zero
+                    }
+                }
+
+                "gender" -> {
+                    genderOptions.addAll(question.options)
+                    val genderText = when (userdata.gender?.uppercase(Locale.getDefault())) {
+                        "M", "MALE" -> "Male"
+                        "F", "FEMALE" -> "Female"
+                        else -> "" // Set to empty string if the value is null or neither Male nor Female
+                    }
+                    binding.edtGender.setText(genderText)
                 }
 
                 "smoking" -> {

@@ -25,6 +25,10 @@ public class Userdata {
     @SerializedName("newEmailStatus")
     @Expose
     private String newEmailStatus;
+     @SerializedName("newPhoneStatus")
+    @Expose
+    private String newPhoneStatus;
+
     @SerializedName("notificationConfiguration")
     @Expose
     private NotificationConfiguration notificationConfiguration;
@@ -77,6 +81,26 @@ public class Userdata {
     @SerializedName("age")
     @Expose
     private int age;
+
+    @SerializedName("body_fat")
+    @Expose
+    private String bodyFat;
+
+    public String getBodyFat() {
+        return bodyFat;
+    }
+
+    public void setBodyFat(String bodyFat) {
+        this.bodyFat = bodyFat;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    public void setHeight(Double height) {
+        this.height = height;
+    }
 
     public String getId() {
         return id;
@@ -261,5 +285,13 @@ public class Userdata {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public String getNewPhoneStatus() {
+        return newPhoneStatus;
+    }
+
+    public void setNewPhoneStatus(String newPhoneStatus) {
+        this.newPhoneStatus = newPhoneStatus;
     }
 }

@@ -8,6 +8,12 @@ public class Recommendation {
     @SerializedName("_id")
     public String id;
     public String contentType;
+
+    public String url;              // NEW: "url": "media/PRODUCT/..."
+    public String previewUrl;       // NEW: "previewUrl": ""
+    public String youtubeUrl;       // NEW: "youtubeUrl": ""
+    public String readingTime;      // NEW: "readingTime": "5"
+
     public String moduleId;
     public String categoryId;
     public String title;

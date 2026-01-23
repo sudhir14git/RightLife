@@ -20,21 +20,24 @@
             android:layout_height="100dp"
             android:padding="5dp"
             android:src="@drawable/img_mindau_low" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/tv_suggested_assessment_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_regular"
-            android:text="DASS-21   "
-            android:layout_margin="10dp"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_medium" />
+
+            <TextView
+                android:id="@+id/tv_suggested_assessment_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="DASS-21   "
+                android:layout_margin="10dp"
+                android:textColor="@color/txt_color_header"
+                android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/tv_suggested_assessment_desc"
                 android:layout_width="match_parent"

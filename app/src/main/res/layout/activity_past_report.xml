@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/white">
+    android:background="@color/settings_bg_color">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,12 +23,12 @@
             android:id="@+id/headerTitle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Scan History"
-            android:fontFamily="@font/dmsans_bold"
-            android:textSize="18sp"
-            android:textColor="@color/txt_color_mind"
             android:layout_weight="1"
-            android:gravity="center" />
+            android:fontFamily="@font/merriweather_bold"
+            android:gravity="center_vertical"
+            android:text="Past Reports"
+            android:textColor="@color/txt_color_mind"
+            android:textSize="18sp" />
 
     </LinearLayout>
     <LinearLayout
@@ -73,6 +73,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/margin_card_16dp"
-        android:paddingHorizontal="@dimen/margin_card_16dp" />
+        android:visibility="gone"
+        android:paddingHorizontal="8dp" />
+
+    <TextView
+        android:id="@+id/noPastReports"
+        android:layout_width="match_parent"
+        android:text="There are no part reports for you at the moment."
+        android:gravity="center"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

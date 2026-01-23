@@ -17,25 +17,28 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="70dp"
-        android:layout_marginStart="70dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
         android:gravity="center_horizontal">
 
         <TextView
             android:id="@+id/textview1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:gravity="center"
-            android:text="Crafting Your Personalised Experience!"
+            android:text="Crafting Your \nPersonalised Experience!"
             android:textSize="18sp"
+            android:visibility="visible"
             android:textColor="@color/txt_color_header"/>
 
         <ImageView
             android:id="@+id/img_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_refresh20"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="7dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/icon_refresh100"
             android:layout_marginTop="20dp"/>
 
         <TextView
@@ -43,8 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_bold"
-            android:gravity="center"
-            android:text="20 %"
+            android:gravity="center_horizontal"
             android:textColor="@color/menuselected"
             android:textSize="16sp"
             android:layout_marginTop="8dp"/>
@@ -59,7 +61,7 @@
             android:textSize="16sp"
             android:textColor="@color/txt_color_header"
             android:layout_marginTop="24dp"/>
-
+<!--
         <LinearLayout
             android:id="@+id/ll_final_onboarding1"
             android:layout_width="match_parent"
@@ -150,7 +152,7 @@
                 android:textColor="@color/color_green"
                 android:layout_marginTop="24dp"/>
 
-        </LinearLayout>
+        </LinearLayout>-->
 
     </LinearLayout>
 

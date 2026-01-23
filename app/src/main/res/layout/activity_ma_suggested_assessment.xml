@@ -22,19 +22,19 @@
 
                 <ImageView
                     android:id="@+id/ic_back_dialog"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="20dp"
-                    android:src="@drawable/ic_leftarrow" />
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/icon_back" />
 
                 <TextView
                     android:id="@+id/tv_header_htw"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:fontFamily="@font/dmsans_bold"
+                    android:fontFamily="@font/merriweather_bold"
                     android:text="Suggested Assessment"
                     android:textSize="18sp"
                     android:textColor="@color/txt_color_mind" />
@@ -107,8 +107,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="12dp"
-                        android:text="You Might Also Like"
-                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Recommend for you"
+                        android:fontFamily="@font/merriweather_bold"
                         android:textColor="@color/txt_color_header"
                         android:textSize="16sp"
                         android:paddingBottom="8dp" />

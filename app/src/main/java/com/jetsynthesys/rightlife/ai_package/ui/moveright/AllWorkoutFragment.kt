@@ -46,6 +46,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     private var routineName: String = ""
     private var mSelectedDate: String = ""
     private var routineId: String = ""
+    private var moduleName : String = ""
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentAllWorkoutBinding
@@ -55,11 +56,6 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         super.onActivityCreated(savedInstanceState)
         appPreference = AppPreference(requireContext())
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                // Optionally navigate to a previous fragment or do nothing
-            }
-        })
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -70,6 +66,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         routineId = arguments?.getString("routineId").toString()
         routineName = arguments?.getString("routineName").toString()
         mSelectedDate = arguments?.getString("selected_date").toString()
+        moduleName = arguments?.getString("ModuleName").toString()
         workoutListRoutine = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         appPreference = AppPreference(requireContext())
         progressDialog = ProgressDialog(activity)
@@ -102,7 +99,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         if (query.isNotEmpty()) {
             searchResultTextView.isVisible = true
             searchResultView.isVisible = true
-            searchResultTextView.text = "Search Result: ${filteredList.size}"
+            searchResultTextView.text = "Search Results: ${filteredList.size}"
         } else {
             searchResultTextView.isVisible = false
             searchResultView.isVisible = false
@@ -120,6 +117,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             putString("allworkout", "allworkout")
             putString("selected_date",mSelectedDate)
             putString("routineId",routineId)
+           putString("ModuleName", moduleName)
             putParcelable("workout", workout)
         }
         fragment.arguments = args
@@ -138,7 +136,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
 
         // Create a new WorkoutSessionRecord with default values
         val newWorkoutRecord = WorkoutSessionRecord(
-            userId = appPreference.getUserId() ?: "64763fe2fa0e40d9c0bc8264",
+            userId = appPreference.getUserId() ?: "",
             activityId = workout._id,
             durationMin = 60, // Default to 60 minutes (1 hour)
             intensity = "Low", // Default intensity
@@ -163,6 +161,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             putString("routineId", routineId)
             putString("routineName", routineName)
             putString("selected_date", mSelectedDate)
+         putString("ModuleName", moduleName)
             putParcelableArrayList("workoutList", workoutListRoutine)
         }
         fragment.arguments = args
@@ -177,42 +176,62 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         val userId = appPreference.getUserId().toString()
         val accessToken = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjc4NTFmZTQ3MTZkOGQ0ZmQyZDhkNzEzIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVFAxQS4yMjA5MDUuMDAxIiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzM3MDE1Nzk5LCJleHAiOjE3NTI3NDA1OTl9.kNSe36d1dnlPrho7rxs7wKpAR6wwa9ToTguSJtifkmU"
+
+        Log.d("GetWorkoutList", "getWorkoutList called → userId: $userId")
+        Log.d("GetWorkoutList", "Access token present: ${accessToken != null}, using fallback token if null")
+
         val call = ApiClient.apiService.getWorkoutList(accessToken ?: token)
+        Log.d("GetWorkoutList", "API call enqueued for getWorkoutList")
+
         call.enqueue(object : Callback<WorkoutResponseModel> {
             override fun onResponse(call: Call<WorkoutResponseModel>, response: Response<WorkoutResponseModel>) {
+                Log.d("GetWorkoutList", "onResponse called → isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     val workoutLists = response.body()?.data ?: emptyList()
+                    Log.d("GetWorkoutList", "Success → received ${workoutLists.size} workouts from API")
+
                     workoutList.clear() // Clear existing data before adding new items
                     workoutList.addAll(workoutLists)
+                    Log.d("GetWorkoutList", "workoutList updated → now contains ${workoutList.size} items")
+
                     if (workoutList.isEmpty()) {
+                        Log.w("GetWorkoutList", "Workout list is empty after API response")
                         Toast.makeText(requireContext(), "No workouts found", Toast.LENGTH_SHORT).show()
                     }
+
                     // Pass click listener to adapter
                     adapter = WorkoutAdapter(requireContext(), workoutList) { selectedWorkout ->
+                        Log.d("GetWorkoutList", "Workout item clicked → id: ${selectedWorkout._id ?: "null"}, title: ${selectedWorkout.title ?: "no title"}")
+
                         if (routine.equals("routine")) {
                             openAddWorkoutFragmentRoutine(selectedWorkout)
-                        }else if(routine.equals("edit_routine")){
+                        } else if (routine.equals("edit_routine")) {
                             openAddWorkoutFragmentRoutine(selectedWorkout)
-                        }else {
+                        } else {
                             openAddWorkoutFragment(selectedWorkout)
                         }
                     }
                     recyclerView.adapter = adapter
+                    Log.d("GetWorkoutList", "RecyclerView adapter set successfully")
 
                     workoutViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
+                        Log.d("GetWorkoutList", "Search query changed → new query: '$query'")
                         filterWorkouts(query)
                     }
+
                     filterWorkouts("")
                 } else {
-                    Log.e("AllWorkoutFragment", "Response not successful: ${response.errorBody()?.string()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("GetWorkoutList", "API error → code: ${response.code()}, error body: $errorBody")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             }
 
             override fun onFailure(call: Call<WorkoutResponseModel>, t: Throwable) {
-                Log.e("AllWorkoutFragment", "API call failed: ${t.message}", t)
+                Log.e("GetWorkoutList", "API call failed completely", t)
                 Toast.makeText(activity, "Failed to fetch workouts", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
             }

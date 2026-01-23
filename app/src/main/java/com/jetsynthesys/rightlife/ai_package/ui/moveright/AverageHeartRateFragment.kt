@@ -34,6 +34,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
@@ -129,9 +130,13 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
             }
 
             when (checkedId) {
-                R.id.rbWeek -> fetchHeartRate("last_weekly")
-                R.id.rbMonth -> fetchHeartRate("last_monthly")
-                R.id.rbSixMonths -> fetchHeartRate("last_six_months")
+                R.id.rbWeek -> {
+                    selectHeartRateLayout.visibility = View.INVISIBLE
+                    fetchHeartRate("last_weekly")}
+                R.id.rbMonth -> { selectHeartRateLayout.visibility = View.INVISIBLE
+                    fetchHeartRate("last_monthly")}
+                R.id.rbSixMonths ->{ selectHeartRateLayout.visibility = View.INVISIBLE
+                    fetchHeartRate("last_six_months")}
             }
         }
 
@@ -261,30 +266,39 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
     /** Update chart with new data and X-axis labels */
     private fun updateChart(entries: List<Entry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = LineDataSet(entries, "Average Heart Rate (bpm)")
+
+        // Line style (bilkul pehle jaisa)
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
+        dataSet.lineWidth = 2f
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
-        dataSet.setCircleColor(Color.RED)
-        dataSet.circleRadius = 5f
-        dataSet.lineWidth = 2f
         dataSet.setDrawValues(entries.size <= 7)
-        dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
+
+        // Normal circle → filled + #FFBFBD (light pink)
+        dataSet.setCircleColor(Color.parseColor("#FFBFBD"))
+        dataSet.circleHoleColor = Color.parseColor("#FFBFBD")   // filled circle
+        dataSet.circleRadius = 5f
+        dataSet.setDrawCircleHole(false)                        // fully solid
+
+        // Tap karne par highlight circle + line → #FD6967
+        dataSet.highLightColor = Color.parseColor("#FD6967")
+        dataSet.isHighlightEnabled = true
+        dataSet.setDrawHorizontalHighlightIndicator(false)
+        dataSet.setDrawVerticalHighlightIndicator(true)
+
+        // Circle ke upar sirf integer dikhega (78.0 → 78)
+        dataSet.valueFormatter = object : ValueFormatter() {
+            override fun getPointLabel(entry: Entry?): String {
+                return entry?.y?.toInt()?.toString() ?: ""
+            }
+        }
 
         val lineData = LineData(dataSet)
         lineChart.data = lineData
 
+        // X-axis multiline labels (bilkul same)
         val combinedLabels: List<String> = if (entries.size == 30) {
             labels
-            /*List(30) { index ->
-                when (index) {
-                    3 -> "1-7\nJun"
-                    10 -> "8-14\nJun"
-                    17 -> "15-21\nJun"
-                    24 -> "22-28\nJun"
-                    28 -> "29-30\nJun"
-                    else -> ""
-                }
-            }*/
         } else {
             labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
                 val cleanedDate = date.substringBefore(",")
@@ -313,8 +327,8 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
             xAxis.axisMaximum = entries.size - 0.5f
             xAxis.setCenterAxisLabels(false)
         }
-
-        // Custom XAxisRenderer
+        xAxis.setDrawGridLines(true)
+        // Custom renderer for multiline labels
         val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
             lineChart.viewPortHandler,
             lineChart.xAxis,
@@ -322,56 +336,38 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         )
         (lineChart as BarLineChartBase<*>).setXAxisRenderer(customRenderer)
 
-        // Y-axis customization
+        // Y-axis (bilkul same)
         val leftYAxis: YAxis = lineChart.axisLeft
         leftYAxis.textSize = 12f
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
         leftYAxis.axisMinimum = 0f
-        leftYAxis.axisMaximum = max(200f, ceil((entries.maxByOrNull { it.y }?.y?.plus(20f) ?: 150f) / 50f) * 50f) // Ensure at least 200
-        leftYAxis.granularity = 50f // Labels at 0, 50, 100, 150, 200, ...
-        // Log Y-axis max and entries for debugging
-        Log.d("ChartYAxis", "Y-axis Max: ${leftYAxis.axisMaximum}")
-        entries.forEachIndexed { i, entry -> Log.d("ChartEntry", "Index: $i, X: ${entry.x}, Y: ${entry.y}") }
+        leftYAxis.axisMaximum = max(200f, ceil((entries.maxByOrNull { it.y }?.y?.plus(20f) ?: 150f) / 50f) * 50f)
+        leftYAxis.granularity = 50f
 
         lineChart.axisRight.isEnabled = false
+
+        // Box + text completely removed
         lineChart.description.isEnabled = false
+        lineChart.legend.isEnabled = false
+
         lineChart.setScaleEnabled(false)
         lineChart.isDoubleTapToZoomEnabled = false
         lineChart.isHighlightPerTapEnabled = true
         lineChart.isHighlightPerDragEnabled = false
-
-        // Description
-        val description = Description().apply {
-            text = ""
-            textColor = Color.BLACK
-            textSize = 14f
-            setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)
-        }
-        lineChart.description = description
-
-        // Extra offsets
         lineChart.setExtraOffsets(0f, 0f, 0f, 25f)
 
-        // Legend
-        val legend = lineChart.legend
-        legend.setDrawInside(false)
-
-        // Chart click listener
+        // Tap listener (same)
         lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
-                if (e != null) {
-                    val x = e.x.toInt()
-                    val y = e.y
-                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                e?.let {
+                    val x = it.x.toInt()
                     selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
-                    selectedCalorieTv.text = y.toInt().toString()
+                    selectedCalorieTv.text = it.y.toInt().toString()
                 }
             }
-
             override fun onNothingSelected() {
-                Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })

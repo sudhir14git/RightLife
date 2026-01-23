@@ -115,7 +115,14 @@ class PastReportActivity : BaseActivity() {
                             }
 
                         }
-                        binding.recyclerView.adapter = adapter
+                        if (reports.isNotEmpty()) {
+                            binding.recyclerView.visibility = android.view.View.VISIBLE
+                            binding.recyclerView.adapter = adapter
+                        }else{
+                            binding.recyclerView.visibility = android.view.View.GONE
+                            binding.noPastReports.visibility = android.view.View.VISIBLE
+                        }
+
                     } else {
                         Toast.makeText(
                             this@PastReportActivity,

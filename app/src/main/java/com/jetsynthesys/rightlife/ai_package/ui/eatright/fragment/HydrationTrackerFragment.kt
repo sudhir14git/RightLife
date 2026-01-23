@@ -42,6 +42,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
+import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
 import com.jetsynthesys.rightlife.databinding.FragmentHydrationTrackerBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -681,6 +682,7 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                 data.todaysWaterLog.goal.toFloat(),
                 data.currentAvgWater.toFloat()
             )
+
             // Include stepsGoal in max check
             val axisMax = maxOf(maxValue, data.todaysWaterLog.goal.toFloat())
 
@@ -697,6 +699,11 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
             totalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.border_green)
             totalStepsLine.textSize = 10f
             totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+            lineChart.rendererLeftYAxis = BadgeLimitLineRenderer(
+                lineChart.viewPortHandler,
+                lineChart.axisLeft,
+                lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
 
             leftYAxis.removeAllLimitLines()
             leftYAxis.addLimitLine(totalStepsLine)
@@ -724,6 +731,7 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         // Legend
         val legend = lineChart.legend
         legend.setDrawInside(false)
+        legend.isEnabled = false
 
         // Chart selection listener
         lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {

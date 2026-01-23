@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -83,11 +85,12 @@ class HealthGoalFragment : Fragment() {
 
         val colorStateListSelected =
             ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
-
+        btnContinue.visibility = GONE
         adapter = HealthGoalAdapter(requireContext(), healthGoalList) { healthGoal ->
-            btnContinue.isEnabled = true
-            btnContinue.backgroundTintList = colorStateListSelected
+            //btnContinue.isEnabled = true
+            //btnContinue.backgroundTintList = colorStateListSelected
             selectedHealthGoal = healthGoal.header
+            handleContinueClick()
         }
 
         recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
@@ -105,7 +108,10 @@ class HealthGoalFragment : Fragment() {
                 .clearOnboardingQuestionRequest()
         }
 
-        btnContinue.setOnClickListener {
+
+
+        btnContinue.setOnClickListener { handleContinueClick() }
+        /*btnContinue.setOnClickListener {
             llSelectedHealthGoal.visibility = VISIBLE
             rlHealthGoal.visibility = GONE
             tvSelectedHealthGoal.text = selectedHealthGoal
@@ -135,13 +141,49 @@ class HealthGoalFragment : Fragment() {
                 )
             )
 
-            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
-        }
+            Handler(Looper.getMainLooper()).postDelayed({
+                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            }, 500)
+        }*/
 
 
         return view
     }
 
+    fun handleContinueClick() {
+        llSelectedHealthGoal.visibility = VISIBLE
+        rlHealthGoal.visibility = GONE
+        tvSelectedHealthGoal.text = selectedHealthGoal
+        tvDescription.visibility = GONE
+
+        //btnContinue.disableViewForSeconds()
+
+        val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+        onboardingQuestionRequest.dailyGoalAchieveTime = selectedHealthGoal
+        SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+        AnalyticsLogger.logEvent(
+                AnalyticsEvent.ACHIEVE_HEALTH_GOALS_SELECTION,
+                mapOf(
+                        AnalyticsParam.USER_ID to SharedPreferenceManager.getInstance(requireActivity()).userId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        AnalyticsParam.GOAL to SharedPreferenceManager.getInstance(requireActivity()).selectedOnboardingModule,
+                        AnalyticsParam.SUB_GOAL to SharedPreferenceManager.getInstance(requireActivity()).selectedOnboardingSubModule,
+                        AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                        AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                        AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                        AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
+                        AnalyticsParam.BODY_FAT to onboardingQuestionRequest.bodyFat!!,
+                        AnalyticsParam.STRESS_MANAGEMENT to selectedHealthGoal
+                )
+        )
+
+        Handler(Looper.getMainLooper()).postDelayed({
+                                                        (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+                                                    }, 500)
+    }
     override fun onPause() {
         super.onPause()
         llSelectedHealthGoal.visibility = GONE

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TimePicker
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.databinding.FragmentBedWakeupTimeBinding
@@ -14,6 +15,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivi
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SleepTimeAnswer
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.time.Duration
 import java.time.LocalTime
@@ -49,34 +51,42 @@ class BedWakeupTimeFragment : Fragment() {
         return binding.root
     }
 
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize TimePickers
         binding.timePickerBedtime.setIs24HourView(false)
         binding.timePickerWakeTime.setIs24HourView(false)
 
-        // Set default values
-        binding.timePickerBedtime.hour = 22 // 9 PM
+        binding.timePickerBedtime.hour = 22
         binding.timePickerBedtime.minute = 0
-        binding.timePickerWakeTime.hour = 6 // 6 AM
+        binding.timePickerWakeTime.hour = 6
         binding.timePickerWakeTime.minute = 0
 
-
+        // initial compute + button state
         updateSleepDuration()
 
-        // Listen changes
         binding.timePickerBedtime.setOnTimeChangedListener { _, _, _ -> updateSleepDuration() }
         binding.timePickerWakeTime.setOnTimeChangedListener { _, _, _ -> updateSleepDuration() }
 
         binding.btnContinue.setOnClickListener {
             binding.btnContinue.disableViewForSeconds()
-            val sleepTimeAnswer = SleepTimeAnswer()
-            sleepTimeAnswer.bedTime = getSelectedTimeFromTimePicker(binding.timePickerBedtime)
-            sleepTimeAnswer.wakeTime = getSelectedTimeFromTimePicker(binding.timePickerWakeTime)
-            sleepTimeAnswer.sleepDuration = binding.tvSleepDuration.text.toString()
+
+            // prevent submit if equal times
+            if (areTimesEqual(binding.timePickerBedtime, binding.timePickerWakeTime)) {
+                // Optional: button can be disabled, if product requires
+                 Utils.showNewDesignToast(requireContext(), "Bedtime and Wake time cannot be the same.",false)
+                return@setOnClickListener
+            }
+
+            val sleepTimeAnswer = SleepTimeAnswer().apply {
+                bedTime = getSelectedTimeFromTimePicker(binding.timePickerBedtime)
+                wakeTime = getSelectedTimeFromTimePicker(binding.timePickerWakeTime)
+                sleepDuration = binding.tvSleepDuration.text.toString()
+            }
             submit(sleepTimeAnswer)
         }
     }
@@ -86,19 +96,31 @@ class BedWakeupTimeFragment : Fragment() {
         val bedtime = getSelectedTime(binding.timePickerBedtime)
         val wakeTime = getSelectedTime(binding.timePickerWakeTime)
 
+        if (bedtime == wakeTime) {
+            // Same time → block and inform
+            binding.tvSleepDuration.text = "0 hrs 0 mins"
+            //binding.btnContinue.isEnabled = false
+            return
+        }
+
         val bedtimeLocal = LocalTime.of(bedtime.first, bedtime.second)
         val wakeTimeLocal = LocalTime.of(wakeTime.first, wakeTime.second)
 
         var duration = Duration.between(bedtimeLocal, wakeTimeLocal)
-        if (duration.isNegative) {
-            // Adjust for overnight sleep
-            duration = duration.plusHours(24)
-        }
+        if (duration.isNegative) duration = duration.plusHours(24)
 
         val hours = duration.toHours()
         val minutes = duration.toMinutes() % 60
-        binding.tvSleepDuration.text = "Sleep duration: ${hours} hrs ${minutes} mins"
+        binding.tvSleepDuration.text = "${hours} hrs ${minutes} mins"
+
+        // Enable when valid
+        binding.btnContinue.isEnabled = true
     }
+
+    private fun areTimesEqual(a: TimePicker, b: TimePicker): Boolean {
+        return a.hour == b.hour && a.minute == b.minute
+    }
+
 
     private fun getSelectedTimeFromTimePicker(timePicker: TimePicker): String {
         val hour = timePicker.hour

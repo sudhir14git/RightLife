@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white">
+    android:background="@color/list_color_journal">
 
     <!-- Top bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="12dp"
         android:gravity="center_vertical"
         android:weightSum="1">
 
@@ -20,33 +21,34 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_back" />
+            android:src="@drawable/ic_back_articlepage" />
 
-        <View
+        <TextView
             android:layout_width="0dp"
-            android:layout_height="1dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/btnInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:padding="3dp"
+            android:layout_height="24dp"
             android:src="@drawable/info_affirmation" />
     </LinearLayout>
 
     <!-- Title -->
+
+    <!-- Subtitle -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/merriweather_bold"
+        android:paddingHorizontal="@dimen/margin_card_16dp"
         android:text="Choose a prompt"
-        android:textSize="26sp"
-        android:fontFamily="@font/dmsans_bold"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/txt_color_mind" />
+        android:textColor="@color/txt_color_mind"
+        android:textSize="26sp" />
 
-    <!-- Subtitle -->
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="match_parent"
@@ -54,7 +56,7 @@
         android:text="Each question is here to help you process, remember, and heal - one step at a time."
         android:textSize="16sp"
         android:fontFamily="@font/dmsans_regular"
-        android:paddingHorizontal="16dp"
+        android:paddingHorizontal="@dimen/margin_card_16dp"
         android:layout_marginTop="4dp"
         android:textColor="@color/txt_color_journal_gray" />
 

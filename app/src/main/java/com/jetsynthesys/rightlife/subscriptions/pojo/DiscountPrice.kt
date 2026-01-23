@@ -2,11 +2,12 @@ package com.jetsynthesys.rightlife.subscriptions.pojo
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class DiscountPrice {
+class DiscountPrice : Serializable {
     @SerializedName("INR")
     @Expose
-    var inr: Int? = null
+    var inr: Double? = null
 
     @SerializedName("USD")
     @Expose

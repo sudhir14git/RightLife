@@ -49,12 +49,12 @@ class BreathworkActivity : BaseActivity() {
         //getBreathingWork()
 
         binding.icBackDialog.setOnClickListener {
-            callPostMindFullDataAPI()
+            //callPostMindFullDataAPI()
             finish()
         }
 
         onBackPressedDispatcher.addCallback(this) {
-            callPostMindFullDataAPI()
+            //callPostMindFullDataAPI()
             finish()
         }
 

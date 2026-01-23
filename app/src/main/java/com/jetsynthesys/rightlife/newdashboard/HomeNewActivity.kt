@@ -1,30 +1,33 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ComponentCaller
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Rect
+import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
@@ -37,6 +40,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
 import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
@@ -55,7 +59,6 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryPurchasesParams
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
@@ -63,6 +66,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
+import com.jetsynthesys.rightlife.MainApplication
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
@@ -80,47 +84,440 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
+import com.jetsynthesys.rightlife.newdashboard.model.ChallengeDateData
+import com.jetsynthesys.rightlife.newdashboard.model.ChallengeDateResponse
+import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
+import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
 import com.jetsynthesys.rightlife.ui.ActivityUtils
+import com.jetsynthesys.rightlife.ui.AppLoader
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
+import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
+import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeActivity
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showChallengeInfoBottomSheet
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeEmptyActivity
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getChallengeDateRange
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaysFromToday
+import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
+import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
+import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
+import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
+import com.jetsynthesys.rightlife.ui.profile_new.SavedItemListActivity
+import com.jetsynthesys.rightlife.ui.settings.PurchasePlansActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
 
 class HomeNewActivity : BaseActivity() {
+    // for deep links
+    companion object {
+        const val EXTRA_DEEP_LINK_TARGET = "EXTRA_DEEP_LINK_TARGET"
+        const val EXTRA_DEEP_LINK_DETAIL_ID = "EXTRA_DEEP_LINK_DETAIL_ID"
+
+        const val TARGET_HOME = "home"
+        const val TARGET_MY_HEALTH = "my_health"
+
+        const val TARGET_MEAL_LOG = "meal_log"
+
+        const val TARGET_PROFILE = "profile"
+        const val TARGET_SLEEP_SOUNDS = "sleepsounds"
+
+        // add more as needed…
+        const val TARGET_CATEGORY_LIST = "categorylist"
+        const val TARGET_AI_REPORT = "ai-report"
+        const val TARGET_MIND_AUDIT = "mind-audit"
+
+        //Explore Button
+        const val TARGET_THINK_EXPLORE = "thinkright-explore"
+        const val TARGET_EAT_EXPLORE = "eatright-explore"
+        const val TARGET_SLEEP_EXPLORE = "sleepright-explore"
+        const val TARGET_MOVE_EXPLORE = "moveright-explore"
+        const val TARGET_MOVERIGHT_HOME = "moveright-home"
+        const val TARGET_WORKOUT_LOG_DEEP = "workoutlog-deep"
+        const val TARGET_EATRIGHT_HOME = "eatright-home"
+        const val TARGET_SLEEPRIGHT_HOME = "sleepright-home"
+        const val TARGET_WEIGHT_LOG_DEEP = "weight-log-deep"
+        const val TARGET_WATER_LOG_DEEP = "water-log-deep"
+        const val TARGET_SNAP_MEAL_DEEP = "snap-meal-deep"
+        const val TARGET_FOOD_LOG_DEEP = "food-log-deep"
+        const val TARGET_SLEEP_LOG_DEEP = "sleep-log-deep"
+        const val TARGET_THINKRIGHT_HOME = "thinkright-home"
+
+        // Quick link section
+        const val TARGET_FACE_SCAN = "face-scan"
+        const val TARGET_SNAP_MEAL = "snap-meal"
+        const val TARGET_SLEEP_SOUND = "sleep-sound"
+        const val TARGET_AFFIRMATION = "affirmation"
+        const val TARGET_JOURNAL = "journal"
+        const val TARGET_BREATHING = "breathing"
+
+        const val TARGET_ACTIVITY_LOG = "activity-log"
+        const val TARGET_WEIGHT_LOG = "weight-log"
+        const val TARGET_WATER_LOG = "water-log"
+        const val TARGET_SLEEP_LOG = "sleep-log"
+        const val TARGET_FOOD_LOG = "food-log"
+
+
+        // Content
+        const val TARGET_JUMPBACK = "jumpback"
+        const val TARGET_SAVED_ITEMS = "saved-content"
+
+
+    }
+
+    // 🔹 Deeplink readiness flags
+    private var pendingDeepLinkTarget: String? = null
+    private var isUserProfileLoaded = false
+    var isCategoryModuleLoaded = false
+    private var isChecklistLoaded = false
+
+    private var checklistCount = 0
+
+    private fun isInitialDataReadyFor(target: String): Boolean {
+        // For simple navigation, no need to wait
+        return when (target) {
+            TARGET_HOME,
+            TARGET_MY_HEALTH -> true
+
+            // Features that depend on user profile & checklist
+            TARGET_JOURNAL,
+            TARGET_MEAL_LOG,
+            TARGET_BREATHING,
+            TARGET_SLEEP_SOUNDS,
+            TARGET_PROFILE -> {
+                isUserProfileLoaded && isChecklistLoaded
+            }
+
+            TARGET_CATEGORY_LIST -> {
+                isCategoryModuleLoaded
+            }
+
+            else -> {
+                // By default, be conservative
+                isUserProfileLoaded && isChecklistLoaded
+            }
+        }
+    }
+
+    private fun tryProcessPendingDeepLink() {
+        val target = pendingDeepLinkTarget ?: return
+
+        if (isInitialDataReadyFor(target)) {
+            // Clear before calling to avoid infinite loops
+            pendingDeepLinkTarget = null
+            handleDeepLinkTarget(target)
+        }
+    }
+
+    private fun handleDeepLinkTarget(target: String?) {
+        if (target == null) return
+
+        // If data not ready for this target, just store it and return
+        if (!isInitialDataReadyFor(target)) {
+            pendingDeepLinkTarget = target
+            return
+        }
+
+        // ✅ Data ready – now actually act
+        when (target) {
+
+            TARGET_HOME -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeExploreFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_home)
+            }
+
+            TARGET_MY_HEALTH -> {
+                myHealthFragmentSelected()
+            }
+
+            /*   TARGET_JOURNAL -> {
+                   if (checkTrailEndedAndShowDialog()) {
+                       ActivityUtils.startJournalListActivity(this)
+                   }
+               }*/
+
+            TARGET_MEAL_LOG -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "MealLogTypeEat")
+                        putExtra("snapMealId", snapMealId)
+                    })
+                }
+            }
+
+            TARGET_BREATHING -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+
+            TARGET_SLEEP_SOUNDS -> {
+                startActivity(Intent(this, NewSleepSoundActivity::class.java))
+            }
+
+            TARGET_PROFILE -> {
+                startActivity(Intent(this, ProfileSettingsActivity::class.java))
+            }
+
+            TARGET_CATEGORY_LIST -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "ThinkRight")
+                startActivity(intent)
+            }
+
+            TARGET_AI_REPORT -> {
+                callAIReportCardClick()
+            }
+
+            TARGET_MIND_AUDIT -> {
+                callMindAuditClick()
+            }
+
+            TARGET_FACE_SCAN -> {
+                callFaceScanClick()
+            }
+
+            TARGET_EATRIGHT_HOME -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "Not")
+                    })
+                }
+            }
+
+            TARGET_SLEEPRIGHT_HOME -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "SleepRight")
+                        putExtra("BottomSeatName", "Not")
+                    })
+                }
+            }
+
+            TARGET_MOVERIGHT_HOME -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "MoveRight")
+                        putExtra("BottomSeatName", "Not")
+                    })
+                }
+            }
+
+            TARGET_WORKOUT_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "MoveRight")
+                        putExtra("BottomSeatName", "SearchActivityLogMove") // YourActivityFragment
+                    })
+                }
+            }
+
+            TARGET_WEIGHT_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "LogWeightEat")  // ← Ye hi Weight Log kholta hai
+                    })
+                }
+            }
+
+            TARGET_WATER_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "LogWaterIntakeEat")  // Water Log screen
+                    })
+                }
+            }
+
+            TARGET_SNAP_MEAL_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "SnapMealTypeEat")  // Ye hi Snap Meal kholta hai
+                    })
+                }
+            }
+
+            TARGET_FOOD_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "MealLogTypeEat")  // Ye hi Food Log kholta hai
+                    })
+                }
+            }
+
+            TARGET_SLEEP_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "SleepRight")
+                        putExtra(
+                            "BottomSeatName",
+                            "LogLastNightSleep"
+                        )  // Ye hi Sleep Log kholta hai
+                    })
+                }
+            }
+
+            TARGET_THINKRIGHT_HOME -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "ThinkRight")
+                        putExtra("BottomSeatName", "Not")  // ThinkRight ka default home tab
+                    })
+                }
+            }
+
+            TARGET_SNAP_MEAL -> {
+                callSnapMealClick()
+            }
+
+            TARGET_JOURNAL -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startJournalListActivity(this)
+                }
+            }
+
+            TARGET_SLEEP_SOUND -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
+                }
+            }
+
+            TARGET_AFFIRMATION -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
+                }
+            }
+
+            TARGET_BREATHING -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+
+            //quick link logs
+            TARGET_ACTIVITY_LOG -> {
+                callLogActivitylick()
+            }
+
+            TARGET_WEIGHT_LOG -> {
+                callLogWeightClick()
+            }
+
+            TARGET_WATER_LOG -> {
+                callLogWaterClick()
+            }
+
+            TARGET_SLEEP_LOG -> {
+                callLogSleepClick()
+            }
+
+            TARGET_FOOD_LOG -> {
+                callLogFoodClick()
+            }
+
+            TARGET_JUMPBACK -> {
+                callJumpBackIn()
+            }
+
+            TARGET_SAVED_ITEMS -> {
+                startActivity(Intent(this, SavedItemListActivity::class.java))
+            }
+
+            TARGET_THINK_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "THINK_RIGHT")
+                startActivity(intent)
+            }
+
+            TARGET_EAT_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "EAT_RIGHT")
+                startActivity(intent)
+            }
+
+            TARGET_SLEEP_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "SLEEP_RIGHT")
+                startActivity(intent)
+            }
+
+            TARGET_MOVE_EXPLORE -> {
+                val intent = Intent(this, NewCategoryListActivity::class.java)
+                intent.putExtra("moduleId", "MOVE_RIGHT")
+                startActivity(intent)
+            }
+
+
+            else -> {
+                // Unknown / not mapped → ignore
+            }
+        }
+    }
+
+
+    private var snapMealId = ""
     private lateinit var binding: ActivityHomeNewBinding
     private var isAdd = true
+    private var showheaderFlag = false
     var isTrialExpired = false
     private var isCountDownVisible = false
     var isHealthCamFree = true
@@ -169,6 +566,13 @@ class HomeNewActivity : BaseActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        /* window.apply {
+             // Allow content to draw behind status bar
+             decorView.systemUiVisibility =
+                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+             statusBarColor = android.graphics.Color.TRANSPARENT // Transparent status bar
+         }*/
+
         binding = ActivityHomeNewBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
         this.let {
@@ -178,33 +582,154 @@ class HomeNewActivity : BaseActivity() {
         }
 
         // Load default fragment only on first launch
+        val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                .commit()
-            updateMenuSelection(R.id.menu_home)
-        } else {
-            // 🟢 Restore menu highlight based on current fragment
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-            when (currentFragment) {
-                is HomeExploreFragment -> updateMenuSelection(R.id.menu_explore)
-                is HomeDashboardFragment -> updateMenuSelection(R.id.menu_home)
+            if (openMyHealth) {
+                myHealthFragmentSelected()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeExploreFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_home)
             }
+        } else {
+            if (openMyHealth) {
+                myHealthFragmentSelected()
+            } else {
+                // 🟢 Restore menu highlight based on current fragment
+                val currentFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+                when (currentFragment) {
+                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
+                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
+                }
+            }
+        }
+
+        binding.layoutChallengeToCompleteChecklist.seekBar.apply {
+            setOnTouchListener { _, _ -> true }
+            splitTrack = false
+            isFocusable = false
+        }
+
+        binding.layoutChallengeDailyScore.scoreSeekBar.apply {
+            setOnTouchListener { _, _ -> true }
+            splitTrack = false
+            isFocusable = false
+        }
+
+
+        /*DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Unlock RightLife Pro to keep your health journey uninterrupted.",
+            "Free Trial Ending In 2 Days",
+            "Upgrade Now",
+            false,
+            R.drawable.ft_days_left,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your trial ends today.\n" +
+                    "Upgrade to Pro to continue accessing your data and insights.",
+            "Free Trial ends today",
+            "Upgrade To Pro",
+            false,
+            R.drawable.ft_expired_today,
+            R.drawable.ft_warning,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
+            "Free Trial ended",
+            "See Plans",
+            false,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Monthly Pro Plan ends in 7 days. Renew now to avoid interruptions.",
+            "7 days left",
+            "Renew Plan",
+            false,
+            R.drawable.ft_days_left,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Monthly Pro Plan access ends tomorrow. Renew to keep your dashboard active.",
+            "Plan Ends tomorrow",
+            "Renew Plan",
+            false,
+            R.drawable.ft_expired_today,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Pro Plan has expired. Reactivate now to continue tracking and improving your health.",
+            "Plan expired",
+            "Renew Plan",
+            false,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Annual Pro Plan ends in 14 days. Renew today to continue enjoying full access.",
+            "Plan Expiring Soon",
+            "Renew Plan",
+            true,
+            R.drawable.ft_days_left,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Just 3 days left in your Annual Pro Plan. Don’t lose your progress.",
+            "3 days left",
+            "Renew Plan",
+            true,
+            R.drawable.ft_expired_today,
+            R.drawable.ft_close,
+            onOkayClick = {})
+
+        DialogUtils.showFreeTrailRelatedBottomSheet(this,
+            "Your Annual Pro Plan has expired. Renew now to keep your yearly savings and full access.",
+            "Annual Plan expired",
+            "Renew Plan",
+            true,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {})*/
+
+        binding.flFreeTrial.setOnClickListener {
+            startActivity(Intent(this, BeginMyFreeTrialActivity::class.java))
         }
 
         binding.scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
             binding.swipeRefreshLayout.isEnabled = scrollY <= 5
         }
 
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+            showTrailEndedBottomSheet()
+        } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+            showSubsciptionEndedBottomSheet()
+        }
+
         onBackPressedDispatcher.addCallback {
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                }
+
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
-                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_explore)
-                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_home)
+                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
+                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
                 }
 
                 binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
@@ -222,14 +747,14 @@ class HomeNewActivity : BaseActivity() {
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
-                    is HomeExploreFragment -> {
+                    is HomeDashboardFragment -> {
                         supportFragmentManager.beginTransaction()
-                            .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                            .replace(R.id.fragmentContainer, HomeExploreFragment())
                             .commit()
                         updateMenuSelection(R.id.menu_home)
                     }
 
-                    is HomeDashboardFragment -> finish()
+                    is HomeExploreFragment -> finish()
                 }
             }
         }
@@ -238,21 +763,27 @@ class HomeNewActivity : BaseActivity() {
         binding.fab.backgroundTintList = ContextCompat.getColorStateList(
             this, android.R.color.white
         )
-        binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.black))
+        binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.rightlife))
         val bottom_sheet = binding.includedhomebottomsheet.bottomSheet
         binding.fab.setOnClickListener { v ->
 
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                }
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
-                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_explore)
-                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_home)
+                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_explore)
+                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_home)
                 }
             } else {
                 bottom_sheet.visibility = View.VISIBLE
+                binding.includedhomebottomsheet.bottomSheetParent.visibility = View.VISIBLE
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(
                     Color.parseColor(
                         "#CC000000"
@@ -290,51 +821,24 @@ class HomeNewActivity : BaseActivity() {
         }
 
         binding.profileImage.setOnClickListener {
+            binding.profileImage.disableViewForSeconds()  // 👈 prevent double click
+
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
         }
 
         // Handle menu item clicks
         binding.menuHome.setOnClickListener {
-            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
-                bottom_sheet.visibility = View.GONE
-                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
-                binding.fab.animate().rotationBy(180f).setDuration(60)
-                    .setInterpolator(DecelerateInterpolator()).withEndAction {
-                        // Change icon after rotation
-                        if (isAdd) {
-                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
-                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-                                this, R.color.rightlife
-                            )
-                            binding.fab.imageTintList = ColorStateList.valueOf(
-                                resources.getColor(
-                                    R.color.black
-                                )
-                            )
-                        } else {
-                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
-                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-                                this, R.color.white
-                            )
-                            binding.fab.imageTintList = ColorStateList.valueOf(
-                                resources.getColor(
-                                    R.color.rightlife
-                                )
-                            )
-                        }
-                        isAdd = !isAdd // Toggle the state
-                    }.start()
-            } else {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                    .commit()
-                updateMenuSelection(R.id.menu_home)
-            }
-        }
+            val currentFragment =
+                supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment is HomeExploreFragment) return@setOnClickListener
 
-        binding.menuExplore.setOnClickListener {
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                }
                 binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 binding.fab.animate().rotationBy(180f).setDuration(60)
                     .setInterpolator(DecelerateInterpolator()).withEndAction {
@@ -366,9 +870,61 @@ class HomeNewActivity : BaseActivity() {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainer, HomeExploreFragment())
                     .commit()
-                updateMenuSelection(R.id.menu_explore)
+                updateMenuSelection(R.id.menu_home)
             }
         }
+
+        /*   binding.menuExplore.setOnClickListener {
+               val currentFragment =
+                   supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+               if (currentFragment is HomeDashboardFragment) return@setOnClickListener
+               myHealthFragmentSelected()
+           }*/
+        binding.menuExplore.setOnClickListener {
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment is HomeDashboardFragment) return@setOnClickListener
+
+            // ✅ Step 1: If bottom sheet is currently visible, close it first
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                // Hide bottom sheet view
+                binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+
+                // Hide parent dim/overlay
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                    setBackgroundColor(Color.TRANSPARENT)
+                }
+
+                // Reset FAB icon and colors
+                binding.fab.animate().rotationBy(180f).setDuration(60)
+                    .setInterpolator(DecelerateInterpolator())
+                    .withEndAction {
+                        if (isAdd) {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black)
+                            binding.fab.backgroundTintList =
+                                ContextCompat.getColorStateList(this, R.color.rightlife)
+                            binding.fab.imageTintList =
+                                ColorStateList.valueOf(resources.getColor(R.color.black))
+                        } else {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus)
+                            binding.fab.backgroundTintList =
+                                ContextCompat.getColorStateList(this, R.color.white)
+                            binding.fab.imageTintList =
+                                ColorStateList.valueOf(resources.getColor(R.color.rightlife))
+                        }
+                        isAdd = !isAdd
+                    }.start()
+
+                // ✅ Don’t navigate yet — just return after closing the bottom sheet
+                return@setOnClickListener
+            }
+
+            // ✅ Step 2: If bottom sheet is already closed, open Explore normally
+            myHealthFragmentSelected()
+        }
+
 
         with(binding) {
             includedhomebottomsheet.llJournal.setOnClickListener {
@@ -396,23 +952,11 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
-                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
-                if (DashboardChecklistManager.facialScanStatus) {
-                    startActivity(
-                        Intent(
-                            this@HomeNewActivity, NewHealthCamReportActivity::class.java
-                        )
-                    )
-                } else {
-                    ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
-                }
+
+                callFaceScanClick()
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
-                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SNAP_MEAL_CLICK)
-                ActivityUtils.startEatRightReportsActivity(
-                    this@HomeNewActivity,
-                    "SnapMealTypeEat",
-                    "")
+                callSnapMealClick()
             }
 
         }
@@ -420,7 +964,12 @@ class HomeNewActivity : BaseActivity() {
         binding.includedhomebottomsheet.llFoodLog.setOnClickListener {
             AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "MealLogTypeEat")
+                //ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "MealLogTypeEat")
+                startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("BottomSeatName", "MealLogTypeEat")
+                    putExtra("snapMealId", snapMealId)
+                })
             }
         }
         binding.includedhomebottomsheet.llActivityLog.setOnClickListener {
@@ -474,12 +1023,13 @@ class HomeNewActivity : BaseActivity() {
                     putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
                 }
                 startActivity(intent)
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.RL_AI_Report_Card_Tap)
             }
+
         }
 
         // Handling Subscribe to RightLife
         binding.trialExpiredLayout.btnSubscription.setOnClickListener {
-
             startActivity(
                 Intent(
                     this,
@@ -488,16 +1038,117 @@ class HomeNewActivity : BaseActivity() {
                     putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
                 })
         }
+
+        binding.llFreeTrailExpired.setOnClickListener {
+            startActivity(
+                Intent(
+                    this,
+                    SubscriptionPlanListActivity::class.java
+                ).apply {
+                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                })
+        }
+        binding.tvStriketroughPrice.paintFlags =
+            binding.tvStriketroughPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+        Log.d(
+            "UI_DEBUG", """
+    flFreeTrial visible=${binding.flFreeTrial.visibility}
+    flFreeTrial clickable=${binding.flFreeTrial.isClickable}
+    flFreeTrial enabled=${binding.flFreeTrial.isEnabled}
+    homeBottomSheet visible=${binding.includedhomebottomsheet.root.visibility}
+""".trimIndent()
+        )
+
+        // deeplinks
+        val deepLinkTarget = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
+        handleDeepLinkTarget(deepLinkTarget)
+
+        sendTokenToServer("")
+
+        if (!sharedPreferenceManager.isHomeFirstVisited) {
+            sharedPreferenceManager.isHomeFirstVisited = true
+            lifecycleScope.launch {
+                delay(2000)
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.HOME_PAGE_FIRST_OPEN)
+            }
+        }
+
+        if (MainApplication.isFreshLaunch && (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED || !sharedPreferenceManager.enableNotificationServer)
+        ) {
+            ChallengeBottomSheetHelper.showChallengeReminderBottomSheet(this) { dialog ->
+                checkPermission()
+                dialog.dismiss()
+            }
+            MainApplication.isFreshLaunch = false
+        }
     }
+
+    private fun checkPermission(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    100
+                )
+                return false
+            } else {
+                enableNotificationServer()
+                return true
+            }
+        } else {
+            enableNotificationServer()
+            // Permission not required before Android 13
+            return true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                enableNotificationServer()
+            } else {
+                showCustomToast("Notification permission denied", false)
+                sharedPreferenceManager.enableNotificationServer = false
+            }
+        }
+    }
+
 
     override fun onResume() {
         super.onResume()
-        checkForUpdate()
+        //checkForUpdate()
+        //new force update check below
+        checkForceUpdate()
         getUserDetails()
         initBillingAndRecover()
+        getDashboardChecklistStatus()
+        getDashboardChecklist()
+        getSubscriptionList()
+        //getSubscriptionProducts(binding.tvStriketroughPrice);
     }
 
-    override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
+    private fun enableNotificationServer() {
+        val requestBody = mapOf("pushNotification" to true)
+        CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
+            //showToast(message)
+            sharedPreferenceManager.enableNotificationServer = true
+        }
+    }
+
+    /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
         super.onNewIntent(intent, caller)
         if (intent.getBooleanExtra("start_journal", false)) {
             startActivity(Intent(this, JournalListActivity::class.java))
@@ -518,6 +1169,55 @@ class HomeNewActivity : BaseActivity() {
                 })
             }
         }
+    }*/
+
+    // API 35+ (Android 15)
+    override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
+        super.onNewIntent(intent, caller)
+        handleIncomingIntent(intent)
+        // Make sure getIntent() returns the latest one if you use it elsewhere
+        setIntent(intent)
+    }
+
+    // Older platforms
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIncomingIntent(intent)
+        setIntent(intent)
+    }
+
+    private fun handleIncomingIntent(intent: Intent) {
+        when {
+            intent.getBooleanExtra("OPEN_MY_HEALTH", false) -> {
+                myHealthFragmentSelected()
+            }
+
+            intent.getBooleanExtra("start_journal", false) -> {
+                startActivity(Intent(this, JournalListActivity::class.java))
+            }
+
+            intent.getBooleanExtra("start_profile", false) -> {
+                startActivity(Intent(this, ProfileSettingsActivity::class.java))
+            }
+
+            intent.getBooleanExtra("finish_MindAudit", false) &&
+                    intent.getBooleanExtra("FROM_THINK_RIGHT", false) -> {
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+
+            intent.getBooleanExtra("finish_Journal", false) &&
+                    intent.getBooleanExtra("FROM_THINK_RIGHT", false) -> {
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+        val target = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
+        handleDeepLinkTarget(target)
     }
 
 
@@ -536,6 +1236,7 @@ class HomeNewActivity : BaseActivity() {
                     )
                     SharedPreferenceManager.getInstance(applicationContext)
                         .saveUserId(ResponseObj.userdata.id)
+                    ResponseObj.userdata.bodyFat = ResponseObj.bodyFat
                     SharedPreferenceManager.getInstance(applicationContext)
                         .saveUserProfile(ResponseObj)
 
@@ -548,28 +1249,14 @@ class HomeNewActivity : BaseActivity() {
                             .placeholder(R.drawable.rl_profile).error(R.drawable.rl_profile)
                             .into(binding.profileImage)
                     }
-                    binding.userName.text = ResponseObj.userdata.firstName
-                    val tvGreetingText = findViewById<TextView>(R.id.greetingText)
-                    tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
 
-                    val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
-                    if (countDown < 7) {
-                        binding.tvCountDown.text = "${countDown + 1}/7"
-                        binding.llCountDown.visibility = View.VISIBLE
-                        binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                        isTrialExpired = false
-                        isCountDownVisible = true
-                    } else {
-                        binding.llCountDown.visibility = View.GONE
-                        isCountDownVisible = false
-                        if (!DashboardChecklistManager.paymentStatus) {
-                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
-                            isTrialExpired = true
-                        } else {
-                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                            isTrialExpired = false
-                        }
-                    }
+                    var name = ResponseObj.userdata.firstName
+                    /*if (!ResponseObj.userdata.lastName.isNullOrEmpty())
+                        name = name.plus(" ${ResponseObj.userdata.lastName}")*/
+                    binding.userName.text = name
+
+                    val tvGreetingText = findViewById<TextView>(R.id.greetingText)
+                    tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + ","
 
                     if (ResponseObj.isReportGenerated && !ResponseObj.reportView) {
                         binding.rightLifeReportCard.visibility = View.VISIBLE
@@ -594,26 +1281,138 @@ class HomeNewActivity : BaseActivity() {
                         ?.find { it.title == "HealthCam" }
                         ?.isFree ?: false
                     Log.d("isHealthCamFree", isHealthCamFree.toString())
+                    handleUserSubscriptionStatus(ResponseObj.user_sub_status)
+                    if (ResponseObj.freeServiceDate.isNotEmpty()) {
+                        /*if (showheaderFlag) {
+                            binding.llCountDown.visibility = View.VISIBLE
+                        }*/
+                        // Get the current fragment
+                        supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+
+                        // Check if it's HomeDashboardFragment
+                        /*if (currentFragment is HomeDashboardFragment) {
+                            if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status != 3)
+                                binding.llCountDown.visibility = View.VISIBLE
+                        } else {
+                            binding.llCountDown.visibility = View.GONE
+                        }*/
+                        if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status != 3)
+                            binding.llCountDown.visibility = View.VISIBLE
+                        showSevenDayCountdown(ResponseObj.freeServiceDate, binding.tvDays)
+                    } else {
+                        binding.tvDays.text = ""
+                        binding.llCountDown.visibility = View.GONE
+                    }
+                    isUserProfileLoaded = true
+                    tryProcessPendingDeepLink()
+                    if (ResponseObj.user_sub_status == 2) {
+                        AnalyticsLogger.logEvent(
+                            this@HomeNewActivity,
+                            AnalyticsEvent.FreeTrialEnded
+                        )
+                    }
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    if (response.code() == 401) {
+                        clearUserDataAndFinish()
+                    }
+                    isUserProfileLoaded = true
+                    tryProcessPendingDeepLink()
                 }
 
-                if (!DashboardChecklistManager.paymentStatus) {
-                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
-                    isTrialExpired = true
-                } else {
-                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
-                    isTrialExpired = false
-                }
-
-
+                /*  if (!DashboardChecklistManager.paymentStatus) {
+                      binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                      isTrialExpired = true
+                  } else {
+                      binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                      isTrialExpired = false
+                  }*/
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
                 handleNoInternetView(t)
+                isUserProfileLoaded = true
+                tryProcessPendingDeepLink()
             }
         })
     }
+
+    fun checkTrailEndedAndShowDialog(): Boolean {
+        /*  binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+          binding.includedhomebottomsheet.bottomSheetParent.apply {
+              isClickable = false
+              isFocusable = false
+              visibility = View.GONE
+          }
+          binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+          binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+          binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+              this@HomeNewActivity, R.color.white
+          )
+          binding.fab.imageTintList = ColorStateList.valueOf(
+              resources.getColor(
+                  R.color.rightlife
+              )
+          )
+          isAdd = !isAdd // Toggle the state*/
+        // commented above code as now as per product it should be kept open while going to next screen
+
+        return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this) {
+                    //myHealthFragmentSelected()
+                    HandleQuicklinkmenu()
+                }
+                false
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+                showTrailEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+                showSubsciptionEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else {
+                true
+            }
+        }
+        return true
+
+    }
+
+    private fun checkForceUpdate() {
+        if (!sharedPreferenceManager.isForceUpdateEnabled) return
+
+        val minRequired = sharedPreferenceManager.forceUpdateMinVersion
+        val currentVersion = BuildConfig.VERSION_NAME ?: "0"
+
+        if (isVersionLower(currentVersion, minRequired)) {
+            showForceUpdateDialog(
+                sharedPreferenceManager.forceUpdateMessage,
+                sharedPreferenceManager.forceUpdateUrl
+            )
+        }
+    }
+
+    private fun isVersionLower(current: String?, required: String?): Boolean {
+        if (current.isNullOrBlank() || required.isNullOrBlank()) return false
+
+        val currentParts = current.split(".").map { it.toIntOrNull() ?: 0 }
+        val requiredParts = required.split(".").map { it.toIntOrNull() ?: 0 }
+
+        val maxLength = maxOf(currentParts.size, requiredParts.size)
+
+        for (i in 0 until maxLength) {
+            val currentValue = currentParts.getOrElse(i) { 0 }
+            val requiredValue = requiredParts.getOrElse(i) { 0 }
+
+            if (currentValue < requiredValue) return true
+            if (currentValue > requiredValue) return false
+        }
+        return false
+    }
+
 
     private fun checkForUpdate() {
         val remoteConfig = Firebase.remoteConfig
@@ -633,12 +1432,15 @@ class HomeNewActivity : BaseActivity() {
             if (task.isSuccessful) {
                 val latestVersion = remoteConfig.getString("force_update_current_version")
                 val isForceUpdate = remoteConfig.getBoolean("isForceUpdate")
-                val forceUpdateBuildNumber = remoteConfig.getString("force_update_build_number")
+                remoteConfig.getString("force_update_build_number")
 
                 val currentVersion = BuildConfig.VERSION_NAME
 
                 if (isForceUpdate && isVersionOutdated(currentVersion, latestVersion)) {
-                    showForceUpdateDialog()
+                    showForceUpdateDialog(
+                        sharedPreferenceManager.forceUpdateMessage,
+                        sharedPreferenceManager.forceUpdateUrl
+                    )
                 }
             }
         }
@@ -656,7 +1458,7 @@ class HomeNewActivity : BaseActivity() {
         return diffInDays.toInt()
     }
 
-    private fun showForceUpdateDialog() {
+    private fun showForceUpdateDialog(forceUpdateMessage: String, forceUpdateUrl: String) {
 
         // Create the dialog
         val dialog = Dialog(this)
@@ -688,13 +1490,14 @@ class HomeNewActivity : BaseActivity() {
 
     }
 
+
     private fun updateMenuSelection(selectedMenuId: Int) {
         // Reset both to unselected
         binding.iconHome.setImageResource(R.drawable.new_home_unselected_svg)
         binding.labelHome.setTextColor(ContextCompat.getColor(this, R.color.gray))
         binding.labelHome.setTypeface(null, Typeface.NORMAL)
 
-        binding.iconExplore.setImageResource(R.drawable.new_explore_unselected_svg)
+        binding.iconExplore.setImageResource(R.drawable.my_health_menu_unselected_new)
         binding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.gray))
         binding.labelExplore.setTypeface(null, Typeface.NORMAL)
 
@@ -707,30 +1510,55 @@ class HomeNewActivity : BaseActivity() {
             }
 
             R.id.menu_explore -> {
-                binding.iconExplore.setImageResource(R.drawable.new_explore_selected_svg)
+                binding.iconExplore.setImageResource(R.drawable.my_health_menu_selected_new)
                 binding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.rightlife))
                 binding.labelExplore.setTypeface(null, Typeface.BOLD)
             }
         }
     }
 
-
-    private fun checkTrailEndedAndShowDialog(): Boolean {
-        return if (!DashboardChecklistManager.paymentStatus) {
-            showTrailEndedBottomSheet()
-            false // Return false if condition is true and dialog is shown
-        } else {
-            if (!DashboardChecklistManager.checklistStatus) {
-                DialogUtils.showCheckListQuestionCommonDialog(this)
-                false
-            } else {
-                true // Return true if condition is false
-            }
-        }
-        return true
+    fun showTrailEndedBottomSheet() {
+        DialogUtils.showFreeTrailRelatedBottomSheet(
+            this,
+            "Your 7-Day Trial has ended. You can still view your 7-day journey, but new tracking is locked. Upgrade to Pro to continue building your health story.",
+            "Free Trial Ended",
+            "See Plans",
+            false,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {
+                if (NetworkUtils.isInternetAvailable(this)) {
+                    startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                        putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                    })
+                } else {
+                    showInternetError()
+                }
+            })
     }
 
-    private fun showTrailEndedBottomSheet() {
+    fun showSubsciptionEndedBottomSheet() {
+        DialogUtils.showFreeTrailRelatedBottomSheet(
+            this,
+            "Reactivate now to continue tracking and improving your health.",
+            "No Active Plan",
+            "See Plans",
+            false,
+            R.drawable.ft_ended,
+            R.drawable.ft_warning,
+            onOkayClick = {
+                if (NetworkUtils.isInternetAvailable(this)) {
+                    startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                        putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                    })
+                    AnalyticsLogger.logEvent(this, AnalyticsEvent.ManageSubs_Explore)
+                } else {
+                    showInternetError()
+                }
+            })
+    }
+
+    /*private fun showTrailEndedBottomSheet() {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
 
@@ -768,10 +1596,17 @@ class HomeNewActivity : BaseActivity() {
         }
 
         bottomSheetDialog.show()
-    }
+    }*/
 
     fun showHeader(show: Boolean) {
-        binding.llCountDown.visibility = if (show && isCountDownVisible) View.VISIBLE else View.GONE
+        showheaderFlag = show
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 1 || sharedPreferenceManager.userProfile?.freeServiceDate?.isNotEmpty() == true) {
+            binding.llCountDown.visibility =
+                if (show && isCountDownVisible) View.VISIBLE else View.GONE
+        } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+            binding.llFreeTrailExpired.visibility = View.VISIBLE
+            binding.llCountDown.visibility = View.GONE
+        }
     }
 
     private fun showInternetError() {
@@ -781,9 +1616,11 @@ class HomeNewActivity : BaseActivity() {
     fun showSubsribeLayout(show: Boolean) {
         if (!DashboardChecklistManager.paymentStatus) {
             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+            binding.llFreeTrailExpired.visibility = View.VISIBLE
             isTrialExpired = true
         } else {
             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+            binding.llFreeTrailExpired.visibility = View.GONE
             isTrialExpired = false
         }
     }
@@ -827,7 +1664,7 @@ class HomeNewActivity : BaseActivity() {
                     // Query subscriptions
 
                     recoverSubscriptions()
-
+                    //getSubscriptionProducts(binding.tvStriketroughPrice);
                 }
 
             }
@@ -959,36 +1796,36 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-/*    private fun updateBackendForPurchase(purchase: Purchase) {
-        Log.d(
-            TAG,
-            "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}"
-        )
+    /*    private fun updateBackendForPurchase(purchase: Purchase) {
+            Log.d(
+                TAG,
+                "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}"
+            )
 
-        val paymentSuccessRequest = PaymentSuccessRequest().apply {
-            planId = purchase.products.firstOrNull() ?: ""
-            planName = purchase.products.firstOrNull() ?: ""
-            paymentGateway = "googlePlay"
-            orderId = purchase.orderId ?: ""
-            environment = "payment"
-            notifyType = "SDK"
-            couponId = ""
-            obfuscatedExternalAccountId = ""
-            price = purchase.products.firstOrNull() ?: ""
-
-            sdkDetail = SdkDetail().apply {
-                price = ""
+            val paymentSuccessRequest = PaymentSuccessRequest().apply {
+                planId = purchase.products.firstOrNull() ?: ""
+                planName = purchase.products.firstOrNull() ?: ""
+                paymentGateway = "googlePlay"
                 orderId = purchase.orderId ?: ""
-                title = ""
                 environment = "payment"
-                description = ""
-                currencyCode = "INR"
-                currencySymbol = "₹"
-            }
-        }
+                notifyType = "SDK"
+                couponId = ""
+                obfuscatedExternalAccountId = ""
+                price = purchase.products.firstOrNull() ?: ""
 
-        saveSubscriptionSuccess(paymentSuccessRequest)
-    }*/
+                sdkDetail = SdkDetail().apply {
+                    price = ""
+                    orderId = purchase.orderId ?: ""
+                    title = ""
+                    environment = "payment"
+                    description = ""
+                    currencyCode = "INR"
+                    currencySymbol = "₹"
+                }
+            }
+
+            saveSubscriptionSuccess(paymentSuccessRequest)
+        }*/
 
     private fun updateBackendForPurchase(purchase: Purchase) {
         Log.d(
@@ -1168,20 +2005,41 @@ class HomeNewActivity : BaseActivity() {
             }
         }
 
-    private suspend fun fetchAllHealthData() {
+    private suspend fun fetchAllHealthDatas() {
         try {
-            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
-            var endTime = Instant.now()
-            var startTime = Instant.now()
+            val grantedPermissions =
+                healthConnectClient.permissionController.getGrantedPermissions()
+            val now = Instant.now()
             val syncTime =
-                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime ?: ""
-            if (syncTime == "") {
-                endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(30))
+                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime.orEmpty()
+            val startTime: Instant = if (syncTime.isBlank()) {
+                // First-time sync: pull last 30 days
+                now.minus(Duration.ofDays(30))
             } else {
-                endTime = Instant.now()
-                startTime = convertUtcToInstant(syncTime)
+                // Next sync: only fetch new data
+                Instant.parse(syncTime)
             }
+            val endTime: Instant = now
+            // Trackers for incremental sync
+            var latestModifiedTime: Instant? = null
+            var recordsFound = false
+
+            // Update function for lastModifiedTime
+            fun updateLastSync(record: Record) {
+                val modified = record.metadata.lastModifiedTime
+                if (latestModifiedTime == null || modified.isAfter(latestModifiedTime)) {
+                    latestModifiedTime = modified
+                }
+            }
+//            var startTime = Instant.now()
+//            val syncTime = SharedPreferenceManager.getInstance(context?.let { it }).moveRightSyncTime ?: ""
+//            if (syncTime == "") {
+//                endTime = Instant.now()
+//                startTime = endTime.minus(Duration.ofDays(30))
+//            }else{
+//                endTime = Instant.now()
+//                startTime = convertUtcToInstant(syncTime)
+//            }
             if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
                 if (syncTime == "") {
                     val totalCaloroieResponse = mutableListOf<TotalCaloriesBurnedRecord>()
@@ -1201,7 +2059,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     totalCaloriesBurnedRecord = totalCaloroieResponse
-                }else{
+                } else {
                     val caloriesResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = TotalCaloriesBurnedRecord::class,
@@ -1215,7 +2073,12 @@ class HomeNewActivity : BaseActivity() {
                     val burnedCalories = record.energy.inKilocalories
                     val start = record.startTime
                     val end = record.endTime
-                    Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d(
+                        "HealthData",
+                        "Total Calories Burned: $burnedCalories kcal | From: $start To: $end"
+                    )
                 }
             } else {
                 totalCaloriesBurnedRecord = emptyList()
@@ -1240,7 +2103,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     stepsRecord = stepsResponse
-                }else{
+                } else {
                     val stepsResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = StepsRecord::class,
@@ -1248,6 +2111,10 @@ class HomeNewActivity : BaseActivity() {
                         )
                     )
                     stepsRecord = stepsResponse.records
+                }
+                stepsRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                 }
             } else {
                 stepsRecord = emptyList()
@@ -1272,7 +2139,7 @@ class HomeNewActivity : BaseActivity() {
                         chunkStart = chunkEnd
                     }
                     heartRateRecord = results
-                }else{
+                } else {
                     val response = healthConnectClient.readRecords(
                         ReadRecordsRequest(
                             recordType = HeartRateRecord::class,
@@ -1282,9 +2149,33 @@ class HomeNewActivity : BaseActivity() {
                     heartRateRecord = response.records
                     Log.d("HealthData", "Total HR records fetched: ${response.records.size}")
                 }
-            }else {
+                heartRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                }
+            } else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
+            }
+            if (HealthPermission.getReadPermission(RestingHeartRateRecord::class) in grantedPermissions) {
+                val restingHRResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = RestingHeartRateRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                restingHeartRecord = restingHRResponse.records
+                restingHeartRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
+                    Log.d(
+                        "HealthData",
+                        "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}"
+                    )
+                }
+            } else {
+                restingHeartRecord = emptyList()
+                Log.d("HealthData", "Resting Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class) in grantedPermissions) {
                 val activeCalorieResponse = healthConnectClient.readRecords(
@@ -1295,12 +2186,16 @@ class HomeNewActivity : BaseActivity() {
                 )
                 activeCalorieBurnedRecord = activeCalorieResponse.records
                 activeCalorieBurnedRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d(
-                        "HealthData", "Active Calories Burned: ${record.energy} kCal, Time: ${record.startTime}")
+                        "HealthData",
+                        "Active Calories Burn Rate: ${record.energy} kCal, Time: ${record.startTime}"
+                    )
                 }
             } else {
                 activeCalorieBurnedRecord = emptyList()
-                Log.d("HealthData", "Active Calories Burned permission denied")
+                Log.d("HealthData", "Active Calories burn permission denied")
             }
             if (HealthPermission.getReadPermission(BasalMetabolicRateRecord::class) in grantedPermissions) {
                 val basalMetabolic = healthConnectClient.readRecords(
@@ -1318,7 +2213,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             } else {
                 basalMetabolicRateRecord = emptyList()
-                Log.d("HealthData", "Basal Metabolic rate permission denied")
+                Log.d("HealthData", "Basal Metabolic permission denied")
             }
             if (HealthPermission.getReadPermission(BloodPressureRecord::class) in grantedPermissions) {
                 val bloodPressure = healthConnectClient.readRecords(
@@ -1329,14 +2224,11 @@ class HomeNewActivity : BaseActivity() {
                 )
                 bloodPressureRecord = bloodPressure.records
                 bloodPressureRecord?.forEach { record ->
-                    Log.d(
-                        "HealthData",
-                        "Blood Pressure: ${record.systolic}, Time: ${record.time}"
-                    )
+                    Log.d("HealthData", "Blood Pressure: ${record.systolic}, Time: ${record.time}")
                 }
             } else {
                 bloodPressureRecord = emptyList()
-                Log.d("HealthData", "Blood Pressure permission denied")
+                Log.d("HealthData", "Blood Pressure  permission denied")
             }
             if (HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class) in grantedPermissions) {
                 val restingVresponse = healthConnectClient.readRecords(
@@ -1347,14 +2239,16 @@ class HomeNewActivity : BaseActivity() {
                 )
                 heartRateVariability = restingVresponse.records
                 heartRateVariability?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d(
                         "HealthData",
-                        "Heart Rate Variability Rmssd: ${record.heartRateVariabilityMillis}, Time: ${record.time}"
+                        "Heart Rate Variability: ${record.heartRateVariabilityMillis}, Time: ${record.time}"
                     )
                 }
             } else {
                 heartRateVariability = emptyList()
-                Log.d("HealthData", "Heart rate Variability Rmssdpermission denied")
+                Log.d("HealthData", "Heart rate Variability permission denied")
             }
             if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
                 val sleepResponse = healthConnectClient.readRecords(
@@ -1365,6 +2259,8 @@ class HomeNewActivity : BaseActivity() {
                 )
                 sleepSessionRecord = sleepResponse.records
                 sleepSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d(
                         "HealthData",
                         "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}"
@@ -1383,6 +2279,8 @@ class HomeNewActivity : BaseActivity() {
                 )
                 exerciseSessionRecord = exerciseResponse.records
                 exerciseSessionRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d(
                         "HealthData",
                         "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}"
@@ -1469,6 +2367,8 @@ class HomeNewActivity : BaseActivity() {
                 )
                 respiratoryRateRecord = respiratoryRateResponse.records
                 respiratoryRateRecord?.forEach { record ->
+                    recordsFound = true
+                    updateLastSync(record)
                     Log.d(
                         "HealthData",
                         "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}"
@@ -1489,23 +2389,34 @@ class HomeNewActivity : BaseActivity() {
                 for (record in stepsResponse.records) {
                     dataOrigin = record.metadata.dataOrigin.packageName
                     val deviceInfo = record.metadata.device
-                    if (deviceInfo != null && deviceInfo.manufacturer != "null") {
+                    if (deviceInfo != null) {
                         if (deviceInfo.manufacturer != "") {
-                            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(deviceInfo.manufacturer)
+                            SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                                .saveDeviceName(dataOrigin)
                             Log.d(
                                 "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-               Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
                             )
                             break
-                        }else{
-                            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(dataOrigin)
+                        } else {
+                            SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                                .saveDeviceName(dataOrigin)
                             break
                         }
                     } else {
-                        SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(dataOrigin)
+                        SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                            .saveDeviceName(dataOrigin)
                         break
                     }
                 }
+            }
+            if (recordsFound && latestModifiedTime != null) {
+                SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                    .saveMoveRightSyncTime(Instant.now().toString())
+                Log.d("HealthSync", "✔ Saved new last sync time: $latestModifiedTime")
+
+            } else {
+                Log.d("HealthSync", "⚠ No new data found → NOT updating last sync time")
             }
             if (dataOrigin.equals("com.google.android.apps.fitness")) {
                 storeHealthData()
@@ -1519,9 +2430,200 @@ class HomeNewActivity : BaseActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@HomeNewActivity, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@HomeNewActivity,
+                    "Error fetching health data: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
+    }
+
+    private suspend fun fetchAllHealthData() {
+        try {
+
+            val ctx = this@HomeNewActivity ?: return
+            val client = healthConnectClient
+
+            val granted = try {
+                client.permissionController.getGrantedPermissions()
+            } catch (e: Exception) {
+                Log.e("HealthSync", "Permission fetch failed", e)
+                emptySet()
+            }
+
+            Log.d("HealthSync", "Granted permissions = $granted")
+
+            val now = Instant.now()
+
+            val savedSync = SharedPreferenceManager
+                .getInstance(ctx)
+                .moveRightSyncTime
+                .orEmpty()
+
+            val isFirstSync = savedSync.isBlank()
+
+            val defaultStart = now.minus(Duration.ofDays(30))
+            val lastSyncInstant = if (isFirstSync) null else runCatching {
+                Instant.parse(savedSync)
+            }.getOrNull()
+
+            // ✅ TIMEZONE SAFE
+            val todayStart = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+
+            val computedStartTime = when {
+                isFirstSync -> defaultStart
+                lastSyncInstant != null -> {
+                    if (lastSyncInstant.isAfter(todayStart)) todayStart else lastSyncInstant
+                }
+
+                else -> defaultStart
+            }
+
+            val endTime = now
+
+            Log.d("HealthSync", "StartTime = $computedStartTime")
+            Log.d("HealthSync", "EndTime   = $endTime")
+
+            var latestModified: Instant? = null
+            var foundNewData = false
+
+            fun markModified(record: Record) {
+                foundNewData = true
+                val modified = record.metadata.lastModifiedTime
+                if (latestModified == null || modified.isAfter(latestModified)) {
+                    latestModified = modified
+                }
+            }
+
+            suspend fun <T : Record> fetchChunk(type: KClass<T>): List<T> {
+                return try {
+                    if (isFirstSync) {
+                        fetchChunked(type, computedStartTime, endTime, 15)
+                    } else {
+                        client.readRecords(
+                            ReadRecordsRequest(
+                                type,
+                                TimeRangeFilter.between(computedStartTime, endTime)
+                            )
+                        ).records
+                    }
+                } catch (e: Exception) {
+                    Log.e("HealthSync", "Fetch failed for ${type.simpleName}", e)
+                    emptyList()
+                }
+            }
+
+            fun <T : Record> hasPermission(type: KClass<T>): Boolean {
+                val perm = HealthPermission.getReadPermission(type)
+                val grantedNow = perm in granted
+                if (!grantedNow) {
+                    Log.w("HealthSync", "Missing permission for ${type.simpleName}")
+                }
+                return grantedNow
+            }
+
+            suspend fun <T : Record> load(
+                type: KClass<T>,
+                assign: (List<T>) -> Unit
+            ) {
+                Log.d("HealthSync", "Loading ${type.simpleName}")
+
+                if (!hasPermission(type)) {
+                    assign(emptyList())
+                    return
+                }
+
+                val records = fetchChunk(type)
+                Log.d("HealthSync", "${type.simpleName} count = ${records.size}")
+
+                assign(records)
+                records.forEach { markModified(it) }
+            }
+
+            // ------------------------------
+            // FETCH
+            // ------------------------------
+            load(TotalCaloriesBurnedRecord::class) { totalCaloriesBurnedRecord = it }
+            load(StepsRecord::class) { stepsRecord = it }
+            load(HeartRateRecord::class) { heartRateRecord = it }
+            load(RestingHeartRateRecord::class) { restingHeartRecord = it }
+            load(ActiveCaloriesBurnedRecord::class) { activeCalorieBurnedRecord = it }
+            load(HeartRateVariabilityRmssdRecord::class) { heartRateVariability = it }
+            load(SleepSessionRecord::class) { sleepSessionRecord = it }
+            load(ExerciseSessionRecord::class) { exerciseSessionRecord = it }
+            load(RespiratoryRateRecord::class) { respiratoryRateRecord = it }
+            load(WeightRecord::class) { weightRecord = it }
+            load(BodyFatRecord::class) { bodyFatRecord = it }
+            load(DistanceRecord::class) { distanceRecord = it }
+            load(OxygenSaturationRecord::class) { oxygenSaturationRecord = it }
+            load(BasalMetabolicRateRecord::class) { basalMetabolicRateRecord = it }
+            load(BloodPressureRecord::class) { bloodPressureRecord = it }
+
+            // ------------------------------
+            // DEVICE DETECTION
+            // ------------------------------
+            val devicePackage =
+                stepsRecord?.firstOrNull()?.metadata?.dataOrigin?.packageName ?: "unknown"
+
+            val deviceManufacturer =
+                stepsRecord?.firstOrNull()?.metadata?.device?.manufacturer ?: devicePackage
+
+            SharedPreferenceManager.getInstance(ctx).saveDeviceName(deviceManufacturer)
+
+            // ------------------------------
+            // SAVE SYNC TIME
+            // ------------------------------
+            if (foundNewData && latestModified != null) {
+                SharedPreferenceManager
+                    .getInstance(ctx)
+                    .saveMoveRightSyncTime(latestModified.toString())
+
+                Log.d("HealthSync", "Updated lastSync = $latestModified")
+            } else {
+                Log.d("HealthSync", "No new data. Sync time unchanged")
+            }
+
+            // ------------------------------
+            // PUSH TO SERVER
+            // ------------------------------
+            when (devicePackage) {
+                "com.google.android.apps.fitness" -> storeHealthData()
+                "com.sec.android.app.shealth",
+                "com.samsung.android.wear.shealth" -> storeSamsungHealthData()
+
+                else -> storeHealthData()
+            }
+
+        } catch (e: Exception) {
+            Log.e("HealthSync", "Fatal error", e)
+        } finally {
+            //hideLoaderSafe()
+        }
+    }
+
+    private suspend fun <T : Record> fetchChunked(
+        type: KClass<T>,
+        start: Instant,
+        end: Instant,
+        chunks: Int
+    ): List<T> {
+        val output = mutableListOf<T>()
+        val total = Duration.between(start, end)
+        val chunk = total.dividedBy(chunks.toLong())
+
+        var cursor = start
+        repeat(chunks) { i ->
+            val next = if (i == chunks - 1) end else cursor.plus(chunk)
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(type, TimeRangeFilter.between(cursor, next))
+            )
+            output.addAll(response.records)
+            cursor = next
+        }
+        return output
     }
 
     private fun storeHealthData() {
@@ -1529,9 +2631,9 @@ class HomeNewActivity : BaseActivity() {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(this@HomeNewActivity).userId
-                var activeEnergyBurned : List<EnergyBurnedRequest>? = null
-                if (activeCalorieBurnedRecord!!.isNotEmpty()){
-                     activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
+                var activeEnergyBurned: List<EnergyBurnedRequest>? = null
+                if (activeCalorieBurnedRecord!!.isNotEmpty()) {
+                    activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
                         if (record.energy.inKilocalories > 0) {
                             EnergyBurnedRequest(
                                 start_datetime = convertToTargetFormat(record.startTime.toString()),
@@ -1543,8 +2645,8 @@ class HomeNewActivity : BaseActivity() {
                             )
                         } else null
                     } ?: emptyList()
-                }else{
-                     activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
+                } else {
+                    activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
                         if (record.energy.inKilocalories > 0) {
                             EnergyBurnedRequest(
                                 start_datetime = convertToTargetFormat(record.startTime.toString()),
@@ -1569,12 +2671,14 @@ class HomeNewActivity : BaseActivity() {
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US, "%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                         )
                     } else null
@@ -1627,24 +2731,28 @@ class HomeNewActivity : BaseActivity() {
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeKm = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                         )
                     } else null
                 } ?: emptyList()
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                         )
                     } else null
@@ -1671,23 +2779,27 @@ class HomeNewActivity : BaseActivity() {
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToTargetFormat(record.time.toString()),
                             end_datetime = convertToTargetFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                         )
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToTargetFormat(record.time.toString()),
                         end_datetime = convertToTargetFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage),
+                        value = String.format(Locale.US, "%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                     )
                 } ?: emptyList()
@@ -1701,7 +2813,7 @@ class HomeNewActivity : BaseActivity() {
                                 record_type = "Asleep",
                                 unit = "stage",
                                 value = "Asleep",
-                                source_name =  SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                             )
                         )
                     } else {
@@ -1721,7 +2833,7 @@ class HomeNewActivity : BaseActivity() {
                                     record_type = it,
                                     unit = "sleep_stage",
                                     value = it,
-                                    source_name =  SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                    source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 )
                             }
                         }
@@ -1746,21 +2858,22 @@ class HomeNewActivity : BaseActivity() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin.let { 5.0 }
-                        WorkoutRequest(
-                            start_datetime = convertToTargetFormat(record.startTime.toString()),
-                            end_datetime = convertToTargetFormat(record.endTime.toString()),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName,
-                            record_type = "Workout",
-                            workout_type = workoutType,
-                            duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = "",
-                            distance = String.format("%.1f", distance),
-                            duration_unit = "minutes",
-                            calories_unit = "kcal",
-                            distance_unit = "km"
-                        )
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
+                    WorkoutRequest(
+                        start_datetime = convertToTargetFormat(record.startTime.toString()),
+                        end_datetime = convertToTargetFormat(record.endTime.toString()),
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName,
+                        record_type = "Workout",
+                        workout_type = workoutType,
+                        duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
+                        calories_burned = "",
+                        distance = String.format(Locale.US, "%.1f", safeDistance),
+                        duration_unit = "minutes",
+                        calories_unit = "kcal",
+                        distance_unit = "km"
+                    )
                 } ?: emptyList()
-                val request = StoreHealthDataRequest(
+                StoreHealthDataRequest(
                     user_id = userid,
                     source = "android",
                     active_energy_burned = activeEnergyBurned,
@@ -1808,24 +2921,33 @@ class HomeNewActivity : BaseActivity() {
                     val req = StoreHealthDataRequest(
                         user_id = userid,
                         source = "android",
-                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "ActiveEnergyBurned" },
-                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "BasalMetabolic" },
+                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>()
+                            .filter { it.record_type == "ActiveEnergyBurned" },
+                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>()
+                            .filter { it.record_type == "BasalMetabolic" },
                         distance_walking_running = batch.filterIsInstance<Distance>(),
                         step_count = batch.filterIsInstance<StepCountRequest>(),
-                        heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "HeartRate" },
+                        heart_rate = batch.filterIsInstance<HeartRateRequest>()
+                            .filter { it.record_type == "HeartRate" },
                         heart_rate_variability_SDNN = batch.filterIsInstance<HeartRateVariabilityRequest>(),
-                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "RestingHeartRate" },
+                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>()
+                            .filter { it.record_type == "RestingHeartRate" },
                         respiratory_rate = batch.filterIsInstance<RespiratoryRate>(),
                         oxygen_saturation = batch.filterIsInstance<OxygenSaturation>(),
-                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureSystolic" },
-                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureDiastolic" },
+                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>()
+                            .filter { it.record_type == "BloodPressureSystolic" },
+                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>()
+                            .filter { it.record_type == "BloodPressureDiastolic" },
                         body_mass = batch.filterIsInstance<BodyMass>(),
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
                         workout = batch.filterIsInstance<WorkoutRequest>(),
                         time_zone = timeZone
                     )
-                    val response = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(req)
+                    val response =
+                        com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(
+                            req
+                        )
                     if (!response.isSuccessful) {
                         throw Exception("Batch upload failed with code: ${response.code()}")
                     }
@@ -1848,12 +2970,16 @@ class HomeNewActivity : BaseActivity() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(this@HomeNewActivity).saveMoveRightSyncTime(syncTime)
+//                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
+//                        .saveMoveRightSyncTime(Instant.now().toString())
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@HomeNewActivity, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@HomeNewActivity,
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -1864,8 +2990,8 @@ class HomeNewActivity : BaseActivity() {
             try {
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(this@HomeNewActivity).userId
-                var activeEnergyBurned : List<EnergyBurnedRequest>? = null
-                if (activeCalorieBurnedRecord!!.isNotEmpty()){
+                var activeEnergyBurned: List<EnergyBurnedRequest>? = null
+                if (activeCalorieBurnedRecord!!.isNotEmpty()) {
                     activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
                         if (record.energy.inKilocalories > 0) {
                             EnergyBurnedRequest(
@@ -1878,7 +3004,7 @@ class HomeNewActivity : BaseActivity() {
                             )
                         } else null
                     } ?: emptyList()
-                }else{
+                } else {
                     activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
                         if (record.energy.inKilocalories > 0) {
                             EnergyBurnedRequest(
@@ -1905,12 +3031,14 @@ class HomeNewActivity : BaseActivity() {
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
                     if (record.distance.inKilometers > 0) {
+                        val km = record.distance.inKilometers
+                        val safeKm = if (km.isFinite()) km else 0.0
                         Distance(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
-                            value = String.format("%.2f", record.distance.inKilometers),
+                            value = String.format(Locale.US, "%.2f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 ?: "samsung"
                         )
@@ -1968,12 +3096,14 @@ class HomeNewActivity : BaseActivity() {
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
+                        val km = record.rate
+                        val safeKm = if (km.isFinite()) km else 0.0
                         RespiratoryRate(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
-                            value = String.format("%.1f", record.rate),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 ?: "samsung"
                         )
@@ -1981,12 +3111,14 @@ class HomeNewActivity : BaseActivity() {
                 } ?: emptyList()
                 val oxygenSaturation = oxygenSaturationRecord?.mapNotNull { record ->
                     if (record.percentage.value > 0) {
+                        val km = record.percentage.value
+                        val safeKm = if (km.isFinite()) km else 0.0
                         OxygenSaturation(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "OxygenSaturation",
                             unit = "%",
-                            value = String.format("%.1f", record.percentage.value),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 ?: "samsung"
                         )
@@ -2016,24 +3148,28 @@ class HomeNewActivity : BaseActivity() {
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
                     if (record.weight.inKilograms > 0) {
+                        val km = record.weight.inKilograms
+                        val safeKm = if (km.isFinite()) km else 0.0
                         BodyMass(
                             start_datetime = convertToSamsungFormat(record.time.toString()),
                             end_datetime = convertToSamsungFormat(record.time.toString()),
                             record_type = "BodyMass",
                             unit = "kg",
-                            value = String.format("%.1f", record.weight.inKilograms),
+                            value = String.format(Locale.US, "%.1f", safeKm),
                             source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                                 ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
+                    val km = record.percentage.value
+                    val safeKm = if (km.isFinite()) km else 0.0
                     BodyFatPercentage(
                         start_datetime = convertToSamsungFormat(record.time.toString()),
                         end_datetime = convertToSamsungFormat(record.time.toString()),
                         record_type = "BodyFat",
                         unit = "percentage",
-                        value = String.format("%.1f", record.percentage),
+                        value = String.format(Locale.US, "%.1f", safeKm),
                         source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                             ?: "samsung"
                     )
@@ -2093,22 +3229,23 @@ class HomeNewActivity : BaseActivity() {
                         else -> "Other"
                     }
                     val distance = record.metadata.dataOrigin.let { 5.0 }
-                        WorkoutRequest(
-                            start_datetime = convertToSamsungFormat(record.startTime.toString()),
-                            end_datetime = convertToSamsungFormat(record.endTime.toString()),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
-                                ?: "samsung",
-                            record_type = "Workout",
-                            workout_type = workoutType,
-                            duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = "",
-                            distance = String.format("%.1f", distance),
-                            duration_unit = "minutes",
-                            calories_unit = "kcal",
-                            distance_unit = "km"
-                        )
+                    val safeDistance = if (distance.isFinite()) distance else 0.0
+                    WorkoutRequest(
+                        start_datetime = convertToSamsungFormat(record.startTime.toString()),
+                        end_datetime = convertToSamsungFormat(record.endTime.toString()),
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                            ?: "samsung",
+                        record_type = "Workout",
+                        workout_type = workoutType,
+                        duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
+                        calories_burned = "",
+                        distance = String.format(Locale.US, "%.1f", safeDistance),
+                        duration_unit = "minutes",
+                        calories_unit = "kcal",
+                        distance_unit = "km"
+                    )
                 } ?: emptyList()
-                val request = StoreHealthDataRequest(
+                StoreHealthDataRequest(
                     user_id = userid,
                     source = "android",
                     active_energy_burned = activeEnergyBurned,
@@ -2156,24 +3293,33 @@ class HomeNewActivity : BaseActivity() {
                     val req = StoreHealthDataRequest(
                         user_id = userid,
                         source = "android",
-                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "ActiveEnergyBurned" },
-                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "BasalMetabolic" },
+                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>()
+                            .filter { it.record_type == "ActiveEnergyBurned" },
+                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>()
+                            .filter { it.record_type == "BasalMetabolic" },
                         distance_walking_running = batch.filterIsInstance<Distance>(),
                         step_count = batch.filterIsInstance<StepCountRequest>(),
-                        heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "HeartRate" },
+                        heart_rate = batch.filterIsInstance<HeartRateRequest>()
+                            .filter { it.record_type == "HeartRate" },
                         heart_rate_variability_SDNN = batch.filterIsInstance<HeartRateVariabilityRequest>(),
-                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "RestingHeartRate" },
+                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>()
+                            .filter { it.record_type == "RestingHeartRate" },
                         respiratory_rate = batch.filterIsInstance<RespiratoryRate>(),
                         oxygen_saturation = batch.filterIsInstance<OxygenSaturation>(),
-                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureSystolic" },
-                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureDiastolic" },
+                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>()
+                            .filter { it.record_type == "BloodPressureSystolic" },
+                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>()
+                            .filter { it.record_type == "BloodPressureDiastolic" },
                         body_mass = batch.filterIsInstance<BodyMass>(),
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
                         workout = batch.filterIsInstance<WorkoutRequest>(),
                         time_zone = timeZone
                     )
-                    val response = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(req)
+                    val response =
+                        com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(
+                            req
+                        )
                     if (!response.isSuccessful) {
                         throw Exception("Batch upload failed with code: ${response.code()}")
                     }
@@ -2196,12 +3342,16 @@ class HomeNewActivity : BaseActivity() {
                 }
                 // ✅ Done, update sync time
                 withContext(Dispatchers.Main) {
-                    val syncTime = ZonedDateTime.now().toString()
-                    SharedPreferenceManager.getInstance(this@HomeNewActivity).saveMoveRightSyncTime(syncTime)
+//                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
+//                        .saveMoveRightSyncTime(Instant.now().toString())
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@HomeNewActivity, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@HomeNewActivity,
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -2354,5 +3504,1157 @@ class HomeNewActivity : BaseActivity() {
         return planId
     }
 
+    private fun handleUserSubscriptionStatus(userSubStatus: Int) {
+        when (userSubStatus) {
+            0 -> {
+                //Toast.makeText(this, "Welcome! Start your free trial.", Toast.LENGTH_LONG).show()
+                // maybe trigger free trial flow here
+                binding.flFreeTrial.visibility = View.VISIBLE
+                makeFreeTrialVisible()
+                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                binding.llFreeTrailExpired.visibility = View.GONE
+            }
+
+            1 -> {
+                //Toast.makeText(this, "You are subscribed. Enjoy premium features!", Toast.LENGTH_LONG).show()
+                binding.flFreeTrial.visibility = View.GONE
+                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                binding.llFreeTrailExpired.visibility = View.GONE
+            }
+
+            2 -> {
+                //   Toast.makeText(this, "Your free trial has expired. Subscribe to continue.", Toast.LENGTH_LONG).show()
+                // navigate to subscription screen if needed
+                binding.flFreeTrial.visibility = View.GONE
+                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                binding.llFreeTrailExpired.visibility = View.VISIBLE
+            }
+
+            3 -> {
+                // Toast.makeText(this, "Your subscription has ended. Renew to regain access.", Toast.LENGTH_LONG).show()
+                binding.flFreeTrial.visibility = View.GONE
+                binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                binding.llFreeTrailExpired.visibility = View.GONE
+            }
+
+            else -> {
+                Toast.makeText(
+                    this,
+                    "Unknown subscription status. Please contact support.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+    }
+
+    private fun makeFreeTrialVisible() {
+        binding.flFreeTrial.apply {
+            visibility = View.VISIBLE        // <-- must be visible
+            isClickable = true               // <-- ensures touch can be received
+            isFocusable = true
+            setOnClickListener {
+                Log.d("FreeTrialDebug", "Clicked!") // should appear in Logcat now
+                startActivity(Intent(this@HomeNewActivity, BeginMyFreeTrialActivity::class.java))
+            }
+        }
+
+    }
+
+    // handle user subsciption Status Code Explanation imp Don't delete
+    /*USER_SUB_STATUS = 0
+
+    0 - New User(Free Trail Not Started) -  trial starts on API Hit
+    1 - SUbribed (Subscribed using payment)
+    2 - Free Trial expired
+    3 - Subscription Ended*/
+
+    // Trial countdown timer logic
+    private var countDownTimer: CountDownTimer? = null
+
+    /**
+     * Shows a 7-day reverse countdown in a TextView based on API date.
+     * If expired, shows "Trial expired".
+     */
+    /*private fun showSevenDayCountdown(apiDate: String, textView: TextView) {
+        // Cancel any existing timer
+        countDownTimer?.cancel()
+
+        try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val startDate = dateFormat.parse(apiDate) ?: return
+
+            // Add 7 days to start date
+            val endTime = startDate.time + (7 * 24 * 60 * 60 * 1000L)
+            val currentTime = System.currentTimeMillis()
+            val timeRemaining = endTime - currentTime
+
+            if (timeRemaining > 0) {
+                countDownTimer = object : CountDownTimer(timeRemaining, 1000L) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        val days = millisUntilFinished / (1000 * 60 * 60 * 24)
+                        val hours = (millisUntilFinished % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                        val minutes = (millisUntilFinished % (1000 * 60 * 60)) / (1000 * 60)
+                        val seconds = (millisUntilFinished % (1000 * 60)) / 1000
+
+                        *//*textView.text = String.format(
+                            Locale.getDefault(),
+                            "%d Days %02d:%02d:%02d",
+                            days, hours, minutes, seconds
+                        )*//*
+                        binding.tvDays.text = String.format(
+                            Locale.getDefault(),
+                            "%02d",
+                            days
+                        )
+                        binding.tvHours.text = String.format(
+                            Locale.getDefault(),
+                            "%02d",
+                            hours
+                        )
+                        binding.tvMinutes.text = String.format(
+                            Locale.getDefault(),
+                            "%02d",
+                            minutes
+                        )
+                    }
+
+                    override fun onFinish() {
+                        textView.text = "Trial expired"
+                    }
+                }.start()
+            } else {
+                // Already expired
+                textView.text = "Trial expired"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            textView.text = "Invalid date"
+        }
+    }*/
+
+
+    private fun showSevenDayCountdown(apiDate: String, textView: TextView) {
+        // Cancel any existing timer
+        countDownTimer?.cancel()
+
+        try {
+            val startDateMillis: Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // API 26+ → use java.time
+                Instant.parse(apiDate).toEpochMilli()
+            } else {
+                // API < 26 → fallback to SimpleDateFormat
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+                dateFormat.parse(apiDate)?.time ?: return
+            }
+
+            // Add 7 days to start date
+            val endTime = startDateMillis + (7 * 24 * 60 * 60 * 1000L)
+            val currentTime = System.currentTimeMillis()
+            val timeRemaining = endTime - currentTime
+
+            if (timeRemaining > 0) {
+                countDownTimer = object : CountDownTimer(timeRemaining, 1000L) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        val days = millisUntilFinished / (1000 * 60 * 60 * 24)
+                        val hours = (millisUntilFinished % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                        val minutes = (millisUntilFinished % (1000 * 60 * 60)) / (1000 * 60)
+                        (millisUntilFinished % (1000 * 60)) / 1000
+
+                        // Update your UI
+                        binding.tvDays.text = String.format(Locale.getDefault(), "%02d", days)
+                        binding.tvHours.text = String.format(Locale.getDefault(), "%02d", hours)
+                        binding.tvMinutes.text = String.format(Locale.getDefault(), "%02d", minutes)
+                        // If you need seconds: binding.tvSeconds.text = "%02d".format(seconds)
+                    }
+
+                    override fun onFinish() {
+                        //textView.text = "Trial expired"
+                        binding.llFreeTrailExpired.visibility = View.VISIBLE
+                    }
+                }.start()
+            } else {
+                // Already expired
+                //textView.text = "Trial expired"
+                binding.llFreeTrailExpired.visibility = View.VISIBLE
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            //textView.text = "Invalid date"
+        }
+    }
+
+
+    // Dashboard Checklist API call
+    private fun getDashboardChecklistStatus() {
+        apiService.getdashboardChecklistStatus(sharedPreferenceManager.accessToken)
+            .enqueue(object : Callback<DashboardChecklistResponse> {
+                override fun onResponse(
+                    call: Call<DashboardChecklistResponse>,
+                    response: Response<DashboardChecklistResponse>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        response.body()?.data?.let {
+                            DashboardChecklistManager.updateFrom(it)
+                        }
+                    }
+                    isChecklistLoaded = true
+                    tryProcessPendingDeepLink()
+                }
+
+                override fun onFailure(call: Call<DashboardChecklistResponse>, t: Throwable) {
+                    handleNoInternetView(t)
+                    isChecklistLoaded = true
+                    tryProcessPendingDeepLink()
+                }
+
+            })
+    }
+
+    //getDashboardChecklist
+    private fun getDashboardChecklist() {
+        // Make the API call
+        val call = apiService.getDashboardChecklist(sharedPreferenceManager.accessToken)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val promotionResponse2 = response.body()!!.string()
+                    val gson = Gson()
+                    val checklistResponse = gson.fromJson(
+                        promotionResponse2, ChecklistResponse::class.java
+                    )
+                    sharedPreferenceManager.saveChecklistResponse(checklistResponse)
+                    handleChecklistResponse(checklistResponse)
+
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t) // Print the full stack trace for more details
+            }
+        })
+    }
+
+    private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
+        checklistCount = 0
+        if (checklistResponse != null) {
+            if (checklistResponse.data.profile.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.meal_snap.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.sync_health_data.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.vital_facial_scan.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.unlock_sleep.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+            if (checklistResponse.data.discover_eating.equals("COMPLETED", ignoreCase = true)) {
+                checklistCount++
+            }
+
+
+            checklistResponse.data.snap_mealId.let { snapMealId ->
+                if (!snapMealId.isNullOrEmpty()) {
+                    sharedPreferenceManager.saveSnapMealId(snapMealId)
+                    this.snapMealId = snapMealId
+                } else {
+                    sharedPreferenceManager.saveSnapMealId("")
+                    this.snapMealId = ""
+                }
+            }
+        }
+
+    }
+
+    private fun freeTrialDialogActivity(featureFlag: String = "") {
+        val intent = Intent(this, BeginMyFreeTrialActivity::class.java).apply {
+            putExtra(FeatureFlags.EXTRA_ENTRY_DEST, featureFlag)
+        }
+        startActivity(intent)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        countDownTimer?.cancel()
+    }
+
+    private fun myHealthFragmentSelected() {
+        // Get the current fragment
+        supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+
+        if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+            binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+            binding.includedhomebottomsheet.bottomSheetParent.apply {
+                isClickable = false
+                isFocusable = false
+                visibility = View.GONE
+            }
+
+            binding.includedhomebottomsheet.bottomSheetParent.visibility = View.GONE
+            binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+            binding.fab.animate().rotationBy(180f).setDuration(60)
+                .setInterpolator(DecelerateInterpolator()).withEndAction {
+                    // Change icon after rotation
+                    if (isAdd) {
+                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                            this, R.color.rightlife
+                        )
+                        binding.fab.imageTintList = ColorStateList.valueOf(
+                            resources.getColor(
+                                R.color.black
+                            )
+                        )
+                    } else {
+                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                            this, R.color.white
+                        )
+                        binding.fab.imageTintList = ColorStateList.valueOf(
+                            resources.getColor(
+                                R.color.rightlife
+                            )
+                        )
+                    }
+                    isAdd = !isAdd // Toggle the state
+                }.start()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                .commit()
+            updateMenuSelection(R.id.menu_explore)
+        } else {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                .commit()
+            updateMenuSelection(R.id.menu_explore)
+        }
+    }
+
+    fun callSnapMealClick() {
+
+        val userProfile = sharedPreferenceManager.userProfile
+        val userStatus = userProfile?.user_sub_status ?: -1
+        val freeDate = userProfile?.freeServiceDate.orEmpty()
+
+        when {
+            userStatus == 0 -> {
+                // Not subscribed
+                freeTrialDialogActivity(FeatureFlags.MEAL_SCAN)
+            }
+
+            userStatus == 1 && freeDate.isNotEmpty() -> {
+                // Free trial active with date
+                if (!DashboardChecklistManager.checklistStatus) {
+                    logAndOpenMeal(snapMealId)
+                } else {
+                    logAndOpenMeal("")
+                }
+            }
+
+            userStatus == 1 && freeDate.isEmpty() -> {
+                // Free trial active but no free date
+                logAndOpenMeal("")
+            }
+
+            userStatus == 2 -> {
+                // Free trial expired but has snap meal id
+                //logAndOpenMeal(snapMealId)
+                checkTrailEndedAndShowDialog()
+            }
+
+            userStatus == 3 -> {
+                // Subscription ended
+                showSubsciptionEndedBottomSheet()
+            }
+
+            snapMealId.isNotEmpty() -> {
+                // Safety fallback: allow if snapMealId present
+                logAndOpenMeal(snapMealId)
+            }
+
+            else -> {
+                // Final fallback: maybe show dialog
+                checkTrailEndedAndShowDialog()
+            }
+        }
+
+    }
+
+
+    fun callFaceScanClick() {
+        AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
+        } else {
+            val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService
+                ?: false
+
+            if (DashboardChecklistManager.facialScanStatus) {
+                startActivity(
+                    Intent(
+                        this@HomeNewActivity, NewHealthCamReportActivity::class.java
+                    )
+                )
+            } else {
+                if (isFacialScanService) {
+                    ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
+                } else {
+                    showSwitchAccountDialog(this@HomeNewActivity, "", "")
+                }
+            }
+        }
+    }
+
+    fun callMindAuditClick() {
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
+        } else {
+            if (DashboardChecklistManager.mindAuditStatus) {
+                //startActivity(Intent(this@HomeNewActivity, NewHealthCamReportActivity::class.java))
+                ActivityUtils.startMindAuditActivity(this)
+            } else {
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startMindAuditActivity(this)
+                }
+            }
+        }
+    }
+
+
+    fun callLogWaterClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startEatRightReportsActivity(
+                this@HomeNewActivity,
+                "LogWaterIntakeEat"
+            )
+        }
+    }
+
+    fun callLogWeightClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "LogWeightEat")
+        }
+    }
+
+    fun callLogSleepClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startMoveRightReportsActivity(
+                this@HomeNewActivity,
+                "SearchActivityLogMove"
+            )
+        }
+    }
+
+    fun callLogFoodClick() {
+        if (checkTrailEndedAndShowDialog()) {
+            //ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "MealLogTypeEat")
+            startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "MealLogTypeEat")
+                putExtra("snapMealId", snapMealId)
+            })
+        }
+    }
+
+    fun callLogActivitylick() {
+        if (checkTrailEndedAndShowDialog()) {
+            ActivityUtils.startMoveRightReportsActivity(
+                this@HomeNewActivity,
+                "SearchActivityLogMove"
+            )
+        }
+    }
+
+    fun callAIReportCardClick() {
+        var dynamicReportId = "" // This Is User ID
+        dynamicReportId = SharedPreferenceManager.getInstance(this).userId
+        if (dynamicReportId.isEmpty()) {
+            // Some error handling if the ID is not available
+        } else {
+            val intent = Intent(this, AIReportWebViewActivity::class.java).apply {
+                // Put the dynamic ID as an extra
+                putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+            }
+            startActivity(intent)
+        }
+    }
+
+    fun callJumpBackIn() {
+        startActivity(Intent(this, JumpInBackActivity::class.java))
+    }
+    /* fun callExploreModuleClick(){
+         val intent = Intent(this, NewCategoryListActivity::class.java)
+             intent.putExtra("moduleId",)
+             startActivity(intent)
+     }*/
+
+    private fun logAndOpenMeal(snapId: String) {
+        AnalyticsLogger.logEvent(
+            this@HomeNewActivity,
+            AnalyticsEvent.EOS_SNAP_MEAL_CLICK
+        )
+        ActivityUtils.startEatRightReportsActivity(
+            this@HomeNewActivity,
+            "SnapMealTypeEat",
+            snapId
+        )
+    }
+
+    private fun clearUserDataAndFinish() {
+        val keysToKeep = setOf(
+            SharedPreferenceConstants.ALL_IN_ONE_PLACE,
+            SharedPreferenceConstants.AFFIRMATION_CONTEXT_SCREEN,
+            SharedPreferenceConstants.BREATH_WORK_CONTEXT_SCREEN,
+            SharedPreferenceConstants.FACE_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.JOURNAL_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MEAL_SCAN_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MIND_AUDIT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MRER_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_SOUND_CONTEXT_SCREEN,
+            SharedPreferenceConstants.TRSR_CONTEXT_SCREEN,
+            SharedPreferenceConstants.EAT_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.MOVE_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.SLEEP_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.THINK_RIGHT_CONTEXT_SCREEN,
+            SharedPreferenceConstants.RIGHT_LIFE_CONTEXT_SCREEN
+        )
+
+        // FIXED: Use the correct SharedPreferences file name
+        val sharedPreferences = getSharedPreferences("app_shared_prefs", MODE_PRIVATE)
+        removeKeysNotInKeepList(sharedPreferences, keysToKeep)
+
+        val intent = Intent(this, DataControlActivity::class.java)
+        startActivity(intent)
+
+        finishAffinity()
+    }
+
+    private fun removeKeysNotInKeepList(
+        sharedPreferences: SharedPreferences,
+        keysToKeep: Set<String>
+    ) {
+        val editor = sharedPreferences.edit()
+
+        // Get all current preference keys
+        val allKeys = sharedPreferences.all.keys
+
+        // Remove keys that are not in the keysToKeep list
+        allKeys.forEach { key ->
+            if (key !in keysToKeep) {
+                editor.remove(key)
+            }
+        }
+
+        // Explicitly remove access token to ensure it's cleared
+        editor.remove(SharedPreferenceConstants.ACCESS_TOKEN)
+
+        editor.apply()
+    }
+
+
+    private fun HandleQuicklinkmenu() {
+
+        // Get the current fragment
+        val currentFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+
+        // Check if it's HomeExploreFragment
+        if (currentFragment is HomeDashboardFragment) {
+
+        } else {
+
+
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.apply {
+                    isClickable = false
+                    isFocusable = false
+                    visibility = View.GONE
+                }
+
+                binding.includedhomebottomsheet.bottomSheetParent.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+                binding.fab.animate().rotationBy(180f).setDuration(60)
+                    .setInterpolator(DecelerateInterpolator()).withEndAction {
+                        // Change icon after rotation
+                        if (isAdd) {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.rightlife
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.black
+                                )
+                            )
+                        } else {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.white
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.rightlife
+                                )
+                            )
+                        }
+                        isAdd = !isAdd // Toggle the state
+                    }.start()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_explore)
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_explore)
+            }
+        }
+    }
+
+    // save FCM TOken
+    private fun sendTokenToServer(token: String) {
+        // Implement API call to send token to your backend
+        Log.d("FCM_TOKEN", "Token should be sent to server: $token")
+        //sharedPreferenceManager.getString(SharedPreferenceConstants.FCM_TOKEN,token)
+
+        CommonAPICall.sendTokenToServer(
+            applicationContext,
+            sharedPreferenceManager.getString(SharedPreferenceConstants.FCM_TOKEN, token)
+        )
+    }
+
+    private fun getSubscriptionList() {
+        val call = apiService.getSubscriptionPlanList(
+            sharedPreferenceManager.accessToken,
+            "SUBSCRIPTION_PLAN"
+        )
+        call.enqueue(object : Callback<SubscriptionPlansResponse> {
+            override fun onResponse(
+                call: Call<SubscriptionPlansResponse>,
+                response: Response<SubscriptionPlansResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.result?.list?.let {
+                        it.forEach { plan ->
+                            if (plan.title.equals("Annual", true)) {
+                                if (sharedPreferenceManager.userProfile.userdata.country.equals("IN")) {
+                                    binding.tvStriketroughPrice.text = "₹ ${plan.price?.inr}"
+                                    binding.tvZero.text = "₹0"
+                                } else {
+                                    binding.tvStriketroughPrice.text = "\$ ${plan.price?.usd}"
+                                    binding.tvZero.text = "\$0"
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(this@HomeNewActivity, response.message(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<SubscriptionPlansResponse>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+// Query subscription products
+    /*private fun getSubscriptionProducts(priceTextView: TextView) {
+        // 1. Safety check for BillingClient readiness
+        if (!billingClient.isReady) {
+            Log.e("Billing", "BillingClient is not ready yet.")
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val productList = listOf(
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId("test_sub_yearly")
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build()
+                )
+
+                val params = QueryProductDetailsParams.newBuilder()
+                    .setProductList(productList)
+                    .build()
+
+                // 2. Query the products
+                val subsResult = billingClient.queryProductDetails(params)
+                val billingResult = subsResult.billingResult
+                val productDetailsList = subsResult.productDetailsList
+
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
+
+                    if (productDetailsList.isEmpty()) {
+                        Log.w("Billing", "No products found. Check Console ID.")
+                        return@launch
+                    }
+
+                    for (productDetails in productDetailsList) {
+                        // 3. Extract the Offer Details (Base plans and offers)
+                        val offerDetails = productDetails.subscriptionOfferDetails
+
+                        if (!offerDetails.isNullOrEmpty()) {
+                            // For a simple setup, we take the first available offer/base plan
+                            val subOffer = offerDetails[0]
+
+                            // 4. Extract Pricing Phases (where the formatted price lives)
+                            val pricingPhases = subOffer.pricingPhases.pricingPhaseList
+
+                            if (pricingPhases.isNotEmpty()) {
+                                // formattedPrice will be "₹7.00" based on your JSON
+                                val price = pricingPhases[0].formattedPrice
+
+                                Log.d("Billing", "Success! Found price: $price")
+
+                                // 5. Update UI on the Main Thread
+                                withContext(Dispatchers.Main) {
+                                    priceTextView.text = price
+                                }
+                            }
+                        } else {
+                            Log.e(
+                                "Billing",
+                                "No subscription offer details found for this product."
+                            )
+                        }
+                    }
+                } else {
+                    Log.e(
+                        "Billing",
+                        "Error: ${billingResult.debugMessage} Code: ${billingResult.responseCode}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("Billing", "Exception during query: ${e.message}")
+            }
+        }
+    }*/
+
+    private fun joinChallenge() {
+        AppLoader.show(this)
+        apiService.postChallengeStart(sharedPreferenceManager.accessToken)
+            .enqueue(object : Callback<CommonResponse> {
+                override fun onResponse(
+                    call: Call<CommonResponse?>,
+                    response: Response<CommonResponse?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful) {
+                        getChallengeStatus()
+                        showCustomToast(response.body()?.successMessage ?: "", true)
+                        AnalyticsLogger.logEvent(
+                            this@HomeNewActivity,
+                            AnalyticsEvent.ChlCard_Join_Tap
+                        )
+                    } else {
+                        showCustomToast("Something went wrong!", false)
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<CommonResponse?>,
+                    t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
+    private fun getChallengeStatus() {
+        AppLoader.show(this)
+        apiService.getChallengeStart(sharedPreferenceManager.accessToken)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>,
+                    response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful && response.body() != null) {
+                        val gson = Gson()
+                        val jsonResponse = response.body()?.string()
+                        val responseObj =
+                            gson.fromJson(jsonResponse, ChallengeDateResponse::class.java)
+
+                        val dates = responseObj.data
+                        hideChallengeLayout()
+                        //handleChallengeStatusResponse(dates)
+                        // challenge related stuff
+                        setChallengeLayout(dates)
+                        handleChallengeUI(dates)
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>,
+                    t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
+    private fun handleChallengeUI(dates: ChallengeDateData) {
+
+        // Hide all layouts first to avoid overlapping UI
+        hideChallengeLayout()
+
+        val dateRange = getChallengeDateRange(
+            dates.challengeStartDate,
+            dates.challengeEndDate
+        )
+
+        sharedPreferenceManager.challengeState = dates.challengeStatus //3
+        sharedPreferenceManager.challengeStartDate =
+            dates.challengeStartDate //"12 Jan 2026, 09:00 PM"
+        sharedPreferenceManager.challengeEndDate = dates.challengeEndDate //"28 Jan 2026, 09:00 PM"
+
+        if (dates.participateDate.isEmpty()) {
+
+            if (dates.challengeStatus != 4) {
+                binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.VISIBLE
+                binding.layoutRegisterChallenge.tvStartEndDate.text = dateRange
+            } else {
+                hideChallengeLayout()
+            }
+
+            return
+        }
+
+        when (sharedPreferenceManager.challengeState) {
+
+            1 -> {
+                if (dates.participateDate.isEmpty()) {
+                    // Join challenge
+                    binding.layoutRegisterChallenge.tvStartEndDate.text = dateRange
+                    binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.VISIBLE
+                } else {
+                    binding.layoutUnlockChallenge.tvStartEndDate.text =
+                        getChallengeDateRange(
+                            dates.challengeStartDate,
+                            dates.challengeEndDate
+                        )
+                    dates.challengeLiveDate.let {
+                        binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
+                            formatWithOrdinal(it)
+                    }
+                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
+                        View.VISIBLE
+                }
+            }
+
+            2 -> {
+                // Waiting for challenge
+                if (!DashboardChecklistManager.checklistStatus) {
+                    // Checklist not completed
+                    binding.layoutChallengeToCompleteChecklist.apply {
+                        tvChecklistNumber.text = "$checklistCount/6"
+                        seekBar.progress = checklistCount.takeIf { it != 0 }?.times(10) ?: 1
+                        imgChallenge.imageTintList = ColorStateList.valueOf("#F5B829".toColorInt())
+                        tvChallenge.setTextColor("#F5B829".toColorInt())
+                        tvChallenge.text = "Challenge Upcoming"
+                        completeChallengeChecklist.visibility = View.VISIBLE
+                    }
+                } else {
+                    // Checklist completed → Countdown card
+                    binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
+                        View.VISIBLE
+                    val daysMin =
+                        getDaysFromToday(sharedPreferenceManager.challengeStartDate).split(" ")
+                    binding.layoutChallengeCountDownDays.tvCountDownDays.text = daysMin[0]
+                    binding.layoutChallengeCountDownDays.tvDaysToGo.text = "${daysMin[1]} to go"
+
+                }
+            }
+
+            3 -> {
+                // Active challenge → Daily score
+                if (!DashboardChecklistManager.checklistStatus) {
+                    // Checklist not completed
+                    binding.layoutChallengeToCompleteChecklist.apply {
+                        tvChecklistNumber.text = "$checklistCount/6"
+                        seekBar.progress = checklistCount.takeIf { it != 0 }?.times(10) ?: 1
+                        imgChallenge.imageTintList = ColorStateList.valueOf("#06B27B".toColorInt())
+                        tvChallenge.setTextColor("#06B27B".toColorInt())
+                        tvChallenge.text = "Challenge Active"
+                        completeChallengeChecklist.visibility = View.VISIBLE
+                    }
+                } else {
+                    //Show Score Card
+                    getDailyTasks(DateHelper.getTodayDate())
+                }
+            }
+
+            4 -> {
+                // Challenge completed
+                binding.layoutChallengeCompleted.challengeCompleted.visibility =
+                    View.VISIBLE
+            }
+        }
+    }
+
+
+    /*private fun handleChallengeStatusResponse(dates: ChallengeDateData) {
+
+        if (getDaysFromToday(dates.challengeEndDate) < 0) {
+            // challenge end here
+            if (dates.participateDate.isNotEmpty()) {
+                // show challenge complete card
+                binding.layoutChallengeCompleted.challengeCompleted.visibility =
+                    View.VISIBLE
+            } else {
+                hideChallengeLayout()
+            }
+        } else {
+            //Challenge is live
+            if (dates.participateDate.isNotEmpty()) {
+                //participated
+                if (getDaysFromToday(dates.challengeLiveDate) < 0) {
+                    //Live date ended
+                    if (!DashboardChecklistManager.checklistStatus) {
+                        //checklist not completed
+                        binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
+                            View.VISIBLE
+                        binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
+                            "$checklistCount/6"
+                    } else {
+                        // checklist completed
+                        if (getDaysFromToday(dates.challengeStartDate) < 0) {
+                            // start date ended
+                            binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+                                View.VISIBLE
+                        } else {
+                            // start date not ended
+                            binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
+                                View.VISIBLE
+                            binding.layoutChallengeCountDownDays.tvCountDownDays.text =
+                                getDaysFromToday(dates.challengeStartDate).toString()
+                        }
+                    }
+                } else {
+                    // live date not ended
+                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
+                        View.VISIBLE
+                    binding.layoutRegisterChallenge.registerChallengeCard.visibility =
+                        View.GONE
+                    binding.layoutUnlockChallenge.tvStartEndDate.text =
+                        getChallengeDateRange(
+                            dates.challengeStartDate,
+                            dates.challengeEndDate
+                        )
+                    dates.challengeLiveDate.let {
+                        binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
+                            formatWithOrdinal(it)
+                    }
+                }
+            } else {
+                // not participated
+                hideChallengeLayout()
+                binding.layoutRegisterChallenge.registerChallengeCard.visibility =
+                    View.VISIBLE
+                binding.layoutRegisterChallenge.tvStartEndDate.text =
+                    getChallengeDateRange(
+                        dates.challengeStartDate,
+                        dates.challengeEndDate
+                    )
+            }
+        }
+    }*/
+
+    private fun formatWithOrdinal(dateStr: String): String {
+        val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        val date = inputFormat.parse(dateStr)
+
+        val calendar = Calendar.getInstance()
+        calendar.time = date!!
+
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val month = SimpleDateFormat("MMM", Locale.ENGLISH).format(date)
+        val year = SimpleDateFormat("yyyy", Locale.ENGLISH).format(date)
+
+        return "$day${getDaySuffix(day)} $month $year"
+    }
+
+
+    fun hideChallengeLayout() {
+        binding.layoutRegisterChallenge.registerChallengeCard.visibility = View.GONE
+        binding.layoutUnlockChallenge.unlockChallengeCard.visibility = View.GONE
+        binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility = View.GONE
+        binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility = View.GONE
+        binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility = View.GONE
+        binding.layoutChallengeCompleted.challengeCompleted.visibility = View.GONE
+    }
+
+    fun showChallengeCard() {
+        getDashboardChecklist()
+        try {
+            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
+                val appConfig =
+                    Gson().fromJson(
+                        sharedPreferenceManager.appConfigJson,
+                        AppConfigResponse::class.java
+                    )
+                if (appConfig?.data?.isChallengeStart == true) {
+                    getChallengeStatus()
+                } else {
+                    hideChallengeLayout()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("AppConfig", "Failed to parse app config from SharedPreferences", e)
+        }
+    }
+
+    private fun setChallengeLayout(dates: ChallengeDateData) {
+        //Register Challenge
+        binding.layoutRegisterChallenge.imgInfoChallege.setOnClickListener {
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+        binding.layoutRegisterChallenge.btnJoin.setOnClickListener {
+            lifecycleScope.launch { joinChallenge() }
+        }
+
+        //Unlock challenge
+        binding.layoutUnlockChallenge.imgInfoChallege.setOnClickListener {
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+
+        //Challenge Complete Checklist
+        binding.layoutChallengeToCompleteChecklist.imgInfoChallege.setOnClickListener {
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+        binding.layoutChallengeToCompleteChecklist.btnCompleteChecklist.setOnClickListener {
+            myHealthFragmentSelected()
+
+            AnalyticsLogger.logEvent(
+                this@HomeNewActivity,
+                AnalyticsEvent.Chl_CompleteChecklist
+            )
+        }
+
+        //Challenge CountDownDays
+        binding.layoutChallengeCountDownDays.imgInfoChallege.setOnClickListener {
+            showChallengeInfoBottomSheet(this@HomeNewActivity)
+        }
+        binding.layoutChallengeCountDownDays.btnViewChallenge.setOnClickListener {
+            startActivity(Intent(this@HomeNewActivity, ChallengeEmptyActivity::class.java))
+        }
+
+        //Challenge Daily Score
+        binding.layoutChallengeDailyScore.imgForwardChallenge.setOnClickListener {
+            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java))
+
+            AnalyticsLogger.logEvent(
+                this@HomeNewActivity,
+                AnalyticsEvent.Chl_DailyScoreCard_Tap
+            )
+
+        }
+
+        //challenge completed
+        binding.layoutChallengeCompleted.imgScoreChallenge.setOnClickListener {
+            // start Challenge Activity here
+            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java))
+        }
+        binding.layoutChallengeCompleted.btnExplorePlans.setOnClickListener {
+            startActivity(
+                Intent(
+                    this@HomeNewActivity,
+                    PurchasePlansActivity::class.java
+                )
+            )
+        }
+    }
+
+    private fun getDailyTasks(date: String) {
+        AppLoader.show(this)
+        apiService.dailyTask(sharedPreferenceManager.accessToken, date)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>, response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+
+                    getDailyScore(date)
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>, t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
+    private fun getDailyScore(date: String) {
+        AppLoader.show(this)
+        apiService.dailyScore(sharedPreferenceManager.accessToken, date)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>, response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful && response.body() != null) {
+                        val gson = Gson()
+                        val jsonResponse = response.body()?.string()
+                        val responseObj =
+                            gson.fromJson(jsonResponse, DailyScoreResponse::class.java)
+                        val scoreData = responseObj.data
+                        binding.layoutChallengeDailyScore.apply {
+                            tvPoints.text = scoreData.totalScore.toString()
+                            scoreSeekBar.progress = scoreData.totalScore.takeIf { it != 0 } ?: 2
+                            setSeekBarProgressColor(
+                                scoreSeekBar, getColorCode(scoreData.performance)
+                            )
+                            imgScoreColor.imageTintList = ColorStateList.valueOf(
+                                Color.parseColor(
+                                    getColorCode(
+                                        scoreData.performance
+                                    )
+                                )
+                            )
+                            tvScoreLabel.text = scoreData.performance
+                            tvMessage.text = scoreData.message
+                            binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+                                View.VISIBLE
+                        }
+                    } else {
+                        showCustomToast("Something went wrong!", false)
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>, t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
 
 }

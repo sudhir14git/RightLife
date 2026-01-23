@@ -1,0 +1,934 @@
+package com.jetsynthesys.rightlife.ui.challenge
+
+import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.core.graphics.toColorInt
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
+import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.databinding.ActivityChallengeBinding
+import com.jetsynthesys.rightlife.showCustomToast
+import com.jetsynthesys.rightlife.ui.AppLoader
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showChallengeInfoBottomSheet
+import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper.showTaskInfoBottomSheet
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDayFromDate
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isFirstDateAfter
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isOlderThan7Days
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.isToday
+import com.jetsynthesys.rightlife.ui.challenge.DateHelper.toApiDate
+import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
+import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getImageBasedOnStatus
+import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
+import com.jetsynthesys.rightlife.ui.challenge.adapters.CalendarChallengeAdapter
+import com.jetsynthesys.rightlife.ui.challenge.pojo.ChallengeStreakResponse
+import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyChallengeResponse
+import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
+import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyTaskResponse
+import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
+import com.jetsynthesys.rightlife.ui.jounal.new_journal.CalendarDay
+import com.jetsynthesys.rightlife.ui.jounal.new_journal.SpacingItemDecoration
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
+class ChallengeActivity : BaseActivity() {
+    private lateinit var binding: ActivityChallengeBinding
+    private val daysOfWeek = listOf("M", "T", "W", "T", "F", "S", "S")
+    private var calendarDays = mutableListOf<CalendarDay>()
+    private lateinit var calendarAdapter: CalendarChallengeAdapter
+    private val calendar = Calendar.getInstance()
+    private var selectedDate: CalendarDay? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityChallengeBinding.inflate(layoutInflater)
+        setChildContentView(binding.root)
+
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+        onBackPressedDispatcher.addCallback(this) {
+            finish()
+        }
+
+        setupCalenderView()
+        setupScoreCardListener()
+        setupListenerForTasks()
+        setupLogListeners()
+        setupShareListeners()
+
+        binding.llStreak.setOnClickListener {
+            it.disableViewForSeconds()
+            startActivity(Intent(this@ChallengeActivity, DailyStreakActivity::class.java))
+        }
+
+        if (sharedPreferenceManager.challengeState == 4) {
+            binding.challengeOverCard.challengeOverCard.visibility = View.VISIBLE
+            binding.logItems.llLogItems.visibility = View.GONE
+        } else {
+            binding.challengeOverCard.challengeOverCard.visibility = View.GONE
+            binding.logItems.llLogItems.visibility = View.VISIBLE
+        }
+
+        AnalyticsLogger.logEvent(
+            this@ChallengeActivity,
+            AnalyticsEvent.Chl_PageOpen
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val rawDate = when {
+            sharedPreferenceManager.challengeState == 4 ->
+                sharedPreferenceManager.challengeEndDate
+                    ?.split(",")
+                    ?.firstOrNull()
+                    ?.takeIf { it.isNotBlank() }
+
+            !selectedDate?.dateString.isNullOrBlank() ->
+                selectedDate?.dateString
+
+            else -> null
+        }
+
+        val date = rawDate?.let { toApiDate(it) }
+            ?: DateHelper.getTodayDate()
+
+        getDailyChallengeData(date)
+        loadStreak()
+
+    }
+
+    private fun setupScoreCardListener() {
+        binding.scoreCard.apply {
+            imgInfo.setOnClickListener {
+                it.disableViewForSeconds()
+                ChallengeBottomSheetHelper.showScoreInfoBottomSheet(this@ChallengeActivity)
+            }
+            scoreSeekBar.apply {
+                setOnTouchListener { _, _ -> true }
+                splitTrack = false
+                isFocusable = false
+            }
+        }
+    }
+
+    private fun setupCalenderView() {
+        val apiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+        binding.rvCalendar.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.rvCalendar.addItemDecoration(SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.spacing)))
+        calendarAdapter = CalendarChallengeAdapter(calendarDays) { selectedDay ->
+            // Toggle selection
+            if (isFirstDateAfter(
+                    selectedDay.dateString,
+                    toApiDate(sharedPreferenceManager.challengeEndDate)
+                ) || isFirstDateAfter(
+                    toApiDate(sharedPreferenceManager.challengeStartDate), selectedDay.dateString
+                )
+            ) {
+                showCustomToast("No challenges available for this day.")
+                return@CalendarChallengeAdapter
+            }
+            if (!isFutureDate(selectedDay.dateString) || isToday(selectedDay.dateString)) {
+                if (selectedDay.dateString != selectedDate?.dateString) {
+                    calendarDays.forEach { it.isSelected = false }
+                    selectedDay.isSelected = true
+
+                    calendarAdapter.updateData(calendarDays)
+                    selectedDate = selectedDay
+                    getDailyTasks(selectedDay.dateString)
+                    binding.tvSelectedDate.text =
+                        SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault())
+                            .format(apiFormat.parse(selectedDay.dateString)!!)
+                }
+            } else showCustomToast("Hold up, we haven’t lived that day yet!")
+        }
+
+        binding.rvCalendar.adapter = calendarAdapter
+    }
+
+    private fun setupLogListeners() {
+        binding.logItems.apply {
+            llLogToolKit.setOnClickListener {
+                it.disableViewForSeconds()
+                startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+            llLogMeal.setOnClickListener {
+                it.disableViewForSeconds()
+                startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("BottomSeatName", "SnapMealTypeEat")
+                    putExtra("snapMealId", "")
+                })
+            }
+            llLogSleep.setOnClickListener {
+                it.disableViewForSeconds()
+                startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "SleepRight")
+                    putExtra("BottomSeatName", "LogLastNightSleep")
+                })
+            }
+            llLogWorkout.setOnClickListener {
+                it.disableViewForSeconds()
+                startActivity(Intent(this@ChallengeActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "MoveRight")
+                    putExtra("BottomSeatName", "SearchActivityLogMove")
+                })
+            }
+        }
+    }
+
+    private fun setupShareListeners() {
+        binding.sharingCard.apply {
+            btnReferNow.setOnClickListener {
+                it.disableViewForSeconds()
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        "Been using this app called RightLife that tracks food, workouts, sleep, and mindfulness. Super simple, no wearable needed. Sign up between 1st Feb - 28th Feb to use the app free for the full period and join the Health Challenge.\n" +
+                                "App Link: https://onelink.to/rightlife"
+                    )
+                }
+
+                startActivity(Intent.createChooser(shareIntent, "Refer via"))
+
+                AnalyticsLogger.logEvent(
+                    this@ChallengeActivity,
+                    AnalyticsEvent.Chl_ReferNow_Tap
+                )
+            }
+        }
+    }
+
+    private fun setupListenerForTasks() {
+        binding.challengeTasks.apply {
+            rlAboutChallenge.setOnClickListener {
+                it.disableViewForSeconds()
+                showChallengeInfoBottomSheet(this@ChallengeActivity)
+            }
+            rlWhyTaskComplete.setOnClickListener {
+                it.disableViewForSeconds()
+                showTaskInfoBottomSheet(this@ChallengeActivity)
+            }
+            imgQuestionChallenge.setOnClickListener {
+                it.disableViewForSeconds()
+                showTaskInfoBottomSheet(this@ChallengeActivity)
+            }
+        }
+    }
+
+    private fun updateWeekView(date: String, isChecked: ArrayList<Boolean>) {
+
+        var isFutureDatePresent = false
+        var isPreviousDatePresent = false
+        calendarDays.clear()
+
+        val apiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+
+        // Base calendar = selected date
+        val baseCal = Calendar.getInstance().apply {
+            time = apiFormat.parse(date)!!
+            firstDayOfWeek = Calendar.SUNDAY
+            set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY) // move to week start
+        }
+
+
+        // Check if provided date falls in this week
+        val weekDates = mutableListOf<String>()
+
+        // Move to Sunday of the provided date's week
+        val weekStartCal = baseCal.clone() as Calendar
+        weekStartCal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+
+        for (i in 0..6) {
+            val cal = weekStartCal.clone() as Calendar
+            cal.add(Calendar.DAY_OF_MONTH, i)
+            weekDates.add(apiFormat.format(cal.time))
+        }
+
+        val startDate = toApiDate(sharedPreferenceManager.challengeStartDate)
+        val endDate = toApiDate(sharedPreferenceManager.challengeEndDate)
+        val today = DateHelper.getTodayDate() // yyyy-MM-dd
+
+        val isStartDateInWeek = weekDates.contains(startDate)
+        val isEndDateInWeek = weekDates.contains(endDate)
+        val isTodayInWeek = weekDates.contains(today)
+
+// today must be between start & end (inclusive)
+        val isTodayBetween =
+            !isFirstDateAfter(startDate, today) &&
+                    !isFirstDateAfter(today, endDate)
+
+        val finalSelectedDate = when {
+            isTodayInWeek && isTodayBetween -> today
+            isStartDateInWeek -> startDate
+            isEndDateInWeek -> endDate
+            else -> weekDates.first() // Sunday fallback
+        }
+
+
+        // Build week (Sunday → Saturday)
+        for (i in 0..6) {
+            val cal = baseCal.clone() as Calendar
+            cal.add(Calendar.DAY_OF_MONTH, i)
+
+            val dateString = apiFormat.format(cal.time)
+
+            val calendarDay = CalendarDay(
+                day = cal.getDisplayName(
+                    Calendar.DAY_OF_WEEK,
+                    Calendar.SHORT,
+                    Locale.ENGLISH
+                )!!.first().toString(),
+                date = cal.get(Calendar.DAY_OF_MONTH),
+                isSelected = dateString == finalSelectedDate,
+                dateString = dateString,
+                isChecked = isChecked.getOrNull(i) ?: false
+            )
+
+            calendarDays.add(calendarDay)
+
+            // ---- Future date logic ----
+            if (sharedPreferenceManager.challengeState == 4) {
+                if (isFirstDateAfter(
+                        dateString,
+                        toApiDate(sharedPreferenceManager.challengeEndDate)
+                    )
+                ) {
+                    isFutureDatePresent = true
+                }
+            } else if (isFutureDate(dateString)) {
+                isFutureDatePresent = true
+            }
+
+            // ---- Previous date logic ----
+            if (isFirstDateAfter(
+                    toApiDate(sharedPreferenceManager.challengeStartDate),
+                    dateString
+                )
+            ) {
+                isPreviousDatePresent = true
+            }
+        }
+
+        // Selected date label (actual selected date, not Sunday)
+        binding.tvSelectedDate.text =
+            SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault())
+                .format(apiFormat.parse(finalSelectedDate)!!)
+
+        calendarAdapter.updateData(calendarDays)
+
+        // Arrow enable / disable
+        binding.ivNext.isEnabled = !isFutureDatePresent
+        binding.ivPrev.isEnabled = !isPreviousDatePresent
+
+        binding.ivNext.setImageResource(
+            if (isFutureDatePresent)
+                R.drawable.right_arrow_journal
+            else
+                R.drawable.right_arrow_journal_enabled
+        )
+
+        binding.ivPrev.setImageResource(
+            if (isPreviousDatePresent)
+                R.drawable.ic_arrow_left_disabled
+            else
+                R.drawable.left_arrow_journal
+        )
+
+        // 🔙 Previous Week → Sunday
+        binding.ivPrev.setOnClickListener {
+            val cal = baseCal.clone() as Calendar
+            cal.add(Calendar.WEEK_OF_YEAR, -1)
+            getDailyChallengeData(apiFormat.format(cal.time))
+        }
+
+        // 🔜 Next Week → Sunday
+        binding.ivNext.setOnClickListener {
+            val cal = baseCal.clone() as Calendar
+            cal.add(Calendar.WEEK_OF_YEAR, 1)
+            getDailyChallengeData(apiFormat.format(cal.time))
+        }
+    }
+
+
+    private fun isFutureDate(dateString: String): Boolean {
+        return try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            dateFormat.isLenient = false
+
+            val inputDate = dateFormat.parse(dateString) ?: return false
+
+            val today = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            // true if date is today OR in future
+            !inputDate.before(today.time)
+
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+
+    private fun getDailyChallengeData(date: String) {
+        AppLoader.show(this)
+        apiService.dailyChallengeData(sharedPreferenceManager.accessToken, date)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>, response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful) {
+                        val gson = Gson()
+                        val jsonResponse = response.body()?.string()
+                        val responseObj =
+                            gson.fromJson(jsonResponse, DailyChallengeResponse::class.java)
+                        val isCheckedList = ArrayList<Boolean>()
+                        responseObj.data.calendar.forEachIndexed { index, calendar ->
+
+                            val isLast = index == responseObj.data.calendar.lastIndex
+
+                            val day = CalendarDay(
+                                day = calendar.day.first().toString(),
+                                date = getDayFromDate(calendar.date).toInt(),
+                                isSelected = calendar.date == date,
+                                dateString = calendar.date,
+                                isChecked = calendar.isCompleted
+                            )
+
+                            isCheckedList.add(calendar.isCompleted)
+                            calendarDays.add(day)
+
+                            if (sharedPreferenceManager.challengeState == 4 && isLast) {
+                                selectedDate = day
+                            }
+                        }
+
+
+                        calendarAdapter.updateData(calendarDays)
+                        updateWeekView(date, isCheckedList)
+
+                        getDailyTasks(date)
+
+                    } else {
+                        showCustomToast("Something went wrong!", false)
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>, t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
+    private fun getDailyScore(date: String) {
+        AppLoader.show(this)
+        apiService.dailyScore(sharedPreferenceManager.accessToken, date)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>, response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful && response.body() != null) {
+                        binding.scoreCard.layoutScoreCard.visibility = View.VISIBLE
+                        val gson = Gson()
+                        val jsonResponse = response.body()?.string()
+                        val responseObj =
+                            gson.fromJson(jsonResponse, DailyScoreResponse::class.java)
+                        val scoreData = responseObj.data
+                        binding.scoreCard.apply {
+                            tvCountDownDays.text = scoreData.totalScore.toString()
+                            scoreSeekBar.progress = scoreData.totalScore.takeIf { it != 0 } ?: 2
+                            setSeekBarProgressColor(
+                                scoreSeekBar, getColorCode(scoreData.performance)
+                            )
+                            imgScoreColor.imageTintList = ColorStateList.valueOf(
+                                Color.parseColor(
+                                    getColorCode(
+                                        scoreData.performance
+                                    )
+                                )
+                            )
+                            tvScoreLabel.text = scoreData.performance
+                            tvMessage.text = scoreData.message
+
+                            tvDailyTasksCompleted.text = scoreData.daily.completed.toString()
+                            tvDailyToatal.text = "/${scoreData.daily.total}"
+
+                            tvBonusTasksCompleted.text = scoreData.bonus.completed.toString()
+                            tvBonusTotal.text = "/${scoreData.bonus.total}"
+                            tvRank.text = scoreData.rank.toString()
+                            tvRankSuffix.text = getDaySuffix(scoreData.rank)
+
+                            //rank code here
+                            setUpRankCard(scoreData.allRank, getDaySuffix(scoreData.allRank))
+                            setupFaceScanCard(responseObj.data.lastReportDate)
+                        }
+                        // Log an event based on the user's performance tier.
+                           when (responseObj?.data?.performance) {
+                               "Good" -> {
+                                   AnalyticsLogger.logEvent(
+                                       this@ChallengeActivity,
+                                       AnalyticsEvent.Chl_EntersGood
+                                   )
+                               }
+                               "Excellent" -> {
+                                   AnalyticsLogger.logEvent(
+                                       this@ChallengeActivity,
+                                       AnalyticsEvent.Chl_EntersExcellent
+                                   )
+                               }
+                               "Champ" -> {
+                                   AnalyticsLogger.logEvent(
+                                       this@ChallengeActivity,
+                                       AnalyticsEvent.Chl_EntersChamp
+                                   )
+                               }
+                           }
+
+                    } else {
+                        showCustomToast("Something went wrong!", false)
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>, t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
+    private fun getDailyTasks(date: String) {
+        AppLoader.show(this)
+        apiService.dailyTask(sharedPreferenceManager.accessToken, date)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>, response: Response<ResponseBody?>
+                ) {
+                    AppLoader.hide()
+                    if (response.isSuccessful && response.body() != null) {
+                        val gson = Gson()
+                        val jsonResponse = response.body()?.string()
+                        val responseObj = gson.fromJson(jsonResponse, DailyTaskResponse::class.java)
+                        val dailyTasks = responseObj.data.dailyTasks
+                        val bonusTasks = responseObj.data.bonusTasks
+
+                        binding.challengeTasks.apply {
+                            tvDailyTaskCount.text = "${responseObj.data.completedDaily}/6"
+                            tvBonusTaskCount.text = "${responseObj.data.completedBonus}/5"
+
+                            dailyTasks.forEach { item ->
+                                run {
+                                    when (item.key) {
+                                        "OPEN_APP" -> {
+                                            imgOpenAppStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlOpenApp.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_OpenApp_Claimed
+                                                )
+                                            }
+                                        }
+
+                                        "LOG_SLEEP" -> {
+                                            imgLogSleepStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlLogSleep.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_LogSleep_Claimed
+                                                )
+                                            }
+                                        }
+
+                                        "LOG_MEAL" -> {
+                                            imgLogMealStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlLogMeal.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_LogMeal_Claimed
+                                                )
+                                            }
+                                        }
+
+                                        "LOG_MOVEMENT" -> {
+                                            imgLogMovementStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlLogMovement.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_LogMove_Claimed
+                                                )
+                                            }
+                                        }
+
+                                        "MINDFULNESS" -> {
+                                            imgPracticeMindfulnessStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlPractiseMindFullness.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_Mindful_Claimed
+                                                )
+                                            }
+                                        }
+
+                                        "FULL_DAY_BONUS" -> {
+                                            imgFullDayBonusStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlFullDayBonus.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_FullDayBonus_Claimed
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            bonusTasks.forEach { item ->
+                                run {
+                                    when (item.key) {
+                                        "HIGH_QUALITY_SLEEP" -> {
+                                            imgHighQualitySleepStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlHighQualitySleep.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_HQSleep_Claim
+                                                )
+                                            }
+                                        }
+
+                                        "BALANCED_EATING" -> {
+                                            imgBalancedEatingStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlBalancedEating.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_BalEat_Claim
+                                                )
+                                            }
+                                        }
+
+                                        "DAILY_MOVEMENT_GOAL" -> {
+                                            imgDailyMovementGoalStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlDailyMovementGoal.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_MoveGoal_Claim
+                                                )
+                                            }
+                                        }
+
+                                        "MINDFUL_MOMENTS" -> {
+                                            imgMindfulMomentsStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlMindfulMoments.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_Mindful_Claim
+                                                )
+                                            }
+                                        }
+
+                                        "ALL_ROUND_WIN" -> {
+                                            imgAllRoundWinStatus.setImageResource(
+                                                getImageBasedOnStatus(item.status)
+                                            )
+                                            rlAllRoundWin.setBackgroundResource(if (item.status == "COMPLETED") R.drawable.task_challenge_selected_bg else R.drawable.bg_gray_border_radius_small)
+                                            if (item.status == "COMPLETED")
+                                            {
+                                                AnalyticsLogger.logEvent(
+                                                    this@ChallengeActivity,
+                                                    AnalyticsEvent.Chl_BT_AllBonus_Claim
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        if (responseObj.data.completedDaily == 6) {
+                            AnalyticsLogger.logEvent(
+                                this@ChallengeActivity,
+                                AnalyticsEvent.Chl_FullDayBonus_Claimed
+                            )
+                        }
+                        if (responseObj.data.completedBonus == 5) {
+                            AnalyticsLogger.logEvent(
+                                this@ChallengeActivity,
+                                AnalyticsEvent.Chl_BT_AllBonus_Claim
+                            )
+                        }
+                    } else {
+                        showCustomToast("Something went wrong!", false)
+                    }
+                    getDailyScore(date)
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseBody?>, t: Throwable
+                ) {
+                    AppLoader.hide()
+                    handleNoInternetView(t)
+                }
+
+            })
+    }
+
+    private fun setUpRankCard(rank: Int, suffix: String) {
+        if (sharedPreferenceManager.challengeState == 4) {
+            binding.rankingCardTop.rlRanking.visibility = View.VISIBLE
+            binding.rankingCard.rlRanking.visibility = View.GONE
+            binding.rankingCardTop.apply {
+                btnViewLeaderBoard.setOnClickListener {
+                    it.disableViewForSeconds()
+                    startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
+                    AnalyticsLogger.logEvent(
+                        this@ChallengeActivity,
+                        AnalyticsEvent.Chl_ViewLeaderboard_Tap
+                    )
+                }
+                tvRankNumber.text = rank.toString()
+                tvRankSuffix.text = suffix
+                when (rank) {
+                    1 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#FFFFFF"))
+                        tvRankNumber.setTextColor(Color.parseColor("#FFFFFF"))
+                        tvRanking.setTextColor(Color.parseColor("#FFFFFF"))
+                        imgRankBg.setImageResource(R.drawable.rank1)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
+                    }
+
+                    2 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
+                        tvRankNumber.setTextColor(Color.parseColor("#984C01"))
+                        tvRanking.setTextColor(Color.parseColor("#984C01"))
+                        imgRankBg.setImageResource(R.drawable.rank3)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#984C01"))
+                    }
+
+                    3 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
+                        imgRankBg.setImageResource(R.drawable.rank2)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
+                    }
+
+                    else -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#0B1215"))
+                        tvRankNumber.setTextColor(Color.parseColor("#0B1215"))
+                        tvRanking.setTextColor(Color.parseColor("#F5B829"))
+                        imgRankBg.setImageResource(R.drawable.rank4)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#F5B829"))
+                    }
+                }
+            }
+        } else {
+            binding.rankingCardTop.rlRanking.visibility = View.GONE
+            binding.rankingCard.rlRanking.visibility = View.VISIBLE
+            binding.rankingCard.apply {
+                btnViewLeaderBoard.setOnClickListener {
+                    it.disableViewForSeconds()
+                    startActivity(Intent(this@ChallengeActivity, LeaderboardActivity::class.java))
+                    AnalyticsLogger.logEvent(
+                        this@ChallengeActivity,
+                        AnalyticsEvent.Chl_ViewLeaderboard_Tap
+                    )
+                }
+                tvRankNumber.text = rank.toString()
+                tvRankSuffix.text = suffix
+                when (rank) {
+                    1 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#FFFFFF"))
+                        tvRankNumber.setTextColor(Color.parseColor("#FFFFFF"))
+                        tvRanking.setTextColor(Color.parseColor("#FFFFFF"))
+                        imgRankBg.setImageResource(R.drawable.rank1)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
+                    }
+
+                    2 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#984C01"))
+                        tvRankNumber.setTextColor(Color.parseColor("#984C01"))
+                        tvRanking.setTextColor(Color.parseColor("#984C01"))
+                        imgRankBg.setImageResource(R.drawable.rank3)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#984C01"))
+                    }
+
+                    3 -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRankNumber.setTextColor(Color.parseColor("#2A3A5E"))
+                        tvRanking.setTextColor(Color.parseColor("#2A3A5E"))
+                        imgRankBg.setImageResource(R.drawable.rank2)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#2A3A5E"))
+                    }
+
+                    else -> {
+                        tvRankSuffix.setTextColor(Color.parseColor("#0B1215"))
+                        tvRankNumber.setTextColor(Color.parseColor("#0B1215"))
+                        tvRanking.setTextColor(Color.parseColor("#F5B829"))
+                        imgRankBg.setImageResource(R.drawable.rank4)
+                        imgChallenge.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor("#F5B829"))
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun setupFaceScanCard(lastFaceScandate: String) {
+        if (isOlderThan7Days(lastFaceScandate)) {
+            //show FaceScan Card
+            binding.faceScanCard.rlFaceScanCard.visibility = View.VISIBLE
+            binding.faceScanCard.apply {
+                if (!lastFaceScandate.isNullOrBlank()) {
+                    val parts = lastFaceScandate.split(",")
+
+                    tvLastReportDate.text = parts.getOrNull(0)?.trim() ?: "-"
+                    tvLastReportTime.text = parts.getOrNull(1)?.trim() ?: "-"
+                } else {
+                    tvLastReportDate.text = "-"
+                    tvLastReportTime.text = "-"
+                }
+
+                llNextArrow.setOnClickListener {
+                    startActivity(
+                        Intent(
+                            this@ChallengeActivity, NewHealthCamReportActivity::class.java
+                        )
+                    )
+                }
+            }
+
+        } else
+            binding.faceScanCard.rlFaceScanCard.visibility = View.GONE
+    }
+
+    private fun loadStreak() {
+        val call = apiService.getChallengeStreak(sharedPreferenceManager.accessToken)
+
+        call.enqueue(object : Callback<ResponseBody?> {
+
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+
+                if (response.isSuccessful && response.body() != null) {
+                    try {
+                        val gson = Gson()
+                        val jsonString = response.body()!!.string()
+
+                        val responseObj =
+                            gson.fromJson(jsonString, ChallengeStreakResponse::class.java)
+
+                        if (responseObj.success) {
+                            binding.tvStreakSmallCount.text = responseObj.data.streak.toString()
+                            binding.imgStreakSmall.imageTintList = if (responseObj.data.streak > 0)
+                                ColorStateList.valueOf("#FD6967".toColorInt()) else
+                                ColorStateList.valueOf("#B5B5B5".toColorInt())
+                        } else {
+                            Toast.makeText(
+                                this@ChallengeActivity,
+                                "Failed to load streak",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(
+                            this@ChallengeActivity,
+                            "Streak parse error",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@ChallengeActivity,
+                        "Streak API error: ${response.code()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+}

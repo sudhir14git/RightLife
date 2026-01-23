@@ -74,6 +74,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
+        android:clipToPadding="false"
         android:backgroundTint="@color/white" />
 
         <include layout="@layout/loader_layout"/>

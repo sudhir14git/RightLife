@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.mindaudit;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -49,6 +50,7 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> {
+            disableViewForSeconds(nextButton, 1400);
             int currentItem = viewPager.getCurrentItem();
             Fragment fragment = adapter.getRegisteredFragment(currentItem);
 
@@ -71,7 +73,7 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
             int totalItems = adapter.getItemCount();
 
             if (currentItem == 0) {
-                finish();
+                showExitDialog();
             }
             // If on any other page, move to the previous page
             else {
@@ -149,11 +151,11 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
         });
         dialogButtonExit.setOnClickListener(v -> {
             dialog.dismiss();
-            //this.finish();
-            finishAffinity(); // Finishes Activity D and all activities below it in the same task
-            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
+            /*Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
             intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
             startActivity(intent);
+            finishAffinity();*/
+            finish();
         });
 
         // Show the dialog
@@ -163,4 +165,9 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
     public interface OnNextButtonClickListener {
         void onNextClicked();
     }
+    public static void disableViewForSeconds(final View view, long millis) {
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), millis);
+    }
+
 }

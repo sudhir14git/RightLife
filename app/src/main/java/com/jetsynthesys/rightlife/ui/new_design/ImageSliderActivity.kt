@@ -10,19 +10,31 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.viewpager2.widget.ViewPager2
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
@@ -31,8 +43,10 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
-import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetSwitchAccountBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
+import com.jetsynthesys.rightlife.ui.drawermenu.PrivacyPolicyActivity
+import com.jetsynthesys.rightlife.ui.drawermenu.TermsAndConditionsActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
@@ -78,14 +92,14 @@ class ImageSliderActivity : BaseActivity() {
     )
 
     private val headers = listOf(
-        "Four Foundations, One Powerful App",
+        "Build a Healthier You, \nOne Habit at a Time",
         "Meet Your Smart Health Companion",
         "Wellness That Fits Your Life",
         "Backed by Science, Not Fads"
     )
 
     private val descriptions = listOf(
-        "The only app you need to optimize your mind, body, nutrition, and sleep, all from your smartphone.",
+        "Four foundations: mind, body, nutrition, and rest - working together for lifelong wellbeing.",
         "AI that listens to your body, predicts risks, and helps you build better habits.",
         "From stretching at sunrise to meditating at midnight, RightLife adapts to you and guides your progress.",
         "No influencer fluff. Just personalized content backed by evidence you can trust."
@@ -95,6 +109,9 @@ class ImageSliderActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setChildContentView(R.layout.activity_image_slider)
+        val logger = AppEventsLogger.newLogger(this)
+        logger.logEvent("my_debug_test_event")
+        logger.flush()
 
         // Initialize the ViewPager2 and TabLayout
         viewPager = findViewById(R.id.viewPager_image_slider)
@@ -106,6 +123,8 @@ class ImageSliderActivity : BaseActivity() {
             AnalyticsEvent.LOGIN_SCREEN_VISIT,
             mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
         )
+
+        clickForPrivacyPolicyAndTermsOfService()
 
         // Set up the TabLayoutMediator to sync dots with the images
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -208,6 +227,14 @@ class ImageSliderActivity : BaseActivity() {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
+        val btnMobile = findViewById<TextView>(R.id.btn_mobile)
+        btnMobile.setOnClickListener {
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.CONTINUE_WITH_PHONE_NUMBER,
+                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+            )
+            startActivity(Intent(this, MobileLoginActivity::class.java))
+        }
 
 
     }
@@ -215,6 +242,31 @@ class ImageSliderActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         handler.postDelayed(runnable, timeDurationForImageSlider)
+
+        //AppEventsLogger.activateApp(this)
+
+
+        val logger = AppEventsLogger.newLogger(this)
+
+        // Optional: one app-start test event
+        val params = Bundle().apply {
+            putString("source", "app_start")
+            putString("build_type", if (BuildConfig.DEBUG) "debug" else "release")
+        }
+        logger.logEvent("rl_app_start_test", params)
+        logger.logEvent(
+            "test_event_code", bundleOf(
+                "test_param" to "debug_value",
+                "test_event_code" to "TEST86160",
+                "app_version" to BuildConfig.VERSION_NAME
+            )
+        )
+
+        logger.logEvent("this_is_some_event")
+        logger.logEvent("TEST86160")
+        logger.flush()
+
+        Log.d("MetaSDK", "Sent rl_app_start_test")
     }
 
     override fun onPause() {
@@ -275,6 +327,11 @@ class ImageSliderActivity : BaseActivity() {
                             )
                         } catch (e: Exception) {
                             Log.e("GoogleAuthUtil", "Error retrieving access token", e)
+                            Utils.showNewDesignToast(
+                                this@ImageSliderActivity,
+                                "Verification Failed",
+                                false
+                            )
                         }
                     }
                 }
@@ -339,6 +396,11 @@ class ImageSliderActivity : BaseActivity() {
                 response: Response<GoogleLoginTokenResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
+                    Utils.showNewDesignToast(
+                        this@ImageSliderActivity,
+                        "Verification Successful",
+                        true
+                    )
                     val apiResponse = response.body()
                     SharedPreferenceManager.getInstance(this@ImageSliderActivity)
                         .saveAccessToken(apiResponse?.accessToken)
@@ -426,6 +488,7 @@ class ImageSliderActivity : BaseActivity() {
                         jsonResponse, UserProfileResponse::class.java
                     )
                     sharedPreferenceManager.saveUserId(ResponseObj.userdata.id)
+                    ResponseObj.userdata.bodyFat = ResponseObj.bodyFat
                     sharedPreferenceManager
                         .saveUserProfile(ResponseObj)
 
@@ -496,12 +559,12 @@ class ImageSliderActivity : BaseActivity() {
                     val responseCode = response.code()
 
                     if (responseCode == 500) {
-                      /*  Toast.makeText(
-                            this@ImageSliderActivity,
-                            "Server Error: 500 - Internal Server Error",
-                            Toast.LENGTH_SHORT
-                        ).show()*/
-                        showSwitchAccountDialog(this@ImageSliderActivity,"","")
+                        /*  Toast.makeText(
+                              this@ImageSliderActivity,
+                              "Server Error: 500 - Internal Server Error",
+                              Toast.LENGTH_SHORT
+                          ).show()*/
+                        showSwitchBottomSheet()
                     } else {
                         // Try to parse errorBody if present
                         val errorBodyString = response.errorBody()?.string()
@@ -551,7 +614,7 @@ class ImageSliderActivity : BaseActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 // You can navigate or perform a specific action here if needed
-                showSwitchAccountDialog(this, "", "")
+                showSwitchBottomSheet()
             }
 
             else -> {
@@ -560,30 +623,134 @@ class ImageSliderActivity : BaseActivity() {
         }
     }
 
-    fun showSwitchAccountDialog(context: Context, header: String, htmlText: String) {
-        val dialog = Dialog(context)
-        val binding = DialogSwitchAccountBinding.inflate(LayoutInflater.from(context))
-        dialog.setContentView(binding.root)
-        dialog.setCancelable(true)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val window = dialog.window
-        // Set the dim amount
-        val layoutParams = window!!.attributes
-        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
-        window.attributes = layoutParams
+    private fun showSwitchBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val dialogBinding = BottomsheetSwitchAccountBinding.inflate(layoutInflater)
+        val bottomSheetView = dialogBinding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
 
-        /*binding.tvTitle.text = header
-        binding.tvDescription.text = Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)*/
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
 
-        // Handle close button click
-        binding.btnOk.setOnClickListener {
-            dialog.dismiss()
+        dialogBinding.tvTitle.text = "You're Logged In with a Different Account"
+        dialogBinding.tvDescription.text =
+            "This device is already logged in with a different account. As a result, free services are not available. \n\nPlease log out and sign in with your original account to access free features."
+
+        dialogBinding.ivDialogClose.setImageResource(R.drawable.close_breathwork)
+
+        dialogBinding.ivDialogClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        dialogBinding.btnYes.text = "Skip"
+        dialogBinding.btnYes.setTextColor(ContextCompat.getColor(this, R.color.menuselected))
+        dialogBinding.btnCancel.text = "Switch Account"
+
+        dialogBinding.btnYes.setOnClickListener {
             fetchApiData(accessTokenGoogle)
+            bottomSheetDialog.dismiss()
         }
-        binding.btnSwitchAccount.setOnClickListener {
-            dialog.dismiss()
+        /*dialogBinding.btnYes.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }*/
+        dialogBinding.btnCancel.setOnClickListener {
+            bottomSheetDialog.dismiss()
+
+            // Force a full logout and new chooser
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                .requestProfile()
+                .requestScopes(
+                    Scope("https://www.googleapis.com/auth/userinfo.email"),
+                    Scope("https://www.googleapis.com/auth/userinfo.profile"),
+                    Scope("openid")
+                )
+                .build()
+
+            val googleSignInClient = GoogleSignIn.getClient(this@ImageSliderActivity, gso)
+
+            // Step 1: Sign out
+            googleSignInClient.signOut().addOnCompleteListener {
+                // Step 2: Revoke access to forget the previous account
+                googleSignInClient.revokeAccess().addOnCompleteListener {
+                    // Step 3: Launch new sign-in chooser
+                    val signInIntent = googleSignInClient.signInIntent
+                    startActivityForResult(signInIntent, RC_SIGN_IN)
+                }
+            }
         }
 
-        dialog.show()
+        bottomSheetDialog.show()
+    }
+
+    private fun clickForPrivacyPolicyAndTermsOfService() {
+        val textView = findViewById<TextView>(R.id.textView)
+        val fullText = "By signing up, I agree to RightLife’s Terms of Service & Privacy Policy."
+
+        val spannableString = SpannableString(fullText)
+
+// Define clickable ranges
+        val termsStart = fullText.indexOf("Terms of Service")
+        val termsEnd = termsStart + "Terms of Service".length
+
+        val privacyStart = fullText.indexOf("Privacy Policy")
+        val privacyEnd = privacyStart + "Privacy Policy".length
+
+// ClickableSpan for Terms of Service
+        val termsClickable = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(
+                    this@ImageSliderActivity,
+                    TermsAndConditionsActivity::class.java
+                )
+                startActivity(intent)
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = Color.parseColor("#808080") // link color (blue)
+            }
+        }
+
+// ClickableSpan for Privacy Policy
+        val privacyClickable = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(
+                    this@ImageSliderActivity,
+                    PrivacyPolicyActivity::class.java
+                )
+                startActivity(intent)
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = Color.parseColor("#808080")
+            }
+        }
+
+// Apply spans
+        spannableString.setSpan(
+            termsClickable,
+            termsStart,
+            termsEnd,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannableString.setSpan(
+            privacyClickable,
+            privacyStart,
+            privacyEnd,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        textView.text = spannableString
+        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.highlightColor = Color.TRANSPARENT
+
     }
 }

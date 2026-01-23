@@ -20,9 +20,9 @@
 
         <ImageView
             android:id="@+id/main_heading_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:scaleType="fitCenter"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:scaleType="fitXY"
             android:layout_marginEnd="5dp"
             android:src="@drawable/workout_function_icon"
             app:layout_constraintEnd_toStartOf="@+id/tv_meal_title"
@@ -100,27 +100,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/view_border"
-            app:layout_constraintTop_toBottomOf="@+id/tv_meal_name">
-        </View>
+            app:layout_constraintTop_toBottomOf="@+id/tv_meal_name" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:gravity="left"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view">
 
+            <!-- TIME SECTION - LEFT (25%) -->
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:id="@+id/layout_time"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:gravity="center">
+                app:layout_constraintWidth_percent="0.25"
+                android:layout_marginStart="0dp">
 
                 <ImageView
                     android:id="@+id/image_serve"
@@ -132,33 +134,39 @@
                 <TextView
                     android:id="@+id/tv_serves"
                     android:layout_width="wrap_content"
-                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
+                    android:minWidth="20dp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
-                    android:text="1" />
+                    android:text="1"
+                    android:gravity="center"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
-                    android:textSize="12sp"
-                    android:visibility="gone"
+                    android:textSize="11sp"
+                    android:minWidth="18dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
-                    android:text="hr" />
+                    android:text="hr"
+                    android:gravity="center"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:visibility="gone"
-                    android:textSize="18sp"
+                    android:layout_marginStart="3dp"
+                    android:textSize="16sp"
+                    android:minWidth="24dp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
-                    android:text="30" />
+                    android:text="30"
+                    android:gravity="center"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tv_serves_count"
@@ -166,22 +174,37 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:textSize="12sp"
+                    android:minWidth="24dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
-                    android:text="mins" />
+                    android:text="mins"
+                    android:gravity="center" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <!-- DIVIDER LINE 1 -->
+            <View
+                android:id="@+id/divider_1"
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:background="@color/view_border"
+                app:layout_constraintStart_toEndOf="@+id/layout_time"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
+
+            <!-- CALORIE SECTION - CENTER-LEFT (25%) -->
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:id="@+id/layout_cal"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toEndOf="@+id/divider_1"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="70dp">
+                app:layout_constraintWidth_percent="0.25"
+                android:layout_marginStart="10dp">
 
                 <ImageView
                     android:id="@+id/image_cal"
@@ -195,10 +218,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:textSize="18sp"
+                    android:textSize="14sp"
+                    android:minWidth="32dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
-                    android:text="337" />
+                    android:text="337"
+                    android:gravity="center" />
 
                 <TextView
                     android:id="@+id/tv_cal_unit"
@@ -206,21 +231,39 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:textSize="10sp"
-                    android:visibility="gone"
+                    android:minWidth="18dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/black"
-                    android:text="cal" />
+                    android:text="cal"
+                    android:gravity="center"
+                    android:visibility="gone" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <!-- DIVIDER LINE 2 -->
+            <View
+                android:id="@+id/divider_2"
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:background="@color/view_border"
+                app:layout_constraintStart_toEndOf="@+id/layout_cal"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
+
+            <!-- INTENSITY SECTION - CENTER-RIGHT (25%) -->
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:id="@+id/layout_intensity"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="3dp"
+                android:gravity="center_vertical"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toEndOf="@+id/divider_2"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center"
+                app:layout_constraintEnd_toStartOf="@+id/divider_3"
+                app:layout_constraintWidth_default="spread"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp">
 
                 <ImageView
@@ -238,40 +281,59 @@
                     android:textSize="12sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
-                    android:text="Low Intensity" />
+                    android:text="Low Intensity"
+                    android:gravity="left" />
+
                 <TextView
                     android:id="@+id/tv_subtraction_value_Intensity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:visibility="gone"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
-                    android:text=" Intensity" />
+                    android:text=" Intensity"
+                    android:gravity="center"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tv_subtraction_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
-                    android:visibility="gone"
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
-                    android:text="g" />
+                    android:text="g"
+                    android:gravity="center"
+                    android:visibility="gone" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <!-- DIVIDER LINE 3 -->
+            <View
+                android:id="@+id/divider_3"
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:visibility="gone"
+                android:background="@color/view_border"
+                app:layout_constraintStart_toEndOf="@+id/layout_intensity"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
+
+            <!-- CARBS SECTION - RIGHT (25%) -->
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:id="@+id/layout_carbs"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toEndOf="@+id/divider_3"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center"
-                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_marginEnd="0dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/image_baguette"
@@ -286,9 +348,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:textSize="12sp"
+                    android:minWidth="28dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
-                    android:text="308" />
+                    android:text="308"
+                    android:gravity="center" />
 
                 <TextView
                     android:id="@+id/tv_baguette_unit"
@@ -298,19 +362,23 @@
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
-                    android:text="g" />
+                    android:text="g"
+                    android:gravity="center" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <!-- DEWPOINT SECTION - RIGHT -->
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center"
                 android:visibility="gone"
-                android:layout_marginStart="10dp">
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintStart_toEndOf="@+id/layout_carbs">
 
                 <ImageView
                     android:id="@+id/image_dewpoint"
@@ -327,7 +395,8 @@
                     android:textSize="12sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
-                    android:text="17" />
+                    android:text="17"
+                    android:gravity="center" />
 
                 <TextView
                     android:id="@+id/tv_dewpoint_unit"
@@ -337,7 +406,8 @@
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
-                    android:text="g" />
+                    android:text="g"
+                    android:gravity="center" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

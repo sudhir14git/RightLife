@@ -297,10 +297,14 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                         firstReport = rangeList[0]
                         binding.indicator.text = firstReport.indicator
                         binding.tvIndicatorExplain.text =
-                            Html.fromHtml(firstReport.implication, Html.FROM_HTML_MODE_COMPACT)
+                            Html.fromHtml(firstReport.implication, Html.FROM_HTML_MODE_LEGACY)
                         binding.tvIndicatorValue.text = "${firstReport.value} ${firstReport.unit}"
                         binding.tvIndicatorValueBg.text =
                             "${firstReport.lowerRange}-${firstReport.upperRange} ${firstReport.unit}"
+
+                        binding.tvAverageUnit.text = firstReport.unit
+                        binding.tvMaximumUnit.text = firstReport.unit
+                        binding.tvMinimumUnit.text = firstReport.unit
 
                         val colorHexString =
                             "#" + firstReport.colour // Construct the correct hex string
@@ -414,6 +418,8 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
     private fun getWeekRange(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val displayFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+        val displayFormatWithYear = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
         // Apply offset in days
@@ -427,11 +433,20 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         val endDate = dateFormat.format(calendar.time)
         startDateAPI = endDate
 
-        return "$endDate - $startDate"
+        // New display values for UI text
+        val startDisplayDate = displayFormat.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(endDate)!!)
+        val endDisplayDate = displayFormatWithYear.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(startDate)!!)
+
+        val formattedRange = "$startDisplayDate - $endDisplayDate"
+        return formattedRange
+
+
     }
 
     private fun getMonthRange(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val displayFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+        val displayFormatWithYear = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
         // Current date with offset applied
@@ -444,7 +459,13 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         val startDate = dateFormat.format(calendar.time)
         startDateAPI = startDate
 
-        return "$startDate - $endDate"
+        // New display values for UI text
+        val startDisplayDate = displayFormat.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(startDate)!!)
+        val endDisplayDate = displayFormatWithYear.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(endDate)!!)
+
+        val formattedRange = "$startDisplayDate - $endDisplayDate"
+        return formattedRange
+
     }
 
     private fun getSixMonthRange(): String {
@@ -769,8 +790,8 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             if (it.y == 0f) Entry(it.x, Float.NaN) else it
         }
 
-        val dataSet = LineDataSet(modifiedEntries, "Data Set").apply {
-            color = Color.parseColor("#05AB26")
+        val dataSet = LineDataSet(modifiedEntries, "").apply {
+            color = Color.parseColor("#FFFFFF")
             setCircleColors(circleColors)
             lineWidth = 2f
             circleRadius = 4f
@@ -843,7 +864,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             "MSI" -> R.drawable.ic_db_report_stresslevel
             "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
             "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
-            "HEALTH_SCORE" -> R.drawable.ic_wellness_man
+            "HEALTH_SCORE" -> R.drawable.ic_wellness_man_small
             else -> R.drawable.ic_db_report_heart_rate
         }
     }

@@ -20,7 +20,10 @@
             android:layout_height="wrap_content"
             android:id="@+id/filter_text"
             android:textSize="12dp"
-            android:padding="10dp"
+           android:paddingStart="15dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingEnd="15dp"
             android:text="All"
             />
     </LinearLayout>

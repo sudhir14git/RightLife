@@ -1,9 +1,7 @@
 package com.jetsynthesys.rightlife.ui.affirmation
 
 import android.Manifest
-import android.app.AlarmManager
 import android.app.Dialog
-import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.Context
@@ -18,6 +16,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
@@ -32,6 +31,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -39,6 +39,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityPratciseAffirmationPlaylis
 import com.jetsynthesys.rightlife.databinding.BottmsheetReminderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetReminserSetBinding
 import com.jetsynthesys.rightlife.databinding.DialogPraticeTimeAffirmationBinding
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.AffirmationCardPagerAdapter
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.WeekDayAdapter
@@ -84,6 +85,8 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
     private var watchedResponse: GetWatchedAffirmationPlaylistResponse? = null
     private var position = 0
     private var startDate = ""
+    private var startTime: Long = 0
+    private var isFromNotification = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,12 +96,14 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         getAffirmationPlaylist()
         getWatchedAffirmationPlaylist(0)
         setupReminderBottomSheet()
+        startTime = System.currentTimeMillis()
 
         setCardPlaylistAdapter(affirmationList)
+        isFromNotification = intent.getBooleanExtra("From_Notification", false)
 
         onBackPressedDispatcher.addCallback(this) {
-            callPostMindFullDataAPI()
-            finish()
+            stopTimer()
+            updateWatchedAffirmationPlaylist()
         }
 
         binding.ivDownload.setOnClickListener {
@@ -135,6 +140,14 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
             override fun onPageScrollStateChanged(state: Int) {}
         })
+
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.TR_AffirmationPlaylist_PageOpen,
+            mapOf(
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+            )
+        )
     }
 
     private fun setCardPlaylistAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
@@ -282,13 +295,30 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         dialogBinding.tvDialogAffirmations.text =
             watchedResponse?.data?.get(position)?.readAffirmation.toString()
         dialogBinding.tvDialogDuration.text =
-            watchedResponse?.data?.get(position)?.duration.toString()
+            formatSeconds(watchedResponse?.data?.get(position)?.duration ?: 0)
         dialogBinding.tvDialogTotalSessions.text =
             watchedResponse?.data?.get(position)?.totalSession.toString()
         if (!(this.isFinishing || this.isDestroyed)) {
             dialog.show()
         }
+
+        val duration = System.currentTimeMillis() - startTime
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.TR_AffirmationPlaylist_Completion,
+            mapOf(
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.TOTAL_DURATION to duration
+            )
+        )
     }
+
+    private fun formatSeconds(seconds: Int): String {
+        val minutes = seconds / 60
+        val remainingSeconds = seconds % 60
+        return String.format("%02d:%02d", minutes, remainingSeconds)
+    }
+
 
     private fun setupReminderBottomSheet() {
         // Create and configure BottomSheetDialog
@@ -302,6 +332,17 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
         // Set up the animation
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        bottomSheetView.post {
+            val bottomSheet =
+                reminderBottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+                it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                it.requestLayout()
+            }
+        }
         if (bottomSheetLayout != null) {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
@@ -311,7 +352,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
         dialogBinding.ivDialogClose.setOnClickListener {
             callPostMindFullDataAPI()
-            finish()
+            finishActivity()
         }
 
         dialogBinding.llMorningTime.isClickable = false
@@ -399,45 +440,8 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         if (!checkPermission()) {
             return
         }
-
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(this, ReminderReceiver::class.java).apply {
-            action = "PRACTICE_ALARM_TRIGGERED"
-        }
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            100, // Unique code
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Parse "6:40 PM" properly
-        val sdf = SimpleDateFormat("h:mm a", Locale.getDefault())
-        val date = sdf.parse(time)
-
-        val calendar = Calendar.getInstance()
-        calendar.time = date!!
-        // Set today's date
-        val now = Calendar.getInstance()
-        calendar.set(Calendar.YEAR, now.get(Calendar.YEAR))
-        calendar.set(Calendar.MONTH, now.get(Calendar.MONTH))
-        calendar.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH))
-
-        // If time already passed, schedule for tomorrow
-        if (calendar.before(now)) {
-            calendar.add(Calendar.DATE, 1)
-        }
-
-        val triggerTime = calendar.timeInMillis
-
-
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            pendingIntent
-        )
+        val requestCode = System.currentTimeMillis().toInt()
+        NotificationHelper.setReminder(this, "PRACTICE_ALARM_TRIGGERED", time, requestCode)
     }
 
     private fun setupReminderSetBottomSheet() {
@@ -461,7 +465,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
         dialogBinding.ivDialogClose.setOnClickListener {
             callPostMindFullDataAPI()
-            finish()
+            finishActivity()
         }
 
         if (selectedMorningTime.isNullOrEmpty()) {
@@ -582,6 +586,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
                                 TodaysAffirmationActivity::class.java
                             )
                         )
+                        finish()
                     }
                     setCardPlaylistAdapter(affirmationList)
                     startTimer()
@@ -644,7 +649,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
 
         AnalyticsLogger.logEvent(
             this,
-            AnalyticsEvent.AFFIRMATION_PLAYLIST_PRACTISE,
+            AnalyticsEvent.TR_AffirmationPlaylist_Completion_PageOpen,
             mapOf(
                 AnalyticsParam.TIME_TO_COMPLETE to binding.tvTimer.text.toString(),
                 AnalyticsParam.AFFIRMATION_PLAYLIST_ID to sharedPreferenceManager.userId,
@@ -691,6 +696,12 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
     private fun callPostMindFullDataAPI() {
         val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         CommonAPICall.postMindFullData(this, "Affirmation", startDate, endDate)
+    }
+
+    private fun finishActivity() {
+        if (isFromNotification)
+            startActivity(Intent(this, HomeNewActivity::class.java))
+        finish()
     }
 
 }

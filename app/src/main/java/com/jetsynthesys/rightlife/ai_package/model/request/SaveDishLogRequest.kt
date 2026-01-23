@@ -2,7 +2,20 @@ package com.jetsynthesys.rightlife.ai_package.model.request
 
 data class SaveDishLogRequest(
     val meal_type: String?,
-    val meal_log: List<DishLog>
+    val recipes: List<RecipeLogRequest>,
+    val ingredients: List<IngredientLogRequest>
+)
+
+data class RecipeLogRequest(
+    val recipe_id: String?,
+    val selected_serving_type: String?,
+    val selected_serving_value: Double?
+)
+
+data class IngredientLogRequest(
+    val ingredient_id: String?,
+    val meal_quantity: Double?,
+    val standard_serving_size: String?
 )
 
 data class DishLog(
@@ -11,4 +24,3 @@ data class DishLog(
     val unit: String?,
     val measure: String?
 )
-

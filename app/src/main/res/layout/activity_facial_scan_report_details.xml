@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:backgroundTint="@color/white"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -26,71 +26,74 @@
                     android:id="@+id/back_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_back"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/icon_back" />
 
                 <RelativeLayout
                     android:id="@+id/rlWitelsSelection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
                     android:background="@drawable/bg_gray_border"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingVertical="8dp">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_centerInParent="true">
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/img_popup_menu"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/active_heartrate_icon"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/active_heartrate_icon" />
 
                         <TextView
                             android:id="@+id/tvWitale"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:gravity="center_vertical"
                             android:text="Pulse Rate"
-                            android:textSize="16sp"
                             android:textColor="@color/txt_color_header"
-                            android:fontFamily="@font/merriweather_bold" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/arrow_drop_down"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="8dp" />
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/arrow_drop_down" />
                 </RelativeLayout>
 
             </LinearLayout>
 
             <androidx.cardview.widget.CardView
-                android:visibility="visible"
                 android:id="@+id/calorie_balance_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="4dp"
-                android:background="@color/white"
-                app:cardCornerRadius="10dp"
+                android:layout_below="@+id/llTopLayout"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginEnd="20dp"
+                android:background="@color/white"
+                android:elevation="4dp"
+                android:visibility="visible"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_below="@+id/llTopLayout">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -100,15 +103,15 @@
                             android:id="@+id/tabGroup"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
-                            android:orientation="horizontal"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="20dp"
                             android:background="@drawable/roundedcornerpinkborder"
                             android:backgroundTint="@color/chip_background_color"
+                            android:orientation="horizontal"
                             android:padding="2dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginEnd="20dp"
-                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <RadioButton
@@ -116,25 +119,26 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:text="Week"
-                                android:textSize="14sp"
-                                android:textColor="@color/black"
                                 android:background="@drawable/tab_background_report_detail"
-                                android:gravity="center"
                                 android:button="@null"
-                                android:checked="true" />
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="Week"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <RadioButton
                                 android:id="@+id/rbMonth"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:text="Month"
-                                android:textSize="14sp"
-                                android:textColor="@color/black"
                                 android:background="@drawable/tab_background_report_detail"
+                                android:button="@null"
+                                android:checked="false"
                                 android:gravity="center"
-                                android:button="@null" />
+                                android:text="Month"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
 
                             <!--<RadioButton
                                 android:id="@+id/rbSixMonths"
@@ -154,8 +158,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginStart="21dp"
-                            android:src="@drawable/backward_create_heart_rate"
                             android:layout_marginTop="14dp"
+                            android:src="@drawable/backward_create_heart_rate_svg"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
 
@@ -163,9 +167,9 @@
                             android:id="@+id/forward_image_heart_rate"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:layout_marginEnd="21dp"
-                            android:src="@drawable/forward_image_create_heartrate"
                             android:layout_marginTop="14dp"
+                            android:layout_marginEnd="21dp"
+                            android:src="@drawable/forward_image_create_heartrate_svg"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
 
@@ -173,68 +177,69 @@
                             android:id="@+id/tvDateRange"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="3 Feb -9 Feb, 2O25"
                             android:fontFamily="@font/dmsans_bold"
-                            android:textSize="14sp"
+                            android:text="3 Feb -9 Feb, 2O25"
                             android:textColor="@color/black"
+                            android:textSize="14sp"
                             app:layout_constraintBottom_toBottomOf="@+id/backward_image_heart_rate"
-                            app:layout_constraintStart_toEndOf="@+id/backward_image_heart_rate"
-                            app:layout_constraintEnd_toStartOf="@+id/forward_image_heart_rate" />
+                            app:layout_constraintEnd_toStartOf="@+id/forward_image_heart_rate"
+                            app:layout_constraintStart_toEndOf="@+id/backward_image_heart_rate" />
 
                         <LinearLayout
+                            android:id="@+id/ll_selected_graph_item"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/roundedcornerborderred"
-                            android:id="@+id/ll_selected_graph_item"
-                            android:layout_marginTop="18dp"
                             android:layout_marginStart="21dp"
+                            android:layout_marginTop="18dp"
                             android:layout_marginEnd="21dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            android:background="@drawable/roundedcornerborderred"
                             android:orientation="vertical"
                             android:padding="10dp"
-                            android:visibility="gone"
+                            android:visibility="visible"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate">
 
                             <TextView
                                 android:id="@+id/report_date"
                                 android:layout_width="wrap_content"
-                                android:text=""
-                                android:fontFamily="@font/dmsans_semibold"
+                                android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
-                                android:layout_height="wrap_content" />
+                                android:fontFamily="@font/dmsans_semibold"
+                                android:text="" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
-                                android:orientation="horizontal"
+                                android:layout_height="wrap_content"
                                 android:gravity="bottom"
-                                android:layout_height="wrap_content">
+                                android:orientation="horizontal">
 
                                 <TextView
                                     android:id="@+id/report_name_average_value"
                                     android:layout_width="wrap_content"
-                                    android:text="107"
-                                    android:layout_toRightOf="@+id/report_name_average"
+                                    android:layout_height="wrap_content"
                                     android:layout_centerVertical="true"
                                     android:layout_marginStart="15dp"
-                                    android:textSize="32sp"
+                                    android:layout_toRightOf="@+id/report_name_average"
                                     android:fontFamily="@font/dmsans_bold"
-                                    android:layout_height="wrap_content" />
+                                    android:text="107"
+                                    android:textSize="32sp" />
 
                                 <TextView
                                     android:id="@+id/report_unit"
                                     android:layout_width="wrap_content"
-                                    android:text="bpm"
-                                    android:fontFamily="@font/dmsans_semibold"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
                                     android:layout_marginEnd="5dp"
-                                    android:layout_height="wrap_content" />
+                                    android:fontFamily="@font/dmsans_semibold"
+                                    android:text="bpm" />
 
                                 <ImageView
                                     android:layout_width="15dp"
-                                    android:src="@drawable/ic_db_report_heart_rate"
+                                    android:layout_height="15dp"
                                     android:layout_marginBottom="5dp"
-                                    android:layout_height="15dp" />
+                                    android:src="@drawable/ic_db_report_heart_rate"
+                                    android:visibility="gone" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -243,13 +248,13 @@
                             android:id="@+id/average_text_heading"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="108dp"
                             android:layout_marginStart="21dp"
+                            android:layout_marginTop="108dp"
+                            android:fontFamily="@font/dmsans_bold"
                             android:text="Average"
+                            android:textColor="@color/black"
                             android:textSize="12sp"
                             android:visibility="invisible"
-                            android:fontFamily="@font/dmsans_bold"
-                            android:textColor="@color/black"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -257,12 +262,12 @@
                             android:id="@+id/average_number"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="21dp"
+                            android:fontFamily="@font/dmsans_bold"
                             android:text="78.5"
-                            android:visibility="invisible"
                             android:textColor="@color/black"
                             android:textSize="20dp"
-                            android:fontFamily="@font/dmsans_bold"
-                            android:layout_marginStart="21dp"
+                            android:visibility="invisible"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/average_text_heading" />
 
@@ -270,10 +275,10 @@
                             android:id="@+id/average_unit"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/dmsans_bold"
                             android:text="Ms"
                             android:textSize="12sp"
                             android:visibility="invisible"
-                            android:fontFamily="@font/dmsans_bold"
                             app:layout_constraintBottom_toBottomOf="@+id/average_number"
                             app:layout_constraintStart_toEndOf="@+id/average_number" />
 
@@ -281,20 +286,20 @@
                             android:id="@+id/percentage_icon"
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:src="@drawable/forward_image_create_heartrate"
                             android:layout_marginStart="21dp"
+                            android:src="@drawable/forward_image_create_heartrate"
                             android:visibility="gone"
-                            app:layout_constraintTop_toBottomOf="@+id/average_number"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/average_number" />
 
                         <TextView
                             android:id="@+id/percentage_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="50% past week"
-                            android:textSize="10sp"
                             android:layout_marginStart="4dp"
+                            android:text="50% past week"
                             android:textColor="@color/green_text"
+                            android:textSize="10sp"
                             android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"
                             app:layout_constraintStart_toEndOf="@+id/percentage_icon" />
@@ -303,11 +308,11 @@
                             android:id="@+id/heartRateChart"
                             android:layout_width="match_parent"
                             android:layout_height="300dp"
-                            android:layout_marginTop="20dp"
                             android:layout_marginHorizontal="2dp"
-                            app:layout_constraintTop_toBottomOf="@+id/percentage_text"
+                            android:layout_marginTop="20dp"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            app:layout_constraintTop_toBottomOf="@+id/percentage_text" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -315,139 +320,189 @@
                         android:id="@+id/llValues"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:layout_below="@id/calorie_balance_layout"
-                        android:layout_margin="5dp">
+                        android:layout_margin="5dp"
+                        android:orientation="horizontal">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="12dp"
-                            android:gravity="center"
-                            android:layout_weight="1"
                             android:layout_marginHorizontal="5dp"
-                            android:background="@drawable/bg_edittext_gray">
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:backgroundTint="@color/gray_light_bg"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical">
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_graph_average"
-                                    android:layout_marginEnd="8dp" />
+                                    android:layout_marginEnd="8dp"
+                                    android:src="@drawable/ic_graph_average" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/dmsans_regular"
-                                    android:textSize="@dimen/textsize_small"
-                                    android:text="Average" />
+                                    android:text="Average"
+                                    android:textSize="10sp" />
 
                             </LinearLayout>
 
-                            <TextView
-                                android:id="@+id/tvAverage"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
                                 android:layout_gravity="center_horizontal"
-                                android:layout_marginTop="8dp" />
+                                android:layout_marginTop="8dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvAverage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="16sp"
+                                    android:fontFamily="@font/dmsans_bold" />
+
+                                <TextView
+                                    android:id="@+id/tvAverageUnit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="10sp"
+                                    android:layout_marginStart="1.5dp"
+                                    android:fontFamily="@font/dmsans_bold" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="12dp"
-                            android:gravity="center"
-                            android:layout_weight="1"
                             android:layout_marginHorizontal="5dp"
-                            android:background="@drawable/bg_edittext_gray">
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:backgroundTint="@color/gray_light_bg"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center">
+                                android:gravity="center"
+                                android:orientation="horizontal">
 
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_graph_minimum"
-                                    android:layout_marginEnd="8dp" />
+                                    android:layout_marginEnd="8dp"
+                                    android:src="@drawable/ic_graph_minimum" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_regular"
                                     android:text="Minimum"
-                                    android:fontFamily="@font/dmsans_regular"
-                                    android:textSize="@dimen/textsize_small" />
+                                    android:textSize="10sp" />
 
                             </LinearLayout>
 
-                            <TextView
-                                android:id="@+id/tvMinimum"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
                                 android:layout_gravity="center_horizontal"
-                                android:layout_marginTop="8dp" />
+                                android:layout_marginTop="8dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvMinimum"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="16sp"
+                                    android:fontFamily="@font/dmsans_bold" />
+
+                                <TextView
+                                    android:id="@+id/tvMinimumUnit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="10sp"
+                                    android:layout_marginStart="1.5dp"
+                                    android:fontFamily="@font/dmsans_bold" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="12dp"
-                            android:gravity="center"
                             android:layout_weight="1"
-                            android:layout_marginHorizontal="5dp"
-                            android:background="@drawable/bg_edittext_gray">
+                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:backgroundTint="@color/gray_light_bg"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical">
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_graph_maximum"
-                                    android:layout_marginEnd="8dp" />
+                                    android:layout_marginEnd="8dp"
+                                    android:src="@drawable/ic_graph_maximum" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Maximum"
                                     android:fontFamily="@font/dmsans_regular"
-                                    android:textSize="@dimen/textsize_small" />
+                                    android:text="Maximum"
+                                    android:textSize="10sp" />
 
                             </LinearLayout>
 
-                            <TextView
-                                android:id="@+id/tvMaximum"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
                                 android:layout_gravity="center_horizontal"
-                                android:layout_marginTop="8dp" />
+                                android:layout_marginTop="8dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvMaximum"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="16sp"
+                                    android:fontFamily="@font/dmsans_bold" />
+
+                                <TextView
+                                    android:id="@+id/tvMaximumUnit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textSize="10sp"
+                                    android:layout_marginStart="1.5dp"
+                                    android:fontFamily="@font/dmsans_bold" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -461,44 +516,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/calorie_balance_layout"
-                android:textColor="@color/txt_color_header"
-                android:textSize="12sp"
+                android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="@dimen/margin_card_16dp"
                 android:fontFamily="@font/dmsans_regular"
-                android:layout_marginHorizontal="16dp"
-                android:visibility="visible"
-                android:text="Pulse rate is the number of times your heart beats in a minute, giving insight into your heart’s rhythm and pace. It’s best measured when you’re calm, like first thing in the morning or after sitting quietly for a few minutes." />
+                android:text="Pulse rate is the number of times your heart beats in a minute, giving insight into your heart’s rhythm and pace. It’s best measured when you’re calm, like first thing in the morning or after sitting quietly for a few minutes."
+                android:textColor="@color/txt_color_header"
+                android:textSize="12sp"
+                android:visibility="visible" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:layout_margin="16dp"
                 android:layout_below="@+id/tvDescription"
-                android:background="@drawable/bg_gray_border">
+                android:layout_margin="16dp"
+                android:background="@drawable/bg_gray_border"
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/indicator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/merriweather_bold"
                         android:text="Normal"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:layout_weight="1" />
+                        android:textSize="@dimen/textsize_large18sp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="end">
+                        android:gravity="end"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/tv_indicator_value"
@@ -512,8 +567,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="1 Jan, 2025"
-                            android:visibility="invisible"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:visibility="invisible" />
 
                     </LinearLayout>
 
@@ -523,67 +578,69 @@
                     android:id="@+id/tv_indicator_value_bg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="60-100 bpm"
-                    android:textSize="12sp"
-                    android:padding="8dp"
-                    android:textColor="@color/text_color_app"
-                    android:fontFamily="@font/dmsans_bold"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/bg_rounded_green"
-                    android:layout_marginTop="8dp" />
+                    android:fontFamily="@font/dmsans_bold"
+                    android:padding="8dp"
+                    android:text="60-100 bpm"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_indicator_explain"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/dmsans_regular"
                     android:text="Your vital are in the normal range in between 60-100 Bpm."
-                    android:textSize="16sp"
-                    android:layout_marginTop="16dp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/dmsans_regular"
                     android:text="Optimal RHR (around 60-70 BPM): Your heart's in the sweet spot! It's working smoothly with minimal stress."
                     android:textSize="16sp"
-                    android:visibility="gone"
-                    android:layout_marginTop="16dp" />
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/dmsans_regular"
                     android:text="Higher normal RHR (&gt;80 BPM): A little heads-up—if this persists, it could mean future heart concerns. Keep an eye on it!"
                     android:textSize="16sp"
-                    android:visibility="gone"
-                    android:layout_marginTop="16dp" />
+                    android:visibility="gone" />
 
 
                 <RelativeLayout
                     android:id="@+id/rl_ranges_button"
                     android:layout_width="match_parent"
-                    android:background="@drawable/roundedcornerbutton"
-                    android:backgroundTint="@color/light_blue"
+                    android:layout_height="33dp"
                     android:layout_marginTop="10dp"
-                    android:layout_height="wrap_content">
+                    android:background="@drawable/roundedcornerbutton"
+                    android:backgroundTint="@color/light_blue">
 
                     <TextView
                         android:id="@+id/txt_inthisarticle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/merriweather_regular"
+                        android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:paddingStart="32dp"
-                        android:paddingEnd="30dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:fontFamily="@font/dmsans_bold"
                         android:text="View More About The Ranges"
                         android:textColor="#1292E5"
                         android:textSize="@dimen/textsize_medium" />
 
                     <ImageView
                         android:id="@+id/icon_arrow_ranges"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_alignParentEnd="true"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="30dp"
-                        android:padding="15dp"
+                        android:layout_toEndOf="@+id/txt_inthisarticle"
+                        android:padding="3dp"
                         android:src="@drawable/icon_arrow_article"
                         app:tint="#1292E5" />
                 </RelativeLayout>
@@ -591,16 +648,16 @@
                 <LinearLayout
                     android:id="@+id/ll_range_expand"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="gone"
-                    android:layout_height="wrap_content">
+                    android:visibility="gone">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerViewRanges"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
-                        android:overScrollMode="never"/>
+                        android:overScrollMode="never" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -619,29 +676,29 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/headerText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="12dp"
-                android:text="Recommended For You"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@color/txt_color_header"
-                android:textSize="16sp"
-                android:paddingBottom="8dp" />
+                <TextView
+                    android:id="@+id/headerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:paddingBottom="8dp"
+                    android:text="Recommended For You"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="16sp" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/light_grey"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/light_grey" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:id="@+id/recyclerViewContinue"
-                android:nestedScrollingEnabled="false"
-                android:layout_height="wrap_content" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewContinue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

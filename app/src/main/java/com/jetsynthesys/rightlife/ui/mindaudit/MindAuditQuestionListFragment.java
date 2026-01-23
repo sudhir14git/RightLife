@@ -63,6 +63,10 @@ public class MindAuditQuestionListFragment extends Fragment {
         txt_question = view.findViewById(R.id.txt_question);
 
         txt_question.setText(question.getQuestion());
+        if (question.getQuestion() == null || question.getQuestion().isEmpty())
+            txt_question.setVisibility(View.INVISIBLE);
+        else
+            txt_question.setVisibility(View.VISIBLE);
         ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.GONE);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 1);
@@ -75,7 +79,7 @@ public class MindAuditQuestionListFragment extends Fragment {
 
             String currentOption = scoringPattern.getOption();
 
-            if (activity.adapter.getItemCount() - 1 == position && "PHQ-9".equalsIgnoreCase(header) && (!currentOption.equalsIgnoreCase("Not difficult at all"))) {
+            if (activity.adapter.getItemCount() - 1 == position && ("PHQ-9".equalsIgnoreCase(header) || "DASS-21".equalsIgnoreCase(header)) && (!(currentOption.equalsIgnoreCase("Not difficult at all") || currentOption.equalsIgnoreCase("Not at all") || currentOption.equalsIgnoreCase("Did not apply to me at all")))) {
                 isSubmitClickable = false;
                 activity.openSecondActivity();
             } else {

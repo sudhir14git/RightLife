@@ -9,14 +9,18 @@
 
     <TextView
         android:id="@+id/deleteTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Delete Meal"
-        android:textColor="@color/black_no_meals"
-        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:maxLines="2"
         android:fontFamily="@font/merriweather_bold"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -25,12 +29,12 @@
         android:id="@+id/deleteConfirmTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Are you sure you want to delete this meal entry?"
+        android:text="Are you sure you want to delete this meal?"
         android:gravity="center"
-        android:textColor="@color/black_no_meals"
+        android:textColor="@color/black"
         android:textSize="18sp"
         android:minLines="2"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/dmsans_regular"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:layout_marginTop="20dp"
@@ -54,12 +58,13 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/yesBtn"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:background="@drawable/white_grey_meal_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/green_meal_bg"
             android:layout_marginBottom="10dp"
             android:gravity="center">
 
@@ -73,7 +78,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textSize="20sp"
-                android:textColor="@color/black_no_meals"
+                android:textColor="@color/white"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Yes"/>
 
@@ -81,13 +86,14 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/noBtn"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/yesBtn"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/green_meal_bg"
-            android:layout_marginStart="20dp"
+            android:background="@drawable/white_grey_meal_bg"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:gravity="center">
 
@@ -100,7 +106,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_gravity="center"
                 android:textSize="20sp"
-                android:textColor="@color/white"
+                android:textColor="@color/txt_color_journal_date"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="No"/>
 

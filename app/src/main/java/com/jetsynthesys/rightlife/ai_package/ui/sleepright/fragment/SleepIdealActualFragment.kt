@@ -59,7 +59,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentIdealActualSleepTimeBinding
         get() = FragmentIdealActualSleepTimeBinding::inflate
     var snackbar: Snackbar? = null
-
     private lateinit var sixMonthGraph: SixMonthGraphView
     private lateinit var lineChart:LineChart
     private lateinit var radioGroup: RadioGroup
@@ -76,10 +75,12 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private lateinit var tvIdealTitle: TextView
     private lateinit var sleep_actual_time_box: ConstraintLayout
     private lateinit var tvIdealMessage: TextView
+    private lateinit var ideal_extra_text: TextView
     private lateinit var tv_ideal_actual_date: TextView
     private lateinit var tv_ideal_time: TextView
     private lateinit var tv_actual_time: TextView
     private lateinit var sleepCard: CardView
+    private lateinit var sleep_ideal_card_new: CardView
     private lateinit var sleepNoCard: CardView
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -98,6 +99,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         sixMonthGraph = view.findViewById(R.id.sixMonthGraph)
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
+        sleep_ideal_card_new = view.findViewById(R.id.sleep_ideal_card_new)
         percentage_text_average = view.findViewById(R.id.percentage_text_average)
         percentage_text = view.findViewById(R.id.percentage_text)
         sleep_actual_time_box = view.findViewById(R.id.sleep_actual_time_box)
@@ -108,6 +110,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         tvAverageNeeded = view.findViewById(R.id.tv_average_needed_time)
         tvIdealTitle = view.findViewById(R.id.ideal_title)
         tvIdealMessage = view.findViewById(R.id.ideal_message)
+        ideal_extra_text = view.findViewById(R.id.ideal_extra_text)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -189,7 +192,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                     addToBackStack(null)
                     commit()
                 }
-
             }
         })
     }
@@ -210,7 +212,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
     private fun setupListeners() {
       /*  radioGroup.setOnCheckedChangeListener { _, checkedId ->
-
         }*/
 
         btnPrevious.setOnClickListener {
@@ -255,46 +256,31 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private fun loadSixMonthsData() {
         val startDate = getSixMonthsEarlierDate()
         val endDate = getTodayDate()
-
         val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
         dateRangeText.text = "${startDate.format(formatter)} - ${endDate.format(formatter)}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endDate.format(formatter1), "monthly")
     }
-
-
 
     private fun loadMonthData() {
         val endOfMonth = currentDateMonth
         val startOfMonth = endOfMonth.minusMonths(1)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endOfMonth.format(formatter1), "monthly")
-
      //   val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
-
    //     setGraphDataFromSleepList(monthList,weekRanges)
     }
 
     private fun loadWeekData() {
-
         val endOfWeek = currentDateWeek
         val startOfWeek = endOfWeek.minusDays(6)
-
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endOfWeek.format(formatter1), "weekly")
-
       //  val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-
       //  setGraphDataFromSleepList(weekList, weekRanges)
     }
 
@@ -309,16 +295,13 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dayFormat = SimpleDateFormat("d", Locale.getDefault())
         val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
-
         val startDate = dateFormat.parse(startDateStr)!!
         val calendar = Calendar.getInstance()
         calendar.time = startDate
-
         val endDate = Calendar.getInstance().apply {
             time = startDate
             add(Calendar.DAY_OF_MONTH, 29) // total 30 days
         }.time
-
         val fullList = MutableList(30) { "" } // default 30 items with empty strings
         var labelIndex = 0
         var startIndex = 0
@@ -351,7 +334,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         if (period != "weekly"){
             startDateStr = getOneMonthBack(endDate)
         }
-
         var startDate = LocalDate.parse("2025-05-30")
         val mEndDate = LocalDate.parse(endDate, formatter)
         if (startDateStr != ""){
@@ -360,42 +342,33 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         val idealEntries = ArrayList<Entry>()
         val actualEntries = ArrayList<Entry>()
         val labels = mutableListOf<String>()
-
-
         sleepData?.forEachIndexed { index, data ->
             idealEntries.add(Entry(index.toFloat(), data.idealSleep))
             actualEntries.add(Entry(index.toFloat(), data.actualSleep))
         }
-
 
         if (sleepData?.size!! > 8 ) {
             labels.addAll(generateLabeled30DayListWithEmpty(startDateStr))
             /*val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate).toInt() + 1
             val entries = ArrayList<BarEntry>()
            // val labels = ArrayList<String>()
-
             val monthFormatter = DateTimeFormatter.ofPattern("MMM") // For 'Jun', 'Feb', etc.
-
             for (i in 0 until daysBetween) {
                 val currentDate = startDate.plusDays(i.toLong())
-
                 // Calculate group index (each group is 7 days long)
                 val groupIndex = i / 7
                 val groupStartDate = startDate.plusDays(groupIndex * 7L)
                 val groupEndDate = groupStartDate.plusDays(6).coerceAtMost(mEndDate)
-
                 // Label for the group (shown only once per 7-day group)
                 val label = if (i % 7 == 0) {
                     val dayRange = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
                     val month = groupEndDate.format(monthFormatter)
-
                     // Center month by adding padding spaces (rough estimation)
                     val spaces = " ".repeat((dayRange.length - month.length).coerceAtLeast(0) / 2)
                     "$dayRange\n$spaces$month"
                 } else {
                     ""
                 }
-
                 labels.add(label)*/
             val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
                 color = Color.parseColor("#00C853") // green
@@ -417,7 +390,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 lineWidth = 0f
                 isHighlightEnabled = true
             }
-
             // Line without circles - Actual
             val actualLineSet = LineDataSet(actualEntries, "Actual").apply {
                 color = Color.parseColor("#2979FF") // blue
@@ -580,7 +552,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 Log.d("TouchEvent", "Nothing selected, cleared TextViews")
             }
         })
-
+        lineChart.legend.isEnabled = false
         lineChart.invalidate()
     }
 
@@ -627,7 +599,9 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                             if (idealActualResponse.message != "No sleep time data retrieved successfully") {
                                 tvIdealTitle.visibility = View.VISIBLE
                                 tvIdealMessage.visibility = View.VISIBLE
+                                ideal_extra_text.visibility = View.VISIBLE
                                 sleepCard.visibility = View.VISIBLE
+                                sleep_ideal_card_new.visibility = View.VISIBLE
                                 sleepNoCard.visibility = View.GONE
                                 percentage_text.text = "${response.body()!!.data?.progress_detail?.actual_sleep?.progress_percentage?.toInt().toString()}% of past week"
                                 percentage_text_average.text = "${response.body()!!.data?.progress_detail?.needed_sleep?.progress_percentage?.toInt().toString()}% of past week"
@@ -636,6 +610,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                 sleepCard.visibility = View.GONE
                                 sleepNoCard.visibility = View.VISIBLE
                                 tvIdealTitle.visibility = View.GONE
+                                sleep_ideal_card_new.visibility = View.GONE
+                                ideal_extra_text.visibility = View.GONE
                                 tvIdealMessage.visibility = View.GONE
                             }
                         }
@@ -644,6 +620,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                         sleepCard.visibility = View.GONE
                         sleepNoCard.visibility = View.VISIBLE
                         tvIdealTitle.visibility = View.GONE
+                        sleep_ideal_card_new.visibility = View.GONE
+                        ideal_extra_text.visibility = View.GONE
                         tvIdealMessage.visibility = View.GONE
                         Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                     }else {
@@ -702,6 +680,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
     private fun setSleepRightData(period: String, endDate: String) {
         tvIdealTitle.setText(idealActualResponse.data?.sleepInsightDetail?.title)
+        ideal_extra_text.setText(idealActualResponse.data?.sleepInsightDetail?.action)
         tvIdealMessage.setText(idealActualResponse.data?.sleepInsightDetail?.message)
         if (idealActualResponse.data?.averageSleep!=null && idealActualResponse.data?.averageNeeded!=null) {
             tvAverageSleep.setText(convertDecimalHoursToHrMinFormat(idealActualResponse.data?.averageSleep!!))

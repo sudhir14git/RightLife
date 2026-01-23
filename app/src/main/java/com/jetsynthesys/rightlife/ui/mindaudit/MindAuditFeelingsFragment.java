@@ -110,10 +110,13 @@ public class MindAuditFeelingsFragment extends Fragment {
                         }
 
                         emotionsAdapter = new EmotionsAdapter(requireContext(), emotionsList,"1", emotion -> {
+                            String emotionKey = emotion.getEmotion().toUpperCase();
                             if (emotion.isSelected()) {
-                                selectedEmotions.add(emotion.getEmotion().toUpperCase());
+                                if (!selectedEmotions.contains(emotionKey)) {
+                                    selectedEmotions.add(emotionKey);
+                                }
                             } else {
-                                selectedEmotions.remove(emotion.getEmotion().toUpperCase());
+                                selectedEmotions.remove(emotionKey);
                             }
                         });
 

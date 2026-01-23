@@ -3,9 +3,12 @@ package com.jetsynthesys.rightlife.ui.utility;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
+import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.jetsynthesys.rightlife.ui.mindaudit.UserEmotions;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.InterestDataList;
@@ -139,6 +142,21 @@ public class SharedPreferenceManager {
         Gson gson = new Gson();
         String json = sharedPreferences.getString(SharedPreferenceConstants.USER_PROFILE, "");
         UserProfileResponse obj = gson.fromJson(json, UserProfileResponse.class);
+        return obj;
+    }
+
+    public void saveChecklistResponse(ChecklistResponse checklistResponse) {
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(checklistResponse);
+        prefsEditor.putString(SharedPreferenceConstants.CHECKLISTDATA, json);
+        prefsEditor.apply();
+    }
+
+    public ChecklistResponse getChecklistResponse() {
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(SharedPreferenceConstants.CHECKLISTDATA, "");
+        ChecklistResponse obj = gson.fromJson(json, ChecklistResponse.class);
         return obj;
     }
 
@@ -379,6 +397,16 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
+    public Boolean getEnableNotificationServer() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.SERVER_ENABLE_NOTIFICATION, false);
+    }
+
+    public void setEnableNotificationServer(boolean enableNotification) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.SERVER_ENABLE_NOTIFICATION, enableNotification);
+        editor.apply();
+    }
+
     public Boolean getEnableNotification() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.ENABLE_NOTIFICATION, false);
     }
@@ -441,6 +469,60 @@ public class SharedPreferenceManager {
     }
 
     public void setFirstTimeUserForAffirmation(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, isUnlock);
+        editor.apply();
+    }
+
+    public Boolean getFirstTimeUserPlaylistAffirmation() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION_PLAYLIST, true);
+    }
+
+    public void setFirstTimeUserPlaylistAffirmation(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION_PLAYLIST, isUnlock);
+        editor.apply();
+    }
+
+    public Boolean getFirstTimeUserAffirmationInfoShown() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, true);
+    }
+
+    public void setFirstTimeForHomeDashboard(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_HOMEDASHBOARD, isUnlock);
+        editor.apply();
+    }
+
+    public Boolean getFirstTimeForHomeDashboard() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_HOMEDASHBOARD, true);
+    }
+
+    public void setFirstTimeCheckListEventLogged(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_CHECKLIST_EVENT, isUnlock);
+        editor.apply();
+    }
+
+    public Boolean getFirstTimeCheckListEventLogged() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_CHECKLIST_EVENT, true);
+    }
+
+
+    //FIRST_TIME_CHECKLIST_VISIT_EVENT
+
+    public void setFirstTimeCheckListVisitLogged(boolean isUnlock) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_CHECKLIST_VISIT_EVENT, isUnlock);
+        editor.apply();
+    }
+
+    public Boolean getFirstTimeCheckListVisitLogged() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_CHECKLIST_VISIT_EVENT, true);
+    }
+
+
+    public void setFirstTimeUserAffirmationInfoShown(boolean isUnlock) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, isUnlock);
         editor.apply();
@@ -556,6 +638,129 @@ public class SharedPreferenceManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(name, false);
         editor.apply();
+    }
+
+
+    // Add to SharedPreferenceManager.java
+
+    // Generic string save/get/remove methods
+    public void saveString(String key, String value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, value);
+        editor.apply();
+    }
+
+    public String getString(String key, String defaultValue) {
+        String value = sharedPreferences.getString(key, defaultValue);
+        return value != null ? value : defaultValue;
+    }
+
+
+    public void removeKey(String key) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(key);
+        editor.apply();
+    }
+
+    // Mobile number getter (add setter too if not present)
+    public String getMobile() {
+        return sharedPreferences.getString(SharedPreferenceConstants.USER_MOBILE, "");
+    }
+
+    public void setMobile(String mobile) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.USER_MOBILE, mobile);
+        editor.apply();
+    }
+
+    // ---------- Force Update (Config API) ----------
+
+    public void saveForceUpdateConfig(boolean enabled, String minVersion, String updateUrl, String message) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FORCE_UPDATE_ENABLED, enabled);
+        editor.putString(SharedPreferenceConstants.FORCE_UPDATE_MIN_VERSION, minVersion != null ? minVersion : "");
+        editor.putString(SharedPreferenceConstants.FORCE_UPDATE_URL, updateUrl != null ? updateUrl : "");
+        editor.putString(SharedPreferenceConstants.FORCE_UPDATE_MESSAGE, message != null ? message : "");
+        editor.apply();
+    }
+
+    public boolean isForceUpdateEnabled() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FORCE_UPDATE_ENABLED, false);
+    }
+
+    public String getForceUpdateMinVersion() {
+        return getString(SharedPreferenceConstants.FORCE_UPDATE_MIN_VERSION, "");
+    }
+
+    public String getForceUpdateUrl() {
+        return getString(SharedPreferenceConstants.FORCE_UPDATE_URL, "");
+    }
+
+    public String getForceUpdateMessage() {
+        return getString(SharedPreferenceConstants.FORCE_UPDATE_MESSAGE, "");
+    }
+
+    public void clearForceUpdateConfig() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(SharedPreferenceConstants.FORCE_UPDATE_ENABLED);
+        editor.remove(SharedPreferenceConstants.FORCE_UPDATE_MIN_VERSION);
+        editor.remove(SharedPreferenceConstants.FORCE_UPDATE_URL);
+        editor.remove(SharedPreferenceConstants.FORCE_UPDATE_MESSAGE);
+        editor.apply();
+    }
+
+    public void saveAppConfigJson(@NonNull String json) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.APP_CONFIG_RESPONSE, json);
+        editor.apply();
+    }
+
+    public String getAppConfigJson() {
+        return sharedPreferences.getString(SharedPreferenceConstants.APP_CONFIG_RESPONSE, "");
+    }
+
+    public void setHomeFirstVisited(boolean visit) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_HOME_VISIT, visit);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public boolean isHomeFirstVisited() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_HOME_VISIT, false);
+    }
+
+    public void setChallengeState(int state) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.CHALLENGE_STATUS, state);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public int getChallengeState() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.CHALLENGE_STATUS, 1);
+    }
+
+    public void setChallengeEndDate(String state) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.CHALLENGE_END_DATE, state);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public String getChallengeEndDate() {
+        return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_END_DATE, "28 Feb 2026, 09:00 PM");
+    }
+
+    public void setChallengeStartDate(String state) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.CHALLENGE_START_DATE, state);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public String getChallengeStartDate() {
+        return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_START_DATE, "01 Feb 2026, 09:00 AM");
     }
 }
 

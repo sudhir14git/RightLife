@@ -1,5 +1,6 @@
 <!-- res/layout/bottom_sheet_layout.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/design_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -18,14 +19,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/close_dialog_affirmation" />
+            android:src="@drawable/close_breathwork" />
 
         <TextView
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:text="Set Your Reminder"
             android:textColor="@color/txt_color_header"
             android:textSize="20sp" />
@@ -35,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:text="Select &amp; Set Time"
             android:textColor="@color/txt_color_header"
             android:textSize="14sp"
@@ -65,6 +66,7 @@
                     android:text="Morning"
                     android:clickable="false"
                     android:textColor="@color/txt_color_header"
+                    app:buttonTint="@color/checkbox_color"
                     android:textSize="12sp" />
 
             </LinearLayout>
@@ -120,6 +122,7 @@
                     android:text="Afternoon"
                     android:clickable="false"
                     android:textColor="@color/txt_color_header"
+                    app:buttonTint="@color/checkbox_color"
                     android:textSize="12sp" />
 
 
@@ -175,6 +178,7 @@
                     android:text="Evening"
                     android:clickable="false"
                     android:textColor="@color/txt_color_header"
+                    app:buttonTint="@color/checkbox_color"
                     android:textSize="12sp" />
 
             </LinearLayout>

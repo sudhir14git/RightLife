@@ -1,0 +1,62 @@
+<!-- res/layout/bottom_sheet_layout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/design_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:background="@drawable/toproundedcornershape"
+    android:backgroundTint="@color/gray_light_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/merriweather_bold"
+        android:layout_gravity="center_horizontal"
+        android:text="Are You Sure You Want\nTo Quit?"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:layout_marginHorizontal="30dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Your changes were not saved. You can still continue."
+        android:textColor="@color/txt_color_header"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/btnYes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="Yes"
+        android:textSize="16sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/color_think_right"
+        android:backgroundTint="@color/btn_color_journal"/>
+
+    <Button
+        android:id="@+id/btnNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="No"
+        android:textSize="16sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/txt_color_journal_date"
+        android:backgroundTint="@color/color_bg_button_affirmed"/>
+
+</LinearLayout>

@@ -91,7 +91,7 @@ class AnimatedGlowGradientBorderView @JvmOverloads constructor(
         val animatedFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.FILL
             shader = sweepGradient
-            alpha = 50 // slight transparency over solid white
+            alpha = 0 // slight transparency over solid white
         }
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, animatedFillPaint)
         // === Stroke Border ===

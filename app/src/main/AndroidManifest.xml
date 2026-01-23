@@ -6,15 +6,13 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="com.android.vending.BILLING" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO" />
@@ -25,41 +23,49 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<!--    <uses-permission android:name="com.samsung.android.health.permission.READ_HEALTH_DATA" />-->
-<!--    <uses-permission android:name="com.samsung.android.health.permission.WRITE_HEALTH_DATA" />-->
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- <uses-permission android:name="com.samsung.android.health.permission.READ_HEALTH_DATA" /> -->
+    <!-- <uses-permission android:name="com.samsung.android.health.permission.WRITE_HEALTH_DATA" /> -->
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="androidx.health.ACTION_READ_HEALTH_DATA" />
     <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
-
     <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
-
     <uses-permission android:name="android.permission.health.READ_BASAL_METABOLIC_RATE" />
-
     <uses-permission android:name="android.permission.health.READ_DISTANCE" />
-
     <uses-permission android:name="android.permission.health.READ_STEPS" />
-
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-
     <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
-
     <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
-
     <uses-permission android:name="android.permission.health.READ_RESPIRATORY_RATE" />
-
     <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
     <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
     <uses-permission android:name="android.permission.health.READ_WEIGHT" />
     <uses-permission android:name="android.permission.health.READ_BODY_FAT" />
     <uses-permission android:name="android.permission.health.READ_SLEEP" />
-    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
+    <uses-permission android:name="android.permission.health.READ_EXERCISE" /> <!-- Force remove any SMS / Call Log permissions coming from flavors or libraries -->
+    <uses-permission
+        android:name="android.permission.RECEIVE_SMS"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.READ_SMS"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.SEND_SMS"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.RECEIVE_WAP_PUSH"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.READ_CALL_LOG"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.WRITE_CALL_LOG"
+        tools:node="remove" />
 
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
+
         <intent>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
         </intent>
@@ -77,6 +83,27 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="35">
+        <!-- xml -->
+        <service
+            android:name=".fcm.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service> <!-- Meta SDK Configuration -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
+        <meta-data
+            android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
+            android:value="true" />
+        <meta-data
+            android:name="com.facebook.sdk.AdvertiserIDCollectionEnabled"
+            android:value="true" />
+
         <activity
             android:name=".ui.aireport.AIReportWebViewActivity"
             android:exported="false"
@@ -88,7 +115,12 @@
             android:name=".ui.contentdetailvideo.ContentDetailsActivity"
             android:exported="false"
             android:label="@string/title_activity_content_details"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.contentdetailvideo.FullscreenVideoActivity"
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.NewSleepSounds.SleepSoundPlayerActivity"
             android:exported="false"
@@ -201,12 +233,10 @@
             android:name=".ui.mindaudit.MindAuditActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.mindaudit.RedFlagAlertActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.mindaudit.MindAuditResultActivity"
             android:exported="false"
@@ -224,7 +254,33 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.deeplink.DeepLinkRouterActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- base domain -->
+                <data
+                    android:host="${deeplinkHost}"
+                    android:pathPattern="/.*"
+                    android:scheme="https" />
+                <!-- new host placeholder -->
+                <data
+                    android:host="${deeplinkHost_new}"
+                    android:pathPattern="/.*"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.CategoryListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.NewCategoryListActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -311,11 +367,13 @@
             android:name=".ui.sdkpackage.HealthCamRecorderActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-        <activity
+        <!--
+<activity
             android:name=".ui.sdkpackage.VoiceRecorderActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
+        -->
         <activity
             android:name=".ui.jounal.JournalingActivity"
             android:exported="false"
@@ -388,6 +446,14 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".newdashboard.BeginMyFreeTrialActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".newdashboard.JumpInBackActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".newdashboard.FacialScanReportDetailsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
@@ -456,6 +522,10 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.profile_new.SavedItemListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.profile_new.ProfileSettingsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
@@ -490,8 +560,8 @@
         <activity
             android:name=".ai_package.ui.MainAIActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize|stateHidden"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
@@ -534,10 +604,13 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".subscriptions.SubscriptionCheckoutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".subscriptions.PlanInfoActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.context_screens.MindAuditContextScreenActivity"
             android:exported="false"
@@ -561,7 +634,7 @@
         <activity
             android:name=".ui.context_screens.MRERAssessmentContextScreenActivity"
             android:exported="false"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.context_screens.AllInOnePlaceContextScreenActivity"
             android:exported="false"
@@ -596,6 +669,26 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.context_screens.WelcomeRightLifeContextScreenActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.mindaudit.MindAuditDass21DetailResultActivity" />
+        <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
+        <activity android:name=".ui.new_design.MobileLoginActivity" />
+
+        <activity
+            android:name=".ui.challenge.ChallengeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.challenge.ChallengeEmptyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.challenge.DailyStreakActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.challenge.LeaderboardActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 

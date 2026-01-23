@@ -14,11 +14,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityUserInterestBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.new_design.pojo.InterestTopic
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
@@ -41,10 +43,10 @@ class UserInterestActivity : BaseActivity() {
     private lateinit var colorStateListNonSelected: ColorStateList
 
     val iconList = listOf(
-        R.drawable.ic_interest_physical,
-        R.drawable.ic_interest_nutrition,
-        R.drawable.ic_interest_sleep,
-        R.drawable.ic_interest_mind
+        R.drawable.move_interest,
+        R.drawable.eat_interest,
+        R.drawable.sleep_interest,
+        R.drawable.think_interest
     )
 
 
@@ -78,14 +80,23 @@ class UserInterestActivity : BaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.btnSaveInterest.setOnClickListener {
+            if (selectedInterests.size < 2) {
+                showCustomToast( "Please choose at least 2 options to continue.",false)
+                return@setOnClickListener
+            }
+
             val ids = ArrayList<String>()
             selectedInterests.forEach { interest ->
-                interest.id?.let { it1 -> ids.add(it1) }
+                interest.id?.let { ids.add(it) }
             }
-            val saveUserInterestRequest = SaveUserInterestRequest()
-            saveUserInterestRequest.intrestId = ids
+
+            val saveUserInterestRequest = SaveUserInterestRequest().apply {
+                intrestId = ids
+            }
+
             saveUserInterest(saveUserInterestRequest, header!!)
         }
+
     }
 
     private fun getInterests() {
@@ -128,10 +139,10 @@ class UserInterestActivity : BaseActivity() {
                 )
                 gravity = Gravity.CENTER_VERTICAL
             }
-            val iconRes = iconList.getOrElse(index) { R.drawable.ic_interest_mind }
+            val iconRes = iconList.getOrElse(index) { R.drawable.move_interest }
             //section Image
             val iconView = ImageView(this@UserInterestActivity).apply {
-                val sizeInDp = 20
+                val sizeInDp = 16
                 val sizeInPx = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     sizeInDp.toFloat(),
@@ -151,7 +162,8 @@ class UserInterestActivity : BaseActivity() {
                 text = userInterest.title
                 setTextAppearance(android.R.style.TextAppearance_Medium)
                 setPadding(0, 24, 0, 12)
-                setTypeface(typeface, Typeface.BOLD)
+                val customFont = ResourcesCompat.getFont(context, R.font.dmsans_bold)
+                setTypeface(customFont, Typeface.BOLD)
                 textSize = 18F
             }
 
@@ -172,7 +184,6 @@ class UserInterestActivity : BaseActivity() {
                     selectedInterests.add(topic)
                 binding.btnSaveInterest.backgroundTintList =
                     if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected
-                binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
 
                 val chip = Chip(this).apply {
                     text = topic.topic
@@ -186,6 +197,20 @@ class UserInterestActivity : BaseActivity() {
                     )
                     textSize = 12f
                     setEnsureMinTouchTargetSize(false)
+
+
+                    try {
+                        // 1. Load the Typeface from the resource
+                        // Replace R.font.my_custom_font with the actual resource ID of your font file (e.g., R.font.roboto_bold)
+                        val customTypeface = ResourcesCompat.getFont(context, R.font.dmsans_semibold)
+
+                        // 2. Apply the Typeface to the Chip (which inherits from TextView)
+                        this.typeface = customTypeface
+
+                    } catch (e: Exception) {
+                        // It's good practice to log an error if the font resource is not found
+                        Log.e("ChipCreation", "Error loading custom font: ${e.message}")
+                    }
 
                     val heightInDp = 35 // or whatever height you want
                     val heightInPx = TypedValue.applyDimension(
@@ -232,7 +257,6 @@ class UserInterestActivity : BaseActivity() {
 
                         binding.btnSaveInterest.backgroundTintList =
                             if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected
-                        binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
                     }
                 }
                 chipGroup.addView(chip)
@@ -257,6 +281,7 @@ class UserInterestActivity : BaseActivity() {
             ) {
                 Utils.dismissLoader(this@UserInterestActivity)
                 if (response.isSuccessful && response.body() != null) {
+                    Utils.showNewDesignToast(this@UserInterestActivity, "Interests Saved",true)
                     if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
                         sharedPreferenceManager.setSavedInterest(selectedInterests)
                         finish()
@@ -271,7 +296,7 @@ class UserInterestActivity : BaseActivity() {
                             })
                     } else {
                         val intent =
-                            Intent(this@UserInterestActivity, PersonalisationActivity::class.java)
+                            Intent(this@UserInterestActivity, EnableNotificationActivity::class.java)
                         intent.putExtra("WellnessFocus", header)
                         sharedPreferenceManager.interest = true
                         startActivity(intent)

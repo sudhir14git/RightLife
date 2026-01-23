@@ -4,28 +4,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    android:background="@color/colorTransperent">
+    android:background="@color/red"
+    android:clickable="false"
+    android:focusable="false">
 
     <LinearLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/toproundedcornershape"
         android:orientation="vertical"
-        android:padding="5dp"
         android:focusable="true"
         android:clickable="true"
         android:visibility="gone">
-
+        <ImageView
+            android:layout_width="match_parent"
+            android:background="@drawable/bg_transperent_box"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:minHeight="250dp"
+            android:layout_height="match_parent"/>
 
         <LinearLayout
             android:id="@+id/ll_bottomsheet_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:background="@android:color/white"
+
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:paddingHorizontal="5dp"
+            android:background="@drawable/toproundedcornershape"
+
             android:orientation="vertical">
 
             <TextView
@@ -384,7 +394,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Face Scan"
@@ -435,7 +445,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Snap Meal"
@@ -486,7 +496,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Sleep Sounds"
@@ -537,7 +547,8 @@
                             android:backgroundTint="@color/ql_affirmation_color_bg"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="10dp">
+                            android:paddingVertical="10dp"
+                            >
 
                             <ImageView
                                 android:layout_width="30dp"
@@ -547,9 +558,9 @@
 
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Affirmations"
@@ -564,6 +575,7 @@
                                 android:minLines="2"
                                 android:text="Daily mindset boost"
                                 android:textColor="#0B1215"
+                                android:paddingHorizontal="10dp"
                                 android:textSize="@dimen/textsize_small" />
                         </LinearLayout>
                     </LinearLayout>
@@ -600,7 +612,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Journaling"
@@ -651,7 +663,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/dmsans_bold"
+                                android:fontFamily="@font/dmsans_semibold"
                                 android:gravity="center"
                                 android:minLines="2"
                                 android:text="Breathwork"

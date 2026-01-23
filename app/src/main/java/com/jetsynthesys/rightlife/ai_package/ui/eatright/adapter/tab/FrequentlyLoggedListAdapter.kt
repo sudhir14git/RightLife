@@ -7,16 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipe
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 
 class FrequentlyLoggedListAdapter(private val context: Context, private var dataLists: ArrayList<FrequentRecipe>,
                                   private var clickPos: Int, private var mealLogListData : FrequentRecipe?,
                                   private var isClickView : Boolean, val onFrequentlyLoggedItem: (FrequentRecipe, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<FrequentlyLoggedListAdapter.ViewHolder>() {
-
-    private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_frequently_looged_ai, parent, false)
@@ -26,12 +24,28 @@ class FrequentlyLoggedListAdapter(private val context: Context, private var data
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealNameTv.text = item.recipe_name
-        holder.servesCount.text = item.servings.toString()
-        holder.calValue.text = item.calories.toInt().toString()
-        holder.subtractionValue.text = item.protein.toInt().toString()
-        holder.baguetteValue.text = item.carbs.toInt().toString()
-        holder.dewpointValue.text = item.fat.toInt().toString()
+        holder.mealNameTv.text = item.recipe
+        holder.servesCount.text = if (item.servings != 0.0) {
+            item.servings.toString()
+        }else{
+            "1.0"
+        }
+        var imageUrl : String? = ""
+        imageUrl = if (item.photo_url.contains("drive.google.com")) {
+            getDriveImageUrl(item.photo_url)
+        }else{
+            item.photo_url
+        }
+        Glide.with(this.context)
+            .load(imageUrl)
+            .placeholder(R.drawable.ic_view_meal_place)
+            .error(R.drawable.ic_view_meal_place)
+            .into(holder.image_meal)
+        holder.calValue.text = item.calories_kcal?.toInt().toString()
+        holder.subtractionValue.text = item.protein_g?.toInt().toString()
+        holder.baguetteValue.text = item.carbs_g?.toInt().toString()
+        holder.dewpointValue.text = item.fat_g?.toInt().toString()
+
  //       if (isClickView == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -58,6 +72,8 @@ class FrequentlyLoggedListAdapter(private val context: Context, private var data
 //            }
   //      }
 
+
+
         holder.circlePlus.setOnClickListener {
             if (item.isFrequentLog){
                 item.isFrequentLog = false
@@ -75,7 +91,16 @@ class FrequentlyLoggedListAdapter(private val context: Context, private var data
     override fun getItemCount(): Int {
         return dataLists.size
     }
-
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
+    }
      inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
          val mealNameTv: TextView = itemView.findViewById(R.id.mealNameTv)
@@ -83,6 +108,7 @@ class FrequentlyLoggedListAdapter(private val context: Context, private var data
          val edit: ImageView = itemView.findViewById(R.id.image_edit)
          val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
          val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
+         val image_meal: ImageView = itemView.findViewById(R.id.image_meal)
          val serve: ImageView = itemView.findViewById(R.id.image_serve)
          val serves: TextView = itemView.findViewById(R.id.tv_serves)
          val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)

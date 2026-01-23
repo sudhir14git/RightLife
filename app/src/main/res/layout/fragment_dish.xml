@@ -21,7 +21,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="20dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -46,9 +45,9 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textColor="@color/meal_log_title"
-                    android:fontFamily="@font/dmsans_bold"
+                    android:fontFamily="@font/merriweather_bold"
                     android:layout_marginTop="20dp"
                     android:text="Dish"/>
 
@@ -59,8 +58,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 app:layout_constraintTop_toBottomOf="@id/layout_toolbar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -68,13 +65,24 @@
                 <ImageView
                     android:id="@+id/imgFood"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="220dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_view_meal_place"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Green Circle Indicator -->
+                <View
+                    android:id="@+id/greenCircle"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:background="@drawable/green_circle"
+                    app:layout_constraintBottom_toBottomOf="@id/imgFood"
+                    app:layout_constraintStart_toStartOf="@id/imgFood"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/layout_food_name"
@@ -84,6 +92,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/white_bg"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
@@ -143,6 +153,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:background="@drawable/white_bg"
                     android:padding="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:visibility="gone"
                     android:orientation="vertical"
                     android:layout_marginTop="12dp">
@@ -177,6 +189,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:orientation="horizontal"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:gravity="center_vertical"
                     android:layout_marginTop="8dp">
 
@@ -211,7 +225,7 @@
 
                             <EditText
                                 android:id="@+id/quantityEdit"
-                                android:layout_width="match_parent"
+                                android:layout_width="100dp"
                                 android:layout_height="wrap_content"
                                 android:textSize="18sp"
                                 android:background="@null"
@@ -228,8 +242,8 @@
 
                             <ImageView
                                 android:id="@+id/ivEdit"
-                                android:layout_width="15dp"
-                                android:layout_height="15dp"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
                                 android:layout_marginTop="3dp"
                                 android:layout_marginEnd="5dp"
                                 android:scaleType="fitXY"
@@ -237,7 +251,7 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintHorizontal_weight=".1"
-                                android:src="@drawable/material_edit"
+                                android:src="@drawable/ic_edit_eat"
                                 />
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
@@ -259,13 +273,15 @@
                             android:layout_marginStart="15dp"
                             android:textColor="@color/text_color_kcal"/>
 
-                        <LinearLayout
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="5dp"
                             android:background="@drawable/white_bg"
-                            android:padding="8dp"
+                            android:layout_marginTop="5dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
                             android:gravity="center_vertical">
 
                             <TextView
@@ -275,17 +291,37 @@
                                 android:layout_height="wrap_content"
                                 android:text="Serving"
                                 android:textSize="16sp"
+                                android:visibility="gone"
                                 android:fontFamily="@font/dmsans_medium"
-                                android:textColor="@color/black_no_meals"/>
+                                android:textColor="@color/black_no_meals"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"/>
+
+                            <Spinner
+                                android:id="@+id/spinner"
+                                android:layout_width="120dp"
+                                android:layout_height="20dp"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:background="@color/white"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="7dp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textColor="@color/black_no_meals"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintHorizontal_weight="1.9"/>
 
                             <ImageView
                                 android:id="@+id/ivMealDropdown"
-                                android:layout_width="12dp"
-                                android:layout_height="18dp"
-                                android:visibility="invisible"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:src="@drawable/updown_icon"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintHorizontal_weight=".1"
                                 />
-                        </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -294,6 +330,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:paddingBottom="10dp"
                     android:background="@drawable/white_meal_date_bg"
                     app:layout_constraintTop_toBottomOf="@+id/layout_quantity_selector"
@@ -323,7 +361,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             android:textSize="16sp"
                             android:fontFamily="@font/dmsans_bold"
-                            android:textColor="@color/black_no_meals"
+                            android:textColor="@color/meal_log_title"
                             android:text="Macro Nutrients Breakdown" />
 
                         <ImageView
@@ -374,6 +412,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:paddingBottom="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/white_meal_date_bg"
                     app:layout_constraintTop_toBottomOf="@+id/layout_macro_list"
                     app:layout_constraintStart_toStartOf="parent"
@@ -402,7 +442,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             android:textSize="16sp"
                             android:fontFamily="@font/dmsans_bold"
-                            android:textColor="@color/black_no_meals"
+                            android:textColor="@color/meal_log_title"
                             android:text="Micro Nutrients Breakdown" />
 
                         <ImageView

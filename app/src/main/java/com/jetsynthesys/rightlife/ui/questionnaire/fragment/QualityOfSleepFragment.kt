@@ -69,6 +69,8 @@ class QualityOfSleepFragment : Fragment() {
         )
 
         binding.sleepQualitySliderView.setStepColorMap(colorMap)
+        sleepQualityLevelTexts[0].setTypeface(null, Typeface.BOLD)
+        selectedSleepQuality = sleepQualityLevelTexts[0].text.toString()
         binding.sleepQualitySliderView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal

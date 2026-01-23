@@ -10,9 +10,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
@@ -25,11 +27,13 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityTodaysAffirmationBinding
 import com.jetsynthesys.rightlife.databinding.LayoutDiscardBottomsheetBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.BalloonAlignment
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonResponse
@@ -46,6 +50,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -93,7 +98,7 @@ class TodaysAffirmationActivity : BaseActivity() {
             finish()
         }
 
-        if (sharedPreferenceManager.firstTimeUserForAffirmation)
+        if (sharedPreferenceManager.firstTimeUserAffirmationInfoShown)
             showInfoDialog()
 
         binding.llCategorySelection.setOnClickListener {
@@ -101,10 +106,12 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.infoAffirmation.setOnClickListener {
+            it.disableViewForSeconds()
             showInfoDialog()
         }
 
         binding.shareAffirmation.setOnClickListener {
+            it.disableViewForSeconds()
             val bitmap =
                 getBitmapFromView(affirmationCardPagerAdapter.getViewAt(binding.cardViewPager.currentItem)!!)
             val imageUri = saveBitmapToCache(bitmap)
@@ -114,6 +121,7 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.ivClose.setOnClickListener {
+            it.disableViewForSeconds()
             if (sharedPreferenceManager.firstTimeUserForAffirmation)
                 closeBottomSheetDialog.show()
             else if (affirmationPlaylistRequest.isNotEmpty())
@@ -125,6 +133,7 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.addAffirmation.setOnClickListener {
+            it.disableViewForSeconds()
             val position = binding.cardViewPager.currentItem
             if (checkAffirmationIsAlreadyAdded(position)) {
                 if (affirmationPlaylist.size == 3)
@@ -154,6 +163,7 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.btnCreateAffirmation.setOnClickListener {
+            it.disableViewForSeconds()
             if (affirmationPlaylistRequest.isNotEmpty()) {
                 createAffirmationPlaylist()
             }
@@ -162,33 +172,49 @@ class TodaysAffirmationActivity : BaseActivity() {
         setSelectedCategoryAdapter(affirmationList)
 
         val gestureDetector =
-            GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onFling(
-                    e1: MotionEvent?,
-                    e2: MotionEvent,
-                    velocityX: Float,
-                    velocityY: Float
-                ): Boolean {
-                    if (e1 == null || e2 == null) return false
-                    val deltaY = e2.y - e1.y
+                GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onFling(
+                            e1: MotionEvent?,
+                            e2: MotionEvent,
+                            velocityX: Float,
+                            velocityY: Float
+                    ): Boolean {
+                        if (e1 == null || e2 == null) return false
 
-                    if (abs(deltaY) > 150) {
-                        if (deltaY < 0) {
-                            onSwipeUp()
-                        } else {
-                            onSwipeDown()
+                        val deltaX = e2.x - e1.x
+                        val deltaY = e2.y - e1.y
+
+                        // Determine if it's a vertical or horizontal swipe
+                        // If horizontal movement is greater than vertical, let ViewPager handle it
+                        if (abs(deltaX) > abs(deltaY)) {
+                            // Horizontal swipe - let ViewPager handle it
+                            return false
                         }
-                        return true
+
+                        // Vertical swipe - handle category change
+                        if (abs(deltaY) > 150) {
+                            if (deltaY < 0) {
+                                onSwipeUp()
+                            } else {
+                                onSwipeDown()
+                            }
+                            return true
+                        }
+                        return false
                     }
-                    return false
-                }
-            })
+                })
 
         binding.cardViewPager.setOnTouchListener { _, event ->
             gestureDetector.onTouchEvent(event)
+            // Return false to allow ViewPager to also handle the touch for horizontal scrolling
             false
         }
 
+        AnalyticsLogger.logEvent(
+                this,
+                AnalyticsEvent.TR_AffirmationPageGen_Open,
+                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis(), )
+        )
     }
 
     private fun checkAffirmationIsAlreadyAdded(position: Int): Boolean {
@@ -227,49 +253,114 @@ class TodaysAffirmationActivity : BaseActivity() {
     }
 
     private fun onSwipeUp() {
-        // Animate both
         if (selectedCategoryPosition < categoryList.size - 1) {
+            // Animate the entire ViewPager, not just one child
             binding.cardViewPager.animate()
-                .translationYBy(-(binding.cardViewPager.height.toFloat() + 100))
-                .setDuration(300)
-                .withEndAction {
-                    selectedCategoryPosition += 1
-                    getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
-                    binding.tvCategory.text = categoryList[selectedCategoryPosition].title
-                    binding.cardViewPager.translationY =
-                        binding.cardViewPager.height.toFloat() + 100
-                    Handler(Looper.getMainLooper()).postDelayed({
+                    ?.translationYBy(-(binding.cardViewPager.height.toFloat() + 100))
+                    ?.setDuration(300)
+                    ?.withEndAction {
+                        selectedCategoryPosition += 1
+
+                        // Bounds check to prevent crash
+                        if (selectedCategoryPosition >= categoryList.size) {
+                            selectedCategoryPosition = categoryList.size - 1
+                            return@withEndAction
+                        }
+
+                        getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
+                        binding.tvCategory.text = categoryList[selectedCategoryPosition].title
+
+                        // Reset ViewPager position below screen
+                        binding.cardViewPager.translationY = binding.cardViewPager.height.toFloat() + 100
+
+                        // Animate back to original position
                         binding.cardViewPager.animate()
-                            .translationY(0f)
-                            .setDuration(300)
-                            .start()
-                    }, 1000)
-                }
-                .start()
+                                .translationY(0f)
+                                .setDuration(300)
+                                .start()
+                    }
+                    ?.start()
         }
     }
 
     private fun onSwipeDown() {
         if (selectedCategoryPosition > 0) {
+            // Animate the entire ViewPager, not just one child
             binding.cardViewPager.animate()
-                .translationYBy(binding.cardViewPager.height.toFloat() + 100)
-                .setDuration(300)
-                .withEndAction {
+                    ?.translationYBy(binding.cardViewPager.height.toFloat() + 100)
+                    ?.setDuration(300)
+                    ?.withEndAction {
+                        selectedCategoryPosition -= 1
+
+                        // Bounds check to prevent crash
+                        if (selectedCategoryPosition < 0) {
+                            selectedCategoryPosition = 0
+                            return@withEndAction
+                        }
+
+                        getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
+                        binding.tvCategory.text = categoryList[selectedCategoryPosition].title
+
+                        // Reset ViewPager position above screen
+                        binding.cardViewPager.translationY = -(binding.cardViewPager.height.toFloat() + 100)
+
+                        // Animate back to original position
+                        binding.cardViewPager.animate()
+                                .translationY(0f)
+                                .setDuration(300)
+                                .start()
+                    }
+                    ?.start()
+        }
+    }
+/*    private fun onSwipeUp() {
+        if (selectedCategoryPosition < categoryList.size - 1) {
+            val currentPage = binding.cardViewPager.getChildAt(0) // current visible page view
+
+            currentPage?.animate()
+                ?.translationYBy(-(currentPage.height.toFloat() + 100))
+                ?.setDuration(300)
+                ?.withEndAction {
+                    selectedCategoryPosition += 1
+                    getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
+                    binding.tvCategory.text = categoryList[selectedCategoryPosition].title
+
+                    // Reset below screen
+                    currentPage.translationY = currentPage.height.toFloat() + 100
+
+                    currentPage.animate()
+                        .translationY(0f)
+                        .setDuration(300)
+                        .start()
+                }
+                ?.start()
+        }
+    }
+
+    private fun onSwipeDown() {
+        if (selectedCategoryPosition > 0) {
+            val currentPage = binding.cardViewPager.getChildAt(0) // current visible page view
+
+            currentPage?.animate()
+                ?.translationYBy(currentPage.height.toFloat() + 100)
+                ?.setDuration(300)
+                ?.withEndAction {
                     selectedCategoryPosition -= 1
                     getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
                     binding.tvCategory.text = categoryList[selectedCategoryPosition].title
-                    binding.cardViewPager.translationY =
-                        -(binding.cardViewPager.height.toFloat() + 100)
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        binding.cardViewPager.animate()
-                            .translationY(0f)
-                            .setDuration(300)
-                            .start()
-                    }, 1000)
+
+                    // Reset above screen
+                    currentPage.translationY = -(currentPage.height.toFloat() + 100)
+
+                    currentPage.animate()
+                        .translationY(0f)
+                        .setDuration(300)
+                        .start()
                 }
-                .start()
+                ?.start()
         }
-    }
+    }*/
+
 
 
     private fun addCardToPlaylist() {
@@ -390,6 +481,12 @@ class TodaysAffirmationActivity : BaseActivity() {
         // Create and configure BottomSheetDialog
         categoryBottomSheetDialog = BottomSheetDialog(this)
 
+        categoryBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        // Optional: prevent it from collapsing when user scrolls
+        categoryBottomSheetDialog.behavior.skipCollapsed = true
+        categoryBottomSheetDialog.behavior.isDraggable = false
+
         // Inflate the BottomSheet layout
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_layout, null)
 
@@ -407,7 +504,17 @@ class TodaysAffirmationActivity : BaseActivity() {
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
         }
-
+        bottomSheetView.post {
+            val bottomSheet =
+                categoryBottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+                it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                it.requestLayout()
+            }
+        }
         val ivClose = bottomSheetView.findViewById<ImageView>(R.id.ivClose)
         ivClose.setOnClickListener {
             categoryBottomSheetDialog.dismiss()
@@ -432,13 +539,13 @@ class TodaysAffirmationActivity : BaseActivity() {
 
         // Set up button listeners
         binding.btnNo.setOnClickListener {
-            bottomSheetDialog.dismiss()
-        }
-        binding.btnYes.setOnClickListener {
             affirmationPlaylist[0].id?.let { removeFromPlaylist(it) }
             bottomSheetDialog.dismiss()
             callPostMindFullDataAPI()
             finish()
+        }
+        binding.btnYes.setOnClickListener {
+            bottomSheetDialog.dismiss()
         }
         bottomSheetDialog.show()
     }
@@ -629,9 +736,7 @@ class TodaysAffirmationActivity : BaseActivity() {
                                 affirmationPlaylist[0].id?.let { removeFromPlaylist(it) }
                         }
                     }
-                    showToast(
-                        response.body()?.successMessage ?: "Affirmation removed from Playlist!"
-                    )
+                    showCustomToast("Affirmation removed from Playlist!")
                 } else {
                     showToast("try again!: ${response.code()}")
                 }
@@ -673,12 +778,14 @@ class TodaysAffirmationActivity : BaseActivity() {
                         )
                     )
 
-                    if (sharedPreferenceManager.firstTimeUserForAffirmation) {
+                    Log.e("firstaffirmation", "onResponse: bool "+ sharedPreferenceManager.firstTimeUserPlaylistAffirmation)
+                    if (sharedPreferenceManager.firstTimeUserPlaylistAffirmation) {
                         CommonAPICall.postWellnessStreak(
                             this@TodaysAffirmationActivity,
                             "Affirmation"
                         )
                         showCreatedUpdatedDialog("Playlist Created")
+                        sharedPreferenceManager.firstTimeUserPlaylistAffirmation = false
                         sharedPreferenceManager.firstTimeUserForAffirmation = false
                     } else {
                         showCreatedUpdatedDialog("Changes Saved")
@@ -723,6 +830,8 @@ class TodaysAffirmationActivity : BaseActivity() {
         val width = displayMetrics.widthPixels
 
         layoutParams?.width = width
+        val card = dialog.findViewById<View>(R.id.dialog_root_layout)
+        card.setOnClickListener { dialog.dismiss() }
 
         dialog.setOnCancelListener {
             if (sharedPreferenceManager.firstTimeUserForAffirmation)
@@ -739,6 +848,7 @@ class TodaysAffirmationActivity : BaseActivity() {
                 }
         }
         dialog.show()
+        sharedPreferenceManager.firstTimeUserAffirmationInfoShown = false
     }
 
     private fun showCreatedUpdatedDialog(message: String) {

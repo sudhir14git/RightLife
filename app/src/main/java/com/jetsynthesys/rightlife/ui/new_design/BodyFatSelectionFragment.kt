@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -137,6 +139,7 @@ class BodyFatSelectionFragment : Fragment() {
                 binding.tvSelectedBodyFat.text = "${binding.edtBodyFat.text}%"
                 binding.llSelectedBodyFat.visibility = VISIBLE
                 binding.cardViewBodyFat.visibility = GONE
+                binding.tvDescription.visibility = GONE
                 binding.btnContinue.disableViewForSeconds()
                 val onboardingQuestionRequest =
                     SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
@@ -159,7 +162,9 @@ class BodyFatSelectionFragment : Fragment() {
                     )
                 )
 
-                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+                }, 500)
             } else
                 Toast.makeText(
                     requireContext(),
@@ -246,6 +251,7 @@ class BodyFatSelectionFragment : Fragment() {
         super.onPause()
         binding.llSelectedBodyFat.visibility = GONE
         binding.cardViewBodyFat.visibility = VISIBLE
+        binding.tvDescription.visibility = VISIBLE
     }
 
 }

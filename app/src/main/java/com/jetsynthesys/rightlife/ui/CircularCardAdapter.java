@@ -17,14 +17,19 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.apimodel.servicepane.HomeService;
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
-import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity;
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
+import com.jetsynthesys.rightlife.ui.utility.ButtonUtilsKt;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity;
@@ -41,10 +46,16 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
     private final Context mContext;
     private final List<CardItem> items; // Replace CardItem with your model class
+    private final OnItemClickListener onItemClickListener;
 
-    public CircularCardAdapter(Context context, List<CardItem> items) {
+    public interface OnItemClickListener {
+        void onItemClick(CardItem cardItem);
+    }
+
+    public CircularCardAdapter(Context context, List<CardItem> items, OnItemClickListener onItemClickListener) {
         this.items = items;
         this.mContext = context;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -60,46 +71,15 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         if (items.isEmpty())
             return;
         CardItem item = items.get(position % items.size());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Toast.makeText(view.getContext(), "Clicked on: " + item.getTitle()+ holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                // Start new activity here
+        holder.itemView.setOnClickListener(view -> {
+            ButtonUtilsKt.disableViewForSeconds(view);
 
-                if (item.getSeriesType().equalsIgnoreCase("daily") ||
-                        item.getCategory().equalsIgnoreCase("CONTENT") || item.getCategory().equalsIgnoreCase("Test Category")) {
-                    /*Intent intent = new Intent(mContext, ContentDetailsActivity.class);
-                    intent.putExtra("contentId", item.getSeriesId());
-                    mContext.startActivity(intent);*/
-                    //Call Content Activity here
-                    callRlEditDetailActivity(item);
-                } else if (item.getCategory().equalsIgnoreCase("live")) {
-                    Toast.makeText(mContext, "Live Content", Toast.LENGTH_SHORT).show();
-                } else if (item.getCategory().equalsIgnoreCase("MIND_AUDIT") ||
-                        item.getCategory().equalsIgnoreCase("Mind Audit") ||
-                        item.getCategory().equalsIgnoreCase("Health Audit") ||
-                        item.getCategory().equalsIgnoreCase("mindAudit")) {
-                    Intent intent = new Intent(mContext, MindAuditActivity.class);
-                    // Optionally pass data
-                    //intent.putExtra("key", "value");
-                    mContext.startActivity(intent);
+            onItemClickListener.onItemClick(item);
 
-                } else if (item.getCategory().equalsIgnoreCase("VOICE_SCAN")) {
-                    Intent intent = new Intent(mContext, VoiceScanActivity.class);
-                    // Optionally pass data
-                    //intent.putExtra("key", "value");
-                    mContext.startActivity(intent);
-
-                } else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN") ||
-                        item.getCategory().equalsIgnoreCase("Health Cam") || item.getCategory().equalsIgnoreCase("FACE_SCAN")) {
-                    ActivityUtils.INSTANCE.startFaceScanActivity(mContext);
-                }
-
-                ViewCountRequest viewCountRequest = new ViewCountRequest();
-                viewCountRequest.setId(item.getId());
-                viewCountRequest.setUserId(SharedPreferenceManager.getInstance(mContext).getUserId());
-                updateViewCount(viewCountRequest, holder.getBindingAdapterPosition());
-            }
+            ViewCountRequest viewCountRequest = new ViewCountRequest();
+            viewCountRequest.setId(item.getId());
+            viewCountRequest.setUserId(SharedPreferenceManager.getInstance(mContext).getUserId());
+            updateViewCount(viewCountRequest, holder.getBindingAdapterPosition());
         });
         Utils.logDebug("CircularCardAdapter", "" + holder.getBindingAdapterPosition());
         holder.bind(item);
@@ -177,10 +157,14 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         public void bind(CardItem item) {
             // cardTitle.setText(item.getTitle());
             cardImage.setImageResource(item.getImageResId());
+            int radius = 24;
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getImageUrl())
-                        .placeholder(R.drawable.rl_placeholder)
-                        .error(R.drawable.rl_placeholder)
+                Glide.with(itemView.getContext())
+                        .load(ApiClient.CDN_URL_QA + item.getImageUrl())
+                        .apply(new RequestOptions()
+                                .transform(new RoundedCorners(radius))
+                                .placeholder(R.drawable.rl_placeholder)
+                                .error(R.drawable.rl_placeholder))
                         .into(cardImage);
             }
             if (item.getButtonImage() != null && !item.getButtonImage().isEmpty()) {
@@ -226,26 +210,4 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
         }
     }
-
-private void callRlEditDetailActivity(CardItem item) {
-    // Assuming rightLifeEditResponse is accessible in this class
-    String contentType = null;
-    String contentId = null;
-    contentType = item.getSelectedContentType();
-    contentId = item.getSeriesId();
-
-    if (contentType != null && contentType.equalsIgnoreCase("TEXT")) {
-        Intent intent = new Intent(mContext, ArticlesDetailActivity.class);
-        intent.putExtra("contentId", contentId);
-        mContext.startActivity(intent);
-    } else if (contentType != null && (contentType.equalsIgnoreCase("VIDEO") || contentType.equalsIgnoreCase("AUDIO"))) {
-        Intent intent = new Intent(mContext, ContentDetailsActivity.class);
-        intent.putExtra("contentId", contentId);
-        mContext.startActivity(intent);
-    } else if (contentType != null && contentType.equalsIgnoreCase("SERIES")) {
-        Intent intent = new Intent(mContext, SeriesListActivity.class);
-        intent.putExtra("contentId", contentId);
-        mContext.startActivity(intent);
-    }
-}
 }

@@ -1,0 +1,115 @@
+<!-- res/layout/bottom_sheet_layout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/design_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    android:orientation="vertical"
+    android:gravity="bottom">
+
+    <LinearLayout
+        android:id="@+id/llClaimBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/toproundedcornershape"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_card_16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivDialogClose"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:padding="6dp"
+                android:src="@drawable/close_breathwork"
+                android:layout_alignParentEnd="true" />
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="35dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/img_rightlife_pro"
+                android:layout_centerInParent="true" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvTitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_card_16dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:gravity="center"
+            android:text="All your health data, one clear path forward. Unlock your full potential. "
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.zhpan.bannerview.indicator.DrawableIndicator
+            android:id="@+id/indicator_view_pager"
+            android:layout_width="wrap_content"
+            android:layout_margin="7dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:id="@+id/btnClaimFreeTrial"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:text="Claim Free Trial Now"
+            android:textSize="16sp"
+            android:layout_marginTop="@dimen/margin_card_16dp"
+            android:layout_marginBottom="@dimen/margin_card_16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/menuselected" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llCompleteBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roundedcornershape"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingVertical="80dp"
+        android:paddingHorizontal="16dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/playlist_added" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free Trial Unlocked!"
+            android:fontFamily="@font/dmsans_bold"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You’re all set! Explore premium features and see what RightLife can do."
+            android:fontFamily="@font/dmsans_regular"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginVertical="16dp"
+            android:layout_marginHorizontal="24dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -43,7 +43,10 @@ import kotlinx.coroutines.withContext
 
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText: EditText
+    private lateinit var count_character:TextView
     private lateinit var textViewRoutine: TextView
+    private lateinit var no_workout_heading: TextView
+    private lateinit var no_workout_discription: TextView
     private lateinit var createRoutineBackButton: ImageView
     private lateinit var edit_icon_create_routine: ImageView
     private lateinit var createRoutineRecyclerView: RecyclerView
@@ -55,9 +58,11 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private var workoutList = ArrayList<WorkoutSessionRecord>()
     private var workoutLists: WorkoutRoutineItem? = null
     private var routine: String = ""
+    private var myroutine: String = ""
     private var routineName: String = ""
     private var editRoutine: String = ""
     private var routineIdworkout: String = ""
+    private var newBooleanBack:Boolean = false
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
         get() = FragmentCreateRoutineBinding::inflate
@@ -67,6 +72,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             requireContext(),
             arrayListOf(),
             ::onWorkoutItemClick,
+            ::onListEmptyCallback,
             ::onWorkoutItemRemove
         )
     }
@@ -76,6 +82,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
         routine = arguments?.getString("routine").toString()
+        myroutine = arguments?.getString("myRoutine").toString()
         routineName = arguments?.getString("routineName").toString()
         editRoutine = arguments?.getString("edit_routine").toString()
         val  newroutineIdworkout = arguments?.getString("routineId").toString()
@@ -87,8 +94,6 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             ?: arguments?.getString("routineId")).toString()
 
         Log.d("CreateRoutineFragment", "Received ${routineIdworkout} activities from YourActivityFragment")
-
-        // Map ActivityModel to WorkoutSessionRecord and append to workoutList
         if (activityList.isNotEmpty()) {
             mapActivityModelToWorkoutSessionRecord(activityList)
         }
@@ -100,8 +105,11 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         editText = view.findViewById(R.id.editText)
+        count_character = view.findViewById(R.id.count_character)
         edit_icon_create_routine = view.findViewById(R.id.edit_icon_create_routine)
         textViewRoutine = view.findViewById(R.id.name_routine_text_view)
+        no_workout_heading = view.findViewById(R.id.no_workout_heading)
+        no_workout_discription = view.findViewById(R.id.no_workout_discription)
         layoutBtnLog = view.findViewById(R.id.layout_btn_log)
         createRoutineBackButton = view.findViewById(R.id.back_button)
         addNameLayout = view.findViewById(R.id.add_name_layout)
@@ -110,6 +118,8 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
         edit_icon_create_routine.setOnClickListener {
             addNameLayout.visibility = View.VISIBLE
+            save_workout_routine_btn.visibility = View.GONE
+            newBooleanBack = true
             createListRoutineLayout.visibility = View.GONE
             editText.setText(textViewRoutine.text.toString())
         }
@@ -118,22 +128,29 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         if (routine == "routine") {
             if (workoutList.isNotEmpty()) {
                 addNameLayout.visibility = View.GONE
+                save_workout_routine_btn.visibility = View.VISIBLE
                 createListRoutineLayout.visibility = View.VISIBLE
+                newBooleanBack = true
                 textViewRoutine.text = routineName
                 // Map workoutList to RoutineWorkoutDisplayModel and update the adapter
                 val routineWorkoutModels = mapWorkoutSessionRecordsToRoutineWorkoutModels(workoutList)
                 routineWorkoutListAdapter.setData(routineWorkoutModels)
                 createRoutineRecyclerView.visibility = View.VISIBLE
             } else {
+
                 addNameLayout.visibility = View.GONE
+                save_workout_routine_btn.visibility = View.VISIBLE
                 createListRoutineLayout.visibility = View.VISIBLE
+                newBooleanBack = true
                 textViewRoutine.text = routineName
                 createRoutineRecyclerView.visibility = View.GONE
             }
         } else if(routine.equals("edit_routine")||editRoutine.equals("edit_routine")){
             if (workoutList.isNotEmpty()) {
                 addNameLayout.visibility = View.GONE
+                save_workout_routine_btn.visibility = View.VISIBLE
                 createListRoutineLayout.visibility = View.VISIBLE
+                newBooleanBack = true
                 //textViewRoutine.text = routineName
                 textViewRoutine.text = workoutLists?.routineName?:routineName
                 // Map workoutList to RoutineWorkoutDisplayModel and update the adapter
@@ -142,25 +159,26 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 createRoutineRecyclerView.visibility = View.VISIBLE
             } else {
                 addNameLayout.visibility = View.GONE
+                save_workout_routine_btn.visibility = View.VISIBLE
                 createListRoutineLayout.visibility = View.VISIBLE
+                newBooleanBack = true
                 textViewRoutine.text = routineName
                 createRoutineRecyclerView.visibility = View.GONE
             }
         } else{
             addNameLayout.visibility = View.VISIBLE
+            save_workout_routine_btn.visibility = View.GONE
             createListRoutineLayout.visibility = View.GONE
+            newBooleanBack = true
             routine = "routine"
         }
-
-        /* if (workoutLists != null) {
-             addNameLayout.visibility = View.GONE
-             createListRoutineLayout.visibility = View.VISIBLE
-             textViewRoutine.text = workoutLists?.routineName
-             // Map workoutList to RoutineWorkoutDisplayModel and update the adapter
-             val routineWorkoutModels = mapWorkoutSessionRecordsToRoutineWorkoutModels(workoutList)
-             routineWorkoutListAdapter.setData(routineWorkoutModels)
-             createRoutineRecyclerView.visibility = View.VISIBLE
-         }*/
+        if(workoutList.isEmpty()){
+            no_workout_discription.visibility = View.VISIBLE
+            no_workout_heading.visibility = View.VISIBLE
+        }else{
+            no_workout_discription.visibility = View.GONE
+            no_workout_heading.visibility = View.GONE
+        }
 
         addBtnLog.setOnClickListener {
             if (editRoutine == "edit_routine") {
@@ -214,46 +232,91 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineRecyclerView.adapter = routineWorkoutListAdapter
 
         createRoutineBackButton.setOnClickListener {
-            if (routine.equals("edit_routine")||editRoutine.equals("edit_routine")){
-                val fragment = SearchWorkoutFragment()
-                val bundle = Bundle().apply {
-                    putInt("selectedTab", 1) // My Routine tab
-                }
-                fragment.arguments = bundle
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
-                    addToBackStack("SearchWorkoutFragment")
-                    commit()
-                }
-            }else{
-                navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
-            }
-
-        }
-
-        editText.addTextChangedListener(object : TextWatcher {
-            private val maxLength = 20
-            override fun afterTextChanged(s: Editable?) {
-                if (s != null && s.length > maxLength) {
-                    s.replace(maxLength, s.length, "")
-                    Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(editText.context, "Name cannot exceed $maxLength characters", Toast.LENGTH_SHORT).show()
+            if (newBooleanBack) {
+                val bottomSheet = ExitConfirmationBottomSheet {
+                    // ✅ On "Yes" click — run your existing logic
+                    if (routine.equals("edit_routine") || editRoutine.equals("edit_routine") || myroutine.equals("myRoutine")) {
+                        val fragment = SearchWorkoutFragment()
+                        val bundle = Bundle().apply { putInt("selectedTab", 1) }
+                        fragment.arguments = bundle
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                            addToBackStack("SearchWorkoutFragment")
+                            commit()
+                        }
+                    } else {
+                        navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
                     }
                 }
+                bottomSheet.isCancelable = false
+                bottomSheet.show(parentFragmentManager, "CustomExitBottomSheet")
+            } else {
+                // Normal flow if newBooleanBack = false
+                if (routine.equals("edit_routine") || editRoutine.equals("edit_routine") || myroutine.equals("myRoutine")) {
+                    val fragment = SearchWorkoutFragment()
+                    val bundle = Bundle().apply { putInt("selectedTab", 1) }
+                    fragment.arguments = bundle
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack("SearchWorkoutFragment")
+                        commit()
+                    }
+                } else {
+                    navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+                }
+            }
+        }
+
+        count_character.text = "0/20 Ch"
+        editText.addTextChangedListener(object : TextWatcher {
+
+            private val maxLength = 20
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s == null) return
+
+                // LIMIT CHECK
+                if (s.length > maxLength) {
+                    s.replace(maxLength, s.length, "")
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(
+                            editText.context,
+                            "Name cannot exceed $maxLength characters",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                // CHARACTER COUNT DISPLAY
+                val currentCount = s.length
+                count_character.text = "$currentCount/$maxLength Ch"
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                // BUTTON ENABLE / DISABLE
                 if (s.isNullOrEmpty()) {
                     layoutBtnLog.background = filledBackground
                     layoutBtnLog.isEnabled = false
+                    count_character.text = "0/$maxLength Ch"
                 } else {
                     layoutBtnLog.background = defaultBackground
                     layoutBtnLog.isEnabled = true
                 }
             }
         })
+
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -280,7 +343,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         layoutBtnLog.setOnClickListener {
             addNameLayout.visibility = View.GONE
+            save_workout_routine_btn.visibility = View.VISIBLE
             createListRoutineLayout.visibility = View.VISIBLE
+            newBooleanBack = true
             textViewRoutine.text = editText.text
         }
     }
@@ -424,6 +489,11 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             commit()
         }
     }
+    private fun onListEmptyCallback() {
+        no_workout_discription.visibility = View.VISIBLE
+        no_workout_heading.visibility = View.VISIBLE
+        createRoutineRecyclerView.visibility = View.GONE
+    }
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun updateWorkoutRoutine(routineName: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -498,7 +568,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
+                    ?: ""
 
                 // Map workoutList to CreateRoutineRequest.Workout
                 val workoutRequests = workoutList.map { record ->

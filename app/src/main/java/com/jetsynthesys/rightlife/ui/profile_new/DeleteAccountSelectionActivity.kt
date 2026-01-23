@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityDeleteAccountSelectionBinding
 import com.jetsynthesys.rightlife.ui.profile_new.adapter.DeleteReasonAdapter
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class DeleteAccountSelectionActivity : BaseActivity() {
 
@@ -36,14 +39,28 @@ class DeleteAccountSelectionActivity : BaseActivity() {
 
         binding.btnContinue.setOnClickListener {
             val selectedReasons = adapter.getSelectedReason()
-            if (selectedReasons?.isEmpty() == true) {
+            if (selectedReasons.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select at least one reason.", Toast.LENGTH_SHORT)
                     .show()
             } else {
-                //Toast.makeText(this, "Selected: $selectedReasons", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, DeleteAccountReasonActivity::class.java).apply {
-                    putExtra("SelectedReasons", selectedReasons)
-                })
+                if (selectedReasons.equals("Other Reasons")) {
+                    startActivity(Intent(this, DeleteAccountReasonActivity::class.java).apply {
+                        putExtra("SelectedReasons", selectedReasons)
+                    })
+                }else{
+                    //Toast.makeText(this, "Selected: $selectedReasons", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, DeleteAccountEmailDataActivity::class.java).apply {
+                        putExtra("SelectedReasons", selectedReasons)
+                    })
+                }
+
+                AnalyticsLogger.logEvent(
+                        this,
+                        AnalyticsEvent.DeleteAccount_ExportData_Continue,
+                        mapOf(
+                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        )
+                )
             }
         }
 

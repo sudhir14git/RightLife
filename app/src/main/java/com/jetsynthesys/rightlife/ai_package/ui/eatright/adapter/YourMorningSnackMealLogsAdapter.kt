@@ -1,12 +1,14 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter
 
 import android.content.Context
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
@@ -39,12 +41,22 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_REGULAR_RECIPE -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
-                RegularRecipeViewHolder(view)
+                if (isLanding){
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dinner_meal_logs_ai, parent, false)
+                    RegularRecipeViewHolder(view)
+                }else{
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
+                    RegularRecipeViewHolder(view)
+                }
             }
             TYPE_SNAP_MEAL -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
-                SnapMealViewHolder(view)
+                if (isLanding){
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dinner_meal_logs_ai, parent, false)
+                    SnapMealViewHolder(view)
+                }else{
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
+                    SnapMealViewHolder(view)
+                }
             }
             else -> throw IllegalArgumentException("Unknown view type")
         }
@@ -87,6 +99,8 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
             val layoutVegNonveg : LinearLayoutCompat = itemView.findViewById(R.id.layout_veg_nonveg)
             val layoutEatTime : LinearLayoutCompat = itemView.findViewById(R.id.layout_eat_time)
             val servesLayout : LinearLayoutCompat = itemView.findViewById(R.id.servesLayout)
+            val imageVeg : ImageView = itemView.findViewById(R.id.image_veg_nonveg)
+            val tvVeg : TextView = itemView.findViewById(R.id.tv_veg_nonveg)
 
             if (isLanding){
                 delete.visibility = View.GONE
@@ -101,20 +115,48 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
-                layoutEatTime.visibility = View.VISIBLE
-                layoutVegNonveg.visibility = View.VISIBLE
+                layoutEatTime.visibility = View.GONE
                 servesLayout.visibility = View.VISIBLE
+                if (data.recipe.category.isNullOrEmpty()){
+                    layoutVegNonveg.visibility = View.GONE
+                }else{
+                    layoutVegNonveg.visibility = View.GONE
+                    if (getFoodType(data.recipe.category) == "Veg"){
+                        imageVeg.setImageResource(R.drawable.green_circle)
+                        tvVeg.text = data.recipe.category
+                    }else if (getFoodType(data.recipe.category) == "Non-Veg"){
+                        imageVeg.setColorFilter(ContextCompat.getColor(context!!, R.color.red), PorterDuff.Mode.SRC_IN)
+                        tvVeg.text = data.recipe.category
+                    }else{
+                        imageVeg.visibility = View.INVISIBLE
+                    }
+                }
             }
 
-            mealName.text = data.receipe.recipe_name
-            servesCount.text = data.receipe.servings.toString()
-            val mealTime = data.receipe.serving_weight
+            val mealNames =  data.recipe.recipe.takeIf { r -> !r.isNullOrBlank() } ?:  data.recipe.food_name
+            mealName.text = mealNames
+            servesCount.text = if(data.recipe.selected_serving?.value == 0.0){
+                "1"
+            }else{
+                data.recipe.selected_serving?.value.toString()
+            }
+            serves.text = if(data.recipe.selected_serving?.type == ""){
+                "Serves"
+            }else{
+                data.recipe.selected_serving?.type.toString()
+            }
+            val mealTime = data.recipe.active_cooking_time_min
             mealTimeTv.text = mealTime.toInt().toString()
-            calValue.text = round(data.receipe.calories).toInt().toString()
-            proteinValue.text = round(data.receipe.protein).toInt().toString()
-            carbsValue.text = round(data.receipe.carbs).toInt().toString()
-            fatsValue.text = round(data.receipe.fat).toInt().toString()
-            val imageUrl = getDriveImageUrl(data.receipe.photo_url)
+            calValue.text = round(data.recipe.calories_kcal!!).toInt().toString()
+            proteinValue.text = round(data.recipe.protein_g!!).toInt().toString()
+            carbsValue.text = round(data.recipe.carbs_g!!).toInt().toString()
+            fatsValue.text = round(data.recipe.fat_g!!).toInt().toString()
+            var imageUrl : String? = ""
+            imageUrl = if (data.recipe.photo_url.contains("drive.google.com")) {
+                getDriveImageUrl(data.recipe.photo_url)
+            }else{
+                data.recipe.photo_url
+            }
             Glide.with(this.itemView)
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_view_meal_place)
@@ -138,6 +180,21 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
                 "https://drive.google.com/uc?export=view&id=$fileId"
             } else {
                 null
+            }
+        }
+
+        fun getFoodType(category: String?): String {
+            if (category.isNullOrBlank()) return ""
+            val cat = category.lowercase()
+            val isVeg = cat.contains("vegetarian") || cat.contains("vegan")
+            val isNonVeg = cat.contains("non-vegetarian") || cat.contains("chicken") ||
+                    cat.contains("egg") || cat.contains("meat") ||
+                    cat.contains("fish") || cat.contains("mutton")
+            return when {
+                isVeg && !isNonVeg -> "Veg"
+                isNonVeg && !isVeg -> "Non-Veg"
+                isVeg && isNonVeg -> "Mixed"
+                else -> ""
             }
         }
     }
@@ -182,9 +239,8 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
-                layoutEatTime.visibility = View.VISIBLE
-                layoutVegNonveg.visibility = View.VISIBLE
-                servesLayout.visibility = View.VISIBLE
+                layoutEatTime.visibility = View.GONE
+                layoutVegNonveg.visibility = View.GONE
             }
 
             val snapData = data.meal_nutrition_summary
@@ -202,9 +258,14 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
                 mealTimeTv.text = ""//mealTime.toInt().toString()
                 calValue.text = round(snapData.calories_kcal)?.toInt().toString()
                 proteinValue.text = round(snapData.protein_g)?.toInt().toString()
-                carbsValue.text = round(snapData.carb_g)?.toInt().toString()
+                carbsValue.text = round(snapData.carbs_g)?.toInt().toString()
                 fatsValue.text = round(snapData.fat_g)?.toInt().toString()
-                val imageUrl = data.image_url//getDriveImageUrl(data.photo_url)
+                var imageUrl : String? = ""
+                imageUrl = if (data.image_url.contains("drive.google.com")) {
+                    getDriveImageUrl(data.image_url)
+                }else{
+                    data.image_url
+                }
                 Glide.with(this.itemView)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_morning_snack)

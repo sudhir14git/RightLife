@@ -26,7 +26,12 @@ class MicroNutrientsAdapter(private val context: Context, private var dataLists:
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.calValue.text = item.nutrientsValue
+        val formattedValue = item.nutrientsValue
+            ?.toDoubleOrNull()
+            ?.let { String.format("%.2f", it) }
+            ?: "0.00"
+
+        holder.calValue.text = formattedValue
         holder.unit.text = item.nutrientsUnit
         holder.energyType.text = item.nutrientsEnergy
         holder.icCal.visibility = View.GONE

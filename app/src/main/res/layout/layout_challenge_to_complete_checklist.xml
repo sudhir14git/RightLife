@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/completeChallengeChecklist"
+    android:layout_width="match_parent"
+    android:layout_height="270dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    android:visibility="gone">
+
+    <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.AnimatedGlowGradientBorderView
+        android:id="@+id/gradientBorder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_challenge"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:id="@+id/imgChallenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/challenge_icon"
+                app:tint="#F5B829" />
+
+            <TextView
+                android:id="@+id/tvChallenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/imgChallenge"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Challenge Upcoming"
+                android:textColor="#F5B829"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/imgInfoChallege"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/info_challenge" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvChecklistNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="0/6"
+                android:textColor="@color/txt_color_header"
+                android:textSize="32sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:fontFamily="@font/dmsans_medium"
+                android:text="items completed"
+                android:textColor="#414141"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:max="60"
+            android:progress="1"
+            android:progressDrawable="@drawable/progress_pill"
+            android:thumb="@drawable/seekbar_thumb"
+            android:splitTrack="false"
+            android:clipChildren="false"
+            android:clipToPadding="false"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:padding="4dp"
+            android:text="Complete all the checklist items to enter the challenge. We require this data to establish your personalized baseline."
+            android:textColor="#707070"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCompleteChecklist"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_rounded_button"
+            android:backgroundTint="@null"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Complete Checklist"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</FrameLayout>

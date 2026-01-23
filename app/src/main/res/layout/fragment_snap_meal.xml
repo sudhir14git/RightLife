@@ -24,12 +24,13 @@
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Snap Meal"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@color/meal_log_title"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -96,17 +97,67 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Scan Your Food Instantly To Log It!"
-                    android:textSize="18sp"
+                    android:text="Scan Your Food, Log Instantly"
+                    android:textSize="20sp"
                     android:visibility="visible"
                     android:fontFamily="@font/dmsans_bold"
-                    android:textColor="@color/workout_textcolor" />
+                    android:textColor="@color/meal_log_title" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_snap_gallery" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Take photo of your food or choose an image from your gallery."
+                        android:textSize="16sp"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    >
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_nutritional_breakdown" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Instantly get a detailed AI-based nutritional breakdown."
+                        android:textSize="16sp"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/txt_color_journal_date" />
+
+                </LinearLayout>
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="121dp"
                     android:layout_marginEnd="5dp"
                     android:layout_marginTop="15dp"
+                    android:visibility="gone"
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_take_photo_info" />
 
@@ -157,7 +208,7 @@
                     android:padding="15dp"
                     android:gravity="left"
                     android:background="@color/white"
-                    android:hint="Enter your meal description here."
+                    android:hint="For example: Paneer Bhurji, Chana Masala and 3 Rotis"
                     android:layout_marginTop="10dp"
                     android:visibility="visible"
                     android:fontFamily="@font/dmsans_regular"
@@ -183,7 +234,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="20dp"
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -192,9 +243,10 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/tvProceed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Proceed"
+            android:text="Next"
             android:layout_gravity="center"
             android:textSize="20sp"
             android:textColor="@color/white"

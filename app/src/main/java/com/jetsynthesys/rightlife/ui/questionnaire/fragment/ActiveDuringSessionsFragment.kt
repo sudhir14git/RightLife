@@ -6,7 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentActiveDuringSessionBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionTwo
@@ -64,6 +66,11 @@ class ActiveDuringSessionsFragment : Fragment() {
         binding.numberPicker.displayedValues = activeTimes
         binding.numberPicker.value = 3
         binding.numberPicker.wheelItemCount = 5
+
+        val selectedFont = ResourcesCompat.getFont(requireContext(), R.font.dmsans_bold)
+        val normalFont = ResourcesCompat.getFont(requireContext(), R.font.dmsans_regular)
+        binding.numberPicker.setTypeface(normalFont)
+        binding.numberPicker.setSelectedTypeface(selectedFont)
 
         selectedActiveTime = activeTimes[2]
 

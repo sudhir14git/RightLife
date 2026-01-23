@@ -54,7 +54,6 @@ class YourActivitiesListAdapter(private val context: Context, private var dataLi
         }
 
         holder.layoutMain.setOnClickListener {
-            // holder.createNewVersionCard.visibility = View.GONE
             onMealLogDateItem(item, position, true)
         }
     }

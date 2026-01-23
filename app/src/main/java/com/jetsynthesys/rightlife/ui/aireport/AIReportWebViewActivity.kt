@@ -8,7 +8,6 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingMealBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingReportFeedbackBottomSheet
 import com.jetsynthesys.rightlife.databinding.ActivityAireportWebViewBinding
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -107,6 +106,13 @@ class AIReportWebViewActivity : BaseActivity(), RatingReportFeedbackBottomSheet.
 
         webView.loadUrl(fullUrl)
         SharedPreferenceManager.getInstance(applicationContext).setAIReportGeneratedView(true)
+
+
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.RL_AI_Report_PageOpen,
+            mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis(), )
+        )
     }
 
     override fun onBackPressed() {
@@ -148,5 +154,13 @@ class AIReportWebViewActivity : BaseActivity(), RatingReportFeedbackBottomSheet.
 
     override fun onReportFeedbackRating(rating: Double, isSave: Boolean) {
         onBackPressed()
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.RL_AI_Report_Rating_Submit,
+            mapOf(
+                AnalyticsParam.RATING to rating,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+            )
+        )
     }
 }

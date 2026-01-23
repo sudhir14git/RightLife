@@ -29,7 +29,7 @@
             android:adjustViewBounds="true"
             android:padding="2dp"
             android:background="@drawable/white_radius"
-            app:tint="@color/buttoncolormind" />
+            app:tint="@color/buttoncolorvc" />
 
         <!-- Main Content of the Dialog -->
         <LinearLayout
@@ -71,7 +71,7 @@
                 android:layout_width="166dp"
                 android:layout_height="46dp"
                 android:text="I,ll Stay"
-                android:backgroundTint="@color/buttoncolormind"
+                android:backgroundTint="@color/buttoncolorvc"
                 android:textSize="@dimen/textsize_small"
                 android:textColor="#FFF"
                  />
@@ -83,9 +83,9 @@
                 android:backgroundTint="@color/white"
                 android:textSize="@dimen/textsize_small"
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                app:strokeColor="@color/buttoncolormind"
+                app:strokeColor="@color/buttoncolorvc"
                 app:strokeWidth="1dp"
-                android:textColor="@color/buttoncolormind"
+                android:textColor="@color/buttoncolorvc"
                 />
         </LinearLayout>
     </RelativeLayout>

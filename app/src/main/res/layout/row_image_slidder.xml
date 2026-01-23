@@ -17,8 +17,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:text="Four Foundations, One Powerful App"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
         android:textColor="@color/txt_color_header"
         android:textSize="@dimen/textsize_extralarge" />
 
@@ -32,7 +34,7 @@
         android:text="Four Foundations, One Powerful App"
         android:gravity="center"
         android:textColor="@color/txt_color_header"
-        android:textSize="13sp" />
+        android:textSize="@dimen/textsize_medium" />
 
 
 </LinearLayout>

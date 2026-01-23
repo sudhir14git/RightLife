@@ -160,7 +160,12 @@ class HalfCurveProgressBar @JvmOverloads constructor(
     }
 
     private fun drawMainText(canvas: Canvas, centerX: Float, centerY: Float) {
-        val textY = centerY - 40f // Adjusted to move the text up due to larger arc
+        val textY = centerY - 40f
+        if (currentValue > maxValue) {
+            textPaintMain.color = Color.parseColor("#B50200")
+        } else {
+            textPaintMain.color = Color.BLACK
+        }// Adjusted to move the text up due to larger arc
         canvas.drawText("$currentValue", centerX, textY, textPaintMain)
         canvas.drawText("/ $maxValue KCal", centerX, textY + 40f, textPaintSecondary)
     }

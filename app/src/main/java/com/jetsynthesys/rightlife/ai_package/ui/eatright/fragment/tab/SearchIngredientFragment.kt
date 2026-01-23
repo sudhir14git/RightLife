@@ -25,12 +25,12 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.IngredientLists
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.IngredientSearchAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.SearchIngredientsViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentSearchDishBinding
 import retrofit2.Call
@@ -49,10 +49,10 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private lateinit var allDishesRecyclerview : RecyclerView
     private lateinit var searchType : String
     private lateinit var appPreference: AppPreference
-    private val dishesViewModel: DishesViewModel by activityViewModels()
+    private val dishesViewModel: SearchIngredientsViewModel by activityViewModels()
     private var ingredientLocalListModel : IngredientLocalListModel? = null
     private lateinit var backButton : ImageView
-    private var searchIngredientList : ArrayList<IngredientLists> = ArrayList()
+    private var searchIngredientList : ArrayList<IngredientRecipeList> = ArrayList()
     private var recipeId : String = ""
     private var ingredientName : String = ""
     private var recipeName : String = ""
@@ -163,8 +163,6 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             filterDishes(query)
         }
 
-        getRecipesList("0")
-
         cancel.setOnClickListener {
             if (searchEditText.text.toString().isNotEmpty()){
                 dishesViewModel.setSearchQuery("")
@@ -177,6 +175,20 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 dishesViewModel.setSearchQuery(s.toString())
+
+                if (s!!.length > 1) {
+                    searchResultLayout.visibility = View.VISIBLE
+                    tvSearchResult.visibility = View.VISIBLE
+                    cancel.visibility = View.VISIBLE
+                  //  tvSearchResult.text = "Search Result: ${filteredList.size}"
+                    getRecipesList(s.toString())
+                }else if (s!!.length == 0){
+                    searchResultLayout.visibility = View.VISIBLE
+                    tvSearchResult.visibility = View.GONE
+                    cancel.visibility = View.GONE
+                    searchIngredientList.clear()
+                    onSnapSearchDishItemRefresh()
+                }
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -188,24 +200,26 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
 //            getSnapMealRecipesList()
 //            onSnapSearchDishItemRefresh()
 //        }
+
+        getRecipesList("")
     }
 
     private fun onSnapSearchDishItemRefresh() {
 
-        val valueLists : ArrayList<IngredientLists> = ArrayList()
-        valueLists.addAll(searchIngredientList as Collection<IngredientLists>)
-        val mealLogDateData: IngredientLists? = null
+        val valueLists : ArrayList<IngredientRecipeList> = ArrayList()
+        valueLists.addAll(searchIngredientList as Collection<IngredientRecipeList>)
+        val mealLogDateData: IngredientRecipeList? = null
         snapSearchDishAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onSearchIngredientItem(recipesModel: IngredientLists, position: Int, isRefresh: Boolean) {
+    private fun onSearchIngredientItem(recipesModel: IngredientRecipeList, position: Int, isRefresh: Boolean) {
 
-        getRecipesDetails(recipesModel.id)
+        getIngredientDetails(recipesModel.id)
     }
 
     private fun filterDishes(query: String) {
         val filteredList = if (query.isEmpty()) searchIngredientList
-        else searchIngredientList.filter { it.ingredient_name.contains(query, ignoreCase = true) }
+        else searchIngredientList.filter { it.recipe.contains(query, ignoreCase = true) }
         snapSearchDishAdapter.updateList(filteredList)
         if (query.isNotEmpty()) {
             searchResultLayout.visibility = View.VISIBLE
@@ -219,45 +233,83 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
         }
     }
 
-    private fun getRecipesList(limit : String) {
+    private fun getRecipesList(keyword : String) {
+        Log.d("RecipesList", "getRecipesList called with keyword: $keyword")
+
         if (isAdded  && view != null){
+            Log.d("RecipesList", "Fragment is added and view is not null, showing loader")
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
+        } else {
+            Log.w("RecipesList", "Fragment not added or view is null, skipping loader")
         }
-        val call = ApiClient.apiServiceFastApi.getSearchIngredientList(limit)
+
+        val call = ApiClient.apiServiceFastApiV2.getSearchIngredientList(keyword)
+        Log.d("RecipesList", "API call initiated for keyword: $keyword")
+
         call.enqueue(object : Callback<IngredientResponse> {
             override fun onResponse(call: Call<IngredientResponse>, response: Response<IngredientResponse>) {
+                Log.d("RecipesList", "onResponse received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
+                        Log.d("RecipesList", "Dismissing loader after successful response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
+
                     val searchData = response.body()?.data
+                    Log.d("RecipesList", "Search data received, size: ${searchData?.size}")
+
                     if (searchData != null){
                         if (searchData.size > 0){
+                            Log.d("RecipesList", "Search results found: ${searchData.size} items")
+
                             //snapRecipesList.addAll(mealPlanLists)
                             searchIngredientList.clear()
+                            Log.d("RecipesList", "Cleared existing searchIngredientList")
+
                             tvSearchResult.text = "Search Result: ${searchData.size}"
+                            Log.d("RecipesList", "Updated search result text: ${searchData.size}")
+
                             searchIngredientList.addAll(searchData)
+                            Log.d("RecipesList", "Added search data to searchIngredientList, total count: ${searchIngredientList.size}")
+
+                            Log.d("RecipesList", "Calling onSnapSearchDishItemRefresh()")
                             onSnapSearchDishItemRefresh()
+                            Log.d("RecipesList", "Recipes list loaded successfully")
+                        } else {
+                            Log.w("RecipesList", "Search data is empty")
                         }
+                    } else {
+                        Log.w("RecipesList", "Search data is null")
                     }
                 } else {
+                    Log.e("RecipesList", "Response not successful: ${response.code()}")
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+
                     if (isAdded  && view != null){
+                        Log.d("RecipesList", "Dismissing loader after error response")
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<IngredientResponse>, t: Throwable) {
+                Log.e("RecipesList", "API call failed: ${t.message}")
+                Log.e("RecipesList", "Exception: ${t.javaClass.simpleName}")
                 Log.e("Error", "API call failed: ${t.message}")
+                t.printStackTrace()
+
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+
                 if (isAdded  && view != null){
+                    Log.d("RecipesList", "Dismissing loader after API failure")
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }
@@ -266,13 +318,13 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
         })
     }
 
-    private fun getRecipesDetails(ingredientId : String) {
+    private fun getIngredientDetails(ingredientId : String) {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getRecipesDetails(ingredientId)
+        val call = ApiClient.apiServiceFastApiV2.getIngredientDetails(ingredientId)
         call.enqueue(object : Callback<IngredientDetailResponse> {
             override fun onResponse(call: Call<IngredientDetailResponse>, response: Response<IngredientDetailResponse>) {
                 if (response.isSuccessful) {

@@ -87,7 +87,7 @@ class HealthCamVitalsAdapter(
         return when (type) {
             "BMI_CALC" -> R.drawable.ic_db_report_bmi
             "BP_RPP" -> R.drawable.ic_db_report_cardiak_workload
-            "BP_SYSTOLIC" -> R.drawable.ic_db_report_bloodpressure
+            "BP_SYSTOLIC","BP_DIASTOLIC" -> R.drawable.ic_db_report_bloodpressure
             "BP_CVD" -> R.drawable.ic_db_report_cvdrisk
             "MSI" -> R.drawable.ic_db_report_stresslevel
             "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate

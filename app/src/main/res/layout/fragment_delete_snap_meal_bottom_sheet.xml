@@ -11,9 +11,10 @@
         android:id="@+id/closeIc"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:scaleType="fitXY"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="20dp"
-        android:src="@drawable/ic_close_black"
+        android:src="@drawable/close_breathwork"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -23,9 +24,9 @@
         android:id="@+id/tv_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Not quit right?"
-        android:textColor="@color/black_no_meals"
-        android:textSize="20sp"
+        android:text="Not quite right?"
+        android:textColor="@color/black"
+        android:textSize="24sp"
         android:fontFamily="@font/merriweather_bold"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="40dp"
@@ -37,12 +38,12 @@
         android:id="@+id/tv_delete_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No worries-we'll take it off your plat. You can edit and log the right dish yourself."
+        android:text="No worries - we’ll take it off your plate. You can edit and log the right dish yourself."
         android:gravity="center"
-        android:textColor="@color/black_no_meals"
-        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         android:minLines="2"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/dmsans_regular"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginTop="20dp"
@@ -65,7 +66,7 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/layoutCancel"
+            android:id="@+id/layoutDelete"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
@@ -73,36 +74,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@drawable/add_cart_button_background"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/tv_no"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_gravity="center"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/dmsans_bold"
-                android:text="Cancel"/>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/layoutDelete"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/layoutCancel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/white_grey_meal_bg"
-            android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
@@ -118,9 +89,39 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textSize="20sp"
-                android:textColor="@color/black_no_meals"
+                android:textColor="@color/white"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Delete"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutCancel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/layoutDelete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/white_grey_meal_bg"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_gravity="center"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Cancel"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

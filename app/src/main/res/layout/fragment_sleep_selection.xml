@@ -9,7 +9,7 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Do you sleep through the night or wake up often?"
+        android:text="How often do you wake up during the night?"
         android:textSize="@dimen/textsize_large18sp"
         android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"

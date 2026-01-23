@@ -18,7 +18,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -69,7 +68,7 @@ class DeleteRecipeBottomSheet : BottomSheetDialogFragment() {
         val layoutCancel = view.findViewById<LinearLayoutCompat>(R.id.noBtn)
         val layoutDelete = view.findViewById<LinearLayoutCompat>(R.id.yesBtn)
         deleteTitle.text = "Delete Recipe"
-        deleteConfirmTv.text = "Are you sure you want to delete this recipe entry?"
+        deleteConfirmTv.text = "Are you sure you want to delete this recipe?"
 
         recipeId = arguments?.getString("recipeId").toString()
         recipeName = arguments?.getString("recipeName").toString()
@@ -96,7 +95,7 @@ class DeleteRecipeBottomSheet : BottomSheetDialogFragment() {
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
-        val call = ApiClient.apiServiceFastApi.deleteMyRecipe(recipeId, userId)
+        val call = ApiClient.apiServiceFastApiV2.deleteMyRecipe(recipeId, userId)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {

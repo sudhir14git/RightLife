@@ -155,28 +155,40 @@
                     </LinearLayout>
                 </FrameLayout>
 
-                <TextView
-                    android:id="@+id/heading_one"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutTop"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your Caloric Summary"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_color"
-                    android:textSize="18sp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginEnd="18dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rightLifeReportCard" />
-
-                <ImageView
-                    android:id="@+id/caloricInfo"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/infocircle"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rightLifeReportCard"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    >
+                    <TextView
+                        android:id="@+id/heading_one"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your Caloric Summary"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/caloricInfo"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/infocircle"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/calorie_balance_layout"
@@ -188,7 +200,7 @@
                     android:layout_marginStart="15dp"
                     android:layout_marginEnd="15dp"
                     android:layout_marginTop="20dp"
-                    app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutTop"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
@@ -301,14 +313,16 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:gravity="center"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="13dp"
+                                        android:layout_height="15dp"
+                                        android:scaleType="fitXY"
                                         android:src="@drawable/spoon"
                                         android:layout_marginEnd="4dp" />
 
@@ -316,6 +330,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Log Meal"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </LinearLayout>
@@ -341,14 +356,16 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:gravity="center"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="11dp"
+                                        android:layout_height="15dp"
+                                        android:scaleType="fitXY"
                                         android:src="@drawable/run"
                                         android:layout_marginEnd="4dp" />
 
@@ -356,6 +373,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Add Workout"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </LinearLayout>
@@ -383,6 +401,7 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
+                                android:id="@+id/heading_top"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Calorie Balance"
@@ -401,6 +420,15 @@
                                 android:layout_marginEnd="20dp"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
+                            <View
+                                android:id="@+id/view_border_line_top"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="10dp"
+                                android:background="@color/border_line"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/heading_top" />
 
                             <View
                                 android:id="@+id/horizontal_dotted_green"
@@ -494,8 +522,9 @@
                                 android:layout_width="70dp"
                                 android:layout_height="28dp"
                                 android:layout_marginStart="10dp"
+                                android:fontFamily="@font/dmsans_bold"
                                 android:text="INTAKE"
-                                android:textSize="10sp"
+                                android:textSize="11sp"
                                 android:textColor="@color/dotted_green"
                                 android:background="@drawable/button_green"
                                 app:layout_constraintTop_toBottomOf="@+id/textView1"
@@ -505,7 +534,8 @@
                                 android:id="@+id/burned_btn"
                                 android:layout_width="70dp"
                                 android:layout_height="28dp"
-                                android:textSize="10dp"
+                                android:textSize="11sp"
+                                android:fontFamily="@font/dmsans_bold"
                                 android:text="BURNED"
                                 android:textColor="@color/dotted_red"
                                 android:background="@drawable/button_red"
@@ -641,7 +671,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="On Track"
-                                android:textStyle="bold"
+                                android:fontFamily="@font/dmsans_bold"
                                 android:textSize="16sp"
                                 android:textColor="@color/on_track_color"
                                 app:layout_constraintBottom_toBottomOf="@+id/green_tick_icon"
@@ -652,8 +682,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:textStyle="normal"
-                                android:textSize="16dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="16sp"
                                 android:layout_marginStart="20dp"
                                 android:layout_marginEnd="28dp"
                                 android:textColor="@color/on_track_color"
@@ -693,14 +723,16 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:gravity="center"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="13dp"
+                                        android:layout_height="15dp"
+                                        android:scaleType="fitXY"
                                         android:src="@drawable/spoon"
                                         android:layout_marginEnd="4dp" />
 
@@ -708,6 +740,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Log Meal"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </LinearLayout>
@@ -733,14 +766,16 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:gravity="center"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintBottom_toBottomOf="parent">
 
                                     <ImageView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="11dp"
+                                        android:layout_height="15dp"
+                                        android:scaleType="fitXY"
                                         android:src="@drawable/run"
                                         android:layout_marginEnd="4dp" />
 
@@ -748,6 +783,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Add Workout"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </LinearLayout>
@@ -760,28 +796,40 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/heading_two"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutMovementSummery"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your Movement Summary"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_color"
-                    android:textSize="18sp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginEnd="18dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout">
 
-                <ImageView
-                    android:id="@+id/yourMovementSummary"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/infocircle"
-                    app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    <TextView
+                        android:id="@+id/heading_two"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your Movement Summary"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/yourMovementSummary"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/infocircle"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/activity_factor_layout"
@@ -794,7 +842,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginTop="20dp"
-                    app:layout_constraintTop_toBottomOf="@+id/heading_two"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutMovementSummery"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
@@ -1091,6 +1139,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
+                            android:id="@+id/heading_steps"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Steps"
@@ -1110,6 +1159,15 @@
                             android:layout_marginEnd="20dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
+                        <View
+                            android:id="@+id/view_border_line_top_steps"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/border_line"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/heading_steps" />
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/stepNoDataLayout"
@@ -1194,16 +1252,18 @@
 
                             <TextView
                                 android:id="@+id/step_text_heading"
-                                android:layout_width="269dp"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:text="You’re walking less than you do on a typical day"
-                                android:textColor="@color/workout_textcolor"
-                                android:textSize="16dp"
-                                android:textStyle="normal"
+                                android:textColor="@color/black_no_meals"
+                                android:textSize="16sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:layout_marginStart="20dp"
                                 android:layout_marginTop="65dp"
+                                android:layout_marginEnd="20dp"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
 
                             <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
                                 android:id="@+id/line_graph_steps"
@@ -1212,144 +1272,261 @@
                                 android:layout_marginTop="135dp"
                                 android:layout_marginStart="20dp"
                                 android:layout_marginEnd="20dp"
-                                android:layout_marginBottom="20dp"
-                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/step_text_heading"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent" />
-
-                            <ImageView
-                                android:id="@+id/step_today_line"
-                                android:layout_width="11dp"
-                                android:layout_height="2dp"
-                                android:src="@drawable/today_line"
-                                app:layout_constraintEnd_toStartOf="@+id/step_today"
-                                app:layout_constraintTop_toTopOf="@+id/step_today"
-                                app:layout_constraintBottom_toBottomOf="@+id/step_today" />
-
-                            <TextView
-                                android:id="@+id/step_today"
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/horizontalStepsSection"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Today"
-                                android:textSize="12sp"
-                                android:layout_marginStart="30dp"
-                                android:textStyle="bold"
-                                android:textColor="@color/step_today"
-                                android:layout_marginTop="291dp"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
-
-                            <TextView
-                                android:id="@+id/todayStepsTv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/step_today"
-                                android:text="0"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginBottom="20dp"
-                                app:layout_constraintTop_toBottomOf="@+id/step_today"
+                                android:layout_marginTop="12dp"
+                                app:layout_constraintTop_toBottomOf="@id/line_graph_steps"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=" Steps"
-                                android:textSize="12sp"
-                                android:textColor="@color/step_today"
-                                android:textStyle="bold"
-                                app:layout_constraintStart_toEndOf="@+id/todayStepsTv"
-                                app:layout_constraintBottom_toBottomOf="@+id/todayStepsTv" />
-
-                            <ImageView
-                                android:id="@+id/active_line"
-                                android:layout_width="11dp"
-                                android:layout_height="2dp"
-                                android:src="@drawable/activeline"
-                                app:layout_constraintEnd_toStartOf="@+id/active_today"
-                                app:layout_constraintTop_toTopOf="@+id/active_today"
-                                app:layout_constraintBottom_toBottomOf="@+id/active_today" />
-
-                            <TextView
-                                android:id="@+id/active_today"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Average"
-                                android:textSize="12sp"
-                                android:layout_marginStart="145dp"
-                                android:textStyle="bold"
-                                android:textColor="@color/active_text_color"
-                                android:layout_marginTop="291dp"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
-
-                            <TextView
-                                android:id="@+id/averageStepsTv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textColor="@color/active_text_color"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                app:layout_constraintTop_toBottomOf="@+id/active_today"
-                                app:layout_constraintStart_toStartOf="@+id/active_line" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=" Steps"
-                                android:textSize="12sp"
-                                android:textColor="@color/active_text_color"
-                                android:textStyle="bold"
-                                app:layout_constraintStart_toEndOf="@+id/averageStepsTv"
-                                app:layout_constraintBottom_toBottomOf="@+id/averageStepsTv" />
-
-                            <ImageView
-                                android:id="@+id/goal_line"
-                                android:layout_width="11dp"
-                                android:layout_height="2dp"
-                                android:src="@drawable/goalline"
-                                app:layout_constraintEnd_toStartOf="@+id/goal_today"
-                                app:layout_constraintTop_toTopOf="@+id/goal_today"
-                                app:layout_constraintBottom_toBottomOf="@+id/goal_today" />
-
-                            <TextView
-                                android:id="@+id/goal_today"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Goal"
-                                android:textSize="12sp"
-                                android:layout_marginEnd="20dp"
-                                android:textStyle="bold"
-                                android:textColor="@color/goal_text_color"
-                                android:layout_marginTop="291dp"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent" />
-
-                            <TextView
-                                android:id="@+id/goal_tex"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textColor="@color/goal_text_color"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                app:layout_constraintTop_toBottomOf="@+id/goal_today"
-                                app:layout_constraintEnd_toStartOf="@+id/last_steps" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/last_steps"
-                                android:layout_marginEnd="20dp"
-                                android:text=" Steps"
-                                android:textSize="12sp"
-                                android:textColor="@color/goal_text_color"
-                                android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintBottom_toBottomOf="@+id/goal_tex" />
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:id="@+id/today_step_indicator"
+                                    android:layout_width="11dp"
+                                    android:layout_height="2dp"
+                                    android:src="@drawable/today_line"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/today_label"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Today"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/step_today"
+                                    android:layout_marginStart="8dp"
+                                    app:layout_constraintStart_toEndOf="@id/today_step_indicator"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/today_steps_count"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textColor="@color/step_today"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:layout_marginStart="8dp"
+                                    app:layout_constraintStart_toEndOf="@id/today_label"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/today_steps_unit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" Steps"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/step_today"
+                                    android:textStyle="bold"
+                                    android:layout_marginStart="4dp"
+                                    app:layout_constraintStart_toEndOf="@id/today_steps_count"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <ImageView
+                                    android:id="@+id/yesterday_step_indicator"
+                                    android:layout_width="11dp"
+                                    android:layout_height="2dp"
+                                    android:src="@drawable/activeline"
+                                    android:layout_marginStart="24dp"
+                                    app:layout_constraintStart_toEndOf="@id/today_steps_unit"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/yesterday_label"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Yesterday"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/active_text_color"
+                                    android:layout_marginStart="8dp"
+                                    app:layout_constraintStart_toEndOf="@id/yesterday_step_indicator"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/yesterday_steps_count"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textColor="@color/active_text_color"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:layout_marginStart="8dp"
+                                    app:layout_constraintStart_toEndOf="@id/yesterday_label"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/yesterday_steps_unit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" Steps"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/active_text_color"
+                                    android:textStyle="bold"
+                                    android:layout_marginStart="4dp"
+                                    app:layout_constraintStart_toEndOf="@id/yesterday_steps_count"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                            <!-- ✅ Grouped this entire section inside a new ConstraintLayout -->
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/stepsBottomSection"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                app:layout_constraintTop_toBottomOf="@id/line_graph_steps"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:id="@+id/step_today_line"
+                                    android:layout_width="11dp"
+                                    android:layout_height="2dp"
+                                    android:src="@drawable/today_line"
+                                    app:layout_constraintEnd_toStartOf="@+id/step_today"
+                                    app:layout_constraintTop_toTopOf="@+id/step_today"
+                                    app:layout_constraintBottom_toBottomOf="@+id/step_today" />
+
+                                <TextView
+                                    android:id="@+id/step_today"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Today"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/step_today"
+                                    android:layout_marginStart="30dp"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/todayStepsTv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textColor="@color/step_today"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:layout_marginStart="20dp"
+                                    app:layout_constraintTop_toBottomOf="@id/step_today"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" Steps"
+                                    android:layout_marginBottom="2dp"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/step_today"
+                                    android:textStyle="bold"
+                                    app:layout_constraintStart_toEndOf="@+id/todayStepsTv"
+                                    app:layout_constraintBottom_toBottomOf="@+id/todayStepsTv" />
+
+                                <ImageView
+                                    android:id="@+id/active_line"
+                                    android:layout_width="11dp"
+                                    android:layout_height="2dp"
+                                    android:src="@drawable/activeline"
+                                    app:layout_constraintEnd_toStartOf="@+id/active_today"
+                                    app:layout_constraintTop_toTopOf="@+id/active_today"
+                                    app:layout_constraintBottom_toBottomOf="@+id/active_today" />
+
+                                <TextView
+                                    android:id="@+id/active_today"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Yesterday"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/active_text_color"
+                                    android:layout_marginStart="145dp"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/averageStepsTv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textColor="@color/active_text_color"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintTop_toBottomOf="@+id/active_today"
+                                    app:layout_constraintStart_toStartOf="@+id/active_line" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" Steps"
+                                    android:layout_marginBottom="2dp"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/active_text_color"
+                                    android:textStyle="bold"
+                                    app:layout_constraintStart_toEndOf="@+id/averageStepsTv"
+                                    app:layout_constraintBottom_toBottomOf="@+id/averageStepsTv" />
+
+                                <ImageView
+                                    android:id="@+id/goal_line"
+                                    android:layout_width="11dp"
+                                    android:layout_height="2dp"
+                                    android:src="@drawable/goalline"
+                                    app:layout_constraintEnd_toStartOf="@+id/goal_today"
+                                    app:layout_constraintTop_toTopOf="@+id/goal_today"
+                                    app:layout_constraintBottom_toBottomOf="@+id/goal_today" />
+
+                                <TextView
+                                    android:id="@+id/goal_today"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Goal"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/goal_text_color"
+                                    android:layout_marginEnd="40dp"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/goal_tex"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textColor="@color/goal_text_color"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintTop_toBottomOf="@+id/goal_today"
+                                    app:layout_constraintEnd_toStartOf="@+id/last_steps" />
+
+                                <TextView
+                                    android:id="@+id/last_steps"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=" Steps"
+                                    android:textSize="12sp"
+                                    android:layout_marginBottom="2dp"
+                                    android:textColor="@color/goal_text_color"
+                                    android:textStyle="bold"
+                                    android:layout_marginEnd="35dp"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="@+id/goal_tex" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -1409,6 +1586,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
+                            android:id="@+id/active_heart_rate_heading"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Active Heart Rate Zones"
@@ -1427,6 +1605,15 @@
                             android:layout_marginEnd="20dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
+                        <View
+                            android:id="@+id/view_border_line_top_active_heart_rate"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/border_line"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/active_heart_rate_heading" />
 
                         <TextView
                             android:id="@+id/heartRateZoneNoDataTv"
@@ -1441,267 +1628,284 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/lightZoneBelow"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="113"
-                            android:visibility="gone"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light_bgmtext"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_start_light_bgmtext"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_start_light_bgmtext" />
-
-                        <TextView
-                            android:id="@+id/vertical_line_start_light_bgmtext"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="bpm"
-                            android:visibility="gone"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_color_kcal"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_start_light"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_start_light" />
-
-                        <View
-                            android:id="@+id/vertical_line_start_light"
-                            android:layout_width="1dp"
-                            android:layout_height="62dp"
-                            android:background="@drawable/activity_heartrate_verticalline"
-                            app:layout_constraintBottom_toBottomOf="@+id/light_button"
-                            app:layout_constraintStart_toStartOf="@+id/light_button" />
-
                         <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/light_button"
-                            android:layout_width="65dp"
-                            android:layout_height="30dp"
-                            android:background="@color/light_btn_color"
-                            android:layout_marginStart="35dp"
-                            android:layout_marginBottom="23dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent">
+                            app:layout_constraintTop_toBottomOf="@+id/view_border_line_top_active_heart_rate"
+                            app:layout_constraintEnd_toEndOf="parent">
 
+                            <!-- Light Button -->
                             <TextView
+                                android:id="@+id/lightZoneBelow"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Light"
-                                android:textColor="@color/white"
-                                android:textSize="10sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <TextView
-                            android:id="@+id/lightZoneHigh"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="124"
-                            android:textSize="20sp"
-                            android:visibility="gone"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_fatloss_button_bgmtext"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_fatloss_button_bgmtext"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_fatloss_button_bgmtext" />
-
-                        <TextView
-                            android:id="@+id/vertical_line_fatloss_button_bgmtext"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="bpm"
-                            android:visibility="gone"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_color_kcal"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_fatloss_button"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_fatloss_button"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_fatloss_button" />
-
-                        <View
-                            android:id="@+id/vertical_line_fatloss_button"
-                            android:layout_width="1dp"
-                            android:layout_height="62dp"
-                            android:background="@drawable/activity_heartrate_verticalline"
-                            app:layout_constraintBottom_toBottomOf="@+id/light_button"
-                            app:layout_constraintEnd_toEndOf="@+id/light_button" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/fatloss_button"
-                            android:layout_width="65dp"
-                            android:layout_height="30dp"
-                            android:background="@color/fatloss_btn_color"
-                            android:layout_marginBottom="23dp"
-                            app:layout_constraintStart_toEndOf="@+id/light_button"
-                            app:layout_constraintBottom_toBottomOf="parent">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Fat Loss"
-                                android:textColor="@color/white"
-                                android:textSize="10sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <TextView
-                            android:id="@+id/fatLossHigh"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="139"
-                            android:textSize="20sp"
-                            android:visibility="gone"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_cardio_button_bgmtext"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_cardio_button_bgmtext"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_cardio_button_bgmtext" />
-
-                        <TextView
-                            android:id="@+id/vertical_line_cardio_button_bgmtext"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="bpm"
-                            android:visibility="gone"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_color_kcal"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_cardio_button"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_cardio_button"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_cardio_button" />
-
-                        <View
-                            android:id="@+id/vertical_line_cardio_button"
-                            android:layout_width="1dp"
-                            android:layout_height="62dp"
-                            android:background="@drawable/activity_heartrate_verticalline"
-                            app:layout_constraintBottom_toBottomOf="@+id/fatloss_button"
-                            app:layout_constraintEnd_toEndOf="@+id/fatloss_button" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/cardio_button"
-                            android:layout_width="65dp"
-                            android:layout_height="30dp"
-                            android:background="@color/cardio_btn_color"
-                            android:layout_marginBottom="23dp"
-                            app:layout_constraintStart_toEndOf="@+id/fatloss_button"
-                            app:layout_constraintBottom_toBottomOf="parent">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Cardio"
+                                android:text="113"
+                                android:visibility="gone"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
                                 android:textColor="@color/black"
-                                android:textSize="10sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <TextView
-                            android:id="@+id/cardioHigh"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="152"
-                            android:visibility="gone"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_bgmtext"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_bgmtext"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_bgmtext" />
-
-                        <TextView
-                            android:id="@+id/vertical_line_peak_button_bgmtext"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="bpm"
-                            android:visibility="gone"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_color_kcal"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button" />
-
-                        <View
-                            android:id="@+id/vertical_line_peak_button"
-                            android:layout_width="1dp"
-                            android:layout_height="62dp"
-                            android:background="@drawable/activity_heartrate_verticalline"
-                            app:layout_constraintBottom_toBottomOf="@+id/cardio_button"
-                            app:layout_constraintEnd_toEndOf="@+id/cardio_button" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/peak_button"
-                            android:layout_width="65dp"
-                            android:layout_height="30dp"
-                            android:layout_marginEnd="30dp"
-                            android:background="@color/peak_btn_color"
-                            android:layout_marginBottom="23dp"
-                            app:layout_constraintStart_toEndOf="@+id/cardio_button"
-                            app:layout_constraintBottom_toBottomOf="parent">
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light_bgmtext"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_start_light_bgmtext"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_start_light_bgmtext" />
 
                             <TextView
+                                android:id="@+id/vertical_line_start_light_bgmtext"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Peak"
-                                android:textColor="@color/white"
-                                android:textSize="10sp"
+                                android:text="bpm"
+                                android:visibility="gone"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_color_kcal"
+                                android:layout_marginBottom="5dp"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_start_light"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_start_light" />
+
+                            <View
+                                android:id="@+id/vertical_line_start_light"
+                                android:layout_width="1dp"
+                                android:layout_height="62dp"
+                                android:background="@drawable/activity_heartrate_verticalline"
+                                app:layout_constraintBottom_toBottomOf="@+id/light_button"
+                                app:layout_constraintStart_toStartOf="@+id/light_button" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/light_button"
+                                android:layout_width="65dp"
+                                android:layout_height="30dp"
+                                android:background="@color/light_btn_color"
+                                android:layout_marginBottom="23dp"
+                                app:layout_constraintEnd_toStartOf="@+id/fatloss_button"
                                 app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHorizontal_chainStyle="packed">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Light"
+                                    android:textColor="@color/white"
+                                    android:textSize="10sp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <!-- Fat Loss Button -->
+                            <TextView
+                                android:id="@+id/lightZoneHigh"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="124"
+                                android:textSize="20sp"
+                                android:visibility="gone"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_fatloss_button_bgmtext"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_fatloss_button_bgmtext"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_fatloss_button_bgmtext" />
+
+                            <TextView
+                                android:id="@+id/vertical_line_fatloss_button_bgmtext"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="bpm"
+                                android:visibility="gone"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_color_kcal"
+                                android:layout_marginBottom="5dp"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_fatloss_button"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_fatloss_button"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_fatloss_button" />
+
+                            <View
+                                android:id="@+id/vertical_line_fatloss_button"
+                                android:layout_width="1dp"
+                                android:layout_height="62dp"
+                                android:background="@drawable/activity_heartrate_verticalline"
+                                app:layout_constraintBottom_toBottomOf="@+id/light_button"
+                                app:layout_constraintEnd_toEndOf="@+id/light_button" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/fatloss_button"
+                                android:layout_width="65dp"
+                                android:layout_height="30dp"
+                                android:background="@color/fatloss_btn_color"
+                                android:layout_marginBottom="23dp"
+                                app:layout_constraintStart_toEndOf="@+id/light_button"
+                                app:layout_constraintEnd_toStartOf="@+id/cardio_button"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Fat Loss"
+                                    android:textColor="@color/white"
+                                    android:textSize="10sp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <!-- Cardio Button -->
+                            <TextView
+                                android:id="@+id/fatLossHigh"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="139"
+                                android:textSize="20sp"
+                                android:visibility="gone"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_cardio_button_bgmtext"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_cardio_button_bgmtext"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_cardio_button_bgmtext" />
+
+                            <TextView
+                                android:id="@+id/vertical_line_cardio_button_bgmtext"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="bpm"
+                                android:visibility="gone"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_color_kcal"
+                                android:layout_marginBottom="5dp"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_cardio_button"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_cardio_button"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_cardio_button" />
+
+                            <View
+                                android:id="@+id/vertical_line_cardio_button"
+                                android:layout_width="1dp"
+                                android:layout_height="62dp"
+                                android:background="@drawable/activity_heartrate_verticalline"
+                                app:layout_constraintBottom_toBottomOf="@+id/fatloss_button"
+                                app:layout_constraintEnd_toEndOf="@+id/fatloss_button" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/cardio_button"
+                                android:layout_width="65dp"
+                                android:layout_height="30dp"
+                                android:background="@color/cardio_btn_color"
+                                android:layout_marginBottom="23dp"
+                                app:layout_constraintStart_toEndOf="@+id/fatloss_button"
+                                app:layout_constraintEnd_toStartOf="@+id/peak_button"
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Cardio"
+                                    android:textColor="@color/black"
+                                    android:textSize="10sp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <!-- Peak Button -->
+                            <TextView
+                                android:id="@+id/cardioHigh"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="152"
+                                android:visibility="gone"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_bgmtext"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_bgmtext"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_bgmtext" />
+
+                            <TextView
+                                android:id="@+id/vertical_line_peak_button_bgmtext"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="bpm"
+                                android:visibility="gone"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_color_kcal"
+                                android:layout_marginBottom="5dp"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button" />
+
+                            <View
+                                android:id="@+id/vertical_line_peak_button"
+                                android:layout_width="1dp"
+                                android:layout_height="62dp"
+                                android:background="@drawable/activity_heartrate_verticalline"
+                                app:layout_constraintBottom_toBottomOf="@+id/cardio_button"
+                                app:layout_constraintEnd_toEndOf="@+id/cardio_button" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/peak_button"
+                                android:layout_width="65dp"
+                                android:layout_height="30dp"
+                                android:background="@color/peak_btn_color"
+                                android:layout_marginBottom="23dp"
+                                app:layout_constraintStart_toEndOf="@+id/cardio_button"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
+                                app:layout_constraintBottom_toBottomOf="parent">
 
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Peak"
+                                    android:textColor="@color/white"
+                                    android:textSize="10sp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <TextView
+                                android:id="@+id/peakHigh"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="188"
+                                android:textSize="20sp"
+                                android:visibility="gone"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_end_bgmtext"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_end_bgmtext"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_end_bgmtext" />
+
+                            <TextView
+                                android:id="@+id/vertical_line_peak_button_end_bgmtext"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="bpm"
+                                android:visibility="gone"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_color_kcal"
+                                android:layout_marginBottom="5dp"
+                                app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_end"
+                                app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_end"
+                                app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_end" />
+
+                            <View
+                                android:id="@+id/vertical_line_peak_button_end"
+                                android:layout_width="1dp"
+                                android:layout_height="62dp"
+                                android:background="@drawable/activity_heartrate_verticalline"
+                                app:layout_constraintBottom_toBottomOf="@+id/peak_button"
+                                app:layout_constraintEnd_toEndOf="@+id/peak_button" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <TextView
-                            android:id="@+id/peakHigh"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="188"
-                            android:textSize="20sp"
-                            android:visibility="gone"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_end_bgmtext"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_end_bgmtext"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_end_bgmtext" />
-
-                        <TextView
-                            android:id="@+id/vertical_line_peak_button_end_bgmtext"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="bpm"
-                            android:visibility="gone"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_color_kcal"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_end"
-                            app:layout_constraintEnd_toEndOf="@+id/vertical_line_peak_button_end"
-                            app:layout_constraintStart_toStartOf="@+id/vertical_line_peak_button_end" />
-
-                        <View
-                            android:id="@+id/vertical_line_peak_button_end"
-                            android:layout_width="1dp"
-                            android:layout_height="62dp"
-                            android:background="@drawable/activity_heartrate_verticalline"
-                            app:layout_constraintBottom_toBottomOf="@+id/peak_button"
-                            app:layout_constraintEnd_toEndOf="@+id/peak_button" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
                 </androidx.cardview.widget.CardView>
 

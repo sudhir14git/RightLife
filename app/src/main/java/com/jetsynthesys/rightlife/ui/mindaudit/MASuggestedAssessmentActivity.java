@@ -1,25 +1,37 @@
 package com.jetsynthesys.rightlife.ui.mindaudit;
 
-import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient;
 import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse;
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.RecommendationAdapter;
+import com.jetsynthesys.rightlife.databinding.DialogMindAuditDisclaimerBinding;
+import com.jetsynthesys.rightlife.ui.DialogUtils;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 
 import java.util.ArrayList;
@@ -38,6 +50,8 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
     private Assessments assessments;
     private String selectedAssessment;
     private boolean isFromThinkRight = false;
+    private TextView tv_all_assessment;
+    private boolean isDisclaimerDialogShowing = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +60,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
+        tv_all_assessment = findViewById(R.id.tv_all_assessment);
 
         ic_back_dialog.setOnClickListener(view -> {
             finish();
@@ -61,12 +76,6 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         assessments = (Assessments) getIntent().getSerializableExtra("AssessmentData");
         selectedAssessment = getIntent().getStringExtra("SelectedAssessment");
         isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT", false);
-
-        if (selectedAssessment != null) {
-            showDisclaimerDialog(selectedAssessment);
-        } else {
-            fetchThinkRecomendedData();
-        }
 
         if (assessments != null) {
             SuggestedAssessments suggestedAssessments = assessments.suggestedAssessments;
@@ -119,38 +128,75 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
             allAssessmentAdapter = new AllAssessmentAdapter(this, allAssessments, this::showDisclaimerDialog);
             rvAllAssessment.setAdapter(allAssessmentAdapter);
             rvAllAssessment.scrollToPosition(0);
+            if (allAssessments.isEmpty()) {
+                tv_all_assessment.setVisibility(View.GONE);
+            }
         }
 
     }
 
-    private void showDisclaimerDialog(String header) {
-        // Create the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_mind_audit_disclaimer);
-        dialog.setCancelable(true);
-        Window window = dialog.getWindow();
-        // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (selectedAssessment != null) {
+            if (!isDisclaimerDialogShowing) {
+                showDisclaimerDialog(selectedAssessment);
+            }
+        } else {
+            fetchThinkRecomendedData();
+        }
+    }
 
-        Button btnTakeAssessment = dialog.findViewById(R.id.btn_take_assessment);
-        TextView tvItem1 = dialog.findViewById(R.id.item_text1);
-        TextView tvItem2 = dialog.findViewById(R.id.item_text2);
-        TextView tvItem3 = dialog.findViewById(R.id.item_text3);
-        TextView tvHeader = dialog.findViewById(R.id.tv_selected_assessment);
-        tvHeader.setText(header);
-        setDialogText(tvItem1, tvItem2, tvItem3, header);
-        ImageView imgClose = dialog.findViewById(R.id.ic_close_dialog);
-        imgClose.setOnClickListener(view -> {
-            dialog.dismiss();
-            if (selectedAssessment != null) {
-                finish();
+    private void showDisclaimerDialog(String header) {
+        DialogMindAuditDisclaimerBinding binding =
+                DialogMindAuditDisclaimerBinding.inflate(LayoutInflater.from(this));
+
+        BottomSheetDialog bottomSheetDialog =
+                new BottomSheetDialog(this, R.style.TransparentBottomSheetDialogTheme);
+        bottomSheetDialog.setContentView(binding.getRoot());
+        bottomSheetDialog.setCanceledOnTouchOutside(false);
+        bottomSheetDialog.setCancelable(false);
+        // ✅ Force transparent background for system container
+        bottomSheetDialog.setOnShowListener(dialog -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialog;
+            FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                bottomSheet.setBackground(new ColorDrawable(Color.TRANSPARENT));
+                bottomSheet.setClipToOutline(false);
             }
         });
 
+        // ✅ Set rounded background on your root layout
+        binding.getRoot().setBackground(ContextCompat.getDrawable(this, R.drawable.roundedcornershape));
+
+        // ✅ Dim background
+        Window window = bottomSheetDialog.getWindow();
+        if (window != null) {
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.dimAmount = 0.7f;
+            window.setAttributes(params);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        // ✅ Slide up animation
+        Animation slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up);
+        binding.getRoot().startAnimation(slideUpAnimation);
+
+        // Header and content
+        binding.tvSelectedAssessment.setText(header);
+        setDialogText(binding.itemText1, binding.itemText2, binding.itemText3, header);
+
+        // Close button
+        binding.icCloseDialog.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            isDisclaimerDialogShowing = false;
+            if (selectedAssessment != null) finish();
+        });
+
+        // Handle back press
         if (selectedAssessment != null) {
-            dialog.setOnKeyListener((dialogInterface, keyCode, keyEvent) -> {
+            bottomSheetDialog.setOnKeyListener((dialogInterface, keyCode, keyEvent) -> {
                 if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP) {
                     dialogInterface.dismiss();
                     finish();
@@ -160,14 +206,39 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
             });
         }
 
-        btnTakeAssessment.setOnClickListener(view -> {
+        // Start assessment
+        binding.btnTakeAssessment.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            isDisclaimerDialogShowing = false;
             Intent intent = new Intent(MASuggestedAssessmentActivity.this, MAAssessmentQuestionaireActivity.class);
             intent.putExtra("AssessmentType", header);
             intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
             startActivity(intent);
         });
-        // Show the dialog
-        dialog.show();
+        bottomSheetDialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
+        bottomSheetDialog.getBehavior().setDraggable(false);
+        bottomSheetDialog.getBehavior().setSkipCollapsed(true);
+// Handle slide-down dismiss (when user swipes down the bottom sheet)
+        bottomSheetDialog.getBehavior().addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN ||
+                        newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheetDialog.dismiss();
+                    isDisclaimerDialogShowing = false;
+                    if (selectedAssessment != null) finish();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // You can optionally animate dim or background blur here if needed
+            }
+        });
+
+
+        bottomSheetDialog.show();
+        isDisclaimerDialogShowing = true;
     }
 
     private void setDialogText(TextView tvItem1, TextView tvItem2, TextView tvItem3, String header) {
@@ -214,37 +285,11 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
     private void showExitDialog() {
         // Create the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.layout_exit_dialog_mind);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        Window window = dialog.getWindow();
-        // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
-
-        // Find views from the dialog layout
-        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButtonStay = dialog.findViewById(R.id.dialog_button_stay);
-        Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
-
-        // Optional: Set dynamic content
-        // dialogText.setText("Please find a quiet and comfortable place before starting");
-
-        // Set button click listener
-        dialogButtonStay.setOnClickListener(v -> {
-            // Perform your action
-            dialog.dismiss();
-        });
-        dialogButtonExit.setOnClickListener(v -> {
-            dialog.dismiss();
-            this.finish();
-        });
-
-        dialog.show();
+        DialogUtils.INSTANCE.showExitDialog(this,
+                () -> {
+                    finish();
+                    return null;
+                });
     }
 
 
@@ -285,4 +330,9 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isDisclaimerDialogShowing = false;
+    }
 }

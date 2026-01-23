@@ -44,6 +44,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         val moduleNameImage: ImageView = view.findViewById(R.id.moduleNameImage)
         val image_recommended: ImageView = view.findViewById(R.id.image_recommended)
         val overlay: ImageView = view.findViewById(R.id.overlayIcon)
+        val bottomText: TextView = view.findViewById(R.id.bottomText)
         val viewLine: View = view.findViewById(R.id.view_line)
     }
 
@@ -181,28 +182,41 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         when(item.contentType) {
             "AUDIO" ->{
                 Glide.with(context)
-                    .load( R.drawable.music_mini_icon)
-                    .placeholder(R.drawable.music_mini_icon)
+                    .load( R.drawable.audio_recomendation)
+                    .placeholder(R.drawable.audio_recomendation)
                     .into(holder.overlay)
+                holder.bottomText.text = "AUDIO"
+
             }
             "SERIES" ->{
-                holder.overlay.visibility = View.GONE
+                //holder.overlay.visibility = View.GONE
                 Glide.with(context)
-                    .load( R.drawable.book_mini_icon)
-                    .placeholder(R.drawable.book_mini_icon)
+                    .load( R.drawable.series_recommended)
+                    .placeholder(R.drawable.series_recommended)
                     .into(holder.overlay)
+                holder.bottomText.text = "SERIES"
+            }
+            "TEXT" ->{
+                Glide.with(context)
+                    .load( R.drawable.article_recomendation)
+                    .placeholder(R.drawable.article_recomendation)
+                    .into(holder.overlay)
+                holder.bottomText.text = "TEXT"
             }
             "VIDEO"  ->{
                 Glide.with(context)
-                    .load( R.drawable.play_mini_icon)
-                    .placeholder(R.drawable.play_mini_icon)
+                    .load( R.drawable.video_recomendation)
+                    .placeholder(R.drawable.video_recomendation)
                     .into(holder.overlay)
+                holder.bottomText.text = "VIDEO"
+
             }
             "YOUTUBE"  ->{
                 Glide.with(context)
-                    .load( R.drawable.video_mini_icon)
-                    .placeholder(R.drawable.video_mini_icon)
+                    .load( R.drawable.video_recomendation)
+                    .placeholder(R.drawable.video_recomendation)
                     .into(holder.overlay)
+                holder.bottomText.text = "YOUTUBE"
             }
         }
         if (position == items.size -1){
@@ -223,7 +237,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         val dateTime = LocalDateTime.parse(isoDateString, formatter)
 
         // Convert to desired format (dd MMMM, yyyy)
-        val outputFormatter = DateTimeFormatter.ofPattern("dd MMMM, yyyy").withZone(ZoneId.of("UTC"))
+        val outputFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy").withZone(ZoneId.of("UTC"))
         return outputFormatter.format(dateTime)
     }
     fun convertUtcTo12HourFormat(input: String): String {

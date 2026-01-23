@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_service_pane_even"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="85dp"
     android:layout_gravity="center_horizontal"
-    android:layout_margin="10dp"
+    android:layout_margin="6dp"
     android:layout_weight="1"
     android:background="@drawable/roundedcornerbutton"
     android:backgroundTint="#FDE6FF"
     android:elevation="5dp"
     android:gravity="center"
     android:orientation="horizontal"
-    android:padding="6dp">
+    >
 
     <ImageView
         android:id="@+id/img_service_pane_even"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_healthcam_logo" />
 
     <TextView

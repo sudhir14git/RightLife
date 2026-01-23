@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-
+    android:clipToPadding="true"
+    android:clipChildren="true"
+    app:cardElevation="8dp"
     app:cardCornerRadius="30dp"
     app:cardUseCompatPadding="true">
 
@@ -34,7 +36,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="60dp"
-                android:fontFamily="@font/dmsans_bold"
+                android:fontFamily="@font/merriweather_bold"
                 android:gravity="center"
                 android:text="I Am Worthy Of Love And Respect, Just As I Am."
                 android:textColor="@color/white"
@@ -78,15 +80,23 @@
                 android:layout_marginStart="6dp"
                 android:background="@drawable/rounded_corner_progress_affirmation">
 
-                <com.zhpan.indicator.IndicatorView
-                    android:id="@+id/indicator_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="1dp"
-                    app:vpi_slide_mode="smooth"
-                    app:vpi_slider_checked_color="@color/white"
-                    app:vpi_slider_normal_color="@android:color/transparent"
-                    app:vpi_style="round_rect" />
+                <HorizontalScrollView
+                    android:id="@+id/indicator_scroller"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"
+                    android:fillViewport="false">
+
+                    <com.zhpan.indicator.IndicatorView
+                        android:id="@+id/indicator_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        app:vpi_slide_mode="normal"
+                        app:vpi_style="round_rect"
+                        app:vpi_slider_checked_color="@color/white"
+                        app:vpi_slider_normal_color="@android:color/transparent" />
+                </HorizontalScrollView>
+
             </LinearLayout>
 
         </LinearLayout>

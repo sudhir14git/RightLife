@@ -23,8 +23,6 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
                         val onEditSnapMealLogItem: (SnapMealDetail, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var selectedItem = -1
-
     companion object {
         private const val TYPE_SNAP_MEAL = 0
         private const val TYPE_SAVED_MEAL = 1
@@ -108,7 +106,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 
             val data = item.dish
             if (data.isNotEmpty()){
-                val mealNames  = data!!.map { it.name }
+                val mealNames = data!!.map { it.recipe.takeIf { r -> !r.isNullOrBlank() } ?: it.food_name }
                 val name = mealNames.joinToString(", ")
                 val capitalized = name.replaceFirstChar { it.uppercase() }
                 mealName.text = capitalized
@@ -162,7 +160,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 
             val data = item.receipe_data
             if (data.isNotEmpty()){
-                val mealNames  = data!!.map { it.receipe.recipe_name }
+                val mealNames  = data!!.map { it.recipe }
                 val name = mealNames.joinToString(", ")
                 val capitalized = name.replaceFirstChar { it.uppercase() }
                 mealName.text = capitalized

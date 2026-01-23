@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/close_dialog_affirmation" />
+            android:src="@drawable/close_breathwork" />
 
         <TextView
             android:id="@+id/titleText"

@@ -20,6 +20,7 @@ object RetrofitClient {
   
     private const val BASE_URL = BuildConfig.BASE_URL
     private const val BASE_URL_FAST_API = BuildConfig.BASE_URL_AI
+    private const val BASE_URL_FAST_API_V2 = BuildConfig.BASE_URL_AI_V2
 
     private const val BASE_URL_FOOD_CAPTURE_API = "https://api.spoonacular.com/"
     private const val BASE_URL_FOOD_CAPTURE_NEW_API =
@@ -35,16 +36,18 @@ object RetrofitClient {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(40, TimeUnit.SECONDS) // Set connection timeout (default: 10s)
-        .readTimeout(40, TimeUnit.SECONDS)    // Set read timeout
-        .writeTimeout(40, TimeUnit.SECONDS)   // Set write timeout
+    val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(90, TimeUnit.SECONDS)
+        .readTimeout(90, TimeUnit.SECONDS)
+        .writeTimeout(90, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
         .build()
 
     val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
     private val json = Json {
@@ -55,14 +58,23 @@ object RetrofitClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL_FAST_API)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
 
+    val retrofitFastApiV2: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL_FAST_API_V2)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
+            .build()
+    }
 
     val retrofitFoodCaptureApi: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL_FOOD_CAPTURE_API)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
 
@@ -82,6 +94,10 @@ object ApiClient {
 
     val apiServiceFastApi: ApiService by lazy {
         RetrofitClient.retrofitFastApi.create(ApiService::class.java)
+    }
+
+    val apiServiceFastApiV2: ApiService by lazy {
+        RetrofitClient.retrofitFastApiV2.create(ApiService::class.java)
     }
 
     val apiServiceFoodCaptureApi: ApiService by lazy {

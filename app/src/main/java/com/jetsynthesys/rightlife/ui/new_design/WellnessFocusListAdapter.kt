@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -20,8 +21,6 @@ class WellnessFocusListAdapter(
     private val context: Context,
     private val wellnessFocusList: ArrayList<ModuleTopic>,
     private val onItemClickListener: OnItemClickListener,
-    private val module: String,
-    private var selectedPosition: Int = -1
 ) : RecyclerView.Adapter<WellnessFocusListAdapter.WellnessFocusViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WellnessFocusViewHolder {
@@ -46,25 +45,64 @@ class WellnessFocusListAdapter(
         holder.tvHeader.text = wellnessFocus.moduleTopic
 
 
+        if (wellnessFocus.isSelected)
+            holder.tvHeader.setTextColor(
+                Utils.getModuleDarkColor(
+                    context,
+                    wellnessFocus.moduleName
+                )
+            )
+        else
+            holder.tvHeader.setTextColor(ContextCompat.getColor(context, R.color.txt_color_header))
+
+
         val bgDrawable =
             AppCompatResources.getDrawable(context, R.drawable.bg_gray_border_radius_small)
 
         val unwrappedDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray_radius_small)
+            AppCompatResources.getDrawable(
+                context,
+                R.drawable.rounded_corder_border_gray_radius_small
+            )
         val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
         DrawableCompat.setTint(
             wrappedDrawable,
-            Utils.getModuleColor(context, module)
+            Utils.getModuleColor(context, wellnessFocus.moduleName)
         )
 
         holder.llWellnessFocus.background =
-            if (selectedPosition == position) wrappedDrawable else bgDrawable
+            if (wellnessFocus.isSelected) wrappedDrawable else bgDrawable
+        var count = 0
+        wellnessFocusList.forEach {
+            if (it.isSelected)
+                count++
+        }
 
         holder.itemView.setOnClickListener {
-            selectedPosition = position
-            onItemClickListener.onItemClick(wellnessFocus)
-            wellnessFocus.isSelected = !wellnessFocus.isSelected
-            notifyDataSetChanged()
+            if (count < 4 || wellnessFocus.isSelected) {
+                // 🚫 Block conflicting pair
+                if ((wellnessFocus.moduleTopic == "Weight Loss & Calorie Management" &&
+                            wellnessFocusList.any { it.moduleTopic == "Bulk and Build Muscle" && it.isSelected }) ||
+                    (wellnessFocus.moduleTopic == "Bulk and Build Muscle" &&
+                            wellnessFocusList.any { it.moduleTopic == "Weight Loss & Calorie Management" && it.isSelected })
+                ) {
+                    Utils.showNewDesignToast(
+                        context,
+                        "Goals conflict. Select either Weight Loss or Bulk and Build Muscle.",
+                        false
+                    )
+                    return@setOnClickListener
+                }
+                onItemClickListener.onItemClick(wellnessFocus)
+                wellnessFocus.isSelected = !wellnessFocus.isSelected
+                notifyDataSetChanged()
+            } else {
+                Utils.showNewDesignToast(context, "You can select up to 4 goals only.", false)
+            }
+
+
+
+
         }
     }
 

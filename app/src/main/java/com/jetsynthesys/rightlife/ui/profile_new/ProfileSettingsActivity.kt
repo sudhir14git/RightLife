@@ -16,8 +16,12 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
+import com.jetsynthesys.rightlife.newdashboard.BeginMyFreeTrialActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
-import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
+import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusListActivity
 import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
 import com.jetsynthesys.rightlife.ui.settings.PurchasePlansActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
@@ -26,9 +30,11 @@ import com.jetsynthesys.rightlife.ui.settings.SupportActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Locale
 
 class ProfileSettingsActivity : BaseActivity() {
 
@@ -52,7 +58,22 @@ class ProfileSettingsActivity : BaseActivity() {
         setupPersonalizationRecyclerView()
 
         binding.llProfile.setOnClickListener {
-            activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
+
+            if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+                freeTrialDialogActivity()
+            } else if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this) {
+                    startActivity(
+                        Intent(
+                            this@ProfileSettingsActivity, HomeNewActivity::class.java
+                        ).putExtra("OPEN_MY_HEALTH", true)
+                    )
+                    finishAffinity()
+                }
+            } else {
+                activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
+            }
+            //activityResultLauncher.launch(Intent(this, ProfileNewActivity::class.java))
         }
         binding.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsNewActivity::class.java))
@@ -61,6 +82,11 @@ class ProfileSettingsActivity : BaseActivity() {
         binding.backButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+    }
+
+    private fun freeTrialDialogActivity() {
+        val intent = Intent(this, BeginMyFreeTrialActivity::class.java)
+        startActivity(intent)
     }
 
     private fun setupUserRecyclerView(isShowViewPastReports: Boolean) {
@@ -73,7 +99,8 @@ class ProfileSettingsActivity : BaseActivity() {
         } else {
             listOf(
                 SettingItem("Subscription History"),
-                SettingItem("Purchase Plans")
+                SettingItem("Purchase Plans"),
+                SettingItem("View Past Reports")
             )
         }
 
@@ -85,8 +112,14 @@ class ProfileSettingsActivity : BaseActivity() {
                 "Purchase Plans" ->
                     startActivity(Intent(this, PurchasePlansActivity::class.java))
 
-                "View Past Reports" ->
+                "View Past Reports" -> {
+                    /*if (isShowViewPastReports)
+                        startActivity(Intent(this, PastReportActivity::class.java))
+                    else
+                        Utils.showNewDesignToast(this, "No past reports available", false)*/
                     startActivity(Intent(this, PastReportActivity::class.java))
+                }
+
             }
         }
 
@@ -100,13 +133,14 @@ class ProfileSettingsActivity : BaseActivity() {
         val items = listOf(
             SettingItem("Goals"),
             SettingItem("Interests"),
+            SettingItem("Your Saved Items"),
             //SettingItem("Meal Customisations")
         )
 
         val personalizationAdapter = SettingsAdapter(items) { item ->
             when (item.title) {
                 "Goals" ->
-                    startActivity(Intent(this, WellnessFocusActivity::class.java).apply {
+                    startActivity(Intent(this, WellnessFocusListActivity::class.java).apply {
                         putExtra("FROM", "ProfileSetting")
                     })
 
@@ -114,6 +148,9 @@ class ProfileSettingsActivity : BaseActivity() {
                     startActivity(Intent(this, UserInterestActivity::class.java).apply {
                         putExtra("FROM", "ProfileSetting")
                     })
+
+                "Your Saved Items" ->
+                    startActivity(Intent(this, SavedItemListActivity::class.java))
 
                 "Meal Customisations" ->
                     startActivity(Intent(this, SupportActivity::class.java))
@@ -133,10 +170,11 @@ class ProfileSettingsActivity : BaseActivity() {
             name = name.plus(" ${user.lastName}")
         binding.userName.text = name
         if (user.profilePicture.isNullOrEmpty()) {
-            if (user.firstName.isNotEmpty())
+            /*if (user.firstName.isNotEmpty())
                 binding.tvProfileLetter.text = user.firstName.first().toString()
             else
-                binding.tvProfileLetter.text = "R"
+                binding.tvProfileLetter.text = "R"*/
+            binding.ivProfileImage.visibility = VISIBLE
         } else {
             binding.ivProfileImage.visibility = VISIBLE
             binding.tvProfileLetter.visibility = GONE
@@ -146,9 +184,13 @@ class ProfileSettingsActivity : BaseActivity() {
                 .error(R.drawable.rl_profile)
                 .into(binding.ivProfileImage)
         }
-        if (user.age != null) {
+        if (user.age != 0) {
             binding.tvUserAge.text = user.age.toString() + " years"
+        } else {
+            binding.tvUserAge.visibility = GONE
         }
+        val locale = Locale.getDefault()
+        val countryCode = locale.country
         binding.tvUserCity.text = user.country
     }
 
@@ -169,6 +211,7 @@ class ProfileSettingsActivity : BaseActivity() {
                         jsonResponse, UserProfileResponse::class.java
                     )
                     sharedPreferenceManager.saveUserId(profileResponse.userdata.id)
+                    profileResponse.userdata.bodyFat = profileResponse.bodyFat
                     sharedPreferenceManager.saveUserProfile(profileResponse)
 
                     sharedPreferenceManager.setAIReportGeneratedView(profileResponse.reportView)

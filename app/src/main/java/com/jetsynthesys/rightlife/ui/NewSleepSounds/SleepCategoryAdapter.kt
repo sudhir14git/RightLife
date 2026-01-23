@@ -14,7 +14,7 @@ class SleepCategoryAdapter(
     private val onCategorySelected: (SleepCategory) -> Unit
 ) : RecyclerView.Adapter<SleepCategoryAdapter.CategoryViewHolder>() {
 
-    private var selectedPosition = -1
+    private var selectedPosition = 1
 
     inner class CategoryViewHolder(val binding: ItemSleepCategoryBinding) :
         RecyclerView.ViewHolder(binding.root)

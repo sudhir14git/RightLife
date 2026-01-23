@@ -20,6 +20,7 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistRes
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,23 +46,31 @@ class PlaylistBottomSheetDialogFragment(
         sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
 
         adapter = PlaylistAdapter(soundList, currentIndex, { selectedPosition ->
-
             onSongSelected(selectedPosition)
-
             dismiss()
-
         }, { removedPosition ->
+            // Get the song ID before removal
+            val songId = soundList[removedPosition]._id
 
-            //soundList.removeAt(removedPosition)
+            // Remove from server
+            removeFromPlaylist(songId, removedPosition)
 
-            // Optional: Handle after item removed if needed
-            // API call to update server after removal
-            //callRemoveSongApi(removedItem.id ?: "", position)
-            soundList.get(removedPosition)
-            removeFromPlaylist(soundList.get(removedPosition)._id,removedPosition)
+            // Remove from list
             soundList.removeAt(removedPosition)
-            adapter.notifyItemRemoved(removedPosition)
 
+            // CRITICAL: Update currentIndex based on removal
+            if (removedPosition < adapter.currentIndex) {
+                // Item removed before current playing item, shift index down
+                adapter.currentIndex -= 1
+            } else if (removedPosition == adapter.currentIndex) {
+                // Removed the currently playing item
+                adapter.currentIndex = -1  // No item playing now
+            }
+            // If removedPosition > currentIndex, no change needed
+
+            // Notify adapter
+            adapter.notifyItemRemoved(removedPosition)
+            adapter.notifyItemRangeChanged(removedPosition, soundList.size)
         })
 
 
@@ -178,7 +187,7 @@ class PlaylistBottomSheetDialogFragment(
             ) {
               //  Utils.dismissLoader(this@NewSleepSoundActivity)
                 if (response.isSuccessful && response.body() != null) {
-                    showToast(response.body()?.successMessage ?: "Song removed from Playlist!")
+                    Utils.showNewDesignToast(context, "Removed From Playlist", false)
                 } else {
                     showToast("try again!: ${response.code()}")
                 }
@@ -195,4 +204,5 @@ class PlaylistBottomSheetDialogFragment(
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
+
 }

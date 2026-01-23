@@ -11,18 +11,16 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.bumptech.glide.Glide
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
+import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeList
 
 class RecipeSearchAdapter(
     private val context: Context,
-    private var dataLists: ArrayList<SnapRecipeList>,
+    private var dataLists: ArrayList<IngredientRecipeList>,
     private var clickPos: Int,
-    private var mealLogListData: SnapRecipeList?,
+    private var mealLogListData: IngredientRecipeList?,
     private var isClickView: Boolean,
-    val onSearchDishItem: (SnapRecipeList, Int, Boolean) -> Unit
+    val onSearchDishItem: (IngredientRecipeList, Int, Boolean) -> Unit
 ) : RecyclerView.Adapter<RecipeSearchAdapter.ViewHolder>() {
-
-    private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recipe_card, parent, false)
@@ -32,24 +30,38 @@ class RecipeSearchAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.dishName.text = item.name
-        val imageUrl = getDriveImageUrl(item.photo_url)
+        holder.dishName.text = item.recipe
+        holder.servingTimeKcal.text = "Serves ${item.servings} | ${item.active_cooking_time_min.toInt()} mins | ${item.calories_kcal.toInt()} Kcal"
+        var imageUrl : String? = ""
+        imageUrl = if (item.photo_url.contains("drive.google.com")) {
+            getDriveImageUrl(item.photo_url)
+        }else{
+            item.photo_url
+        }
         Glide.with(context)
             .load(imageUrl)
             .placeholder(R.drawable.ic_view_meal_place)
             .error(R.drawable.ic_view_meal_place)
             .into(holder.dishImage)
 
-        val type = item.food_type
+        val type = item.tags
             ?.substringBefore("_")
             ?.trim()
             ?.lowercase()
         holder.statusDot.visibility = View.VISIBLE
-        when (type) {
-            "veg", "vegan" -> holder.statusDot.setImageResource(R.drawable.green_circle)
-            "non-veg", "nonveg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
-            "egg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
-            else -> holder.statusDot.visibility = View.INVISIBLE
+//        when (type) {
+//            "veg", "vegan" -> holder.statusDot.setImageResource(R.drawable.green_circle)
+//            "non-veg", "nonveg", "non-vegetarian" -> holder.statusDot.setImageResource(R.drawable.red_circle)
+//            "egg" -> holder.statusDot.setImageResource(R.drawable.red_circle)
+//            else -> holder.statusDot.visibility = View.INVISIBLE
+//        }
+
+        if (getFoodType(type) == "Veg"){
+            holder.statusDot.setImageResource(R.drawable.green_circle)
+        }else if (getFoodType(type) == "Non-Veg"){
+            holder.statusDot.setImageResource(R.drawable.red_circle)
+        }else{
+            holder.statusDot.visibility = View.INVISIBLE
         }
 
         holder.itemView.setOnClickListener {
@@ -63,11 +75,12 @@ class RecipeSearchAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dishName: TextView = itemView.findViewById(R.id.recipeName)
+        val servingTimeKcal: TextView = itemView.findViewById(R.id.servingTimeKcal)
         val dishImage: ImageView = itemView.findViewById(R.id.imageView)
         val statusDot : ImageView = itemView.findViewById(R.id.statusDot)
     }
 
-    fun addAll(item: ArrayList<SnapRecipeList>?, pos: Int, mealLogItem: SnapRecipeList?, isClick: Boolean) {
+    fun addAll(item: ArrayList<IngredientRecipeList>?, pos: Int, mealLogItem: IngredientRecipeList?, isClick: Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -78,10 +91,29 @@ class RecipeSearchAdapter(
         }
     }
 
-    fun updateList(newList: List<SnapRecipeList>) {
+    fun updateList(newList: List<IngredientRecipeList>) {
         dataLists.clear()
-        dataLists = newList as ArrayList<SnapRecipeList>
+        dataLists = newList as ArrayList<IngredientRecipeList>
         notifyDataSetChanged()
+    }
+
+    fun getFoodType(category: String?): String {
+        if (category.isNullOrBlank()) return ""
+        val cat = category.lowercase()
+        // Check non-veg first (most specific)
+        val isNonVeg = cat.contains("non-vegetarian")
+                || cat.contains("chicken")
+                || cat.contains("fish")
+                || cat.contains("meat")
+                || cat.contains("egg")
+                || cat.contains("mutton")
+        // Check veg only AFTER excluding non-veg
+        val isVeg = !isNonVeg && (cat.contains("vegetarian") || cat.contains("vegan"))
+        return when {
+            isNonVeg -> "Non-Veg"
+            isVeg -> "Veg"
+            else -> ""
+        }
     }
 
     fun getDriveImageUrl(originalUrl: String): String? {

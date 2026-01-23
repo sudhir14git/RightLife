@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.ui.utility.ButtonUtilsKt;
 
 import java.util.ArrayList;
 
@@ -78,6 +79,7 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
 
 
         holder.itemView.setOnClickListener(v -> {
+
             emotion.setSelected(!emotion.isSelected());
             notifyItemChanged(position);
             onItemClickListener.onItemClick(emotion);

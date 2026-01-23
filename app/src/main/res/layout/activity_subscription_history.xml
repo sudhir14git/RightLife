@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:text="Subscription History"
             android:textColor="@color/txt_color_mind"
             android:textSize="18sp" />
@@ -49,7 +49,7 @@
 
             <TextView
                 android:id="@+id/tv_active_subscription_list"
-                android:text="Active"
+                android:text="Active Subscriptions"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:layout_marginBottom="8dp"
@@ -70,18 +70,26 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:gravity="center_vertical"
                     android:padding="16dp">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/txt_color_health"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="@dimen/textsize_large18sp"
+                        android:text="You have no active subscription at this moment." />
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/text_color_char_left"
                         android:fontFamily="@font/dmsans_regular"
-                        android:textSize="14sp"
-                        android:text="No Data available in Active Subscription" />
+                        android:textSize="@dimen/textsize_medium"
+                        android:text="Unlock RightLife’s full potential with a plan that fits you." />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -96,7 +104,7 @@
 
             <TextView
                 android:id="@+id/tv_past_subscription_list"
-                android:text="Past"
+                android:text="Past Subscriptions"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:layout_marginTop="16dp"
@@ -126,19 +134,26 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:gravity="center_vertical"
                     android:padding="16dp">
-
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/txt_color_health"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="@dimen/textsize_large18sp"
+                        android:text="You have no past subscription at this moment." />
                     <TextView
                         android:id="@+id/settingTitle"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/text_color_char_left"
                         android:fontFamily="@font/dmsans_regular"
                         android:textSize="14sp"
-                        android:text="No Data available in Past Subscription" />
+                        android:text="Unlock RightLife’s full potential with a plan that fits you." />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

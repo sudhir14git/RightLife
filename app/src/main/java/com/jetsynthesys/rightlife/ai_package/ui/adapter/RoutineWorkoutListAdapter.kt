@@ -1,6 +1,10 @@
 package com.jetsynthesys.rightlife.ai_package.ui.adapter
 
 import android.content.Context
+import android.graphics.Typeface
+import android.text.SpannableStringBuilder
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,16 +12,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.RemoveWorkoutBottomSheet
-import java.math.RoundingMode
 
 class RoutineWorkoutListAdapter(
     private val context: Context,
     private var dataList: ArrayList<RoutineWorkoutDisplayModel>,
     private val onItemClick: (RoutineWorkoutDisplayModel, Int) -> Unit,
+    private val onListEmpty: () -> Unit,
     private val onItemRemove: (Int) -> Unit // New callback for removing item from parent fragment
 ) : RecyclerView.Adapter<RoutineWorkoutListAdapter.ViewHolder>() {
 
@@ -32,7 +36,7 @@ class RoutineWorkoutListAdapter(
         // Bind data to views
         holder.mealTitle.text = item.name
         var imageUrl = ""
-        if (item.icon.startsWith("https://d1sacaybzizpm5.cloudfront.net")) {
+        if (item.icon.startsWith(BuildConfig.CDN_URL)) {
             // For Cross Training URL, prepend the jetsynthesisqa base URL
             imageUrl = item.icon
         } else if (item.icon.startsWith("https")) {
@@ -45,9 +49,14 @@ class RoutineWorkoutListAdapter(
        /* Glide.with(context)
             .load(imageUrl)
             .into(holder.workoutIcon)*/
-        holder.servesCount.text = item.duration
-        holder.calValue.text = item.caloriesBurned.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toString()
-        holder.subtractionValue.text = item.intensity
+        val formattedtime = formatTimeString(item.duration)
+        holder.servesCount.text = formattedtime
+        val formattedCalories = item.caloriesBurned!!.substringBefore(".")
+        holder.calValue.text = formattedCalories
+        holder.calUnit.visibility = View.VISIBLE
+        holder.calUnit.text = "cal"
+        holder.subtractionValue.text = "${item.intensity} Intensity"
+
         when (item?.name) {
             "American Football" -> {
                 holder.workoutIcon.setImageResource(R.drawable.american_football)// Handle American Football
@@ -310,6 +319,9 @@ class RoutineWorkoutListAdapter(
                 notifyItemRemoved(position)
                 notifyItemRangeChanged(position, dataList.size)
                 onItemRemove(position) // Notify parent fragment to remove from workoutList
+                if (dataList.isEmpty()) {
+                    onListEmpty()
+                }
             }
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "RemoveWorkoutBottomSheet")
         }
@@ -347,7 +359,95 @@ class RoutineWorkoutListAdapter(
         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
+    private fun formatTimeString(timeString: String): SpannableStringBuilder {
+        // Step 1: Parse the input string (e.g., "1439 min")
+        var hours = 0
+        var minutes = 0
+        val parts = timeString.split(" ")
+        if (parts.size == 2 && parts[1].startsWith("min", ignoreCase = true)) {
+            // Input format: "1439 min"
+            val totalMinutes = parts[0].toIntOrNull() ?: 0
+            hours = totalMinutes / 60 // Convert total minutes to hours
+            minutes = totalMinutes % 60 // Remaining minutes
+        } else {
+            // Fallback for other formats (e.g., "2 hr 01 mins")
+            when (parts.size) {
+                2 -> { // Format: "61 mins"
+                    minutes = parts[0].toIntOrNull() ?: 0
+                }
+                4 -> { // Format: "2 hr 01 mins"
+                    hours = parts[0].toIntOrNull() ?: 0
+                    minutes = parts[2].toIntOrNull() ?: 0
+                }
+            }
+        }
 
+        // Step 2: Build the formatted string (e.g., "23 hr 59 mins")
+        val formattedText = buildString {
+            if (hours > 0) {
+                append("$hours hr ")
+            }
+            if (minutes > 0 || hours == 0) { // Show minutes even if 0 when hours is 0
+                append("$minutes mins")
+            }
+        }.trim()
+
+        // Step 3: Create SpannableStringBuilder for styling
+        val spannable = SpannableStringBuilder(formattedText)
+
+        // Apply bold and 14sp to numbers
+        var currentIndex = 0
+        if (hours > 0) {
+            // Style the hours number
+            spannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                0,
+                hours.toString().length,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                AbsoluteSizeSpan(14, true), // 14sp
+                0,
+                hours.toString().length,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            // Style the "hr" unit (normal, 10sp, no bold)
+            spannable.setSpan(
+                AbsoluteSizeSpan(10, true), // 10sp
+                hours.toString().length,
+                hours.toString().length + 3, // " hr "
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            currentIndex = hours.toString().length + 4 // Move index past "X hr "
+        }
+
+        // Style the minutes number
+        if (minutes > 0 || hours == 0) {
+            val minutesStart = currentIndex
+            val minutesEnd = minutesStart + minutes.toString().length
+            spannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                minutesStart,
+                minutesEnd,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                AbsoluteSizeSpan(14, true), // 14sp
+                minutesStart,
+                minutesEnd,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            // Style the "mins" unit (normal, 10sp, no bold)
+            spannable.setSpan(
+                AbsoluteSizeSpan(10, true), // 10sp
+                minutesEnd,
+                formattedText.length, // " mins"
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        return spannable
+    }
     fun setData(newData: ArrayList<RoutineWorkoutDisplayModel>) {
         dataList.clear()
         dataList.addAll(newData)

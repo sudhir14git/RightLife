@@ -11,8 +11,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ItemBreathworkBinding
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
-import com.jetsynthesys.rightlife.ui.showBalloonWithDim
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class BreathworkAdapter(
     private val items: List<BreathingData>,
@@ -44,35 +42,10 @@ class BreathworkAdapter(
                 .error(R.drawable.rl_placeholder)
                 .into(imageView)
 
-            /*  plusButton.setImageResource(
-                  if (item.isAddedToToolKit) {
-                      R.drawable.greentick
-                  } else
-                  { R.drawable.ic_bookmark_breathing}
-              )*/
-
-            if (item.isAddedToToolKit) {
-                plusButton.setImageResource(R.drawable.ic_save_article_active)
-                plusButton.imageTintList =
-                    ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            plusButton.context,
-                            R.color.color_eat_right
-                        )
-                    )
-            } else {
-                plusButton.setImageResource(R.drawable.ic_save_article)
-                plusButton.imageTintList =
-                    ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            plusButton.context,
-                            R.color.black
-                        )
-                    )
-            }
+            plusButton.setImageResource(if (item.isAddedToToolKit) R.drawable.correct_green else R.drawable.add_breath_work)
 
             plusButton.setOnClickListener {
-                val sharedPreferenceManager =
+                /*val sharedPreferenceManager =
                     SharedPreferenceManager.getInstance(holder.itemView.context)
                 if (!sharedPreferenceManager.isTooltipShowed("BreathWorkAddButton")) {
                     sharedPreferenceManager.saveTooltip("BreathWorkAddButton", true)
@@ -81,11 +54,11 @@ class BreathworkAdapter(
                         "Tap to add this routine to your toolkit.",
                         "BreathWorkAdd", xOff = -200, yOff = 20, arrowPosition = 0.9f
                     )
-                } else {
-                    onItemClick.onAddToolTip(item)
-                    item.isAddedToToolKit = !item.isAddedToToolKit
-                    notifyDataSetChanged()
-                }
+                } else {*/
+                onItemClick.onAddToolTip(item)
+                item.isAddedToToolKit = !item.isAddedToToolKit
+                notifyDataSetChanged()
+                //}
             }
 
             cardView.setOnClickListener {
@@ -125,7 +98,7 @@ class BreathworkAdapter(
             descriptionTextView.setTextColor(textColor)
             // Change color using tint
             infoButton.imageTintList = ColorStateList.valueOf(textColor)
-            plusButton.imageTintList = ColorStateList.valueOf(textColor)
+            //plusButton.imageTintList = ColorStateList.valueOf(textColor)
 
 
             // Debug log (optional)

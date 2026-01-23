@@ -24,7 +24,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:text="Delete Account"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textSize="18sp"
             android:textColor="@color/txt_color_mind"
             android:layout_weight="1"

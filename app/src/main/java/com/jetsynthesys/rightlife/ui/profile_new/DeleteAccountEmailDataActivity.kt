@@ -6,7 +6,7 @@ import android.widget.Toast
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityDeleteAccountEmailDataBinding
 import com.jetsynthesys.rightlife.ui.CommonResponse
-import com.jetsynthesys.rightlife.ui.new_design.ImageSliderActivity
+import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
@@ -41,7 +41,10 @@ class DeleteAccountEmailDataActivity : BaseActivity() {
         }
 
         binding.btnContinue.setOnClickListener {
-            deleteAccountAPI(reasonsList!!, option!!)
+            deleteAccountAPI(reasonsList!!, option ?: "")
+        }
+        binding.backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -91,7 +94,7 @@ class DeleteAccountEmailDataActivity : BaseActivity() {
         editor.apply()
         SharedPreferenceManager.getInstance(this).clearData()
 
-        val intent = Intent(this, ImageSliderActivity::class.java)
+        val intent = Intent(this, DataControlActivity::class.java)
         startActivity(intent)
 
         finishAffinity()

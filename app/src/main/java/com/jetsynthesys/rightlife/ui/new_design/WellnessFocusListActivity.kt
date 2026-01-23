@@ -1,16 +1,20 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleTopic
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingDataModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleRequest
@@ -20,6 +24,7 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,22 +36,26 @@ class WellnessFocusListActivity : BaseActivity() {
     private lateinit var wellnessFocusListAdapter: WellnessFocusListAdapter
     val topicList = ArrayList<ModuleTopic>()
     private lateinit var isFrom: String
+
     // Declare the TextViews as class-level properties
     private lateinit var tv_ur_journey: TextView
     private lateinit var tv_choose_str: TextView
+    private lateinit var btnContinue: Button
+    private lateinit var llHeader: LinearLayout
+    private lateinit var colorStateListSelected: ColorStateList
+    private lateinit var colorStateList: ColorStateList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setChildContentView(R.layout.activity_wellness_focus_list)
 
-        var header = intent.getStringExtra("WellnessFocus")
+        //var header = intent.getStringExtra("WellnessFocus")
         isFrom = intent.getStringExtra("FROM").toString()
-        if (header.isNullOrEmpty()) {
-            header = SharedPreferenceManager.getInstance(this).selectedWellnessFocus
-        }
+
         val tvHeader = findViewById<TextView>(R.id.tv_header)
         val rvWellnessFocusList = findViewById<RecyclerView>(R.id.rv_wellness_focus_list)
-        val btnContinue = findViewById<Button>(R.id.btn_continue)
+        btnContinue = findViewById(R.id.btn_continue)
+        llHeader = findViewById(R.id.ll_header)
         val imgHeader = findViewById<ImageView>(R.id.img_header)
 
         AnalyticsLogger.logEvent(
@@ -61,48 +70,48 @@ class WellnessFocusListActivity : BaseActivity() {
         tv_ur_journey = findViewById(R.id.tv_ur_journey)
         tv_choose_str = findViewById(R.id.tv_choose_str)
 
-        when (header) {
+        /*when (header) {
             "MoveRight" -> imgHeader.setImageResource(R.drawable.header_move_right)
             "SleepRight" -> imgHeader.setImageResource(R.drawable.header_sleep_right)
             "EatRight" -> imgHeader.setImageResource(R.drawable.header_eat_right)
             else
             -> imgHeader.setImageResource(R.drawable.header_think_right)
         }
-        tvHeader.text = header
+        tvHeader.text = header*/
 
-        if (isFrom.isNotEmpty() && isFrom == "ProfileSetting")
+        if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
             btnContinue.text = "Save"
+            llHeader.visibility = View.VISIBLE
+        } else {
+            llHeader.visibility = View.GONE
+        }
 
-        tvHeader.setTextColor(Utils.getModuleDarkColor(this, header))
-        getOnboardingDataModule(header)
+        //tvHeader.setTextColor(Utils.getModuleDarkColor(this, header))
+        getOnboardingDataModule()
 
         findViewById<ImageView>(R.id.back_button).setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
-        val colorStateList = ContextCompat.getColorStateList(this, R.color.rightlife)
+        colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)!!
+        colorStateList = ContextCompat.getColorStateList(this, R.color.rightlife)!!
 
         wellnessFocusListAdapter =
             WellnessFocusListAdapter(
                 this,
-                topicList,
-                { wellnessFocus ->
-                    if (wellnessFocus.isSelected)
-                        selectedWellnessFocus.remove(wellnessFocus)
-                    else
-                        selectedWellnessFocus.add(wellnessFocus)
+                topicList
+            ) { wellnessFocus ->
+                if (wellnessFocus.isSelected)
+                    selectedWellnessFocus.remove(wellnessFocus)
+                else
+                    selectedWellnessFocus.add(wellnessFocus)
 
-                    if (selectedWellnessFocus.isEmpty()) {
-                        btnContinue.backgroundTintList = colorStateList
-                        btnContinue.isEnabled = false
-                    } else {
-                        btnContinue.backgroundTintList = colorStateListSelected
-                        btnContinue.isEnabled = true
-                    }
-                },
-                module = header!!
-            )
+                if (selectedWellnessFocus.size in 2..4) {
+                    btnContinue.backgroundTintList = colorStateListSelected
+                } else {
+                    btnContinue.backgroundTintList = colorStateList
+                }
+            }
 
         val gridLayoutManager = GridLayoutManager(this, 1)
         rvWellnessFocusList.setLayoutManager(gridLayoutManager)
@@ -110,29 +119,35 @@ class WellnessFocusListActivity : BaseActivity() {
         rvWellnessFocusList.adapter = wellnessFocusListAdapter
 
         btnContinue.setOnClickListener {
-            val selectedOptions = ArrayList<String>()
-            selectedWellnessFocus.forEach {
-                it.id?.let { it1 -> selectedOptions.add(it1) }
-            }
-            updateOnBoardingModule(header, selectedOptions)
-            sharedPreferenceManager.selectedOnboardingSubModule = selectedWellnessFocus[0].moduleName
-            if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
-                finish()
-                startActivity(
-                    Intent(
+            it.disableViewForSeconds()
+
+            if (selectedWellnessFocus.size in 2..4) {
+                val selectedOptions = ArrayList<String>()
+                selectedWellnessFocus.forEach {
+                    it.id?.let { it1 -> selectedOptions.add(it1) }
+                }
+
+                val selectedIds = selectedWellnessFocus.mapNotNull { it.id } // <-- this replaces selectedOptions
+
+
+                val params = mutableMapOf<String, Any>(
+                        AnalyticsParam.GOAL1 to (selectedWellnessFocus.getOrNull(0)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL2 to (selectedWellnessFocus.getOrNull(1)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL3 to (selectedWellnessFocus.getOrNull(2)?.moduleTopic ?: "null"),
+                        AnalyticsParam.GOAL4 to (selectedWellnessFocus.getOrNull(3)?.moduleTopic ?: "null")
+                )
+
+                AnalyticsLogger.logEvent(
                         this@WellnessFocusListActivity,
-                        ProfileSettingsActivity::class.java
-                    ).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        putExtra("start_profile", true)
-                    })
+                        AnalyticsEvent.GoalSelection_SaveButton_Tap,
+                        params
+                )
+
+                updateOnBoardingModule(selectedOptions)
+            } else if (selectedWellnessFocus.size < 2) {
+                Utils.showNewDesignToast(this, "Please choose at least 2 goals ", false)
             } else {
-                val intent = Intent(this, UnlockPowerOfYourMindActivity::class.java)
-                intent.putExtra("WellnessFocus", header)
-                intent.putExtra("SelectedTopic", selectedWellnessFocus)
-                SharedPreferenceManager.getInstance(this)
-                    .setWellnessFocusTopics(selectedWellnessFocus)
-                startActivity(intent)
+                Utils.showNewDesignToast(this, "You can select up to 4 goals only.", false)
             }
         }
 
@@ -147,11 +162,11 @@ class WellnessFocusListActivity : BaseActivity() {
         )
     }
 
-    private fun getOnboardingDataModule(moduleName: String?) {
+    private fun getOnboardingDataModule() {
         Utils.showLoader(this)
 
         val call =
-            apiService.getOnboardingDataModule(sharedPreferenceManager.accessToken, moduleName)
+            apiService.getOnboardingDataModule(sharedPreferenceManager.accessToken, "all")
         call.enqueue(object : Callback<OnBoardingDataModuleResponse> {
             override fun onResponse(
                 call: Call<OnBoardingDataModuleResponse>,
@@ -166,6 +181,17 @@ class WellnessFocusListActivity : BaseActivity() {
                     wellnessFocusListAdapter.notifyDataSetChanged()
                     tv_ur_journey.text = data?.sectionTitle
                     tv_choose_str.text = data?.sectionSubtitle
+
+                    topicList.forEach {
+                        if (it.isSelected)
+                            selectedWellnessFocus.add(it)
+                    }
+
+                    if (selectedWellnessFocus.size in 2..4) {
+                        btnContinue.backgroundTintList = colorStateListSelected
+                    } else {
+                        btnContinue.backgroundTintList = colorStateList
+                    }
 
                 } else {
                     Toast.makeText(
@@ -184,9 +210,9 @@ class WellnessFocusListActivity : BaseActivity() {
         })
     }
 
-    private fun updateOnBoardingModule(selectedModule: String, selectedOptions: List<String>) {
+    private fun updateOnBoardingModule(/*selectedModule: String, */selectedOptions: List<String>) {
         val onboardingModuleRequest = OnboardingModuleRequest()
-        onboardingModuleRequest.selectedModule = selectedModule
+        //onboardingModuleRequest.selectedModule = selectedModule
         onboardingModuleRequest.selectedOptions = selectedOptions
 
         val call = apiService.onboardingModuleResult(
@@ -196,7 +222,29 @@ class WellnessFocusListActivity : BaseActivity() {
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
-                    //Nothing to do here
+                    sharedPreferenceManager.selectedOnboardingSubModule =
+                        selectedWellnessFocus[0].moduleName
+                    showCustomToast("Goals Saved", true)
+                    if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
+                        finish()
+                        startActivity(
+                            Intent(
+                                this@WellnessFocusListActivity,
+                                ProfileSettingsActivity::class.java
+                            ).apply {
+                                flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                putExtra("start_profile", true)
+                            })
+                    } else {
+                        val intent =
+                            Intent(this@WellnessFocusListActivity, UserInterestActivity::class.java)
+                        //intent.putExtra("WellnessFocus", header)
+                        intent.putExtra("SelectedTopic", selectedWellnessFocus)
+                        SharedPreferenceManager.getInstance(this@WellnessFocusListActivity)
+                            .setWellnessFocusTopics(selectedWellnessFocus)
+                        startActivity(intent)
+                    }
                 } else {
                     Toast.makeText(
                         this@WellnessFocusListActivity,
@@ -207,7 +255,7 @@ class WellnessFocusListActivity : BaseActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                handleNoInternetView(t)
+                showCustomToast("Couldn’t save. Check connection and try again.")
             }
 
         })

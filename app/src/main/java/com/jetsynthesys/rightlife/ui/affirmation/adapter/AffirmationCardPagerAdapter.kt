@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.affirmation.adapter
 
+import ai.nuralogix.anurasdk.output.e.d.v
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,8 @@ import androidx.viewpager.widget.ViewPager
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationSelectedCategoryData
 import com.zhpan.indicator.IndicatorView
+import com.zhpan.indicator.enums.IndicatorSlideMode
+import com.zhpan.indicator.enums.IndicatorStyle
 
 class AffirmationCardPagerAdapter(
     private val items: ArrayList<AffirmationSelectedCategoryData>,
@@ -88,12 +91,24 @@ class AffirmationCardPagerAdapter(
         }
 
 
-        tvAffirmationTitle.text = item.title
+
+        tvAffirmationTitle.text = "\"${item.title}\""
+
         tvAffirmationAuthor.text = "${item.artist}"
 
 
         // Load image using Glide
         //Glide.with(context).load(item).into(image)
+
+        indicatorView.setSlideMode(IndicatorSlideMode.NORMAL);
+        indicatorView.setIndicatorStyle(IndicatorStyle.ROUND_RECT);
+
+// Set slider sizes programmatically (supported in all releases)
+        indicatorView.setSliderWidth(dp(6));
+        indicatorView.setSliderHeight(dp(3));
+        indicatorView.setSliderGap(dp(2));
+
+
 
         indicatorView.setupWithViewPager(viewPager = viewPager)
         pageCount.text = "${position + 1}/${items.size}"
@@ -103,6 +118,10 @@ class AffirmationCardPagerAdapter(
         return view
     }
 
+    private fun dp(v: Int): Float
+    {
+        return (v * context.resources.displayMetrics.density).toInt().toFloat()
+    }
     override fun getCount() = items.size
 
     override fun isViewFromObject(view: View, `object`: Any) = view == `object`
