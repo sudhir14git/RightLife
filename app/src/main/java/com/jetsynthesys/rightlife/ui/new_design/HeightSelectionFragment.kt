@@ -144,6 +144,8 @@ class HeightSelectionFragment : Fragment() {
                 llSelectedHeight.visibility = VISIBLE
                 tvSelectedHeight.text = selectedHeight
 
+                val age = onboardingQuestionRequest.age?:0
+
                 AnalyticsLogger.logEvent(
                     AnalyticsEvent.HEIGHT_SELECTION,
                     mapOf(
@@ -152,7 +154,7 @@ class HeightSelectionFragment : Fragment() {
                         AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                         AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
                         AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                        AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                        AnalyticsParam.AGE to age,
                         AnalyticsParam.HEIGHT to selectedHeight
                     )
                 )
