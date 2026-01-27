@@ -11,6 +11,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
+import kotlin.math.roundToInt
 
 class HeightPickerBottomSheet : BottomSheetDialogFragment() {
 
@@ -227,7 +228,9 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
                 val clampedCenterY = clampFloat(centerY, minCenterY, maxCenterY)
 
                 // ✅ REVERSED mapping: top = max, bottom = min
-                val indexFromTop = ((clampedCenterY - pickerView.sidePadding) / itemSpacing).toInt()
+                val indexFromTop =
+                    ((clampedCenterY - pickerView.sidePadding) / itemSpacing).roundToInt()
+
                 val totalInches = maxInches - indexFromTop
 
                 if (totalInches != currentTotalInches) {
@@ -250,7 +253,9 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
                 val clampedCenterY = clampFloat(centerY, minCenterY, maxCenterY)
 
                 // ✅ REVERSED mapping
-                val indexFromTop = ((clampedCenterY - pickerView.sidePadding) / itemSpacing).toInt()
+                val indexFromTop =
+                    ((clampedCenterY - pickerView.sidePadding) / itemSpacing).roundToInt()
+
                 val cm = maxCm - indexFromTop
 
                 if (cm != currentCm) {
@@ -338,7 +343,7 @@ class HeightPickerBottomSheet : BottomSheetDialogFragment() {
             val centerY = scrollY + screenHeight / 2f
 
             val indexFloat = (centerY - pickerView.sidePadding) / itemSpacing
-            val indexRounded = Math.round(indexFloat)
+            val indexRounded = indexFloat.roundToInt()
 
             val maxIndex = if (currentUnit == HeightUnit.FEET_INCHES) {
                 ((7 * 12) - (4 * 12)) // 36

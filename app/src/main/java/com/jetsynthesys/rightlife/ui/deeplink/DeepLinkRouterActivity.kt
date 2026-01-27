@@ -30,8 +30,6 @@ class DeepLinkRouterActivity : BaseActivity() {
 
         val intent = Intent(this, HomeNewActivity::class.java)
 
-        Log.d("Umesh","Path = "+path)
-
         when {
             // Home
             path == "/home" -> {
