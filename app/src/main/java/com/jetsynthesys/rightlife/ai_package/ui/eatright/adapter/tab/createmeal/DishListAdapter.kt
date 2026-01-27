@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 
-
 class DishListAdapter(private val context: Context, private var dataLists: ArrayList<IngredientRecipeDetails>,
                       private var clickPos: Int, private var mealLogListData : IngredientRecipeDetails?,
                       private var isClickView : Boolean, val onMealLogClickItem: (IngredientRecipeDetails, Int, Boolean) -> Unit,
@@ -30,7 +29,8 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
       //  holder.mealTitle.text = item.mealType
         val capitalized = item.recipe.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
-        holder.servesCount.text = item.selected_serving?.value?.toInt().toString() + item.selected_serving?.type
+        holder.servesCount.text = item.selected_serving?.value?.toInt().toString()
+        holder.serves.text = item.selected_serving?.type
         if (item.active_cooking_time_min != null){
             val mealTime = item.active_cooking_time_min.toString()
             holder.mealTime.text = mealTime

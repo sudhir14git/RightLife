@@ -338,7 +338,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                         }
                         Log.d("RecipeDetails", "Instructions set → count: ${instructionsList.size}")
 
-                        serves_text.text = "Serves ${data.serving_size_for_calorific_breakdown.toString()}"
+                        serves_text.text = "Serves ${data.default_serving.value.toString() + " "  + data.default_serving.type.toString()}"
                         tvMealName.text = data.recipe.toString()
                         time_text.text = data.active_cooking_time_min.toString()
                         calorie_value.text = "${data.calories_kcal?.toInt().toString()} Kcal"
