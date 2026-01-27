@@ -15,7 +15,8 @@ data class MealLogSummary(
     val user_id: String,
     val date: String,
     val meal_detail: Map<String, MealDetailsLog>,
-    val full_day_summary : FullDaySummary
+    val full_day_summary : FullDaySummary,
+    val max_macros : MaxMacros
 ):Parcelable
 
 @Parcelize
@@ -186,4 +187,12 @@ data class FullDaySummary(
     val fat_g: Double,
     val carbs_g: Double
 ):Parcelable
+@Parcelize
+data class MaxMacros(
+    val calories: Double,
+    val protein: Double,
+    val carbs: Double,
+    val fat: Double
+):Parcelable
+
 

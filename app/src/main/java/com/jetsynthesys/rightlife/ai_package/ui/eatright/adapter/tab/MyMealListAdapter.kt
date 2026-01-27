@@ -114,7 +114,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
                 mealName.text = item.meal_name
             }
             mealTitle.text = item.meal_name
-            servesCount.text = item.total_servings.toString()
+            servesCount.text = "1.0"//item.total_servings.toString()
             calValue.text = item.total_calories.toInt().toString()
             subtractionValue.text = item.total_protein.toInt().toString()
             baguetteValue.text = item.total_carbs.toInt().toString()
@@ -168,7 +168,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
                 mealName.text = item.meal_name
             }
             mealTitle.text = item.meal_name
-            servesCount.text = item.total_servings.toString()
+            servesCount.text = "1.0"//item.total_servings.toString()
             calValue.text = item.total_calories.toInt().toString()
             subtractionValue.text = item.total_protein.toInt().toString()
             baguetteValue.text = item.total_carbs.toInt().toString()

@@ -101,6 +101,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
     private lateinit var totalCalorie : TextView
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
+    private lateinit var totalPercentageTv : TextView
     private lateinit var percentageIc : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
@@ -137,6 +138,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
         selectHeartRateLayout = view.findViewById(R.id.selectCalorieLayout)
         selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
         percentageTv = view.findViewById(R.id.percentage_text)
+        totalPercentageTv = view.findViewById(R.id.totalPercentageTv)
         averageBurnCalorie = view.findViewById(R.id.average_number)
         averageHeading = view.findViewById(R.id.averageHeading)
         percentageIc = view.findViewById(R.id.percentageIc)
@@ -908,9 +910,11 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
             totalCalorie.text = activeCaloriesResponse.totalCholesterol.toInt().toString()
             if (activeCaloriesResponse.progressSign.contentEquals("plus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                totalPercentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 // percentageIc.setImageResource(R.drawable.ic_up)
             }else if (activeCaloriesResponse.progressSign.contentEquals("minus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                totalPercentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 // percentageIc.setImageResource(R.drawable.ic_down)
             }else{
 

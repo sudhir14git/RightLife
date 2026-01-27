@@ -139,6 +139,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
             when (checkedId) {
                 R.id.rbWeek -> {
                     currentTab = 0
+                    lineChart.visibility = View.INVISIBLE
                     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     val startDate = getOneWeekEarlierDate().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
@@ -148,6 +149,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 }
                 R.id.rbMonth -> {
                     currentTab = 1
+                    lineChart.visibility = View.INVISIBLE
                     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     val startDate = getOneMonthEarlierDate().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
@@ -329,6 +331,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     }
 
     private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>?, period: String, endDate: String) {
+        lineChart.visibility = View.VISIBLE
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         var startDateStr = ""
         if (period != "weekly"){

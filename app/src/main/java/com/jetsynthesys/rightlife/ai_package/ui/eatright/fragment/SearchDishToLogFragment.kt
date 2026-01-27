@@ -232,6 +232,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                     searchResultLayout.visibility = View.VISIBLE
                     tvSearchResult.visibility = View.VISIBLE
                     cancel.visibility = View.VISIBLE
+                    tvAllDishes.visibility = View.GONE
                     getSearchMealList(s.toString())
                 }else if (s!!.length == 0){
                         requireActivity().runOnUiThread {
@@ -389,7 +390,13 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                         if (searchData.size > 0){
                             //snapRecipesList.addAll(mealPlanLists)
                             requireActivity().runOnUiThread {
-                                tvAllDishes.visibility = View.VISIBLE
+                                if (keyword.isEmpty()){
+                                    tvAllDishes.visibility = View.VISIBLE
+                                    searchResultLayout.visibility = View.GONE
+                                }else{
+                                    tvAllDishes.visibility = View.GONE
+                                    searchResultLayout.visibility = View.VISIBLE
+                                }
                                 searchMealList.clear()
                                 tvSearchResult.text = "Search Result:"
                                 searchMealList.addAll(searchData)

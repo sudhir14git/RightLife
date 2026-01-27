@@ -32,6 +32,7 @@ import com.jetsynthesys.rightlife.ai_package.model.MealLogData
 import com.jetsynthesys.rightlife.ai_package.model.response.FullDaySummary
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMealHistory
+import com.jetsynthesys.rightlife.ai_package.model.response.MaxMacros
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetailsLog
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
@@ -718,12 +719,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         getMealsLogList(formattedDate)
     }
 
-    private fun setGraphValue(dailyRecipe: FullDaySummary?){
+    private fun setGraphValue(dailyRecipe: FullDaySummary?, maxData: MaxMacros?){
         activity?.runOnUiThread {
-            val maxCalorie = SharedPreferenceManager.getInstance(requireActivity()).maxCalories
-            val maxCarbs = SharedPreferenceManager.getInstance(requireActivity()).maxCarbs
-            val maxProtein = SharedPreferenceManager.getInstance(requireActivity()).maxProtein
-            val maxFats = SharedPreferenceManager.getInstance(requireActivity()).maxFats
+            var maxCalorie = 0
+            var maxCarbs = 0
+            var maxProtein = 0
+            var maxFats = 0
+            if (maxData != null){
+                maxCalorie = maxData.calories.toInt()
+                maxCarbs = maxData.carbs.toInt()
+                maxProtein = maxData.protein.toInt()
+                maxFats = maxData.fat.toInt()
+            }
+
             val currentCal = dailyRecipe?.calories_kcal?.let { round(it).toInt() } ?: 0
 
 // Check if current calories is greater than max
@@ -1350,12 +1358,13 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                                 }
                             }
                             val fullDaySummary = response.body()?.data!!.full_day_summary
+                            val maxData = response.body()?.data?.max_macros
 
                             requireActivity()?.runOnUiThread {
                                 if (fullDaySummary.calories_kcal != null){
                                     noMealLogsLayout.visibility = View.GONE
                                     dailyCalorieGraphLayout.visibility = View.VISIBLE
-                                    setGraphValue(fullDaySummary)
+                                    setGraphValue(fullDaySummary,maxData )
                                     if (response.body()?.data!!.meal_detail.isNotEmpty()){
                                         logMealTv.text = "Log New Meal"
                                         setDayLogsList()

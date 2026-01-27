@@ -84,6 +84,7 @@ class VitaminDFragment : BaseFragment<FragmentSugarBinding>() {
     private lateinit var totalCalorie : TextView
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
+    private lateinit var totalPercentageTv : TextView
     private lateinit var percentageIc : TextView
     private lateinit var totalPercentageIc : TextView
     private lateinit var sugar_description_heading : TextView
@@ -121,6 +122,7 @@ class VitaminDFragment : BaseFragment<FragmentSugarBinding>() {
         selectHeartRateLayout = view.findViewById(R.id.selectCalorieLayout)
         selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
         percentageTv = view.findViewById(R.id.percentage_text)
+        totalPercentageTv = view.findViewById(R.id.totalPercentageTv)
         averageBurnCalorie = view.findViewById(R.id.average_number)
         averageHeading = view.findViewById(R.id.averageHeading)
         percentageIc = view.findViewById(R.id.percentageIc)
@@ -812,7 +814,6 @@ class VitaminDFragment : BaseFragment<FragmentSugarBinding>() {
         })
 
     }
-
     private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
         activity?.runOnUiThread {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
@@ -839,18 +840,19 @@ class VitaminDFragment : BaseFragment<FragmentSugarBinding>() {
             }
         }
     }
-
     private fun setLastAverageValue(activeCaloriesResponse: ConsumedVitaminDResponse, type: String) {
         activity?.runOnUiThread {
             averageBurnCalorie.text = activeCaloriesResponse.current_avg_vitamin_d.toInt().toString()
             totalCalorie.text = activeCaloriesResponse.total_vitamin_d.toInt().toString()
-            percentageIc.text = "IU"
-            totalPercentageIc.text = "IU"
+            percentageIc.text = "μg"
+            totalPercentageIc.text = "μg"
             if (activeCaloriesResponse.progressSign.contentEquals("plus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                totalPercentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 // percentageIc.setImageResource(R.drawable.ic_up)
             }else if (activeCaloriesResponse.progressSign.contentEquals("minus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                totalPercentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 // percentageIc.setImageResource(R.drawable.ic_down)
             }else{
             }

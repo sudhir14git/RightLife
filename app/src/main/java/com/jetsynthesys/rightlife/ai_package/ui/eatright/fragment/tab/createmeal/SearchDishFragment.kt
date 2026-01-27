@@ -341,11 +341,13 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 searchResultLayout.visibility = View.VISIBLE
                 tvSearchResult.visibility = View.VISIBLE
                 cancel.visibility = View.VISIBLE
+                tvAllDishes.visibility = View.GONE
                 //tvSearchResult.text = "Search Result: ${filteredList.size}"
             } else {
-                searchResultLayout.visibility = View.VISIBLE
+                searchResultLayout.visibility = View.GONE
                 tvSearchResult.visibility = View.GONE
                 cancel.visibility = View.GONE
+                tvAllDishes.visibility = View.VISIBLE
             }
         }else{
             val filteredList = if (query.isEmpty()) searchMealList
@@ -355,11 +357,13 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 searchResultLayout.visibility = View.VISIBLE
                 tvSearchResult.visibility = View.VISIBLE
                 cancel.visibility = View.VISIBLE
+                tvAllDishes.visibility = View.GONE
                 //tvSearchResult.text = "Search Result: ${filteredList.size}"
             } else {
-                searchResultLayout.visibility = View.VISIBLE
+                searchResultLayout.visibility = View.GONE
                 tvSearchResult.visibility = View.GONE
                 cancel.visibility = View.GONE
+                tvAllDishes.visibility = View.VISIBLE
             }
 //             val filteredList = if (query.isEmpty()) recipesList
 //            else recipesList.filter { it.name.contains(query, ignoreCase = true) }
@@ -395,6 +399,13 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     val searchData = response.body()?.data
                     if (searchData != null){
                         if (searchData.size > 0){
+                            if (keyword.isEmpty()){
+                                tvAllDishes.visibility = View.VISIBLE
+                                searchResultLayout.visibility = View.GONE
+                            }else{
+                                tvAllDishes.visibility = View.GONE
+                                searchResultLayout.visibility = View.VISIBLE
+                            }
                             searchMealList.clear()
                             tvSearchResult.text = "Search Result: ${searchData.size}"
                             searchMealList.addAll(searchData)
