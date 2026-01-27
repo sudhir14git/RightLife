@@ -12,6 +12,7 @@ public class SharedPreferenceConstants {
     public static final String CHALLENGE_STATUS = "CHALLENGE_STATUS";
     public static final String CHALLENGE_START_DATE = "CHALLENGE_START_DATE";
     public static final String CHALLENGE_END_DATE = "CHALLENGE_END_DATE";
+    public static final String CHALLENGE_PARTICIPATED_DATE = "CHALLENGE_PARTICIPATED_DATE";
     public static final String IS_LOGGED_IN = "is_logged_in";
     public static final String USER_ID = "user_id";
     public static final String SNAP_MEAL_ID = "snap_meal_id";

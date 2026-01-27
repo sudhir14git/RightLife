@@ -91,4 +91,6 @@ object AnalyticsParam {
     const val SELECTED_GOALS = "selected_goals"
     const val SELECTED_TOPIC = "selected_topic"
 
+    const val Traffic_Type = "Traffic_Type"
+
 }

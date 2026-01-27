@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.newdashboard
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.ComponentCaller
 import android.app.Dialog
 import android.content.Context
@@ -17,6 +18,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -116,11 +118,13 @@ import com.jetsynthesys.rightlife.ui.challenge.DateHelper
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getChallengeDateRange
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaySuffix
 import com.jetsynthesys.rightlife.ui.challenge.DateHelper.getDaysFromToday
+import com.jetsynthesys.rightlife.ui.challenge.LeaderboardActivity
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
+import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.profile_new.SavedItemListActivity
@@ -201,6 +205,11 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_JOURNAL = "journal"
         const val TARGET_BREATHING = "breathing"
 
+        const val TARGET_BREATHING_ALTERNATE = "breathing-alternate"
+        const val TARGET_BREATHING_BOX = "breathing-boxbreathing"
+        const val TARGET_BREATHING_CUSTOM = "breathing-custom"
+        const val TARGET_BREATHING_4_7_8 = "breathing-4-7-8"
+
         const val TARGET_ACTIVITY_LOG = "activity-log"
         const val TARGET_WEIGHT_LOG = "weight-log"
         const val TARGET_WATER_LOG = "water-log"
@@ -210,7 +219,21 @@ class HomeNewActivity : BaseActivity() {
 
         // Content
         const val TARGET_JUMPBACK = "jumpback"
-        const val TARGET_SAVED_ITEMS = "saved-content"
+        const val TARGET_SAVED_ITEMS = "saveditems"
+
+        // Challenge
+        const val TARGET_CHALLENGE_HOME = "challenge-home"
+        const val TARGET_CHALLENGE_LEADERBOARD = "challenge-leaderboard"
+
+        const val TARGET_SUBSCRIPTION_PLAN = "plans/SUBSCRIPTION_PLAN"
+        const val TARGET_BOOSTER_PLAN = "plans/BOOSTER_PLAN"
+
+        //Mind Audit Info
+        const val TARGET_MIND_AUDIT_PHQ9 = "mind-audit/phq9Info"
+        const val TARGET_MIND_AUDIT_GAD7 = "mind-audit/GAD7"
+        const val TARGET_MIND_AUDIT_OHQ = "mind-audit/ohq"
+        const val TARGET_MIND_AUDIT_CAS = "mind-audit/cas"
+        const val TARGET_MIND_AUDIT_DASS21 = "mind-audit/dass21"
 
 
     }
@@ -242,6 +265,10 @@ class HomeNewActivity : BaseActivity() {
                 isCategoryModuleLoaded
             }
 
+            TARGET_CHALLENGE_HOME -> isUserProfileLoaded && isChecklistLoaded
+
+            TARGET_CHALLENGE_LEADERBOARD -> isUserProfileLoaded && isChecklistLoaded
+
             else -> {
                 // By default, be conservative
                 isUserProfileLoaded && isChecklistLoaded
@@ -260,6 +287,7 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun handleDeepLinkTarget(target: String?) {
+        Log.d("Umesh","Target  = "+target)
         if (target == null) return
 
         // If data not ready for this target, just store it and return
@@ -506,6 +534,75 @@ class HomeNewActivity : BaseActivity() {
                 startActivity(intent)
             }
 
+            TARGET_CHALLENGE_HOME -> {
+                if (sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus)
+                    startActivity(Intent(this, ChallengeActivity::class.java))
+            }
+
+            TARGET_CHALLENGE_LEADERBOARD -> {
+                if (sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus)
+                    startActivity(Intent(this, LeaderboardActivity::class.java))
+            }
+
+            TARGET_SUBSCRIPTION_PLAN -> {
+                startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                })
+            }
+
+            TARGET_BOOSTER_PLAN -> {
+                startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                    putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
+                })
+            }
+
+            TARGET_MIND_AUDIT_PHQ9 -> {
+                callMindAuditDeepLinkClick("PHQ-9")
+            }
+
+            TARGET_MIND_AUDIT_OHQ -> {
+                callMindAuditDeepLinkClick("OHQ")
+            }
+
+            TARGET_MIND_AUDIT_CAS -> {
+                callMindAuditDeepLinkClick("CAS")
+            }
+
+            TARGET_MIND_AUDIT_DASS21 -> {
+                callMindAuditDeepLinkClick("DASS-21")
+            }
+
+            TARGET_MIND_AUDIT_GAD7 -> {
+                callMindAuditDeepLinkClick("GAD-7")
+            }
+
+            TARGET_BREATHING_ALTERNATE -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+
+            TARGET_BREATHING_BOX -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+
+            TARGET_BREATHING_CUSTOM -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
+
+            TARGET_BREATHING_4_7_8 -> {
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
+                if (checkTrailEndedAndShowDialog()) {
+                    ActivityUtils.startBreathWorkActivity(this)
+                }
+            }
 
             else -> {
                 // Unknown / not mapped → ignore
@@ -1093,11 +1190,15 @@ class HomeNewActivity : BaseActivity() {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    100
-                )
+                if (isNotificationPermanentlyDenied()) {
+                    showGoToSettingsDialog()
+                } else {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        100
+                    )
+                }
                 return false
             } else {
                 enableNotificationServer()
@@ -1147,29 +1248,6 @@ class HomeNewActivity : BaseActivity() {
             sharedPreferenceManager.enableNotificationServer = true
         }
     }
-
-    /*override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
-        super.onNewIntent(intent, caller)
-        if (intent.getBooleanExtra("start_journal", false)) {
-            startActivity(Intent(this, JournalListActivity::class.java))
-        } else if (intent.getBooleanExtra("start_profile", false)) {
-            startActivity(Intent(this, ProfileSettingsActivity::class.java))
-        } else if (intent.getBooleanExtra("finish_MindAudit", false)) {
-            if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
-                startActivity(Intent(this, MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "ThinkRight")
-                    putExtra("BottomSeatName", "Not")
-                })
-            }
-        } else if (intent.getBooleanExtra("finish_Journal", false)) {
-            if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
-                startActivity(Intent(this, MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "ThinkRight")
-                    putExtra("BottomSeatName", "Not")
-                })
-            }
-        }
-    }*/
 
     // API 35+ (Android 15)
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -3934,6 +4012,26 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
+    private fun callMindAuditDeepLinkClick(assessmentType: String){
+        if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
+            freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
+        } else {
+            if (DashboardChecklistManager.mindAuditStatus) {
+                startActivity(Intent(
+                    this,
+                    MASuggestedAssessmentActivity::class.java
+                ).apply { putExtra("SelectedAssessment", assessmentType) })
+            } else {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(
+                        this,
+                        MASuggestedAssessmentActivity::class.java
+                    ).apply { putExtra("SelectedAssessment", assessmentType) })
+                }
+            }
+        }
+    }
+
 
     fun callLogWaterClick() {
         if (checkTrailEndedAndShowDialog()) {
@@ -4257,7 +4355,7 @@ class HomeNewActivity : BaseActivity() {
                     call: Call<CommonResponse?>,
                     response: Response<CommonResponse?>
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@HomeNewActivity)
                     if (response.isSuccessful) {
                         getChallengeStatus()
                         showCustomToast(response.body()?.successMessage ?: "", true)
@@ -4274,7 +4372,7 @@ class HomeNewActivity : BaseActivity() {
                     call: Call<CommonResponse?>,
                     t: Throwable
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@HomeNewActivity)
                     handleNoInternetView(t)
                 }
 
@@ -4289,7 +4387,7 @@ class HomeNewActivity : BaseActivity() {
                     call: Call<ResponseBody?>,
                     response: Response<ResponseBody?>
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@HomeNewActivity)
                     if (response.isSuccessful && response.body() != null) {
                         val gson = Gson()
                         val jsonResponse = response.body()?.string()
@@ -4298,7 +4396,6 @@ class HomeNewActivity : BaseActivity() {
 
                         val dates = responseObj.data
                         hideChallengeLayout()
-                        //handleChallengeStatusResponse(dates)
                         // challenge related stuff
                         setChallengeLayout(dates)
                         handleChallengeUI(dates)
@@ -4309,7 +4406,7 @@ class HomeNewActivity : BaseActivity() {
                     call: Call<ResponseBody?>,
                     t: Throwable
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@HomeNewActivity)
                     handleNoInternetView(t)
                 }
 
@@ -4330,6 +4427,7 @@ class HomeNewActivity : BaseActivity() {
         sharedPreferenceManager.challengeStartDate =
             dates.challengeStartDate //"12 Jan 2026, 09:00 PM"
         sharedPreferenceManager.challengeEndDate = dates.challengeEndDate //"28 Jan 2026, 09:00 PM"
+        sharedPreferenceManager.challengeParticipatedDate = dates.participateDate
 
         if (dates.participateDate.isEmpty()) {
 
@@ -4416,73 +4514,6 @@ class HomeNewActivity : BaseActivity() {
     }
 
 
-    /*private fun handleChallengeStatusResponse(dates: ChallengeDateData) {
-
-        if (getDaysFromToday(dates.challengeEndDate) < 0) {
-            // challenge end here
-            if (dates.participateDate.isNotEmpty()) {
-                // show challenge complete card
-                binding.layoutChallengeCompleted.challengeCompleted.visibility =
-                    View.VISIBLE
-            } else {
-                hideChallengeLayout()
-            }
-        } else {
-            //Challenge is live
-            if (dates.participateDate.isNotEmpty()) {
-                //participated
-                if (getDaysFromToday(dates.challengeLiveDate) < 0) {
-                    //Live date ended
-                    if (!DashboardChecklistManager.checklistStatus) {
-                        //checklist not completed
-                        binding.layoutChallengeToCompleteChecklist.completeChallengeChecklist.visibility =
-                            View.VISIBLE
-                        binding.layoutChallengeToCompleteChecklist.tvChecklistNumber.text =
-                            "$checklistCount/6"
-                    } else {
-                        // checklist completed
-                        if (getDaysFromToday(dates.challengeStartDate) < 0) {
-                            // start date ended
-                            binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
-                                View.VISIBLE
-                        } else {
-                            // start date not ended
-                            binding.layoutChallengeCountDownDays.countDownTimeChallengeCard.visibility =
-                                View.VISIBLE
-                            binding.layoutChallengeCountDownDays.tvCountDownDays.text =
-                                getDaysFromToday(dates.challengeStartDate).toString()
-                        }
-                    }
-                } else {
-                    // live date not ended
-                    binding.layoutUnlockChallenge.unlockChallengeCard.visibility =
-                        View.VISIBLE
-                    binding.layoutRegisterChallenge.registerChallengeCard.visibility =
-                        View.GONE
-                    binding.layoutUnlockChallenge.tvStartEndDate.text =
-                        getChallengeDateRange(
-                            dates.challengeStartDate,
-                            dates.challengeEndDate
-                        )
-                    dates.challengeLiveDate.let {
-                        binding.layoutUnlockChallenge.tvChallengeLiveDate.text =
-                            formatWithOrdinal(it)
-                    }
-                }
-            } else {
-                // not participated
-                hideChallengeLayout()
-                binding.layoutRegisterChallenge.registerChallengeCard.visibility =
-                    View.VISIBLE
-                binding.layoutRegisterChallenge.tvStartEndDate.text =
-                    getChallengeDateRange(
-                        dates.challengeStartDate,
-                        dates.challengeEndDate
-                    )
-            }
-        }
-    }*/
-
     private fun formatWithOrdinal(dateStr: String): String {
         val inputFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
         val date = inputFormat.parse(dateStr)
@@ -4517,6 +4548,9 @@ class HomeNewActivity : BaseActivity() {
                         AppConfigResponse::class.java
                     )
                 if (appConfig?.data?.isChallengeStart == true) {
+                    binding.flFreeTrial.visibility = View.GONE
+                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                    binding.llFreeTrailExpired.visibility = View.GONE
                     getChallengeStatus()
                 } else {
                     hideChallengeLayout()
@@ -4595,7 +4629,7 @@ class HomeNewActivity : BaseActivity() {
                 override fun onResponse(
                     call: Call<ResponseBody?>, response: Response<ResponseBody?>
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@HomeNewActivity)
 
                     getDailyScore(date)
                 }
@@ -4603,7 +4637,7 @@ class HomeNewActivity : BaseActivity() {
                 override fun onFailure(
                     call: Call<ResponseBody?>, t: Throwable
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@HomeNewActivity)
                     handleNoInternetView(t)
                 }
 
@@ -4617,7 +4651,7 @@ class HomeNewActivity : BaseActivity() {
                 override fun onResponse(
                     call: Call<ResponseBody?>, response: Response<ResponseBody?>
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@HomeNewActivity)
                     if (response.isSuccessful && response.body() != null) {
                         val gson = Gson()
                         val jsonResponse = response.body()?.string()
@@ -4650,11 +4684,32 @@ class HomeNewActivity : BaseActivity() {
                 override fun onFailure(
                     call: Call<ResponseBody?>, t: Throwable
                 ) {
-                    AppLoader.hide()
+                    AppLoader.hide(this@HomeNewActivity)
                     handleNoInternetView(t)
                 }
 
             })
     }
+
+    private fun showGoToSettingsDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Enable Notifications")
+            .setMessage("Notifications are disabled. Please enable them from Settings.")
+            .setCancelable(false)
+            .setPositiveButton("Go to Settings") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun isNotificationPermanentlyDenied(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
 
 }

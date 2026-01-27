@@ -50,7 +50,8 @@
             android:textSize="@dimen/textsize_large24sp"
             android:fontFamily="@font/merriweather_bold"
             android:textColor="@color/txt_color_mind"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,7 +59,8 @@
             android:textSize="@dimen/textsize_large"
             android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/txt_color_journal_gray"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"/>
 
 
     <androidx.recyclerview.widget.RecyclerView

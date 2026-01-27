@@ -333,4 +333,6 @@ object AnalyticsEvent {
     const val Chl_BT_MoveGoal_Claim = "Chl_BT_MoveGoal_Claim"
     const val Chl_BT_Mindful_Claim = "Chl_BT_Mindful_Claim"
     const val Chl_BT_AllBonus_Claim = "Chl_BT_AllBonus_Claim"
+
+    const val Chl_Leaderboard_Open = "Chl_Leaderboard_Open"
 }
