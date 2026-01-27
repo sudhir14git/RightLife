@@ -109,6 +109,7 @@ import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.NewCategoryListActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
+import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeActivity
 import com.jetsynthesys.rightlife.ui.challenge.ChallengeBottomSheetHelper
@@ -202,6 +203,7 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_SNAP_MEAL = "snap-meal"
         const val TARGET_SLEEP_SOUND = "sleep-sound"
         const val TARGET_AFFIRMATION = "affirmation"
+        const val TARGET_AFFIRMATION_PLAYLIST = "affirmationPlaylist"
         const val TARGET_JOURNAL = "journal"
         const val TARGET_BREATHING = "breathing"
 
@@ -287,7 +289,6 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun handleDeepLinkTarget(target: String?) {
-        Log.d("Umesh","Target  = "+target)
         if (target == null) return
 
         // If data not ready for this target, just store it and return
@@ -475,11 +476,12 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
 
-            TARGET_BREATHING -> {
+            TARGET_AFFIRMATION_PLAYLIST -> {
                 if (checkTrailEndedAndShowDialog()) {
-                    ActivityUtils.startBreathWorkActivity(this)
+                    startActivity(Intent(this, PractiseAffirmationPlaylistActivity::class.java))
                 }
             }
+
 
             //quick link logs
             TARGET_ACTIVITY_LOG -> {
@@ -1433,7 +1435,7 @@ class HomeNewActivity : BaseActivity() {
               )
           )
           isAdd = !isAdd // Toggle the state*/
-        // commented above code as now as per product it should be kept open while going to next screen
+        // commented above code as now as per product it should be kept open while going to next screenṄ
 
         return if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity()
@@ -4012,21 +4014,23 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    private fun callMindAuditDeepLinkClick(assessmentType: String){
+    private fun callMindAuditDeepLinkClick(assessmentType: String) {
         if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
         } else {
             if (DashboardChecklistManager.mindAuditStatus) {
-                startActivity(Intent(
-                    this,
-                    MASuggestedAssessmentActivity::class.java
-                ).apply { putExtra("SelectedAssessment", assessmentType) })
-            } else {
-                if (checkTrailEndedAndShowDialog()) {
-                    startActivity(Intent(
+                startActivity(
+                    Intent(
                         this,
                         MASuggestedAssessmentActivity::class.java
                     ).apply { putExtra("SelectedAssessment", assessmentType) })
+            } else {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(
+                        Intent(
+                            this,
+                            MASuggestedAssessmentActivity::class.java
+                        ).apply { putExtra("SelectedAssessment", assessmentType) })
                 }
             }
         }
