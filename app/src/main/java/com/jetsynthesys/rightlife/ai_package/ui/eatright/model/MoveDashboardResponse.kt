@@ -28,6 +28,8 @@ data class CalorieBalance(
     val calorieRange: List<Double>,
     @SerializedName("goal")
     val goal: String,
+    @SerializedName("goal_text")
+    val goal_text: String,
     @SerializedName("difference")
     val difference: Double,
     @SerializedName("heading")
