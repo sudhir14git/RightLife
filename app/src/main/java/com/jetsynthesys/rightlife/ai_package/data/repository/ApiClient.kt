@@ -36,16 +36,18 @@ object RetrofitClient {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(40, TimeUnit.SECONDS) // Set connection timeout (default: 10s)
-        .readTimeout(40, TimeUnit.SECONDS)    // Set read timeout
-        .writeTimeout(40, TimeUnit.SECONDS)   // Set write timeout
+    val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(90, TimeUnit.SECONDS)
+        .readTimeout(90, TimeUnit.SECONDS)
+        .writeTimeout(90, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
         .build()
 
     val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
     private val json = Json {
@@ -56,6 +58,7 @@ object RetrofitClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL_FAST_API)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
 
@@ -71,6 +74,7 @@ object RetrofitClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL_FOOD_CAPTURE_API)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
 

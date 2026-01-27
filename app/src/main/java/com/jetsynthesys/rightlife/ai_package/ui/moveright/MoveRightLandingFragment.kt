@@ -400,9 +400,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 progressBarCalorieBalance.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 val progressBarWidth = progressBarCalorieBalance.width.toFloat()
                 val overlayPositionPercentage = 0.6f
-                val progress = progressBarCalorieBalance.progress
+                val rawProgress = progressBarCalorieBalance.progress
                 val max = progressBarCalorieBalance.max
-                val progressPercentage = progress.toFloat() / max
+               // val rawProgress = it.data.calorieBalance.calorieIntake.toInt()
+                progressBarCalorieBalance.progress = rawProgress.coerceIn(0, max)
+                val progressPercentage = when {
+                    max <= 0 -> 0f
+                    rawProgress > max -> 0.96f
+                    rawProgress == max -> 0.96f
+                    rawProgress < 0 -> 0f
+                    else -> rawProgress.toFloat() / max.toFloat()
+                }
                 val constraintSet = ConstraintSet()
                 constraintSet.clone(progressBarLayout)
                 constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
@@ -559,7 +567,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 context?.let {
                                     calorieCountText.setTextColor(ContextCompat.getColor(it, colorRes))
                                 }
-//                                val color = when (it.data.calorieBalance.goal) {
+//                                val color = when (it.data.calorieBalance.goal_text) {
 //                                    "weight_loss" -> {
 //                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
 //                                    }
@@ -597,7 +605,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         if (it.data.calorieBalance.calorieRange.size > 1){
                                             rangeEnd = it.data.calorieBalance.calorieRange.getOrNull(1) ?: 0.0
                                         }
-                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() + rangeEnd.toInt()
+                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() * 2
                                         val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
                                         //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
                                         val value = (percentage / 10)
@@ -605,9 +613,16 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         val overlayPositionPercentage = if (value.isFinite() && !value.isNaN()) value else 0f
                                         progressBarCalorieBalance.max = totalCalorie
                                         val max = progressBarCalorieBalance.max
-                                        progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
-                                        val progress = progressBarCalorieBalance.progress
-                                        val progressPercentage = progress.toFloat() / max
+                                        val rawProgress = it.data.calorieBalance.calorieIntake.toInt()
+                                        progressBarCalorieBalance.progress = rawProgress.coerceIn(0, max)
+                                        val progressPercentage = when {
+                                            max <= 0 -> 0f
+                                            rawProgress > max -> 0.96f
+                                            rawProgress == max -> 0.96f
+                                            rawProgress < 0 -> 0f
+                                            else -> rawProgress.toFloat() / max.toFloat()
+                                        }
+
                                         val constraintSet = ConstraintSet()
                                         constraintSet.clone(progressBarLayout)
                                         constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
@@ -619,7 +634,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
                                             else -> "Weight Loss Zone"
                                         }
-                                        weightLossZoneText.text = it.data.calorieBalance.goal
+                                        weightLossZoneText.text = it.data.calorieBalance.goal_text
                                         progressBarCalorieBalance.post {
                                             val max = progressBarCalorieBalance.max.toFloat()
                                             if (max <= 0f) return@post
@@ -661,7 +676,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 context?.let {
                                     calorieCountText.setTextColor(ContextCompat.getColor(it, colorRes))
                                 }
-//                                val color = when (it.data.calorieBalance.goal) {
+//                                val color = when (it.data.calorieBalance.goal_text) {
 //                                    "weight_loss" -> {
 //                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
 //                                    }
@@ -699,7 +714,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         if (it.data.calorieBalance.calorieRange.size > 1){
                                             rangeEnd = it.data.calorieBalance.calorieRange.getOrNull(1) ?: 0.0
                                         }
-                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() + rangeEnd.toInt()
+                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() * 2
                                         //val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
                                       //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
                                         val denominator = (rangeEnd - rangeStart)
@@ -724,12 +739,18 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             0f
                                         }
                                         val overlayPositionPercentage = cleanValue
-
                                         progressBarCalorieBalance.max = totalCalorie
                                         val max = progressBarCalorieBalance.max
                                         progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
-                                        val progress = progressBarCalorieBalance.progress
-                                        val progressPercentage = progress.toFloat() / max
+                                        val rawProgress = it.data.calorieBalance.calorieIntake.toInt()
+                                        progressBarCalorieBalance.progress = rawProgress.coerceIn(0, max)
+                                        val progressPercentage = when {
+                                            max <= 0 -> 0f
+                                            rawProgress > max -> 0.96f
+                                            rawProgress == max -> 0.96f
+                                            rawProgress < 0 -> 0f
+                                            else -> rawProgress.toFloat() / max.toFloat()
+                                        }
                                         val constraintSet = ConstraintSet()
                                         constraintSet.clone(progressBarLayout)
                                         constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
@@ -741,7 +762,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
                                             else -> "Weight Loss Zone"
                                         }
-                                        weightLossZoneText.text = it.data.calorieBalance.goal
+                                        weightLossZoneText.text = it.data.calorieBalance.goal_text
                                         progressBarCalorieBalance.post {
                                             val max = progressBarCalorieBalance.max.toFloat()
                                             if (max <= 0f) return@post
@@ -1163,7 +1184,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         if (it.data.calorieBalance.calorieRange.size > 1){
                                             rangeEnd = it.data.calorieBalance.calorieRange.getOrNull(1) ?: 0.0
                                         }
-                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() + rangeEnd.toInt()
+                                        val totalCalorie = it.data.calorieBalance.calorieBurnTarget.toInt() * 2
                                         val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
                                         //  val percentage = (it.data.calorieBalance.calorieRange.get(0) / it.data.calorieBalance.calorieBurnTarget) * 100
                                         val value = (percentage / 10)
@@ -1171,9 +1192,16 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         val overlayPositionPercentage = if (value.isFinite() && !value.isNaN()) value else 0f
                                         progressBarCalorieBalance.max = totalCalorie
                                         val max = progressBarCalorieBalance.max
-                                        progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
-                                        val progress = progressBarCalorieBalance.progress
-                                        val progressPercentage = progress.toFloat() / max
+                                        val rawProgress = it.data.calorieBalance.calorieIntake.toInt()
+                                        progressBarCalorieBalance.progress = rawProgress.coerceIn(0, max)
+                                        val progressPercentage = when {
+                                            max <= 0 -> 0f
+                                            rawProgress > max -> 0.96f
+                                            rawProgress == max -> 0.96f
+                                            rawProgress < 0 -> 0f
+                                            else -> rawProgress.toFloat() / max.toFloat()
+                                        }
+
                                         val constraintSet = ConstraintSet()
                                         constraintSet.clone(progressBarLayout)
                                         constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
@@ -1185,7 +1213,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
                                             else -> "Weight Loss Zone"
                                         }
-                                        weightLossZoneText.text = it.data.calorieBalance.goal
+                                        weightLossZoneText.text = it.data.calorieBalance.goal_text
                                         progressBarCalorieBalance.post {
                                             val max = progressBarCalorieBalance.max.toFloat()
                                             if (max <= 0f) return@post
@@ -1293,9 +1321,15 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
                                         progressBarCalorieBalance.max = totalCalorie
                                         val max = progressBarCalorieBalance.max
-                                        progressBarCalorieBalance.progress = it.data.calorieBalance.calorieIntake.toInt()
-                                        val progress = progressBarCalorieBalance.progress
-                                        val progressPercentage = progress.toFloat() / max
+                                        val rawProgress = it.data.calorieBalance.calorieIntake.toInt()
+                                        progressBarCalorieBalance.progress = rawProgress.coerceIn(0, max)
+                                        val progressPercentage = when {
+                                            max <= 0 -> 0f
+                                            rawProgress > max -> 0.96f
+                                            rawProgress == max -> 0.96f
+                                            rawProgress < 0 -> 0f
+                                            else -> rawProgress.toFloat() / max.toFloat()
+                                        }
                                         val constraintSet = ConstraintSet()
                                         constraintSet.clone(progressBarLayout)
                                         constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
@@ -1307,7 +1341,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             burnedTarget.toInt() == rangeStart.toInt() -> "Weight Maintain Zone"
                                             else -> "Weight Loss Zone"
                                         }
-                                        weightLossZoneText.text = it.data.calorieBalance.goal
+                                        weightLossZoneText.text = it.data.calorieBalance.goal_text
                                         progressBarCalorieBalance.post {
                                             val max = progressBarCalorieBalance.max.toFloat()
                                             if (max <= 0f) return@post

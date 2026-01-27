@@ -69,7 +69,10 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.log10
 import kotlin.math.max
+import kotlin.math.pow
 
 class BurnFragment : BaseFragment<FragmentBurnBinding>() {
 
@@ -273,8 +276,6 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         }
     }
 
-
-
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = BarDataSet(entries, "")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
@@ -283,7 +284,6 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         dataSet.setDrawValues(entries.size <= 7)
         dataSet.barShadowColor = Color.TRANSPARENT
         dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
-
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barChart.data = barData
@@ -334,33 +334,45 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         leftYAxis.textSize = 12f
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
+        val maxEntryValue = entries.maxOfOrNull { it.y } ?: 0f
+
+        val labelCount = 5
+        val axisMax = calculateTightAxisMax(maxEntryValue, 0.1f)
+        val step = axisMax / (labelCount - 1)
+
         leftYAxis.axisMinimum = 0f
-        leftYAxis.axisMaximum = max(7000f, ceil((entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f) / 1000f) * 1000f)
-        leftYAxis.granularity = 1000f
+        leftYAxis.axisMaximum = axisMax
+        leftYAxis.setLabelCount(labelCount, true)
+        leftYAxis.granularity = step
+        leftYAxis.isGranularityEnabled = true
+
         leftYAxis.valueFormatter = object : ValueFormatter() {
             override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
+                if (value == 0f) return "0"
+
+                return if ((axis?.axisMaximum ?: 0f) >= 1000f) {
+                    val k = value / 1000f
+                    if (k < 1f) String.format("%.1fk", k)
+                    else String.format("%.2fk", k).trimEnd('0').trimEnd('.')
+                } else {
+                    value.toInt().toString()
+                }
             }
         }
 
         barChart.axisRight.isEnabled = false
-
         // YE DO LINES PURI TARAH SE HATAYI HAIN (No box, no "Calories Burned")
         barChart.description.isEnabled = false   // ← Description completely off
         // barChart.description = description     ← Yeh line bhi gayab
-
         barChart.setScaleEnabled(false)
         barChart.isDoubleTapToZoomEnabled = false
         barChart.isHighlightPerTapEnabled = true
         barChart.isHighlightPerDragEnabled = false
-
         // Legend off
         val legend = barChart.legend
         legend.isEnabled = false
-
         // Extra offsets
         barChart.setExtraOffsets(0f, 0f, 0f, 25f)
-
         // Chart click listener (same as before)
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -372,16 +384,21 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
-
             override fun onNothingSelected() {
                 selectHeartRateLayout.visibility = View.INVISIBLE
                       }
         })
-
         barChart.animateY(1000)
         barChart.invalidate()
     }
 
+    private fun calculateTightAxisMax(
+        maxValue: Float,
+        headroomPercent: Float = 0.1f   // 10% only
+    ): Float {
+        if (maxValue <= 0f) return 100f
+        return maxValue * (1f + headroomPercent)
+    }
 
     /** Sample Data for Week */
     private fun getWeekData(): List<BarEntry> {
