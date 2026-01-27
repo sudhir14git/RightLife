@@ -35,9 +35,9 @@ class WeightPickerBottomSheet : BottomSheetDialogFragment() {
     private var initialWeightLbs = 165.0
 
     private val kgMin = 30.0
-    private val kgMax = 200.0
+    private val kgMax = 300.0
     private val lbsMin = 66.0
-    private val lbsMax = 440.0
+    private val lbsMax = 660.0
     private val itemSpacing = 20f
 
     // ✅ same idea as height: prevent listener overriding initial scroll / unit switch scroll

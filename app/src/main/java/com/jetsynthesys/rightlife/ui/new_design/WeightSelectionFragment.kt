@@ -397,7 +397,7 @@ class WeightSelectionFragment : Fragment() {
     }
 
     private fun getDisplayMaxWeight(): Double {
-        return if (currentUnit == WeightUnit.KG) 200.0 else 440.0
+        return if (currentUnit == WeightUnit.KG) 300.0 else 660.0
     }
 
     override fun onPause() {
