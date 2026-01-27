@@ -114,6 +114,14 @@ class DeepLinkRouterActivity : BaseActivity() {
                 )
             }
 
+            path == "/affirmationPlaylist" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_AFFIRMATION_PLAYLIST
+
+                )
+            }
+
             // Breathing
             path == "/breathing" -> {
                 intent.putExtra(
