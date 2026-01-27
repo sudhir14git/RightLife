@@ -62,6 +62,8 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetGenderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.DialogOtpVerificationBinding
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.customviews.HeightPickerBottomSheet
+import com.jetsynthesys.rightlife.ui.customviews.WeightPickerBottomSheet
 import com.jetsynthesys.rightlife.ui.new_design.BodyFatAdapter
 import com.jetsynthesys.rightlife.ui.new_design.pojo.BodyFat
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpEmailRequest
