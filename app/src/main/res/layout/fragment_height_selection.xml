@@ -127,28 +127,19 @@
 
                     </ScrollView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:layout_weight="1"
+                    <FrameLayout
                         android:id="@+id/ll_marker_view"
-                        android:layout_centerVertical="true"
-                        android:orientation="vertical">
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true">
 
                         <View
                             android:id="@+id/markerView"
                             android:layout_width="70dp"
                             android:layout_height="5dp"
-                            android:layout_marginBottom="10dp"
+                            android:layout_gravity="center_vertical"
                             android:background="@android:color/holo_red_light" />
-
-                        <View
-                            android:id="@+id/markerViewdummy"
-                            android:layout_width="match_parent"
-                            android:layout_height="2dp"
-                            android:background="@android:color/transparent"
-                            android:layout_marginEnd="80dp" />
-                    </LinearLayout>
+                    </FrameLayout>
                 </RelativeLayout>
 
             </LinearLayout>
