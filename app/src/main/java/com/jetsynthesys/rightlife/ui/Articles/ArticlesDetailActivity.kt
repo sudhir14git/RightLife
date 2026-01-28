@@ -141,7 +141,6 @@ class ArticlesDetailActivity : BaseActivity() {
             "• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion"
 
         contentId = intent.getStringExtra("contentId")
-        Log.d("Umesh","ContentId  = $contentId")
         getArticleDetails(contentId)
         getRecommendedContent(contentId)
 

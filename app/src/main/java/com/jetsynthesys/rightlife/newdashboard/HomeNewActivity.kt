@@ -124,6 +124,7 @@ import com.jetsynthesys.rightlife.ui.challenge.LeaderboardActivity
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
@@ -237,8 +238,9 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_MIND_AUDIT_OHQ = "mind-audit/ohq"
         const val TARGET_MIND_AUDIT_CAS = "mind-audit/cas"
         const val TARGET_MIND_AUDIT_DASS21 = "mind-audit/dass21"
-
         const val TARGET_ARTICLE = "article"
+        const val TARGET_AUDIO = "audio"
+        const val TARGET_VIDEO = "video"
 
 
     }
@@ -293,8 +295,6 @@ class HomeNewActivity : BaseActivity() {
 
     private fun handleDeepLinkTarget(target: String?) {
         if (target == null) return
-
-        Log.d("Umesh", "Target = $target")
 
         // If data not ready for this target, just store it and return
         if (!isInitialDataReadyFor(target)) {
@@ -612,17 +612,29 @@ class HomeNewActivity : BaseActivity() {
             }
 
             else -> {
-                if (target.contains(TARGET_ARTICLE)) {
-                    target?.split("/")?.let { link ->
-                        // Check if we actually have a second part (index 1)
-                        if (link.size > 2) {
-                            startActivity(
-                                Intent(this, ArticlesDetailActivity::class.java)
-                                    .putExtra("contentId", link[2])
-                            )
-                        }
+                target?.let { safeTarget ->
+
+                    val activityClass = when {
+                        safeTarget.contains(TARGET_ARTICLE) -> ArticlesDetailActivity::class.java
+                        safeTarget.contains(TARGET_AUDIO) ||
+                                safeTarget.contains(TARGET_VIDEO) -> ContentDetailsActivity::class.java
+                        /* safeTarget.contains(TARGET_SERIES) -> SeriesListActivity::class.java
+                         safeTarget.contains(TARGET_SERIES_DETAILS) -> NewSeriesDetailsActivity::class.java*/
+                        else -> null
+                    }
+
+                    val contentId = safeTarget
+                        .split("/")
+                        .getOrNull(2)
+
+                    if (activityClass != null && contentId != null) {
+                        startActivity(
+                            Intent(this, activityClass)
+                                .putExtra("contentId", contentId)
+                        )
                     }
                 }
+
             }
         }
     }
@@ -4015,32 +4027,51 @@ class HomeNewActivity : BaseActivity() {
     }
 
     fun callMindAuditClick() {
+
         if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
+            false // Return false if condition is true and dialog is shown
         } else {
-            if (DashboardChecklistManager.mindAuditStatus) {
-                //startActivity(Intent(this@HomeNewActivity, NewHealthCamReportActivity::class.java))
-                ActivityUtils.startMindAuditActivity(this)
-            } else {
-                if (checkTrailEndedAndShowDialog()) {
-                    ActivityUtils.startMindAuditActivity(this)
+            if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this) {
+                    //myHealthFragmentSelected()
+                    HandleQuicklinkmenu()
                 }
+                false
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+                showTrailEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+                showSubsciptionEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else {
+                ActivityUtils.startMindAuditActivity(this)
             }
         }
     }
 
     private fun callMindAuditDeepLinkClick(assessmentType: String) {
+
         if (sharedPreferenceManager.userProfile?.user_sub_status == 0) {
             freeTrialDialogActivity(FeatureFlags.FACE_SCAN)
+            false // Return false if condition is true and dialog is shown
         } else {
-            if (DashboardChecklistManager.mindAuditStatus) {
-                startActivity(
-                    Intent(
-                        this,
-                        MASuggestedAssessmentActivity::class.java
-                    ).apply { putExtra("SelectedAssessment", assessmentType) })
+            if (!DashboardChecklistManager.checklistStatus) {
+                DialogUtils.showCheckListQuestionCommonDialog(this) {
+                    //myHealthFragmentSelected()
+                    HandleQuicklinkmenu()
+                }
+                false
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 2) {
+                showTrailEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
+            } else if (sharedPreferenceManager.userProfile?.user_sub_status == 3) {
+                showSubsciptionEndedBottomSheet()
+                false // Return false if condition is true and dialog is shown
             } else {
-                if (checkTrailEndedAndShowDialog()) {
+                if (!DashboardChecklistManager.mindAuditStatus) {
+                    ActivityUtils.startMindAuditActivity(this)
+                } else {
                     startActivity(
                         Intent(
                             this,

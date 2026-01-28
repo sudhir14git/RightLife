@@ -30,8 +30,6 @@ class DeepLinkRouterActivity : BaseActivity() {
 
         val intent = Intent(this, HomeNewActivity::class.java)
 
-        Log.d("Umesh", "Path = $path")
-
         when {
             // Home
             path == "/home" -> {
@@ -402,7 +400,9 @@ class DeepLinkRouterActivity : BaseActivity() {
             // each gets a DEEP_LINK_TARGET, and HomeNewActivity will handle them.
 
             else -> {
-                if (path.contains(HomeNewActivity.TARGET_ARTICLE)) {
+                if (path.contains(HomeNewActivity.TARGET_ARTICLE)
+                    || path.contains(HomeNewActivity.TARGET_AUDIO)
+                    || path.contains(HomeNewActivity.TARGET_VIDEO)) {
                     intent.putExtra(
                         HomeNewActivity.EXTRA_DEEP_LINK_TARGET, path
                     )
