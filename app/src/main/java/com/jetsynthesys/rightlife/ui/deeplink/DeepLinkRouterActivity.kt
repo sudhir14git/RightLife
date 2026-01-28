@@ -404,7 +404,9 @@ class DeepLinkRouterActivity : BaseActivity() {
             else -> {
                 if (path.contains(HomeNewActivity.TARGET_ARTICLE)
                     || path.contains(HomeNewActivity.TARGET_AUDIO)
-                    || path.contains(HomeNewActivity.TARGET_VIDEO)) {
+                    || path.contains(HomeNewActivity.TARGET_VIDEO)
+                    || path.contains(HomeNewActivity.TARGET_SERIES)
+                    || path.contains(HomeNewActivity.TARGET_SERIES_DETAILS)) {
                     intent.putExtra(
                         HomeNewActivity.EXTRA_DEEP_LINK_TARGET, path
                     )

@@ -124,6 +124,9 @@ import com.jetsynthesys.rightlife.ui.challenge.LeaderboardActivity
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.getColorCode
 import com.jetsynthesys.rightlife.ui.challenge.ScoreColorHelper.setSeekBarProgressColor
 import com.jetsynthesys.rightlife.ui.challenge.pojo.DailyScoreResponse
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
@@ -237,10 +240,11 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_MIND_AUDIT_OHQ = "mind-audit/ohq"
         const val TARGET_MIND_AUDIT_CAS = "mind-audit/cas"
         const val TARGET_MIND_AUDIT_DASS21 = "mind-audit/dass21"
-
         const val TARGET_ARTICLE = "article"
         const val TARGET_AUDIO = "audio"
         const val TARGET_VIDEO = "video"
+        const val TARGET_SERIES = "series"
+        const val TARGET_SERIES_DETAILS = "series_details"
 
 
     }
@@ -614,37 +618,29 @@ class HomeNewActivity : BaseActivity() {
             }
 
             else -> {
-                if (target.contains(TARGET_ARTICLE)) {
-                    target?.split("/")?.let { link ->
-                        // Check if we actually have a second part (index 1)
-                        if (link.size > 2) {
-                            startActivity(
-                                Intent(this, ArticlesDetailActivity::class.java)
-                                    .putExtra("contentId", link[2])
-                            )
-                        }
+                target?.let { safeTarget ->
+
+                    val activityClass = when {
+                        safeTarget.contains(TARGET_ARTICLE) -> ArticlesDetailActivity::class.java
+                        safeTarget.contains(TARGET_AUDIO) ||
+                                safeTarget.contains(TARGET_VIDEO) -> ContentDetailsActivity::class.java
+                        safeTarget.contains(TARGET_SERIES) -> SeriesListActivity::class.java
+                        safeTarget.contains(TARGET_SERIES_DETAILS) -> NewSeriesDetailsActivity::class.java
+                        else -> null
                     }
-                } else if (target.contains(TARGET_AUDIO)) {
-                    target?.split("/")?.let { link ->
-                        // Check if we actually have a second part (index 1)
-                        if (link.size > 2) {
-                            startActivity(
-                                Intent(this, ArticlesDetailActivity::class.java)
-                                    .putExtra("contentId", link[2])
-                            )
-                        }
-                    }
-                } else if (target.contains(TARGET_VIDEO)) {
-                    target?.split("/")?.let { link ->
-                        // Check if we actually have a second part (index 1)
-                        if (link.size > 2) {
-                            startActivity(
-                                Intent(this, ArticlesDetailActivity::class.java)
-                                    .putExtra("contentId", link[2])
-                            )
-                        }
+
+                    val contentId = safeTarget
+                        .split("/")
+                        .getOrNull(2)
+
+                    if (activityClass != null && contentId != null) {
+                        startActivity(
+                            Intent(this, activityClass)
+                                .putExtra("contentId", contentId)
+                        )
                     }
                 }
+
             }
         }
     }
