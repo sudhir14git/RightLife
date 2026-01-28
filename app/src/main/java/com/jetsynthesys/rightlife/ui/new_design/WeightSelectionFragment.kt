@@ -5,31 +5,26 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.Button
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SnapHelper
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.customviews.WeightPickerView
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
-import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
-import kotlin.math.floor
-
 
 class WeightSelectionFragment : Fragment() {
 
@@ -39,12 +34,18 @@ class WeightSelectionFragment : Fragment() {
     private var tvDescription: TextView? = null
     private var selected_number_text: TextView? = null
     private lateinit var cardViewSelection: CardView
-    private val numbers = mutableListOf<Float>()
-    private lateinit var adapter: RulerAdapter
-    private var selectedLabel: String = " kg"
-    private lateinit var rulerView: RecyclerView
+    private lateinit var scrollView: HorizontalScrollView
+    private lateinit var pickerView: WeightPickerView
     private lateinit var kgOption: TextView
     private lateinit var lbsOption: TextView
+
+    private enum class WeightUnit { KG, LBS }
+    private var currentUnit = WeightUnit.KG
+    private var currentWeightKg = 75.0
+    private var currentWeightLbs = 165.0
+    private var initialWeightKg = 75.0
+    private var initialWeightLbs = 165.0
+    private val itemSpacing = 20f
 
     companion object {
         fun newInstance(pageIndex: Int): WeightSelectionFragment {
@@ -57,21 +58,27 @@ class WeightSelectionFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val gender =
-            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
-        selectedWeight = if (gender == "Male" || gender == "M")
-            "75 kg"
-        else
-            "55 kg"
-        selected_number_text!!.text = selectedWeight
+        val gender = SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
+
+        if (gender == "Male" || gender == "M") {
+            currentWeightKg = 75.0
+            currentWeightLbs = 165.0
+            initialWeightKg = 75.0
+            initialWeightLbs = 165.0
+        } else {
+            currentWeightKg = 55.0
+            currentWeightLbs = 120.0
+            initialWeightKg = 55.0
+            initialWeightLbs = 120.0
+        }
 
         kgOption.setBackgroundResource(R.drawable.bg_left_selected)
         kgOption.setTextColor(Color.WHITE)
-
         lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
         lbsOption.setTextColor(Color.BLACK)
 
-        selectedLabel = " kg"
+        currentUnit = WeightUnit.KG
+        updateWeightDisplay()
     }
 
     override fun onCreateView(
@@ -84,10 +91,12 @@ class WeightSelectionFragment : Fragment() {
         llSelectedWeight = view.findViewById(R.id.ll_selected_weight)
         tvSelectedWeight = view.findViewById(R.id.tv_selected_weight)
         tvDescription = view.findViewById(R.id.tv_description)
+        selected_number_text = view.findViewById(R.id.selected_number_text)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
-        /*if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
-            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
-        }*/
+        scrollView = view.findViewById(R.id.scrollView)
+        pickerView = view.findViewById(R.id.pickerView)
+        kgOption = view.findViewById(R.id.kgOption)
+        lbsOption = view.findViewById(R.id.lbsOption)
 
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
         AnalyticsLogger.logEvent(
@@ -100,204 +109,316 @@ class WeightSelectionFragment : Fragment() {
             )
         )
 
-        kgOption = view.findViewById(R.id.kgOption)
-        lbsOption = view.findViewById(R.id.lbsOption)
-
-        //---------
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
-        selected_number_text = view.findViewById(R.id.selected_number_text)
-        rulerView = view.findViewById(R.id.rulerView)
-        val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
-        val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
-
-        val onboardingQuestionRequest =
-            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+        val onboardingQuestionRequest = SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
         val gender = onboardingQuestionRequest.gender
 
-        selectedWeight = if (gender == "Male" || gender == "M")
-            "75 kg"
-        else
-            "55 kg"
-
-        selected_number_text!!.text = selectedWeight
-
-
-
-        kgOption.setOnClickListener {
-            kgOption.setBackgroundResource(R.drawable.bg_left_selected)
-            kgOption.setTextColor(Color.WHITE)
-
-            lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
-            lbsOption.setTextColor(Color.BLACK)
-
-            selectedLabel = " kg"
-            selectedWeight = if (gender == "Male" || gender == "M")
-                "75 kg"
-            else
-                "55 kg"
-            setKgsValue()
-
-            recyclerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
-            selected_number_text!!.text = selectedWeight
+        if (gender == "Male" || gender == "M") {
+            currentWeightKg = 75.0
+            currentWeightLbs = 165.0
+            initialWeightKg = 75.0
+            initialWeightLbs = 165.0
+        } else {
+            currentWeightKg = 55.0
+            currentWeightLbs = 120.0
+            initialWeightKg = 55.0
+            initialWeightLbs = 120.0
         }
 
-        lbsOption.setOnClickListener {
-            lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
-            lbsOption.setTextColor(Color.WHITE)
-
-            kgOption.setBackgroundResource(R.drawable.bg_left_unselected)
-            kgOption.setTextColor(Color.BLACK)
-
-            selectedLabel = " lbs"
-            selectedWeight = if (gender == "Male" || gender == "M")
-            "165 lbs"
-        else
-            "120 lbs"
-            setLbsValue()
-
-            recyclerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 1650 else 1200)
-            selected_number_text!!.text = selectedWeight
-        }
+        setupUnitButtons()
+        setupPicker()
+        updateWeightDisplay()
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
-            val w = selectedWeight.split(" ")
-            if (selectedLabel == " kg") {
-                if (w[0].toDouble() < 30) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Please select weight between 30 kg and 300 kg",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-            }
+            if (validateInput()) {
+                btnContinue.disableViewForSeconds()
+                onboardingQuestionRequest.weight = selectedWeight
+                SharedPreferenceManager.getInstance(requireContext()).saveOnboardingQuestionAnswer(onboardingQuestionRequest)
 
-            if (selectedLabel == " lbs") {
-                if (w[0].toDouble() < 66) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Please select weight between 66 lbs and 660 lbs",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-            }
-            btnContinue.disableViewForSeconds()
-            val onboardingQuestionRequest =
-                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-            onboardingQuestionRequest.weight = selectedWeight
-            SharedPreferenceManager.getInstance(requireContext())
-                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+                cardViewSelection.visibility = GONE
+                llSelectedWeight.visibility = VISIBLE
+                tvSelectedWeight.text = selectedWeight
 
-            cardViewSelection.visibility = GONE
-            llSelectedWeight.visibility = VISIBLE
-            tvSelectedWeight.text = selectedWeight
-
-            AnalyticsLogger.logEvent(
-                AnalyticsEvent.WEIGHT_SELECTION,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                    AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                    AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
-                    AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
-                    AnalyticsParam.WEIGHT to selectedWeight
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.WEIGHT_SELECTION,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                        AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                        AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                        AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                        AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                        AnalyticsParam.WEIGHT to selectedWeight
+                    )
                 )
-            )
 
-            Handler(Looper.getMainLooper()).postDelayed({
-                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
-            }, 500)
-        }
-
-
-        val layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.layoutManager = layoutManager
-
-        // Generate numbers with increments of 0.1
-
-        for (i in 0..3000) {
-            numbers.add(i / 10f) // Increment by 0.1
-        }
-
-
-        adapter = RulerAdapter(numbers) { number ->
-            // Handle the selected number
-        }
-        recyclerView.adapter = adapter
-
-
-        // Center number with snap alignment
-        val snapHelper: SnapHelper = LinearSnapHelper()
-        snapHelper.attachToRecyclerView(recyclerView)
-
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    // Get the currently snapped position
-                    val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
-                    if (snappedView != null) {
-                        val position = recyclerView.layoutManager!!.getPosition(snappedView)
-                        val snappedNumber = numbers[position]
-                        //selected_number_text.setText("$snappedNumber Kg")
-                        if (selected_number_text != null) {
-                            selected_number_text!!.text = "$snappedNumber$selectedLabel"
-                            selectedWeight = selected_number_text?.text.toString()
-                            btnContinue.isEnabled = true
-                            btnContinue.backgroundTintList = colorStateList
-                        }
-                    }
-                }
+                Handler(Looper.getMainLooper()).postDelayed({
+                                                                activity?.let { act ->
+                                                                    if (act is OnboardingQuestionnaireActivity && isAdded) {
+                                                                        act.submitAnswer(onboardingQuestionRequest)
+                                                                    }
+                                                                }
+                                                            }, 500)
             }
-        })
-
-        rlRulerContainer.post {
-            // Get the width of the parent LinearLayout
-            val parentWidth: Int = rlRulerContainer.width
-
-            // Calculate horizontal padding (half of parent width)
-            val paddingHorizontal = parentWidth / 2
-
-            // Set horizontal padding programmatically
-            rulerView.setPadding(
-                paddingHorizontal,
-                rulerView.paddingTop,
-                paddingHorizontal,
-                rulerView.paddingBottom
-            )
         }
-        rulerView.post {
-            rulerView.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
-        }
+
         return view
     }
 
-    private fun setLbsValue() {
-        numbers.clear()
-        for (i in 0..6615) {
-            numbers.add(i / 10f)
+    private fun setupUnitButtons() {
+        kgOption.setOnClickListener {
+            if (currentUnit != WeightUnit.KG) {
+                currentUnit = WeightUnit.KG
+                updateButtonStates()
+                switchToUnit()
+            }
         }
-        adapter.notifyDataSetChanged()
+
+        lbsOption.setOnClickListener {
+            if (currentUnit != WeightUnit.LBS) {
+                currentUnit = WeightUnit.LBS
+                updateButtonStates()
+                switchToUnit()
+            }
+        }
+
+        updateButtonStates()
     }
 
-    private fun setKgsValue() {
-        numbers.clear()
-        for (i in 0..3000) {
-            numbers.add(i / 10f) // Increment by 0.1
+    private fun updateButtonStates() {
+        if (currentUnit == WeightUnit.KG) {
+            kgOption.setBackgroundResource(R.drawable.bg_left_selected)
+            kgOption.setTextColor(Color.WHITE)
+            lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+            lbsOption.setTextColor(Color.BLACK)
+        } else {
+            lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
+            lbsOption.setTextColor(Color.WHITE)
+            kgOption.setBackgroundResource(R.drawable.bg_left_unselected)
+            kgOption.setTextColor(Color.BLACK)
         }
-        adapter.notifyDataSetChanged()
+    }
+
+    private fun setupPicker() {
+        scrollView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                scrollView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                val screenWidth = scrollView.width
+                pickerView.sidePadding = screenWidth / 2
+                pickerView.itemSpacing = itemSpacing
+                pickerView.updateForKg()
+                pickerView.requestLayout()
+
+                scrollView.postDelayed({
+                                           val initialWeight = if (currentUnit == WeightUnit.KG) initialWeightKg else initialWeightLbs
+                                           scrollToWeight(initialWeight)
+                                       }, 100)
+            }
+        })
+
+        scrollView.viewTreeObserver.addOnScrollChangedListener {
+            val scrollX = scrollView.scrollX
+            val screenWidth = scrollView.width
+            val centerX = scrollX + screenWidth / 2f
+
+            val minWeight = getDisplayMinWeight()
+            val maxWeight = getDisplayMaxWeight()
+
+            // total ticks in "tenths"
+            val maxIndex = Math.round(((maxWeight - minWeight) * 10).toFloat()) // e.g. 30..200 => 1700
+
+            val minCenterX = pickerView.sidePadding.toFloat()
+            val maxCenterX = pickerView.sidePadding + maxIndex * itemSpacing
+
+            // ✅ Clamp center to valid tick area
+            val clampedCenterX = clampFloat(centerX, minCenterX, maxCenterX)
+
+            // ✅ index in tenths (0.1 steps) from left
+            val indexTenths = ((clampedCenterX - pickerView.sidePadding) / itemSpacing).toInt()
+            val safeIndexTenths = clamp(indexTenths, 0, maxIndex)
+
+            val displayWeight = minWeight + (safeIndexTenths / 10.0)
+
+            if (currentUnit == WeightUnit.KG) {
+                if (displayWeight != currentWeightKg) {
+                    currentWeightKg = displayWeight
+                    updateWeightDisplay()
+                }
+            } else {
+                if (displayWeight != currentWeightLbs) {
+                    currentWeightLbs = displayWeight
+                    updateWeightDisplay()
+                }
+            }
+
+            // ✅ If user flings beyond ends, pull back immediately (prevents indicator leaving scale)
+            if (centerX != clampedCenterX) {
+                val targetScroll = (clampedCenterX - screenWidth / 2f).toInt()
+                scrollView.scrollTo(targetScroll, 0)
+            }
+        }
+
+        /*scrollView.viewTreeObserver.addOnScrollChangedListener {
+            val scrollX = scrollView.scrollX
+            val screenWidth = scrollView.width
+            val centerX = scrollX + screenWidth / 2
+
+            val minWeight = getDisplayMinWeight()
+            val weightInTenths = ((centerX - pickerView.sidePadding) / itemSpacing).toInt()
+            val displayWeight = minWeight + (weightInTenths / 10.0)
+
+            if (displayWeight >= getDisplayMinWeight() && displayWeight <= getDisplayMaxWeight()) {
+                if (currentUnit == WeightUnit.KG) {
+                    if (displayWeight != currentWeightKg) {
+                        currentWeightKg = displayWeight
+                        updateWeightDisplay()
+                    }
+                } else {
+                    if (displayWeight != currentWeightLbs) {
+                        currentWeightLbs = displayWeight
+                        updateWeightDisplay()
+                    }
+                }
+            }
+        }*/
+
+        scrollView.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                snapToNearestWeight()
+            }
+            false
+        }
+    }
+
+    private fun switchToUnit() {
+        if (currentUnit == WeightUnit.KG) {
+            pickerView.updateForKg()
+        } else {
+            pickerView.updateForLbs()
+        }
+
+        scrollView.post {
+            val screenWidth = scrollView.width
+            pickerView.sidePadding = screenWidth / 2
+            pickerView.requestLayout()
+
+            scrollView.post {
+                val weight = if (currentUnit == WeightUnit.KG) initialWeightKg else initialWeightLbs
+                scrollToWeight(weight)
+            }
+        }
+
+        updateWeightDisplay()
+    }
+
+    private fun scrollToWeight(weight: Double) {
+        val minWeight = getDisplayMinWeight()
+        val weightInTenths = Math.round(((weight - minWeight) * 10).toFloat())
+        val screenWidth = scrollView.width
+        val targetScroll =
+            (pickerView.sidePadding + weightInTenths * itemSpacing - screenWidth / 2f).toInt()
+        scrollView.scrollTo(targetScroll, 0)
+    }
+
+    /*private fun scrollToWeight(weight: Double) {
+        val minWeight = getDisplayMinWeight()
+        val weightInTenths = ((weight - minWeight) * 10).toInt()
+        val screenWidth = scrollView.width
+        val targetScroll = (pickerView.sidePadding + weightInTenths * itemSpacing - screenWidth / 2).toInt()
+        scrollView.scrollTo(targetScroll, 0)
+    }*/
+    private fun snapToNearestWeight() {
+        scrollView.post {
+            val scrollX = scrollView.scrollX
+            val screenWidth = scrollView.width
+            val centerX = scrollX + screenWidth / 2f
+
+            val minWeight = getDisplayMinWeight()
+            val maxWeight = getDisplayMaxWeight()
+            val maxIndex = Math.round(((maxWeight - minWeight) * 10).toFloat())
+
+            val indexFloat = (centerX - pickerView.sidePadding) / itemSpacing
+            val indexRounded = Math.round(indexFloat)
+
+            val index = clamp(indexRounded, 0, maxIndex)
+
+            val targetScroll =
+                (pickerView.sidePadding + index * itemSpacing - screenWidth / 2f).toInt()
+
+            scrollView.smoothScrollTo(targetScroll, 0)
+        }
+    }
+
+  /*  private fun snapToNearestWeight() {
+        scrollView.post {
+            val scrollX = scrollView.scrollX
+            val screenWidth = scrollView.width
+            val centerX = scrollX + screenWidth / 2
+
+            val minWeight = getDisplayMinWeight()
+            val weightInTenths = Math.round((centerX - pickerView.sidePadding) / itemSpacing)
+
+            val targetScroll = (pickerView.sidePadding + weightInTenths * itemSpacing - screenWidth / 2).toInt()
+            scrollView.smoothScrollTo(targetScroll, 0)
+        }
+    }*/
+
+    private fun updateWeightDisplay() {
+        val displayWeight = if (currentUnit == WeightUnit.KG) currentWeightKg else currentWeightLbs
+        val unit = if (currentUnit == WeightUnit.KG) "kg" else "lbs"
+        selectedWeight = String.format("%.1f %s", displayWeight, unit)
+        selected_number_text?.text = selectedWeight
+    }
+
+    private fun validateInput(): Boolean {
+        val weightValue = if (currentUnit == WeightUnit.KG) currentWeightKg else currentWeightLbs
+
+        return if (currentUnit == WeightUnit.KG) {
+            if (weightValue in 30.0..300.0) {
+                true
+            } else {
+                Toast.makeText(requireContext(), "Please select weight between 30 kg and 300 kg", Toast.LENGTH_SHORT).show()
+                false
+            }
+        } else {
+            if (weightValue in 66.0..660.0) {
+                true
+            } else {
+                Toast.makeText(requireContext(), "Please select weight between 66 lbs and 660 lbs", Toast.LENGTH_SHORT).show()
+                false
+            }
+        }
+    }
+
+    private fun getDisplayMinWeight(): Double {
+        return if (currentUnit == WeightUnit.KG) 30.0 else 66.0
+    }
+
+    private fun getDisplayMaxWeight(): Double {
+        return if (currentUnit == WeightUnit.KG) 300.0 else 660.0
     }
 
     override fun onPause() {
         super.onPause()
         cardViewSelection.visibility = VISIBLE
         llSelectedWeight.visibility = GONE
+    }
+
+
+    ///  fix of last line scroll issue
+
+    private fun clamp(v: Int, min: Int, max: Int): Int = when {
+        v < min -> min
+        v > max -> max
+        else -> v
+    }
+
+    private fun clampFloat(v: Float, min: Float, max: Float): Float = when {
+        v < min -> min
+        v > max -> max
+        else -> v
     }
 
 }

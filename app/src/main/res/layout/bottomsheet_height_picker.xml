@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/toproundedcornershape"
+    android:backgroundTint="#F5F5F5"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:id="@+id/rlSwitch"
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="50dp">
+
+        <LinearLayout
+            android:id="@+id/toggleContainer"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:orientation="horizontal"
+            android:padding="2dp"
+            android:layout_margin="2dp"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:id="@+id/feetOption"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="ft.in"
+                android:fontFamily="@font/dmsans_bold"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:background="@drawable/bg_left_unselected" />
+
+            <TextView
+                android:id="@+id/cmsOption"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="cm"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_right_selected" />
+        </LinearLayout>
+
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/margin_card_16dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingEnd="24dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/heightTextFeet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5 ft"
+                    android:textSize="34sp"
+                    android:layout_marginEnd="5dp"
+                    android:textColor="@color/text_color_app"
+                    android:fontFamily="@font/poppins_medium"/>
+
+                <TextView
+                    android:id="@+id/heightTextInches"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5 in"
+                    android:textSize="34sp"
+                    android:textColor="@color/text_color_app"
+                    android:fontFamily="@font/poppins_medium"
+                    />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/heightTextCm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="170 cm"
+                android:textSize="34sp"
+                android:textColor="@color/text_color_app"
+                android:fontFamily="@font/poppins_medium"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="150dp"
+            android:layout_height="400dp"
+            android:background="#E8E8E8">
+
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:scrollbars="none"
+                android:fadeScrollbars="true">
+
+                <com.jetsynthesys.rightlife.ui.customviews.HeightPickerView
+                    android:id="@+id/pickerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </ScrollView>
+
+            <View
+                android:layout_width="70dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center_vertical|start"
+                android:background="#FF6B6B"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginHorizontal="36dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="36dp"
+        android:backgroundTint="@color/menuselected"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="Save"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textsize_large"
+        android:layout_margin="@dimen/margin_card_16dp"
+        android:layout_below="@+id/ll_main_ruler" />
+
+</LinearLayout>
