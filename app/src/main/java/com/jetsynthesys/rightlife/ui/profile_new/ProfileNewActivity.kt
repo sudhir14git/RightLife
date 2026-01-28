@@ -977,6 +977,7 @@ class ProfileNewActivity : BaseActivity() {
                     binding.etEmail.isEnabled = false
                     binding.btnVerifyEmail.visibility = GONE
                     setEndDrawable(binding.etEmail)
+                    userData.email = binding.etEmail.text.toString()
 
                     userDataResponse.userdata = userData
                     sharedPreferenceManager.saveUserProfile(userDataResponse)
