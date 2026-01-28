@@ -239,6 +239,8 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_MIND_AUDIT_DASS21 = "mind-audit/dass21"
 
         const val TARGET_ARTICLE = "article"
+        const val TARGET_AUDIO = "audio"
+        const val TARGET_VIDEO = "video"
 
 
     }
@@ -613,6 +615,26 @@ class HomeNewActivity : BaseActivity() {
 
             else -> {
                 if (target.contains(TARGET_ARTICLE)) {
+                    target?.split("/")?.let { link ->
+                        // Check if we actually have a second part (index 1)
+                        if (link.size > 2) {
+                            startActivity(
+                                Intent(this, ArticlesDetailActivity::class.java)
+                                    .putExtra("contentId", link[2])
+                            )
+                        }
+                    }
+                } else if (target.contains(TARGET_AUDIO)) {
+                    target?.split("/")?.let { link ->
+                        // Check if we actually have a second part (index 1)
+                        if (link.size > 2) {
+                            startActivity(
+                                Intent(this, ArticlesDetailActivity::class.java)
+                                    .putExtra("contentId", link[2])
+                            )
+                        }
+                    }
+                } else if (target.contains(TARGET_VIDEO)) {
                     target?.split("/")?.let { link ->
                         // Check if we actually have a second part (index 1)
                         if (link.size > 2) {
