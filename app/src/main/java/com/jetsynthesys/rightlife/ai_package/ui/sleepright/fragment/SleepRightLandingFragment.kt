@@ -2735,11 +2735,18 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         // Y Axis Left
+        val maxEntryValue = listOf(
+            idealEntries.maxOfOrNull { it.y } ?: 0f,
+            actualEntries.maxOfOrNull { it.y } ?: 0f
+        ).maxOrNull() ?: 0f
+
+        val paddedMax = maxEntryValue * 1.2f
+        val roundedMax = kotlin.math.ceil(paddedMax)
+
         lineChart.axisLeft.apply {
             axisMinimum = 0f
-            axisMaximum = 20f
+            axisMaximum = roundedMax
             granularity = 1f
-            textSize = 12f
         }
         // Y Axis Right
         lineChart.axisRight.isEnabled = false
