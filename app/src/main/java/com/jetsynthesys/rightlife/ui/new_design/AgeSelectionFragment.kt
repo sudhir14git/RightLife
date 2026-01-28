@@ -160,7 +160,7 @@ class AgeSelectionFragment : Fragment() {
                     AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                     AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                    AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                    AnalyticsParam.GENDER to (onboardingQuestionRequest.gender?:"Male"),
                     AnalyticsParam.AGE to selectedAge
                 )
             )

@@ -124,11 +124,11 @@ class StressManagementSelectionFragment : Fragment() {
                     AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                     AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                    AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                    AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
-                    AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
-                    AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
-                    AnalyticsParam.BODY_FAT to onboardingQuestionRequest.bodyFat!!,
+                    AnalyticsParam.GENDER to (onboardingQuestionRequest.gender ?: "Male"),
+                    AnalyticsParam.AGE to (onboardingQuestionRequest.age ?: 27),
+                    AnalyticsParam.HEIGHT to (onboardingQuestionRequest.height ?: "173 cm"),
+                    AnalyticsParam.WEIGHT to (onboardingQuestionRequest.weight ?: "75 kg"),
+                    AnalyticsParam.BODY_FAT to (onboardingQuestionRequest.bodyFat ?: ""),
                     AnalyticsParam.STRESS_MANAGEMENT to selectedStressManagement.header
                 )
             )

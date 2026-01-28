@@ -10,7 +10,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -19,7 +18,6 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ui.customviews.HeightPickerBottomSheet
 import com.jetsynthesys.rightlife.ui.customviews.HeightPickerView
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -42,15 +40,17 @@ class HeightSelectionFragment : Fragment() {
     private lateinit var cmsOption: TextView
 
     private enum class HeightUnit { FEET_INCHES, CM }
+
     private var currentUnit = HeightUnit.FEET_INCHES
     private var currentTotalInches = 68
     private var currentCm = 173
-    private var initialTotalInches = 68
-    private var initialCm = 173
     private val itemSpacing = 30f
 
     private var isInitializing = true
     private var isSwitchingUnit = false
+
+    private var defaultTotalInches = 68 // 5'8"
+    private var defaultCm = 173
 
     companion object {
         fun newInstance(pageIndex: Int): HeightSelectionFragment {
@@ -63,19 +63,20 @@ class HeightSelectionFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val gender = SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
+        val gender =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
 
         if (gender == "Male" || gender == "M") {
-            currentTotalInches = 68
-            currentCm = 173
-            initialTotalInches = 68
-            initialCm = 173
+            defaultTotalInches = 68 // 5 ft 8 in
+            defaultCm = 173
         } else {
-            currentTotalInches = 64
-            currentCm = 163
-            initialTotalInches = 64
-            initialCm = 163
+            defaultTotalInches = 64 // 5 ft 4 in
+            defaultCm = 163
         }
+
+        // ✅ Always keep defaults set (NO conversion)
+        currentTotalInches = defaultTotalInches
+        currentCm = defaultCm
 
         feetOption.setBackgroundResource(R.drawable.bg_left_selected)
         feetOption.setTextColor(Color.WHITE)
@@ -114,20 +115,21 @@ class HeightSelectionFragment : Fragment() {
             )
         )
 
-        val onboardingQuestionRequest = SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+        val onboardingQuestionRequest =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
         val gender = onboardingQuestionRequest.gender
 
         if (gender == "Male" || gender == "M") {
-            currentTotalInches = 68
-            currentCm = 173
-            initialTotalInches = 68
-            initialCm = 173
+            defaultTotalInches = 68 // 5 ft 8 in
+            defaultCm = 173
         } else {
-            currentTotalInches = 64
-            currentCm = 163
-            initialTotalInches = 64
-            initialCm = 163
+            defaultTotalInches = 64 // 5 ft 4 in
+            defaultCm = 163
         }
+
+        // ✅ Always keep defaults set (NO conversion)
+        currentTotalInches = defaultTotalInches
+        currentCm = defaultCm
 
         setupUnitButtons()
         setupPicker()
@@ -138,13 +140,12 @@ class HeightSelectionFragment : Fragment() {
             if (validateInput()) {
                 btnContinue.disableViewForSeconds()
                 onboardingQuestionRequest.height = selectedHeight
-                SharedPreferenceManager.getInstance(requireContext()).saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+                SharedPreferenceManager.getInstance(requireContext())
+                    .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
 
                 cardViewSelection.visibility = GONE
                 llSelectedHeight.visibility = VISIBLE
                 tvSelectedHeight.text = selectedHeight
-
-                val age = onboardingQuestionRequest.age?:0
 
                 AnalyticsLogger.logEvent(
                     AnalyticsEvent.HEIGHT_SELECTION,
@@ -153,19 +154,19 @@ class HeightSelectionFragment : Fragment() {
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                         AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                         AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                        AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                        AnalyticsParam.AGE to age,
+                        AnalyticsParam.GENDER to (onboardingQuestionRequest.gender ?: "Male"),
+                        AnalyticsParam.AGE to (onboardingQuestionRequest.age ?: 27),
                         AnalyticsParam.HEIGHT to selectedHeight
                     )
                 )
 
                 Handler(Looper.getMainLooper()).postDelayed({
-                                                                activity?.let { act ->
-                                                                    if (act is OnboardingQuestionnaireActivity && isAdded) {
-                                                                        act.submitAnswer(onboardingQuestionRequest)
-                                                                    }
-                                                                }
-                                                            }, 500)
+                    activity?.let { act ->
+                        if (act is OnboardingQuestionnaireActivity && isAdded) {
+                            act.submitAnswer(onboardingQuestionRequest)
+                        }
+                    }
+                }, 500)
             }
         }
 
@@ -223,8 +224,8 @@ class HeightSelectionFragment : Fragment() {
 
                 isInitializing = true
                 // ✅ scroll to correct default according to currentUnit
-                if (currentUnit == HeightUnit.FEET_INCHES) scrollToInches(currentTotalInches)
-                else scrollToCm(currentCm)
+                if (currentUnit == HeightUnit.FEET_INCHES) scrollToInches(defaultTotalInches)
+                else scrollToCm(defaultCm)
 
                 scrollView.post {
                     isInitializing = false
@@ -306,6 +307,7 @@ class HeightSelectionFragment : Fragment() {
             false
         }
     }
+
     private fun clamp(v: Int, min: Int, max: Int): Int = when {
         v < min -> min
         v > max -> max
@@ -335,9 +337,11 @@ class HeightSelectionFragment : Fragment() {
 
             pickerView.post {
                 if (currentUnit == HeightUnit.FEET_INCHES) {
-                    scrollToInches(currentTotalInches)
+                    currentTotalInches = defaultTotalInches
+                    scrollToInches(defaultTotalInches)
                 } else {
-                    scrollToCm(currentCm)
+                    currentCm = defaultCm
+                    scrollToCm(defaultCm)
                 }
 
                 updateHeightDisplay()
@@ -349,6 +353,7 @@ class HeightSelectionFragment : Fragment() {
             }
         }
     }
+
     private fun scrollToInches(totalInches: Int) {
         val maxInches = 7 * 12
         val index = maxInches - totalInches // ✅ reversed
@@ -357,6 +362,7 @@ class HeightSelectionFragment : Fragment() {
             (pickerView.sidePadding + index * itemSpacing - screenHeight / 2f).toInt()
         scrollView.scrollTo(0, targetScroll)
     }
+
     private fun scrollToCm(cm: Int) {
         val maxCm = 220
         val index = maxCm - cm // ✅ reversed
@@ -407,14 +413,22 @@ class HeightSelectionFragment : Fragment() {
             if (feet in 4..7) {
                 true
             } else {
-                Toast.makeText(requireActivity(), "Height should be between 4 feet to 7 feet", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireActivity(),
+                    "Height should be between 4 feet to 7 feet",
+                    Toast.LENGTH_SHORT
+                ).show()
                 false
             }
         } else {
             if (currentCm in 120..220) {
                 true
             } else {
-                Toast.makeText(requireActivity(), "Height should be between 120 cm to 220 cm", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireActivity(),
+                    "Height should be between 120 cm to 220 cm",
+                    Toast.LENGTH_SHORT
+                ).show()
                 false
             }
         }

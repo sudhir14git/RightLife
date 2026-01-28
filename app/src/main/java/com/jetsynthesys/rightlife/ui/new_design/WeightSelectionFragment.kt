@@ -146,9 +146,9 @@ class WeightSelectionFragment : Fragment() {
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                         AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                         AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                        AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                        AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
-                        AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                        AnalyticsParam.GENDER to (onboardingQuestionRequest.gender?:"Male"),
+                        AnalyticsParam.AGE to (onboardingQuestionRequest.age?:27),
+                        AnalyticsParam.HEIGHT to (onboardingQuestionRequest.height?:"173 cm"),
                         AnalyticsParam.WEIGHT to selectedWeight
                     )
                 )

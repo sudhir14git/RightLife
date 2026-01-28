@@ -104,6 +104,7 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.AppLoader
+import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
@@ -237,6 +238,8 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_MIND_AUDIT_CAS = "mind-audit/cas"
         const val TARGET_MIND_AUDIT_DASS21 = "mind-audit/dass21"
 
+        const val TARGET_ARTICLE = "article"
+
 
     }
 
@@ -290,6 +293,8 @@ class HomeNewActivity : BaseActivity() {
 
     private fun handleDeepLinkTarget(target: String?) {
         if (target == null) return
+
+        Log.d("Umesh", "Target = $target")
 
         // If data not ready for this target, just store it and return
         if (!isInitialDataReadyFor(target)) {
@@ -607,7 +612,17 @@ class HomeNewActivity : BaseActivity() {
             }
 
             else -> {
-                // Unknown / not mapped → ignore
+                if (target.contains(TARGET_ARTICLE)) {
+                    target?.split("/")?.let { link ->
+                        // Check if we actually have a second part (index 1)
+                        if (link.size > 2) {
+                            startActivity(
+                                Intent(this, ArticlesDetailActivity::class.java)
+                                    .putExtra("contentId", link[2])
+                            )
+                        }
+                    }
+                }
             }
         }
     }
