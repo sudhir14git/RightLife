@@ -100,6 +100,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var tvSetGoal : TextView
     private lateinit var description_progressbar_layout : TextView
     private lateinit var lineChart: LineChart
+    private lateinit var goalLayout : LinearLayoutCompat
     private var loadingOverlay : FrameLayout? = null
     private lateinit var customProgressPreviousWeek : BasicProgressBar
     private lateinit var customProgressBarFatBurn : SimpleProgressBar
@@ -140,7 +141,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         iconEdit = view.findViewById(R.id.iconEdit)
         tvSetGoal = view.findViewById(R.id.tvSetGoal)
         description_progressbar_layout = view.findViewById(R.id.description_progressbar_layout)
-
+        goalLayout = view.findViewById(R.id.goalLayout)
 
         layoutSetGoal.setOnClickListener {
             val args = Bundle().apply {
@@ -425,18 +426,23 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             layoutSetGoal.setBackgroundResource(R.drawable.add_cart_button_background)
             tvSetGoal?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
         }
-        val goalStepsLine = LimitLine(stepData.stepsGoal.toFloat(), "G")
-        goalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_minimal)
-        goalStepsLine.lineWidth = 1f
-        goalStepsLine.enableDashedLine(10f, 10f, 0f)
-        goalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
-        goalStepsLine.textSize = 10f
-        goalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
         leftYAxis.removeAllLimitLines()
+        if (stepData.stepsGoal != null && stepData.stepsGoal > 0) {
+            val goalStepsLine  = LimitLine(stepData.stepsGoal.toFloat(), "G")
+            goalLayout.visibility = View.VISIBLE
+            goalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_minimal)
+            goalStepsLine.lineWidth = 1f
+            goalStepsLine.enableDashedLine(10f, 10f, 0f)
+            goalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.white)
+            goalStepsLine.textSize = 10f
+            goalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            leftYAxis.addLimitLine(goalStepsLine)
+        }
 
         leftYAxis.addLimitLine(avgStepsLine)
-        leftYAxis.addLimitLine(goalStepsLine)
+
         currentGoal = stepData.stepsGoal
 
         // Multiline X-axis labels
