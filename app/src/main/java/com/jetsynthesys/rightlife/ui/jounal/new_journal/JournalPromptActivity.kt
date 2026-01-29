@@ -68,7 +68,7 @@ class JournalPromptActivity : BaseActivity() {
             }
 
 
-            DialogUtils.showJournalCommonDialog(this, journalItem.title!!, htmlText)
+            DialogUtils.showJournalCommonDialog(this, journalItem.title?:"", htmlText)
         }
         // write a code here to show subtext according to journal item
         val subtext = when

@@ -355,7 +355,8 @@ class HomeNewActivity : BaseActivity() {
             }
 
             TARGET_AI_REPORT -> {
-                callAIReportCardClick()
+                if (sharedPreferenceManager.userProfile.isReportGenerated)
+                    callAIReportCardClick()
             }
 
             TARGET_MIND_AUDIT -> {
@@ -1371,18 +1372,6 @@ class HomeNewActivity : BaseActivity() {
                         binding.rightLifeReportCard.visibility = View.GONE
                     }
 
-
-                    /*if (!ResponseObj.reportView){
-                        binding.rightLifeReportCard.visibility = View.VISIBLE
-                    } else {
-                        binding.rightLifeReportCard.visibility = View.GONE
-                    }*/
-                    /*if (ResponseObj.isFacialReport != null && ResponseObj.isFacialReport) {
-                        showSwitchAccountDialog(this@HomeNewActivity,"","")
-                    } else {
-
-                    }*/
-
                     // Find HealthCam service and check if it's free
                     var isHealthCamFree = ResponseObj?.homeServices
                         ?.find { it.title == "HealthCam" }
@@ -1390,19 +1379,9 @@ class HomeNewActivity : BaseActivity() {
                     Log.d("isHealthCamFree", isHealthCamFree.toString())
                     handleUserSubscriptionStatus(ResponseObj.user_sub_status)
                     if (ResponseObj.freeServiceDate.isNotEmpty()) {
-                        /*if (showheaderFlag) {
-                            binding.llCountDown.visibility = View.VISIBLE
-                        }*/
                         // Get the current fragment
                         supportFragmentManager.findFragmentById(R.id.fragmentContainer)
 
-                        // Check if it's HomeDashboardFragment
-                        /*if (currentFragment is HomeDashboardFragment) {
-                            if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status != 3)
-                                binding.llCountDown.visibility = View.VISIBLE
-                        } else {
-                            binding.llCountDown.visibility = View.GONE
-                        }*/
                         if (ResponseObj.user_sub_status != 1 || ResponseObj.user_sub_status != 3)
                             binding.llCountDown.visibility = View.VISIBLE
                         showSevenDayCountdown(ResponseObj.freeServiceDate, binding.tvDays)

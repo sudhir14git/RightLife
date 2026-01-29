@@ -82,7 +82,7 @@ class JournalNewActivity : BaseActivity() {
                             }
                         }
                         if (journalItemSend != null) {
-                            startNextActivity(journalItemSend!!)
+                            startNextActivity(journalItemSend)
                             finish()
                         } else {
                             runOnUiThread {
@@ -109,8 +109,8 @@ class JournalNewActivity : BaseActivity() {
         })
     }
 
-    private fun startNextActivity(journalItem: JournalItem) {
-        val intent = when (journalItem.title) {
+    private fun startNextActivity(journalItem: JournalItem?) {
+        val intent = when (journalItem?.title) {
             "Free Form" -> Intent(
                 this@JournalNewActivity,
                 FreeFormJournalActivity::class.java

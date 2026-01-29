@@ -73,7 +73,7 @@ class SplashScreenActivity : BaseActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     try {
-                        val json = response.body()!!.string()
+                        val json = response.body()?.string() ?: ""
                         appConfig =
                             com.google.gson.Gson().fromJson(json, AppConfigResponse::class.java)
 
@@ -123,7 +123,7 @@ class SplashScreenActivity : BaseActivity() {
     private fun logCurrentFCMToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val token = task.result
+                task.result
                 //Log.d("FCM_TOKEN", "Current token: $token")
                 //Log.d("FCM_TOKEN", "Token length: ${token?.length}")
             } else {

@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.settings
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -110,9 +111,26 @@ class SettingsNewActivity : BaseActivity() {
         othersAdapter = SettingsAdapter(settingsItems) { item ->
             when (item.title) {
                 "Rate RightLife" -> {
-                    val uri = Uri.parse("market://details?id=${packageName}")
-                    val rateIntent = Intent(Intent.ACTION_VIEW, uri)
-                    startActivity(rateIntent)
+                    try {
+                        // 1. Try to open via the Play Store App
+                        val uri = Uri.parse("market://details?id=${packageName}")
+                        val rateIntent = Intent(Intent.ACTION_VIEW, uri)
+                        // Add flags to prevent back stack issues
+                        rateIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or
+                                Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
+                                Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                        startActivity(rateIntent)
+                    } catch (e: ActivityNotFoundException) {
+                        // 2. Fallback: If Play Store app is missing, open via Web Browser
+                        try {
+                            val webUri = Uri.parse("https://play.google.com/store/apps/details?id=${packageName}")
+                            val webIntent = Intent(Intent.ACTION_VIEW, webUri)
+                            startActivity(webIntent)
+                        } catch (e: Exception) {
+                            // 3. Fallback if no browser is found either
+                            Toast.makeText(this, "Unable to open store", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
 
                 "Share" -> {
