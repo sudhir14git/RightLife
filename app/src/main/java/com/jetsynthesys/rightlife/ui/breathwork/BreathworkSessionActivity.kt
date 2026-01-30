@@ -40,13 +40,10 @@ class BreathworkSessionActivity : BaseActivity() {
         if (startDate.isEmpty())
             startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
-        /*binding.ivPlus.setImageResource(
-            if (breathingData?.isAddedToToolKit!!) R.drawable.greentick else R.drawable.ic_breathing_toolkit
-        )*/
-        setSaveImage(breathingData!!)
+        setSaveImage(breathingData)
 
         setupUI()
-        setupListeners(breathingData!!)
+        setupListeners(breathingData)
         if (breathingData?.title == "Custom") {
             breathingData?.breathInhaleTime = "4"
             breathingData?.breathHoldTime = "4"
@@ -56,29 +53,12 @@ class BreathworkSessionActivity : BaseActivity() {
         setBreathingTypeColors()
     }
 
-    private fun setSaveImage(breathingData: BreathingData) {
+    private fun setSaveImage(breathingData: BreathingData?) {
+        // 1. Safe Guard: Exit if data is null
+        val data = breathingData ?: return
 
-        if (breathingData.isAddedToToolKit) {
-            binding.ivPlus.setImageResource(R.drawable.ic_save_article_active)
-            binding.ivPlus.imageTintList =
-                ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.color_eat_right
-                    )
-                )
-        } else {
-            binding.ivPlus.setImageResource(R.drawable.ic_save_article)
-            binding.ivPlus.imageTintList =
-                ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.black
-                    )
-                )
-        }
-
-        val textColorRes = when (breathingData.title?.trim()) {
+        // 2. Determine the specific branding color for this breathing type
+        val brandingColorRes = when (data.title?.trim()) {
             "Box Breathing" -> R.color.box_breathing_card_color_text
             "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color_text
             "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color_text
@@ -86,9 +66,20 @@ class BreathworkSessionActivity : BaseActivity() {
             else -> R.color.custom_breathing_card_color_text
         }
 
-        val textColor = ContextCompat.getColor(this, textColorRes)
+        val brandingColor = ContextCompat.getColor(this, brandingColorRes)
+        val blackColor = ContextCompat.getColor(this, R.color.black)
 
-        binding.ivPlus.imageTintList = ColorStateList.valueOf(textColor)
+        // 3. Apply State (Active vs Inactive)
+        // We treat null 'isAddedToToolKit' as false to be safe
+        if (data.isAddedToToolKit == true) {
+            binding.ivPlus.setImageResource(R.drawable.ic_save_article_active)
+            // Use the specific branding color when active
+            binding.ivPlus.imageTintList = ColorStateList.valueOf(brandingColor)
+        } else {
+            binding.ivPlus.setImageResource(R.drawable.ic_save_article)
+            // Use black when inactive (unsaved)
+            binding.ivPlus.imageTintList = ColorStateList.valueOf(blackColor)
+        }
     }
 
     private fun setupUI() {
@@ -136,7 +127,7 @@ class BreathworkSessionActivity : BaseActivity() {
         picker.wrapSelectorWheel = false
     }
 
-    private fun setupListeners(breathWorData: BreathingData) {
+    private fun setupListeners(breathWorData: BreathingData?) {
         binding.ivBack.setOnClickListener { finish() }
 
         binding.btnMinus.setOnClickListener {
@@ -183,15 +174,15 @@ class BreathworkSessionActivity : BaseActivity() {
                 !breathingData?.isAddedToToolKit!!
             )
             breathingData?.isAddedToToolKit = !breathingData?.isAddedToToolKit!!
-            setSaveImage(breathingData!!)
+            setSaveImage(breathingData)
         }
     }
 
     private fun calculateSessiontime() {
         val totalSets = sessionCount
-        val inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
-        val exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
-        val holdTime = breathingData?.breathHoldTime?.toLong()!! * 1000
+        val inhaleTime = (breathingData?.breathInhaleTime?.toLong() ?: 0L) * 1000
+        val exhaleTime = (breathingData?.breathExhaleTime?.toLong() ?: 0L) * 1000
+        val holdTime = (breathingData?.breathHoldTime?.toLong() ?: 0L) * 1000
 
         // Calculate session duration based on the selected practice
         val cycleDuration = inhaleTime +

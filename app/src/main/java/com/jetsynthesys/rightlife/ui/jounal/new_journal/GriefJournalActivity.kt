@@ -118,11 +118,11 @@ class GriefJournalActivity : BaseActivity() {
 
         binding.ivRefresh.setOnClickListener {
             if (questionsList?.isNotEmpty() == true) {
-                if (questionsList!!.size - 1 == position)
+                if (questionsList?.size?.minus(1) == position)
                     position = 0
                 else
                     position += 1
-                binding.tvPrompt.text = questionsList!![position].question
+                binding.tvPrompt.text = questionsList?.getOrNull(position)?.question ?: ""
             }
         }
 

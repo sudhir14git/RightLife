@@ -121,7 +121,7 @@ class BreathworkActivity : BaseActivity() {
                                 }
                             }
                             if (breathingDataSend != null) {
-                                startNextActivity(breathingDataSend!!)
+                                startNextActivity(breathingDataSend)
                                 finish()
                             } else
                                 adapter.notifyDataSetChanged()

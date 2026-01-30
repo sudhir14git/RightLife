@@ -54,11 +54,11 @@ class FAQNewActivity : BaseActivity() {
         call.enqueue(object : Callback<FAQResponse> {
             override fun onResponse(call: Call<FAQResponse>, response: Response<FAQResponse>) {
                 if (response.isSuccessful && response.body() != null) {
-                    val faqResponse = response.body()!!
+                    val faqResponse = response.body()
                     mixedItems.clear()
 
                     // ✅ Build combined list: section title + questions
-                    faqResponse.data?.forEach { section ->
+                    faqResponse?.data?.forEach { section ->
                         section.title?.let { title ->
                             mixedItems.add(title)   // Add section header
                         }

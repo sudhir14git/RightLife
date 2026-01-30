@@ -132,10 +132,6 @@ class StressManagementSelectionFragment : Fragment() {
                     AnalyticsParam.STRESS_MANAGEMENT to selectedStressManagement.header
                 )
             )
-
-         /*   Handler(Looper.getMainLooper()).postDelayed({
-                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
-            }, 500)*/
             // cancel any pending submit
             submitJob?.cancel()
 
@@ -145,17 +141,14 @@ class StressManagementSelectionFragment : Fragment() {
                 // only submit if we’re still at least STARTED (i.e., not backing away)
                 if (!isAdded || !lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return@launch
                 (activity as? OnboardingQuestionnaireActivity)?.submitAnswer(onboardingQuestionRequest)
+                delay(500)
+                llSelectedStressManagement.visibility = GONE
+                rlStressManagement.visibility = VISIBLE
             }
         }
 
         return view
     }
-
-/*    override fun onPause() {
-        super.onPause()
-        llSelectedStressManagement.visibility = GONE
-        rlStressManagement.visibility = VISIBLE
-    }*/
 
     override fun onPause() {
         super.onPause()

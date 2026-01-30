@@ -50,7 +50,7 @@ class HealthCamActivity : BaseActivity() {
 
         binding.icBackDialog.setOnClickListener {
             val currentItem = binding.viewPager.currentItem
-            adapter!!.itemCount
+            adapter?.itemCount
             if (currentItem == 0) {
                 finish()
             } else {
@@ -64,14 +64,15 @@ class HealthCamActivity : BaseActivity() {
 
         binding.btnHowitworks.setOnClickListener {
             val currentItem = binding.viewPager.currentItem
-            val totalItems = adapter!!.itemCount
-            // Go to the next page if it's not the last one
+            val totalItems = binding.viewPager.adapter?.itemCount ?: 0
+
             if (currentItem < totalItems - 1) {
                 binding.viewPager.currentItem = currentItem + 1
             } else {
                 val desc =
                     "This Face scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
-                DialogUtils.showCommonBottomSheetDialog(this, description = desc,
+                DialogUtils.showCommonBottomSheetDialog(
+                    this, description = desc,
                     onOkayClick = {
                         startActivity(
                             Intent(
@@ -98,9 +99,10 @@ class HealthCamActivity : BaseActivity() {
     // Method to update button text based on the current page
     @SuppressLint("SetTextI18n")
     private fun updateButtonText(position: Int) {
-        val totalItems = adapter!!.itemCount
+        val currentItem = binding.viewPager.currentItem
+        val totalItems = binding.viewPager.adapter?.itemCount ?: 0
 
-        if (position == totalItems - 1) {
+        if (currentItem < totalItems - 1) {
             binding.btnHowitworks.text = "Start Now"
         } else {
             binding.btnHowitworks.text = "Start Now"
@@ -112,12 +114,12 @@ class HealthCamActivity : BaseActivity() {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.layout_exit_dialog_mind)
         dialog.setCancelable(true)
-        dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         val window = dialog.window
         // Set the dim amount
-        val layoutParams = window!!.attributes
-        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
-        window.attributes = layoutParams
+        val layoutParams = window?.attributes
+        layoutParams?.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
+        window?.attributes = layoutParams
 
         // Find views from the dialog layout
         //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
@@ -154,7 +156,6 @@ class HealthCamActivity : BaseActivity() {
                     Utils.dismissLoader(this@HealthCamActivity)
                     if (response.isSuccessful && response.body() != null) {
                         try {
-                            //val jsonString = response.body()!!.string()
                             finish()
                             startActivity(
                                 Intent(
