@@ -659,10 +659,11 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     }
 
     fun markdownToBold(text: String): Spanned {
-        val htmlText = text.replace(Regex("\\*\\*(.*?)\\*\\*"), "<b>$1</b>")
+        val htmlText = text
+            .replace("\n", "<br>")
+            .replace(Regex("\\*\\*(.*?)\\*\\*"), "<b>$1</b>")
         return Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)
     }
-
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {

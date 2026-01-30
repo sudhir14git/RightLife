@@ -1089,7 +1089,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     fun markdownToBold(text: String): Spanned {
-        val htmlText = text.replace(Regex("\\*\\*(.*?)\\*\\*"), "<b>$1</b>")
+        val htmlText = text
+            .replace("\n", "<br>")
+            .replace(Regex("\\*\\*(.*?)\\*\\*"), "<b>$1</b>")
         return Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)
     }
 
