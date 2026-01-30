@@ -543,13 +543,29 @@ class HomeNewActivity : BaseActivity() {
             }
 
             TARGET_CHALLENGE_HOME -> {
-                if (sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus)
+                val isValidState = sharedPreferenceManager.challengeState in listOf(3, 4)
+
+                if (
+                    isValidState &&
+                    sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
+                    DashboardChecklistManager.checklistStatus
+                ) {
                     startActivity(Intent(this, ChallengeActivity::class.java))
+                }
+
             }
 
             TARGET_CHALLENGE_LEADERBOARD -> {
-                if (sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus)
+                val isValidState = sharedPreferenceManager.challengeState in listOf(3, 4)
+
+                if (
+                    isValidState &&
+                    sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
+                    DashboardChecklistManager.checklistStatus
+                ) {
                     startActivity(Intent(this, LeaderboardActivity::class.java))
+                }
+
             }
 
             TARGET_SUBSCRIPTION_PLAN -> {
