@@ -1325,6 +1325,7 @@ class HomeNewActivity : BaseActivity() {
             }
         }
         val target = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
+        Log.e("Target","target Home = "+target)
         handleDeepLinkTarget(target)
     }
 
