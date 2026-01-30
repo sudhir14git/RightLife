@@ -163,8 +163,8 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
                         sharedPreferenceManager.appConfigJson,
                         AppConfigResponse::class.java
                     )
-                /*binding.layoutRazorPay.visibility =
-                    if (appConfig?.data?.razorpay?.enabled == true) View.VISIBLE else View.GONE*/
+                binding.layoutRazorPay.visibility =
+                    if (appConfig?.data?.razorpay?.enabled == true) View.VISIBLE else View.GONE
 
             }
         } catch (e: Exception) {
