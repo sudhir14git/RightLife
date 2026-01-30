@@ -24,7 +24,6 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class HealthGoalFragment : Fragment() {
 
@@ -83,8 +82,7 @@ class HealthGoalFragment : Fragment() {
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
 
-        val colorStateListSelected =
-            ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
+        ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
         btnContinue.visibility = GONE
         adapter = HealthGoalAdapter(requireContext(), healthGoalList) { healthGoal ->
             //btnContinue.isEnabled = true
@@ -111,41 +109,6 @@ class HealthGoalFragment : Fragment() {
 
 
         btnContinue.setOnClickListener { handleContinueClick() }
-        /*btnContinue.setOnClickListener {
-            llSelectedHealthGoal.visibility = VISIBLE
-            rlHealthGoal.visibility = GONE
-            tvSelectedHealthGoal.text = selectedHealthGoal
-            tvDescription.visibility = GONE
-
-            btnContinue.disableViewForSeconds()
-
-            val onboardingQuestionRequest =
-                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-            onboardingQuestionRequest.dailyGoalAchieveTime = selectedHealthGoal
-            SharedPreferenceManager.getInstance(requireContext())
-                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
-
-            AnalyticsLogger.logEvent(
-                AnalyticsEvent.ACHIEVE_HEALTH_GOALS_SELECTION,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                    AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                    AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
-                    AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
-                    AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
-                    AnalyticsParam.BODY_FAT to onboardingQuestionRequest.bodyFat!!,
-                    AnalyticsParam.STRESS_MANAGEMENT to selectedHealthGoal
-                )
-            )
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
-            }, 500)
-        }*/
-
 
         return view
     }
@@ -159,31 +122,32 @@ class HealthGoalFragment : Fragment() {
         //btnContinue.disableViewForSeconds()
 
         val onboardingQuestionRequest =
-                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
         onboardingQuestionRequest.dailyGoalAchieveTime = selectedHealthGoal
         SharedPreferenceManager.getInstance(requireContext())
-                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+            .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
 
         AnalyticsLogger.logEvent(
-                AnalyticsEvent.ACHIEVE_HEALTH_GOALS_SELECTION,
-                mapOf(
-                        AnalyticsParam.USER_ID to SharedPreferenceManager.getInstance(requireActivity()).userId,
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                        AnalyticsParam.GOAL to SharedPreferenceManager.getInstance(requireActivity()).selectedOnboardingModule,
-                        AnalyticsParam.SUB_GOAL to SharedPreferenceManager.getInstance(requireActivity()).selectedOnboardingSubModule,
-                        AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                        AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
-                        AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
-                        AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
-                        AnalyticsParam.BODY_FAT to onboardingQuestionRequest.bodyFat!!,
-                        AnalyticsParam.STRESS_MANAGEMENT to selectedHealthGoal
-                )
+            AnalyticsEvent.ACHIEVE_HEALTH_GOALS_SELECTION,
+            mapOf(
+                AnalyticsParam.USER_ID to SharedPreferenceManager.getInstance(requireActivity()).userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to SharedPreferenceManager.getInstance(requireActivity()).selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to SharedPreferenceManager.getInstance(requireActivity()).selectedOnboardingSubModule,
+                AnalyticsParam.GENDER to (onboardingQuestionRequest.gender ?: "Male"),
+                AnalyticsParam.AGE to (onboardingQuestionRequest.age ?: 27),
+                AnalyticsParam.HEIGHT to (onboardingQuestionRequest.height ?: "173 cm"),
+                AnalyticsParam.WEIGHT to (onboardingQuestionRequest.weight ?: "75 kg"),
+                AnalyticsParam.BODY_FAT to (onboardingQuestionRequest.bodyFat ?: ""),
+                AnalyticsParam.STRESS_MANAGEMENT to selectedHealthGoal
+            )
         )
 
         Handler(Looper.getMainLooper()).postDelayed({
-                                                        (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
-                                                    }, 500)
+            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+        }, 500)
     }
+
     override fun onPause() {
         super.onPause()
         llSelectedHealthGoal.visibility = GONE

@@ -252,7 +252,15 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
 //                }else{
                     mealName.text = data.meal_name
  //               }
-                servesCount.text = "1"
+                if (data.dish!!.size > 1){
+                    servesCount.text = "1.0"
+                }else{
+                    if (data.dish!!.size == 1){
+                        servesCount.text = data.dish?.get(0)?.quantity?.toString()
+                    }else{
+                        servesCount.text = "1.0"
+                    }
+                }
                 val mealTime = ""
                 mealTimeTv.text = ""//mealTime.toInt().toString()
                 calValue.text = round(snapData.calories_kcal)?.toInt().toString()

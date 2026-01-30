@@ -4,6 +4,8 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -600,7 +602,8 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                         }
                         withContext(Dispatchers.Main) {
                             weight_description_heading.text = data.heading
-                            weight_description_text.text = data.description
+                            weight_description_text.text = markdownToBold(data.description)
+
                             if (data.lastWeightLog != null){
                                 weightIntakeUnit.text = data.lastWeightLog?.type
                                 if (data.lastWeightLog?.type.equals("lbs")){
@@ -653,6 +656,13 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                 }
             }
         }
+    }
+
+    fun markdownToBold(text: String): Spanned {
+        val htmlText = text
+            .replace("\n", "<br>")
+            .replace(Regex("\\*\\*(.*?)\\*\\*"), "<b>$1</b>")
+        return Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {

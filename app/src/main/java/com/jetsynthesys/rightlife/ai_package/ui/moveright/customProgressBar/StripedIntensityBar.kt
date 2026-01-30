@@ -17,12 +17,12 @@ class SimpleProgressBar @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private val backgroundPaint = Paint().apply {
-        color = Color.parseColor("#FFB6C1") // Light pink background
+        color = Color.parseColor("#FFECEB") // Light pink background
         style = Paint.Style.FILL
     }
 
     private val progressPaint = Paint().apply {
-        color = Color.RED // Red progress fill
+        color = Color.parseColor("#FD6967") // Red progress fill
         style = Paint.Style.FILL
     }
 

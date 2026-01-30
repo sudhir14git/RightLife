@@ -180,10 +180,12 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                     searchResultLayout.visibility = View.VISIBLE
                     tvSearchResult.visibility = View.VISIBLE
                     cancel.visibility = View.VISIBLE
+                    tvAllDishes.visibility = View.GONE
                   //  tvSearchResult.text = "Search Result: ${filteredList.size}"
                     getRecipesList(s.toString())
                 }else if (s!!.length == 0){
-                    searchResultLayout.visibility = View.VISIBLE
+                    tvAllDishes.visibility = View.VISIBLE
+                    searchResultLayout.visibility = View.GONE
                     tvSearchResult.visibility = View.GONE
                     cancel.visibility = View.GONE
                     searchIngredientList.clear()
@@ -266,7 +268,13 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                     if (searchData != null){
                         if (searchData.size > 0){
                             Log.d("RecipesList", "Search results found: ${searchData.size} items")
-
+                            if (keyword.isEmpty()){
+                                tvAllDishes.visibility = View.VISIBLE
+                                searchResultLayout.visibility = View.GONE
+                            }else{
+                                tvAllDishes.visibility = View.GONE
+                                searchResultLayout.visibility = View.VISIBLE
+                            }
                             //snapRecipesList.addAll(mealPlanLists)
                             searchIngredientList.clear()
                             Log.d("RecipesList", "Cleared existing searchIngredientList")

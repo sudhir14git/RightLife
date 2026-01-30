@@ -76,6 +76,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
@@ -453,15 +454,16 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
 
         addToLogLayout.setOnClickListener {
             isSaveClick = false
-            if (moduleName.contentEquals("EatRight")) {
-                // ratingMealLogDialog()
-                // sharedPreferenceManager.setFirstTimeUserForSnapMealRating(true)
-                if (mealId != "null" && mealId != null) {
-                    updateSnapMealsSave((snapRecipesList))
-                } else {
-                  //  currentPhotoPathsecound?.let { getUrlFromURI(it) }
-                    ratingMealLogDialog(isSaveCheck)
-                }
+            if (!snapRecipesList.isEmpty()){
+                if (moduleName.contentEquals("EatRight")) {
+                    // ratingMealLogDialog()
+                    // sharedPreferenceManager.setFirstTimeUserForSnapMealRating(true)
+                    if (mealId != "null" && mealId != null) {
+                        updateSnapMealsSave((snapRecipesList))
+                    } else {
+                        //  currentPhotoPathsecound?.let { getUrlFromURI(it) }
+                        ratingMealLogDialog(isSaveCheck)
+                    }
 //                requireActivity().supportFragmentManager.beginTransaction().apply {
 //                    val snapMealFragment = HomeBottomTabFragment()
 //                    val args = Bundle()
@@ -471,19 +473,23 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
 //                    addToBackStack(null)
 //                    commit()
 //                }
-            } else {
-                val snapMealId = SharedPreferenceManager.getInstance(requireActivity()).snapMealId
-                if (snapMealId != "" &&  snapMealId != null){
-                    AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RESULTPAGE_ADDTOLOG)
-                }else{
-                    AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RESULTPAGE_FIRSTLOG)
-                }
-                if (snapMealLog.equals("snapMealLog")) {
-                    updateSnapMealLog(mealId, snapRecipesList)
                 } else {
-                   // currentPhotoPathsecound?.let { getUrlFromURI(it) }
-                    ratingMealLogDialog(isSaveCheck)
+                    val snapMealId = SharedPreferenceManager.getInstance(requireActivity()).snapMealId
+                    if (snapMealId != "" &&  snapMealId != null){
+                        AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RESULTPAGE_ADDTOLOG)
+                    }else{
+                        AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MEALSNAP_RESULTPAGE_FIRSTLOG)
+                    }
+                    if (snapMealLog.equals("snapMealLog")) {
+                        updateSnapMealLog(mealId, snapRecipesList)
+                    } else {
+                        // currentPhotoPathsecound?.let { getUrlFromURI(it) }
+                        ratingMealLogDialog(isSaveCheck)
+                    }
                 }
+            }else{
+                val ctx = context ?: return@setOnClickListener
+                showCustomToast(ctx, "Please add atleast one dish to log the meal.")
             }
         }
 
@@ -925,7 +931,8 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
         val datePicker = DatePickerDialog(
-            requireContext(), { _, year, month, dayOfMonth ->
+            requireContext(),
+            { _, year, month, dayOfMonth ->
                 val date = "$dayOfMonth ${getMonthName(month + 1)} $year"
                 tvSelectedDate.text = date
             },
@@ -933,10 +940,46 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
-        // ✅ Disable future dates
-        datePicker.datePicker.maxDate = System.currentTimeMillis()
+        val today = System.currentTimeMillis()
+        // 🚫 Disable past dates
+        datePicker.datePicker.minDate = today
+        // 🚫 Disable future dates
+        datePicker.datePicker.maxDate = today
         datePicker.show()
     }
+
+//    private fun showDatePicker() {
+//        val calendar = Calendar.getInstance()
+//        val datePicker = DatePickerDialog(
+//            requireContext(), { _, year, month, dayOfMonth ->
+//                val date = "$dayOfMonth ${getMonthName(month + 1)} $year"
+//                tvSelectedDate.text = date
+//            },
+//            calendar.get(Calendar.YEAR),
+//            calendar.get(Calendar.MONTH),
+//            calendar.get(Calendar.DAY_OF_MONTH)
+//        )
+//        // ✅ Disable future dates
+//        datePicker.datePicker.maxDate = System.currentTimeMillis()
+//        datePicker.show()
+//    }
+
+
+//    private fun showDatePicker() {
+//        val calendar = Calendar.getInstance()
+//        val datePicker = DatePickerDialog(
+//            requireContext(), { _, year, month, dayOfMonth ->
+//                val date = "$dayOfMonth ${getMonthName(month + 1)} $year"
+//                tvSelectedDate.text = date
+//            },
+//            calendar.get(Calendar.YEAR),
+//            calendar.get(Calendar.MONTH),
+//            calendar.get(Calendar.DAY_OF_MONTH)
+//        )
+//        // ✅ Disable future dates
+//        datePicker.datePicker.maxDate = System.currentTimeMillis()
+//        datePicker.show()
+//    }
 
     private fun getMonthName(month: Int): String {
         return SimpleDateFormat("MMMM", Locale.getDefault()).format(Date(0, month, 0))
@@ -1052,7 +1095,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         // Cancel any old toast
         currentToast?.cancel()
         val inflater = LayoutInflater.from(context)
-        val toastLayout = inflater.inflate(R.layout.custom_toast_ai_eat, null)
+        val toastLayout = if (message.equals("Please add atleast one dish to log the meal.")){
+            inflater.inflate(R.layout.custom_toast_ai_sleep, null)
+        }else{
+            inflater.inflate(R.layout.custom_toast_ai_eat, null)
+        }
+
         val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
         textView.text = message
         // ✅ Wrap layout inside FrameLayout to apply margins

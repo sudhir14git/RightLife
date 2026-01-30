@@ -854,7 +854,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
                 val timeZone = ZoneId.systemDefault().id
                 val userId = sharedPreferenceManager.userId ?: ""
-                val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
 
                 var activeEnergyBurned : List<EnergyBurnedRequest>? = null
                 if (activeCalorieBurnedRecord!!.isNotEmpty()){
@@ -866,7 +865,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     } ?: emptyList()
@@ -879,7 +878,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     } ?: emptyList()
@@ -893,7 +892,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "BasalMetabolic",
                         unit = "power",
                         value = record.basalMetabolicRate.toString(),
-                        source_name = deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 Log.d("ActivitySyncBottomSheet", "Prepared ${basalEnergyBurned.size} basal energy records")
@@ -908,7 +907,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
                             value = String.format(Locale.US, "%.2f", safeKm),
-                            source_name = deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -922,7 +921,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name = deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -937,7 +936,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                 record_type = "HeartRate",
                                 unit = "bpm",
                                 value = sample.beatsPerMinute.toInt().toString(),
-                                source_name = deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     }
@@ -951,7 +950,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "HeartRateVariability",
                         unit = "double",
                         value = record.heartRateVariabilityMillis.toString(),
-                        source_name = deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 Log.d("ActivitySyncBottomSheet", "Prepared ${heartRateVariability.size} heart rate variability records")
@@ -963,7 +962,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "RestingHeartRate",
                         unit = "bpm",
                         value = record.beatsPerMinute.toString(),
-                        source_name = deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 Log.d("ActivitySyncBottomSheet", "Prepared ${restingHeartRate.size} resting heart rate records")
@@ -978,7 +977,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -994,7 +993,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "OxygenSaturation",
                             unit = "%",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -1007,7 +1006,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "BloodPressureSystolic",
                         unit = "millimeterOfMercury",
                         value = record.systolic.inMillimetersOfMercury.toString(),
-                        source_name = deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 Log.d("ActivitySyncBottomSheet", "Prepared ${bloodPressureSystolic.size} blood pressure systolic records")
@@ -1019,7 +1018,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "BloodPressureDiastolic",
                         unit = "millimeterOfMercury",
                         value = record.diastolic.inMillimetersOfMercury.toString(),
-                        source_name = deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 Log.d("ActivitySyncBottomSheet", "Prepared ${bloodPressureDiastolic.size} blood pressure diastolic records")
@@ -1034,7 +1033,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "BodyMass",
                             unit = "kg",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -1049,7 +1048,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "BodyFat",
                         unit = "percentage",
                         value = String.format(Locale.US,"%.1f", safeKm * 100),
-                        source_name = deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 Log.d("ActivitySyncBottomSheet", "Prepared ${bodyFatPercentage.size} body fat percentage records")
@@ -1064,7 +1063,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                 record_type = "Asleep",
                                 unit = "stage",
                                 value = "Asleep",
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         )
                     } else {
@@ -1084,7 +1083,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                     record_type = it,
                                     unit = "sleep_stage",
                                     value = it,
-                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                    source_name = record.metadata.dataOrigin.packageName
                                 )
                             }
                         }
@@ -1114,7 +1113,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         WorkoutRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
-                            source_name = deviceName,
+                            source_name = record.metadata.dataOrigin.packageName,
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
@@ -1237,7 +1236,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
-                val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
                 val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 var activeEnergyBurned : List<EnergyBurnedRequest>? = null
@@ -1250,7 +1248,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     } ?: emptyList()
@@ -1263,7 +1261,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     } ?: emptyList()
@@ -1275,7 +1273,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "BasalMetabolic",
                         unit = "power",
                         value = record.basalMetabolicRate.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
@@ -1288,7 +1286,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
                             value = String.format(Locale.US,"%.2f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -1300,7 +1298,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -1313,7 +1311,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                 record_type = "HeartRate",
                                 unit = "bpm",
                                 value = sample.beatsPerMinute.toInt().toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     }
@@ -1325,7 +1323,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "HeartRateVariability",
                         unit = "double",
                         value = record.heartRateVariabilityMillis.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val restingHeartRate = restingHeartRecord?.map { record ->
@@ -1335,7 +1333,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "RestingHeartRate",
                         unit = "bpm",
                         value = record.beatsPerMinute.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
@@ -1348,7 +1346,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -1362,7 +1360,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "OxygenSaturation",
                             unit = "%",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -1373,7 +1371,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "BloodPressureSystolic",
                         unit = "millimeterOfMercury",
                         value = record.systolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val bloodPressureDiastolic = bloodPressureRecord?.mapNotNull { record ->
@@ -1383,7 +1381,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "BloodPressureDiastolic",
                         unit = "millimeterOfMercury",
                         value = record.diastolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
@@ -1396,7 +1394,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "BodyMass",
                             unit = "kg",
                             value = String.format(Locale.US,"%.1f",safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -1409,7 +1407,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         record_type = "BodyFat",
                         unit = "percentage",
                         value = String.format(Locale.US,"%.1f", safeKm),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
@@ -1422,7 +1420,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                 record_type = "Asleep",
                                 unit = "stage",
                                 value = "Asleep",
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         )
                     } else {
@@ -1442,7 +1440,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                                     record_type = it,
                                     unit = "sleep_stage",
                                     value = it,
-                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                    source_name = record.metadata.dataOrigin.packageName
                                 )
                             }
                         }
@@ -1471,7 +1469,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         WorkoutRequest(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung",
+                            source_name = record.metadata.dataOrigin.packageName,
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),

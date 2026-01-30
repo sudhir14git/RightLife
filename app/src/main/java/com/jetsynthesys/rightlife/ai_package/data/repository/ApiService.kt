@@ -156,7 +156,7 @@ interface ApiService {
     fun getRecipesList(
        ): Call<RecipeListResponse>
 
-    @GET("eat/recipes/")
+    @GET("eat/recipes/fetch_recipe_by_id/")
     fun getDetailsViewRecipeById(
         @Query("recipe_id") recipeId: String
     ): Call<RecipeDetailsViewResponse>

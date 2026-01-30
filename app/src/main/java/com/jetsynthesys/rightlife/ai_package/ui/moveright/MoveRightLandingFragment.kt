@@ -11,6 +11,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -39,6 +41,7 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.health.connect.client.units.Energy
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -80,6 +83,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.reflect.KClass
@@ -131,6 +135,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var todayStepsTv: TextView
     private lateinit var today_steps_count: TextView
     private lateinit var averageStepsTv: TextView
+    private lateinit var stepHeading : TextView
     private lateinit var yesterday_steps_count: TextView
     private lateinit var steps_no_data_text: TextView
     private lateinit var stes_no_data_text_description: TextView
@@ -239,6 +244,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         stepLineGraphView = view.findViewById(R.id.line_graph_steps)
         todayStepsTv = view.findViewById(R.id.todayStepsTv)
         today_steps_count = view.findViewById(R.id.today_steps_count)
+        stepHeading = view.findViewById(R.id.step_text_heading)
         averageStepsTv = view.findViewById(R.id.averageStepsTv)
         yesterday_steps_count = view.findViewById(R.id.yesterday_steps_count)
         goalStepsTv = view.findViewById(R.id.goal_tex)
@@ -850,6 +856,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     averageStepsTv.text = averageStepCount.toString()
                                     yesterday_steps_count.text = averageStepCount.toString()
                                     goalStepsTv.text = goalStepCount.toString()
+                                    stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
                                 }else{
                                    if(it.data.caloriesBurned.today.toDouble() == 0.0){
                                        val result = hasAnyValueGreaterThanZero(avgHrData)
@@ -876,6 +883,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                            averageStepsTv.text = averageStepCount.toString()
                                            yesterday_steps_count.text = averageStepCount.toString()
                                            goalStepsTv.text = goalStepCount.toString()
+                                           stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
                                        }else{
                                            step_forward_icon.visibility = View.INVISIBLE
                                            stepNoDataLayout.visibility = View.VISIBLE
@@ -904,6 +912,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                        averageStepsTv.text = averageStepCount.toString()
                                        yesterday_steps_count.text = averageStepCount.toString()
                                        goalStepsTv.text = goalStepCount.toString()
+                                       stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
                                    }
                                 }
                             }
@@ -1048,6 +1057,42 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }
         }
+    }
+
+    fun messageForSteps(
+        today: Int,
+        yesterday: Int,
+        goal: Int?
+    ): String {
+        // 1️⃣ User HAS set a goal
+        if (goal != null && goal > 0) {
+            return when {
+                today < yesterday && today < goal ->
+                    "You’ve done better — still time to close the gap!"
+                today < yesterday && today >= goal ->
+                    "Goal crushed — steady work pays off!"
+                today >= yesterday && today < goal ->
+                    "Pacing ahead of yesterday — now push for your goal!"
+                else -> // today >= yesterday && today >= goal
+                    "You beat yesterday *and* hit your goal — that's how it’s done!"
+            }
+        }
+        // 2️⃣ User has NOT set a goal
+        if (today < yesterday) {
+            return "Still time to turn the day around — you’ve done more before!"
+        }
+        val tenPercent = (yesterday * 0.10).toInt()
+        if (kotlin.math.abs(today - yesterday) <= tenPercent) {
+            return "Consistency is a win — keep the streak alive!"
+        }
+        return "You’re outpacing yesterday — keep that momentum going!"
+    }
+
+    fun markdownToBold(text: String): Spanned {
+        val htmlText = text
+            .replace("\n", "<br>")
+            .replace(Regex("\\*\\*(.*?)\\*\\*"), "<b>$1</b>")
+        return Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun fetchMoveLandingAfterRefresh(recyclerView: RecyclerView, adapter: GridAdapter) {
@@ -1429,6 +1474,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     averageStepsTv.text = averageStepCount.toString()
                                     yesterday_steps_count.text = averageStepCount.toString()
                                     goalStepsTv.text = goalStepCount.toString()
+                                    stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
                                 }else{
                                     if(it.data.caloriesBurned.today.toDouble() == 0.0){
                                         val result = hasAnyValueGreaterThanZero(avgHrData)
@@ -1455,6 +1501,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             averageStepsTv.text = averageStepCount.toString()
                                             yesterday_steps_count.text = averageStepCount.toString()
                                             goalStepsTv.text = goalStepCount.toString()
+                                            stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
                                         }else{
                                             step_forward_icon.visibility = View.INVISIBLE
                                             stepNoDataLayout.visibility = View.VISIBLE
@@ -1483,6 +1530,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         averageStepsTv.text = averageStepCount.toString()
                                         yesterday_steps_count.text = averageStepCount.toString()
                                         goalStepsTv.text = goalStepCount.toString()
+                                        stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
                                     }
                                 }
                             }
@@ -2285,6 +2333,93 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
 
+    private fun Instant.hourStart(): Instant =
+        atZone(ZoneId.systemDefault())
+            .truncatedTo(ChronoUnit.HOURS)
+            .toInstant()
+
+    private fun Instant.dayStart(): Instant =
+        atZone(ZoneId.systemDefault())
+            .toLocalDate()
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+
+    private fun Instant.zoneOffset(): ZoneOffset =
+        ZoneId.systemDefault().rules.getOffset(this)
+
+    private fun List<StepsRecord>.toHourlySteps(): List<StepsRecord> {
+        if (isEmpty()) return emptyList()
+
+        return groupBy { it.endTime.dayStart() }
+            .flatMap { (_, dayRecords) ->
+
+                dayRecords
+                    .groupBy { it.endTime.hourStart() }
+                    .toSortedMap()
+                    .map { (hour, records) ->
+
+                        val hourSteps = records.sumOf { it.count }
+                        val offset = hour.zoneOffset()
+
+                        StepsRecord(
+                            startTime = hour,
+                            startZoneOffset = offset,
+                            endTime = hour.plus(Duration.ofHours(1)),
+                            endZoneOffset = offset,
+                            count = hourSteps, // ✅ ONLY this hour
+                            metadata = records.first().metadata
+                        )
+                    }
+            }
+    }
+
+    private fun List<ActiveCaloriesBurnedRecord>.toHourlyCumulativeActiveCalories()
+            : List<ActiveCaloriesBurnedRecord> {
+
+        if (isEmpty()) return emptyList()
+
+        return groupBy { it.endTime.dayStart() }
+            .flatMap { (_, dayRecords) ->
+
+                val deltasByHour = dayRecords.groupBy {
+                    it.endTime.hourStart()
+                }.mapValues { (_, records) ->
+                    records.sumOf { it.energy.inKilocalories }
+                }
+
+                var runningKcal = 0.0
+
+                deltasByHour.keys.sorted().map { hour ->
+                    runningKcal += deltasByHour[hour] ?: 0.0
+                    val offset = hour.zoneOffset()
+
+                    ActiveCaloriesBurnedRecord(
+                        startTime = hour,
+                        startZoneOffset = offset,
+                        endTime = hour.plus(Duration.ofHours(1)),
+                        endZoneOffset = offset,
+                        energy = Energy.kilocalories(runningKcal),
+                        metadata = dayRecords.first().metadata
+                    )
+                }
+            }
+    }
+
+    private fun List<TotalCaloriesBurnedRecord>.toHourlyCumulativeTotalCalories()
+            : List<TotalCaloriesBurnedRecord> {
+
+        if (isEmpty()) return emptyList()
+
+        return groupBy { it.endTime.dayStart() }
+            .flatMap { (_, dayRecords) ->
+
+                dayRecords.groupBy {
+                    it.endTime.hourStart()
+                }.mapNotNull { (_, records) ->
+                    records.maxByOrNull { it.endTime }
+                }
+            }
+    }
 
 //    private suspend fun fetchAllHealthData() {
 //        try {
@@ -2671,7 +2806,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     } ?: emptyList()
@@ -2684,7 +2819,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     } ?: emptyList()
@@ -2696,7 +2831,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "BasalMetabolic",
                         unit = "power",
                         value = record.basalMetabolicRate.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
@@ -2709,7 +2844,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
                             value = String.format(Locale.US, "%.2f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -2721,7 +2856,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -2734,7 +2869,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "HeartRate",
                                 unit = "bpm",
                                 value = sample.beatsPerMinute.toInt().toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     }
@@ -2746,7 +2881,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "HeartRateVariability",
                         unit = "double",
                         value = record.heartRateVariabilityMillis.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val restingHeartRate = restingHeartRecord?.map { record ->
@@ -2756,7 +2891,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "RestingHeartRate",
                         unit = "bpm",
                         value = record.beatsPerMinute.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
@@ -2769,7 +2904,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
                             value = String.format(Locale.US,"%.1f", safeRate),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -2783,7 +2918,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "OxygenSaturation",
                             unit = "%",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -2794,7 +2929,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "BloodPressureSystolic",
                         unit = "millimeterOfMercury",
                         value = record.systolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                        source_name =record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val bloodPressureDiastolic = bloodPressureRecord?.mapNotNull { record ->
@@ -2804,7 +2939,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "BloodPressureDiastolic",
                         unit = "millimeterOfMercury",
                         value = record.diastolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
@@ -2817,7 +2952,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "BodyMass",
                             unit = "kg",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -2830,7 +2965,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "BodyFat",
                         unit = "percentage",
                         value =String.format(Locale.US,"%.1f", safeKm),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
@@ -2843,7 +2978,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "Asleep",
                                 unit = "stage",
                                 value = "Asleep",
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         )
                     } else {
@@ -2863,7 +2998,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     record_type = it,
                                     unit = "sleep_stage",
                                     value = it,
-                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                    source_name = record.metadata.dataOrigin.packageName
                                 )
                             }
                         }
@@ -2893,7 +3028,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     WorkoutRequest(
                         start_datetime = convertToTargetFormat(record.startTime.toString()),
                         end_datetime = convertToTargetFormat(record.endTime.toString()),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ,
+                        source_name = record.metadata.dataOrigin.packageName ,
                         record_type = "Workout",
                         workout_type = workoutType,
                         duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
@@ -3027,7 +3162,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     } ?: emptyList()
@@ -3040,7 +3175,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "ActiveEnergyBurned",
                                 unit = "kcal",
                                 value = record.energy.inKilocalories.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     } ?: emptyList()
@@ -3052,7 +3187,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "BasalMetabolic",
                         unit = "power",
                         value = record.basalMetabolicRate.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
@@ -3065,7 +3200,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
                             value = String.format(Locale.US,"%.2f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -3077,7 +3212,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -3090,7 +3225,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "HeartRate",
                                 unit = "bpm",
                                 value = sample.beatsPerMinute.toInt().toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         } else null
                     }
@@ -3102,7 +3237,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "HeartRateVariability",
                         unit = "double",
                         value = record.heartRateVariabilityMillis.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val restingHeartRate = restingHeartRecord?.map { record ->
@@ -3112,7 +3247,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "RestingHeartRate",
                         unit = "bpm",
                         value = record.beatsPerMinute.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
@@ -3125,7 +3260,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -3139,7 +3274,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "OxygenSaturation",
                             unit = "%",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -3150,7 +3285,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "BloodPressureSystolic",
                         unit = "millimeterOfMercury",
                         value = record.systolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val bloodPressureDiastolic = bloodPressureRecord?.mapNotNull { record ->
@@ -3160,7 +3295,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "BloodPressureDiastolic",
                         unit = "millimeterOfMercury",
                         value = record.diastolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
@@ -3173,7 +3308,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "BodyMass",
                             unit = "kg",
                             value = String.format(Locale.US,"%.1f", safeKm),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
@@ -3186,7 +3321,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         record_type = "BodyFat",
                         unit = "percentage",
                         value = String.format(Locale.US,"%.1f", safeKm),
-                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                        source_name = record.metadata.dataOrigin.packageName
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
@@ -3199,7 +3334,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "Asleep",
                                 unit = "stage",
                                 value = "Asleep",
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                source_name = record.metadata.dataOrigin.packageName
                             )
                         )
                     } else {
@@ -3219,7 +3354,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     record_type = it,
                                     unit = "sleep_stage",
                                     value = it,
-                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                    source_name = record.metadata.dataOrigin.packageName
                                 )
                             }
                         }
@@ -3249,7 +3384,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         WorkoutRequest(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung",
+                            source_name = record.metadata.dataOrigin.packageName,
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),

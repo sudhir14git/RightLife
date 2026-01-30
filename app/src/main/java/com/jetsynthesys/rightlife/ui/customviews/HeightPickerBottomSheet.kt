@@ -1,123 +1,100 @@
-package com.jetsynthesys.rightlife.ui.new_design
+package com.jetsynthesys.rightlife.ui.customviews
 
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.cardview.widget.CardView
-import androidx.fragment.app.Fragment
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ui.customviews.HeightPickerView
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlin.math.roundToInt
 
-class HeightSelectionFragment : Fragment() {
+class HeightPickerBottomSheet : BottomSheetDialogFragment() {
 
-    private lateinit var llSelectedHeight: LinearLayout
-    private lateinit var tvSelectedHeight: TextView
-    private var selectedHeight = "5 Ft 10 In"
-    private var tvDescription: TextView? = null
-    private var selected_number_text: TextView? = null
-    private lateinit var cardViewSelection: CardView
+    private lateinit var heightTextFeet: TextView
+    private lateinit var heightTextInches: TextView
+    private lateinit var heightTextCm: TextView
     private lateinit var scrollView: ScrollView
     private lateinit var pickerView: HeightPickerView
+    private lateinit var btn_confirm: Button
     private lateinit var feetOption: TextView
     private lateinit var cmsOption: TextView
 
     private enum class HeightUnit { FEET_INCHES, CM }
 
     private var currentUnit = HeightUnit.FEET_INCHES
-    private var currentTotalInches = 68
-    private var currentCm = 173
+    private var currentTotalInches = 67
+    private var currentCm = 170
+
+    // Gender-based defaults
+    private var defaultTotalInches = 68 // 5'8"
+    private var defaultCm = 173
+
     private val itemSpacing = 30f
 
     private var isInitializing = true
     private var isSwitchingUnit = false
 
-    private var defaultTotalInches = 68 // 5'8"
-    private var defaultCm = 173
+    private var onHeightSelected: ((String, String) -> Unit)? = null
 
     companion object {
-        fun newInstance(pageIndex: Int): HeightSelectionFragment {
-            val fragment = HeightSelectionFragment()
+        fun newInstance(
+            height: String = "5'7\"",
+            unit: String = "ft",
+            gender: String = "Male"
+        ): HeightPickerBottomSheet {
+            val fragment = HeightPickerBottomSheet()
             val args = Bundle()
+            args.putString("height", height)
+            args.putString("unit", unit) // "ft" or "cm"
+            args.putString("gender", gender)
             fragment.arguments = args
             return fragment
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        val gender =
-            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
-
-        if (gender == "Male" || gender == "M") {
-            defaultTotalInches = 68 // 5 ft 8 in
-            defaultCm = 173
-        } else {
-            defaultTotalInches = 64 // 5 ft 4 in
-            defaultCm = 163
-        }
-
-        // ✅ Always keep defaults set (NO conversion)
-        currentTotalInches = defaultTotalInches
-        currentCm = defaultCm
-
-        feetOption.setBackgroundResource(R.drawable.bg_left_selected)
-        feetOption.setTextColor(Color.WHITE)
-        cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
-        cmsOption.setTextColor(Color.BLACK)
-
-        currentUnit = HeightUnit.FEET_INCHES
-        updateHeightDisplay()
+    fun setOnHeightSelectedListener(listener: (String, String) -> Unit) {
+        onHeightSelected = listener
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val view: View = inflater.inflate(R.layout.fragment_height_selection, container, false)
+    ): View? {
+        return inflater.inflate(R.layout.bottomsheet_height_picker, container, false)
+    }
 
-        llSelectedHeight = view.findViewById(R.id.ll_selected_height)
-        tvSelectedHeight = view.findViewById(R.id.tv_selected_height)
-        tvDescription = view.findViewById(R.id.tv_description)
-        selected_number_text = view.findViewById(R.id.selected_number_text)
-        cardViewSelection = view.findViewById(R.id.card_view_age_selector)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        dialog?.setOnShowListener { dialogInterface ->
+            val bottomSheet =
+                (dialogInterface as? com.google.android.material.bottomsheet.BottomSheetDialog)
+                    ?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(it)
+                behavior.state =
+                    com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+                behavior.isDraggable = true
+            }
+        }
+
+        heightTextFeet = view.findViewById(R.id.heightTextFeet)
+        heightTextInches = view.findViewById(R.id.heightTextInches)
+        heightTextCm = view.findViewById(R.id.heightTextCm)
         scrollView = view.findViewById(R.id.scrollView)
         pickerView = view.findViewById(R.id.pickerView)
+        btn_confirm = view.findViewById(R.id.btn_confirm)
         feetOption = view.findViewById(R.id.feetOption)
         cmsOption = view.findViewById(R.id.cmsOption)
 
-        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
-        AnalyticsLogger.logEvent(
-            AnalyticsEvent.HEIGHT_SELECTION_VISIT,
-            mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
-            )
-        )
-
-        val onboardingQuestionRequest =
-            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-        val gender = onboardingQuestionRequest.gender
+        // ✅ Gender based defaults
+        val gender = arguments?.getString("gender", "Male") ?: "Male"
 
         if (gender == "Male" || gender == "M") {
             defaultTotalInches = 68 // 5 ft 8 in
@@ -131,46 +108,27 @@ class HeightSelectionFragment : Fragment() {
         currentTotalInches = defaultTotalInches
         currentCm = defaultCm
 
+        // ✅ Minimal change: open tab based on received "unit" ("ft" / "cm")
+        val unitArg = arguments?.getString("unit", "ft") ?: "ft"
+        currentUnit = if (unitArg.equals("cm", true)) HeightUnit.CM else HeightUnit.FEET_INCHES
+
         setupUnitButtons()
+        updateButtonStates()   // ✅ important: set tab UI before picker init
         setupPicker()
         updateHeightDisplay()
 
-        val btnContinue = view.findViewById<Button>(R.id.btn_continue)
-        btnContinue.setOnClickListener {
-            if (validateInput()) {
-                btnContinue.disableViewForSeconds()
-                onboardingQuestionRequest.height = selectedHeight
-                SharedPreferenceManager.getInstance(requireContext())
-                    .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
-
-                cardViewSelection.visibility = GONE
-                llSelectedHeight.visibility = VISIBLE
-                tvSelectedHeight.text = selectedHeight
-
-                AnalyticsLogger.logEvent(
-                    AnalyticsEvent.HEIGHT_SELECTION,
-                    mapOf(
-                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                        AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                        AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                        AnalyticsParam.GENDER to (onboardingQuestionRequest.gender ?: "Male"),
-                        AnalyticsParam.AGE to (onboardingQuestionRequest.age ?: 27),
-                        AnalyticsParam.HEIGHT to selectedHeight
-                    )
-                )
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    activity?.let { act ->
-                        if (act is OnboardingQuestionnaireActivity && isAdded) {
-                            act.submitAnswer(onboardingQuestionRequest)
-                        }
-                    }
-                }, 500)
+        btn_confirm.setOnClickListener {
+            val height = if (currentUnit == HeightUnit.FEET_INCHES) {
+                val feet = currentTotalInches / 12
+                val inches = currentTotalInches % 12
+                "$feet.$inches"
+            } else {
+                "$currentCm cm"
             }
+            val unit = if (currentUnit == HeightUnit.FEET_INCHES) "ft" else "cm"
+            onHeightSelected?.invoke(height, unit)
+            dismiss()
         }
-
-        return view
     }
 
     private fun setupUnitButtons() {
@@ -189,8 +147,6 @@ class HeightSelectionFragment : Fragment() {
                 switchToUnitDefault()
             }
         }
-
-        updateButtonStates()
     }
 
     private fun updateButtonStates() {
@@ -199,12 +155,32 @@ class HeightSelectionFragment : Fragment() {
             feetOption.setTextColor(Color.WHITE)
             cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
             cmsOption.setTextColor(Color.BLACK)
+
+            heightTextFeet.visibility = TextView.VISIBLE
+            heightTextInches.visibility = TextView.VISIBLE
+            heightTextCm.visibility = TextView.GONE
         } else {
             cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
             cmsOption.setTextColor(Color.WHITE)
             feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
             feetOption.setTextColor(Color.BLACK)
+
+            heightTextFeet.visibility = TextView.GONE
+            heightTextInches.visibility = TextView.GONE
+            heightTextCm.visibility = TextView.VISIBLE
         }
+    }
+
+    private fun clamp(v: Int, min: Int, max: Int): Int = when {
+        v < min -> min
+        v > max -> max
+        else -> v
+    }
+
+    private fun clampFloat(v: Float, min: Float, max: Float): Float = when {
+        v < min -> min
+        v > max -> max
+        else -> v
     }
 
     private fun setupPicker() {
@@ -308,19 +284,7 @@ class HeightSelectionFragment : Fragment() {
         }
     }
 
-    private fun clamp(v: Int, min: Int, max: Int): Int = when {
-        v < min -> min
-        v > max -> max
-        else -> v
-    }
-
-    private fun clampFloat(v: Float, min: Float, max: Float): Float = when {
-        v < min -> min
-        v > max -> max
-        else -> v
-    }
-
-
+    // ✅ On unit switch: NO conversion, always jump to gender default
     private fun switchToUnitDefault() {
         isSwitchingUnit = true
 
@@ -400,43 +364,10 @@ class HeightSelectionFragment : Fragment() {
         if (currentUnit == HeightUnit.FEET_INCHES) {
             val feet = currentTotalInches / 12
             val inches = currentTotalInches % 12
-            selectedHeight = "$feet ft $inches in"
+            heightTextFeet.text = "$feet ft"
+            heightTextInches.text = "$inches in"
         } else {
-            selectedHeight = "$currentCm cm"
+            heightTextCm.text = "$currentCm cm"
         }
-        selected_number_text?.text = selectedHeight
-    }
-
-    private fun validateInput(): Boolean {
-        return if (currentUnit == HeightUnit.FEET_INCHES) {
-            val feet = currentTotalInches / 12
-            if (feet in 4..7) {
-                true
-            } else {
-                Toast.makeText(
-                    requireActivity(),
-                    "Height should be between 4 feet to 7 feet",
-                    Toast.LENGTH_SHORT
-                ).show()
-                false
-            }
-        } else {
-            if (currentCm in 120..220) {
-                true
-            } else {
-                Toast.makeText(
-                    requireActivity(),
-                    "Height should be between 120 cm to 220 cm",
-                    Toast.LENGTH_SHORT
-                ).show()
-                false
-            }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        cardViewSelection.visibility = VISIBLE
-        llSelectedHeight.visibility = GONE
     }
 }
