@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.DashPathEffect
@@ -303,13 +304,20 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                             if (sleepConsistencyResponse.data?.progress_detail?.progress_sign == "plus"){
                               //  percentageIcon.visibility = View.VISIBLE
                                 percentageIcon.setImageResource(R.drawable.ic_up)
+                                percentageIcon.imageTintList =
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                                    )
                              //   percentageText.visibility = View.VISIBLE
                                 percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
                             }else{
                            //     percentageIcon.visibility = View.VISIBLE
                            //     percentageText.visibility = View.VISIBLE
                                 percentageIcon.setImageResource(R.drawable.ic_down)
-                                percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
+                                percentageIcon.imageTintList =
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(requireContext(), R.color.step_today)
+                                    )
                                 percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
                             }
                         }else{
