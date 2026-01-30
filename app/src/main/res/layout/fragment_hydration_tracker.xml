@@ -35,9 +35,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="10dp"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textColor="@color/meal_log_title"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:text="Hydration Tracker" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
