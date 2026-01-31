@@ -42,6 +42,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryRespon
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutRecord
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesWeeklyListAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SelectMealTypeBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentYourActivityBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -52,8 +53,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.DayOfWeek
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -180,12 +183,17 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     }
                 }
             })
+//
+//        val currentDateTime = LocalDateTime.now()
+//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//        val formattedDate = currentDateTime.format(formatter)
+//        val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
 
-        val currentDateTime = LocalDateTime.now()
+        val nowInstant = Instant.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedDate = currentDateTime.format(formatter)
+        val formattedDate = nowInstant.getMealLogDate(4)//currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
-
+        val formattedDisplayDate  = nowInstant.getMealLogDisplayDate(4)
 
         if (selectedDate == null || selectedDate.equals("")){
             selectedDate = formattedDate
@@ -250,10 +258,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         layoutAddWorkout.setOnClickListener {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val date = LocalDate.parse(selectedDate, formatter)
-            val currentDate = LocalDate.now()
-            if (date <= currentDate) {
+            val current = LocalDate.parse(formattedDate, formatter)
+            val updated = LocalDate.parse(selectedDate, formatter)
+            if (current >= updated){
                 val fragment = SearchWorkoutFragment()
                 val args = Bundle()
                 args.putString("selected_date", selectedDate) // Put the string in the bundle
@@ -316,7 +323,47 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         isTooltipShown = prefs.getBoolean("hasShownTooltips", false)
     }
 
+    fun Instant.getMealLogDate(rolloverHour: Int = 4): String {
+        val zone = ZoneId.systemDefault()
+        val effectiveDate = this.effectiveDateForApi(rolloverHour, zone)
+        return effectiveDate
+            .atZone(zone)
+            .toLocalDate()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    }
+    private fun Instant.effectiveDateForApi(
+        rolloverHour: Int,
+        zone: ZoneId
+    ): Instant {
+        val now = Instant.now()
+        val thisDate = this.atZone(zone).toLocalDate()
+        val today = now.atZone(zone).toLocalDate()
+        // ✅ Only apply rollover if THIS date is today
+        if (thisDate != today) {
+            return thisDate.atStartOfDay(zone).toInstant()
+        }
+        val currentHour = now.atZone(zone).hour
+        return if (currentHour < rolloverHour) {
+            // before rollover → yesterday
+            today
+                .minusDays(1)
+                .atStartOfDay(zone)
+                .toInstant()
+        } else {
+            // after rollover → today
+            today
+                .atStartOfDay(zone)
+                .toInstant()
+        }
+    }
 
+    fun Instant.getMealLogDisplayDate(rolloverHour: Int = 4): String {
+        val zone = ZoneId.systemDefault()
+        val effective = this.effectiveDateForApi(rolloverHour, zone)
+        return effective
+            .atZone(zone)
+            .format(DateTimeFormatter.ofPattern("E, d MMM yyyy"))
+    }
 
     override fun onResume() {
         super.onResume()

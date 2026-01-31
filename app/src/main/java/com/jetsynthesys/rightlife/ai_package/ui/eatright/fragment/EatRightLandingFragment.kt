@@ -68,7 +68,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -1049,7 +1051,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             newImprovementLayout.visibility = View.GONE
             weightLastLogDateTv.visibility = View.VISIBLE
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            //val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            val nowInstant = Instant.now()
+            val currentDate = nowInstant.getMealLogDate(4)
             val request = WeightIntakeRequest(
                 userId = userId,
                 source = "android",
@@ -1109,6 +1113,40 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             waterMl: Int,
             date: String
         ) {
+        }
+    }
+
+    fun Instant.getMealLogDate(rolloverHour: Int = 4): String {
+        val zone = ZoneId.systemDefault()
+        val effectiveDate = this.effectiveDateForApi(rolloverHour, zone)
+        return effectiveDate
+            .atZone(zone)
+            .toLocalDate()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    }
+    private fun Instant.effectiveDateForApi(
+        rolloverHour: Int,
+        zone: ZoneId
+    ): Instant {
+        val now = Instant.now()
+        val thisDate = this.atZone(zone).toLocalDate()
+        val today = now.atZone(zone).toLocalDate()
+        // ✅ Only apply rollover if THIS date is today
+        if (thisDate != today) {
+            return thisDate.atStartOfDay(zone).toInstant()
+        }
+        val currentHour = now.atZone(zone).hour
+        return if (currentHour < rolloverHour) {
+            // before rollover → yesterday
+            today
+                .minusDays(1)
+                .atStartOfDay(zone)
+                .toInstant()
+        } else {
+            // after rollover → today
+            today
+                .atStartOfDay(zone)
+                .toInstant()
         }
     }
 
