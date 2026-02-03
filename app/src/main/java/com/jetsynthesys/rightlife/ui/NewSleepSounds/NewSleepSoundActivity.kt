@@ -102,7 +102,7 @@ class NewSleepSoundActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback { handleBackPressed() }
         setupCategoryRecyclerView()
         //fetchCategories()
-        //getUserCreatedPlaylist()
+        getUserCreatedPlaylist()
         //getNewReleases()
 
         // Register for result
