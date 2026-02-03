@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
@@ -22,16 +25,28 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainAIActivity : BaseActivity() {
 
-    lateinit var bi: ActivityMainAiBinding
+    lateinit var baseBinding: ActivityMainAiBinding
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bi = ActivityMainAiBinding.inflate(layoutInflater)
-        setContentView(bi.root)
+        baseBinding = ActivityMainAiBinding.inflate(layoutInflater)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setContentView(baseBinding.root)
         AnalyticsLogger.init(this)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
+        ViewCompat.setOnApplyWindowInsetsListener(baseBinding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+            insets
+        }
 
         val moduleName = intent.getStringExtra("ModuleName")
         val bottomSeatName = intent.getStringExtra("BottomSeatName")

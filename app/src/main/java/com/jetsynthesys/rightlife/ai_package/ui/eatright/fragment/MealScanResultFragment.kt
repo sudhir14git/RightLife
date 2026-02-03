@@ -1028,9 +1028,9 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                        // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                         val moduleName = arguments?.getString("ModuleName").toString()
                         if (moduleName.contentEquals("EatRight")) {
-                            val fragment = HomeBottomTabFragment()
+                            val fragment = YourMealLogsFragment()
                             val args = Bundle()
-                            args.putString("ModuleName", "EatRight")
+                            args.putString("ModuleName", "EatRightLandingWithoutPopup")
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flFragment, fragment, "landing")

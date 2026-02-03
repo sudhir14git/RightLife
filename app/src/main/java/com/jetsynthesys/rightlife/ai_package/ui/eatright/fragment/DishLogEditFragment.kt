@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -49,14 +50,20 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
 
     private lateinit var macroItemRecyclerView : RecyclerView
     private lateinit var microItemRecyclerView : RecyclerView
     private lateinit var addToTheMealLayout : LinearLayoutCompat
+    private lateinit var selectDateMealTypeTitleLayout : LinearLayoutCompat
+    private lateinit var selectDateMealTypeLayout : LinearLayoutCompat
+    private lateinit var tvSelectedDate: TextView
     private lateinit var layoutMicroTitle : ConstraintLayout
     private lateinit var layoutMacroTitle : ConstraintLayout
     private lateinit var icMacroUP : ImageView
@@ -81,18 +88,21 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvMeasure :TextView
     private lateinit var backButton : ImageView
     private lateinit var spinner: Spinner
+    private lateinit var spinnerMealType: Spinner
     private var measureType : String = ""
     private var selectedDefaultValue : Double? = 0.0
     private var dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
     private var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
     private var mealId : String = ""
     private var mealName : String = ""
-    private lateinit var mealType : String
     private var moduleName : String = ""
     private var loadingOverlay : FrameLayout? = null
     private var isSpinnerInitialized = false
     private var defaultServing: Serving? = null
+    private var selectedMealDate : String = ""
+    private lateinit var selectedMealType: String
     private var userSelectedServing: Serving? = null
+    private var mealType : String = ""
     private var isDataChanged = false
     private var initialServingType: String = ""
     private var initialServingValue: Double = 0.0
@@ -134,14 +144,21 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         ivEdit = view.findViewById(R.id.ivEdit)
         backButton = view.findViewById(R.id.backButton)
         spinner = view.findViewById(R.id.spinner)
+        tvSelectedDate = view.findViewById(R.id.tvSelectedDate)
+        spinnerMealType = view.findViewById(R.id.spinnerMealType)
         ivMealDropdown = view.findViewById(R.id.ivMealDropdown)
+        selectDateMealTypeTitleLayout = view.findViewById(R.id.selectDateMealTypeTitleLayout)
+        selectDateMealTypeLayout = view.findViewById(R.id.selectDateMealTypeLayout)
         addToTheMealLayout.isEnabled = false
         addToTheMealLayout.alpha = 0.5f
 
+        selectDateMealTypeTitleLayout.visibility = View.VISIBLE
+        selectDateMealTypeLayout.visibility = View.VISIBLE
 
         moduleName = arguments?.getString("ModuleName").toString()
         mealId = arguments?.getString("mealId").toString()
         mealType = arguments?.getString("mealType").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
       //  mealName = arguments?.getString("mealName").toString()
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
 
@@ -158,6 +175,54 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
                     dishLists.addAll(recipeDetailsLocalListModel!!.data)
                 }
             }
+        }
+
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formatFullDate = DateTimeFormatter.ofPattern("d MMMM yyyy")
+        tvSelectedDate.text = currentDateTime.format(formatFullDate)
+        val items = arrayOf("Breakfast", "Morning Snack", "Lunch", "Evening Snacks", "Dinner")
+        // Create Adapter
+        val adapter =
+            ArrayAdapter(requireActivity(), R.layout.snap_mealtype_spinner, items)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+        spinnerMealType.adapter = adapter
+
+        if (!mealType.equals("")){
+            val defaultIndex = items.indexOf(formatMealTypeName(mealType))
+            if (defaultIndex != -1) {
+                spinnerMealType.setSelection(defaultIndex)
+                selectedMealType = items[defaultIndex]
+            }
+        }else {
+            val defaultMeal = getDefaultMealType()
+            val defaultIndex = items.indexOf(defaultMeal)
+            if (defaultIndex != -1) {
+                spinnerMealType.setSelection(defaultIndex)
+                selectedMealType = items[defaultIndex]
+            }
+        }
+
+        // Handle item selection
+        spinnerMealType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                selectedMealType = selectedItem
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                //  selectedText.text = "No selection"
+            }
+        }
+
+        view.findViewById<LinearLayoutCompat>(R.id.datePickerLayout).setOnClickListener {
+            // Open Date Picker
+            showDatePicker()
         }
 
         layoutMacroTitle.setOnClickListener {
@@ -362,6 +427,51 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         }
     }
 
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val datePicker = DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                val date = "$dayOfMonth ${getMonthName(month + 1)} $year"
+                tvSelectedDate.text = date
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        val today = System.currentTimeMillis()
+        // 🚫 Disable past dates
+        datePicker.datePicker.minDate = today
+        // 🚫 Disable future dates
+        datePicker.datePicker.maxDate = today
+        datePicker.show()
+    }
+
+    fun getDefaultMealType(): String {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val currentMinutes = hour * 60 + minute
+        return when {
+            currentMinutes in (5 * 60)..(9 * 60 + 59) -> "Breakfast"
+            currentMinutes in (10 * 60)..(11 * 60 + 59) -> "Morning Snack"
+            currentMinutes in (12 * 60)..(14 * 60 + 59) -> "Lunch"
+            currentMinutes in (15 * 60)..(18 * 60 + 59) -> "Evening Snacks"
+            else -> "Dinner" // 7:00 PM – 4:59 AM
+        }
+    }
+
+    private fun formatMealTypeName(meal: String): String {
+        return when (meal.lowercase()) {
+            "breakfast" -> "Breakfast"
+            "morning_snack" -> "Morning Snack"
+            "lunch" -> "Lunch"
+            "evening_snack" -> "Evening Snacks"
+            "dinner" -> "Dinner"
+            else -> meal.replaceFirstChar { it.uppercase() } // fallback
+        }
+    }
+
     private fun calculateValue(givenValue: Double?, defaultQuantity: Double, targetQuantity: Double): Double {
         return if (givenValue != null && defaultQuantity > 0.0) {
             (givenValue / defaultQuantity) * targetQuantity
@@ -375,7 +485,7 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
     }
 
     private fun setDishData(snapRecipeData: IngredientRecipeDetails, isEdit: Boolean) {
-        addToTheMealTV.text = "Add To The Meal"
+        addToTheMealTV.text = "Edit Dish"
         tv_log_meal_title.text = "Edit Dish"
         val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
         tvMealName.text = capitalized
@@ -629,6 +739,40 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
             "https://drive.google.com/uc?export=view&id=$fileId"
         } else {
             null
+        }
+    }
+
+    fun Instant.getMealLogDate(rolloverHour: Int = 4): String {
+        val zone = ZoneId.systemDefault()
+        val effectiveDate = this.effectiveDateForApi(rolloverHour, zone)
+        return effectiveDate
+            .atZone(zone)
+            .toLocalDate()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    }
+    private fun Instant.effectiveDateForApi(
+        rolloverHour: Int,
+        zone: ZoneId
+    ): Instant {
+        val now = Instant.now()
+        val thisDate = this.atZone(zone).toLocalDate()
+        val today = now.atZone(zone).toLocalDate()
+        // ✅ Only apply rollover if THIS date is today
+        if (thisDate != today) {
+            return thisDate.atStartOfDay(zone).toInstant()
+        }
+        val currentHour = now.atZone(zone).hour
+        return if (currentHour < rolloverHour) {
+            // before rollover → yesterday
+            today
+                .minusDays(1)
+                .atStartOfDay(zone)
+                .toInstant()
+        } else {
+            // after rollover → today
+            today
+                .atStartOfDay(zone)
+                .toInstant()
         }
     }
 
