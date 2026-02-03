@@ -5,6 +5,9 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityBaseBinding
@@ -22,7 +25,19 @@ open class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         baseBinding = ActivityBaseBinding.inflate(layoutInflater)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(baseBinding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(baseBinding.baseLayout) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+            insets
+        }
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         apiService = ApiClient.getClient(this).create(ApiService::class.java)

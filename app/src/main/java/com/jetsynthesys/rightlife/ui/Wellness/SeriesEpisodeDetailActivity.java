@@ -94,9 +94,8 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_seriesepisode_detail_layout);
         binding = ActivitySeriesepisodeDetailLayoutBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setChildContentView(binding.getRoot());
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
             finish();
         });

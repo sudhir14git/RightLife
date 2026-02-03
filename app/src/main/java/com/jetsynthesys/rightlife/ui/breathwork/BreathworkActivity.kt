@@ -40,9 +40,8 @@ class BreathworkActivity : BaseActivity() {
     private lateinit var binding: ActivityBreathworkBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setChildContentView(R.layout.activity_breathwork)
         binding = ActivityBreathworkBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         isFromTool = intent.getBooleanExtra("IS_FROM_TOOLS", false)
         whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
