@@ -1136,12 +1136,12 @@ class HomeExploreFragment : BaseFragment() {
             binding.viewPager.apply {
                 clipToPadding = false
                 clipChildren = false
-                offscreenPageLimit = 5
+                offscreenPageLimit = 1
                 setPadding(60, 0, 60, 0)
             }
 
             // Set offscreen page limit and page margin
-            binding.viewPager.offscreenPageLimit = 5 // Load adjacent pages
+            binding.viewPager.offscreenPageLimit = 1 // Load adjacent pages
             binding.viewPager.clipToPadding = false
             binding.viewPager.clipChildren = false
             binding.viewPager.setPageTransformer { page, position ->

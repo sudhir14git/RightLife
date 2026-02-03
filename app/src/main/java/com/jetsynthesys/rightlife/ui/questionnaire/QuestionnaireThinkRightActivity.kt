@@ -28,7 +28,7 @@ class QuestionnaireThinkRightActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQuestionnaireBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         instance = this
         binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
