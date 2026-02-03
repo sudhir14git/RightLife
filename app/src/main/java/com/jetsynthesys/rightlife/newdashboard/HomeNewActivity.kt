@@ -177,7 +177,6 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_MEAL_LOG = "meal_log"
 
         const val TARGET_PROFILE = "profile"
-        const val TARGET_SLEEP_SOUNDS = "sleepsounds"
 
         // add more as needed…
         const val TARGET_CATEGORY_LIST = "categorylist"
@@ -204,6 +203,7 @@ class HomeNewActivity : BaseActivity() {
         const val TARGET_FACE_SCAN = "face-scan"
         const val TARGET_SNAP_MEAL = "snap-meal"
         const val TARGET_SLEEP_SOUND = "sleep-sound"
+        const val TARGET_SLEEP_SOUND_PLAYLIST = "sleep-sound/playlist"
         const val TARGET_AFFIRMATION = "affirmation"
         const val TARGET_AFFIRMATION_PLAYLIST = "affirmationPlaylist"
         const val TARGET_JOURNAL = "journal"
@@ -263,7 +263,8 @@ class HomeNewActivity : BaseActivity() {
             TARGET_JOURNAL,
             TARGET_MEAL_LOG,
             TARGET_BREATHING,
-            TARGET_SLEEP_SOUNDS,
+            TARGET_SLEEP_SOUND,
+            TARGET_SLEEP_SOUND_PLAYLIST,
             TARGET_PROFILE -> {
                 isUserProfileLoaded && isChecklistLoaded
             }
@@ -338,10 +339,6 @@ class HomeNewActivity : BaseActivity() {
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startBreathWorkActivity(this)
                 }
-            }
-
-            TARGET_SLEEP_SOUNDS -> {
-                startActivity(Intent(this, NewSleepSoundActivity::class.java))
             }
 
             TARGET_PROFILE -> {
@@ -473,6 +470,17 @@ class HomeNewActivity : BaseActivity() {
             TARGET_SLEEP_SOUND -> {
                 if (checkTrailEndedAndShowDialog()) {
                     ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
+                }
+            }
+
+            TARGET_SLEEP_SOUND_PLAYLIST -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(
+                        Intent(
+                            this@HomeNewActivity,
+                            NewSleepSoundActivity::class.java
+                        ).putExtra("PlayList", "ForPlayList")
+                    )
                 }
             }
 
@@ -1341,7 +1349,7 @@ class HomeNewActivity : BaseActivity() {
             }
         }
         val target = intent.getStringExtra(EXTRA_DEEP_LINK_TARGET)
-        Log.e("Target","target Home = "+target)
+        Log.e("Target", "target Home = " + target)
         handleDeepLinkTarget(target)
     }
 
@@ -3153,7 +3161,7 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name =record.metadata.dataOrigin.packageName
+                            source_name = record.metadata.dataOrigin.packageName
                         )
                     } else null
                 } ?: emptyList()
