@@ -39,6 +39,10 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.LiveData
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.healthcam.ReportData
@@ -1161,7 +1165,21 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
          * Setting the layout of the activity
          */
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_anura_measurement)
+
+        val view = findViewById<ConstraintLayout>(R.id.baseLayoutFaceScan)
+
+        ViewCompat.setOnApplyWindowInsetsListener(view) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+            insets
+        }
 
         /**
          * Initialize and setup Anura Core SDK and associated views

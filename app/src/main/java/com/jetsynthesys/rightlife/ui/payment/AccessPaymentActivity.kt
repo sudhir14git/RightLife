@@ -32,7 +32,7 @@ class AccessPaymentActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_accesspayment)
+        setChildContentView(R.layout.activity_accesspayment)
         findViewById<View>(R.id.ic_back_dialog).setOnClickListener { finish() }
         rvPaymentCard = findViewById(R.id.rv_payment_card)
         imagePaymentBg = findViewById(R.id.image_payment_bg)

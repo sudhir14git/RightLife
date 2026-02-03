@@ -29,7 +29,7 @@ class AIReportWebViewActivity : BaseActivity(), RatingReportFeedbackBottomSheet.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAireportWebViewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         binding.backButton.setOnClickListener {
             if (SharedPreferenceManager.getInstance(this).userProfile?.isReportGenerated == true && SharedPreferenceManager.getInstance(

@@ -51,7 +51,7 @@ class SeriesListActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivitySeriesListBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         var contentId = intent.getStringExtra("contentId")
         //API Call
         if (contentId != null) {

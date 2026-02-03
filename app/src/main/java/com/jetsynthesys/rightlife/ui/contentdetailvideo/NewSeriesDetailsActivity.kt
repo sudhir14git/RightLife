@@ -71,7 +71,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityNewSeriesDetailsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         var contentId = intent.getStringExtra("contentId")
         seriesId = intent.getStringExtra("seriesId").toString()
          episodeId = intent.getStringExtra("episodeId")

@@ -67,7 +67,7 @@ class ArticlesDetailActivity : BaseActivity() {
         setChildContentView(R.layout.activity_articledetail)
 
         binding = ActivityArticledetailBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         startTime = System.currentTimeMillis()
 
         binding.iconArrowArticle.setOnClickListener { v: View? ->

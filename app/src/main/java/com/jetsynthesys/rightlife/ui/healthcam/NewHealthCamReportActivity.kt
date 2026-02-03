@@ -57,11 +57,10 @@ class NewHealthCamReportActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setChildContentView(R.layout.activity_newhealthcamreport)
         binding = ActivityNewhealthcamreportBinding.inflate(
             layoutInflater
         )
-        setContentView(binding!!.root)
+        setChildContentView(binding!!.root)
         scanBinding = LayoutScanProgressBinding.bind(binding!!.scanProgressLayout.root)
         reportId = intent.getStringExtra("REPORT_ID")
         isFrom = intent.getStringExtra("FROM")
