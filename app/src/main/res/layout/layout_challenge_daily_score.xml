@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/dmsans_bold"
-                android:text="16"
+                android:text="13"
                 android:textColor="@color/txt_color_header"
                 android:textSize="38sp" />
 
