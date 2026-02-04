@@ -595,6 +595,7 @@
                                     android:id="@+id/circleIndicator"
                                     android:layout_width="16dp"
                                     android:layout_height="20dp"
+                                    android:layout_marginStart="-6dp"
                                     android:background="@drawable/white_circle_indicator_background"
                                     app:layout_constraintTop_toTopOf="@id/progressBar"
                                     app:layout_constraintBottom_toBottomOf="@id/progressBar"
@@ -610,11 +611,13 @@
                                 <View
                                     android:id="@+id/transparentOverlay"
                                     android:layout_width="0dp"
-                                    android:layout_height="32dp"
+                                    android:layout_height="42dp"
+                                    android:layout_marginTop="-10dp"
                                     android:background="@drawable/border_black"
                                     app:layout_constraintTop_toTopOf="@id/progressBar"
                                     app:layout_constraintBottom_toBottomOf="@id/progressBar"
-                                    app:layout_constraintStart_toStartOf="parent" />
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    />
 
                                 <ImageView
                                     android:id="@+id/imageViewBelowOverlay"
@@ -632,7 +635,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Weight Loss Zone"
-                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:textColor="@color/text_color_kcal"
                                     android:textSize="8sp"
                                     app:layout_constraintTop_toBottomOf="@id/imageViewBelowOverlay"
                                     app:layout_constraintStart_toStartOf="@id/transparentOverlay"

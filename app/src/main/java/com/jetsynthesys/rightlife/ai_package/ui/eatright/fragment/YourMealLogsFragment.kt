@@ -474,6 +474,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
                 selectMealTypeBottomSheet.isCancelable = true
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putString("selectedMealDate", selectedMealDate)
                 selectMealTypeBottomSheet.arguments = args
                 parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
