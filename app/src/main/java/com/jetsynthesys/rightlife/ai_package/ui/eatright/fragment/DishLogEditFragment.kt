@@ -152,8 +152,8 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         addToTheMealLayout.isEnabled = false
         addToTheMealLayout.alpha = 0.5f
 
-        selectDateMealTypeTitleLayout.visibility = View.VISIBLE
-        selectDateMealTypeLayout.visibility = View.VISIBLE
+//        selectDateMealTypeTitleLayout.visibility = View.VISIBLE
+//        selectDateMealTypeLayout.visibility = View.VISIBLE
 
         moduleName = arguments?.getString("ModuleName").toString()
         mealId = arguments?.getString("mealId").toString()
