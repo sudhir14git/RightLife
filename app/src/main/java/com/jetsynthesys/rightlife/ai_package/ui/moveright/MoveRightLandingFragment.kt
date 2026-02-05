@@ -535,6 +535,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         val todayStepCount = it.data.steps.todayTotal
                         val averageStepCount = it.data.steps.averageSteps
                         val goalStepCount = it.data.steps.goalSteps
+                        val comparisonMessage = it.data.steps.comparisonMessage
                         val todayStepsData = it.data.steps.todayCumulativeSteps?.takeIf { it.isNotEmpty() }?.let { data ->
                             data.map { it.cumulativeSteps.toFloat() }.toFloatArray()
                         } ?: FloatArray(24) { 0f }.also {
@@ -886,7 +887,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     averageStepsTv.text = averageStepCount.toString()
                                     yesterday_steps_count.text = averageStepCount.toString()
                                     goalStepsTv.text = goalStepCount.toString()
-                                    stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
+                                    stepHeading.text = markdownToBold(comparisonMessage)
                                 }else{
                                    if(it.data.caloriesBurned.today.toDouble() == 0.0){
                                        val result = hasAnyValueGreaterThanZero(avgHrData)
@@ -913,7 +914,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                            averageStepsTv.text = averageStepCount.toString()
                                            yesterday_steps_count.text = averageStepCount.toString()
                                            goalStepsTv.text = goalStepCount.toString()
-                                           stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
+                                           stepHeading.text = markdownToBold(comparisonMessage)
                                        }else{
                                            step_forward_icon.visibility = View.INVISIBLE
                                            stepNoDataLayout.visibility = View.VISIBLE
@@ -942,7 +943,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                        averageStepsTv.text = averageStepCount.toString()
                                        yesterday_steps_count.text = averageStepCount.toString()
                                        goalStepsTv.text = goalStepCount.toString()
-                                       stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
+                                       stepHeading.text = markdownToBold(comparisonMessage)
                                    }
                                 }
                             }
@@ -1156,6 +1157,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         val todayStepCount = it.data.steps.todayTotal
                         val averageStepCount = it.data.steps.averageSteps
                         val goalStepCount = it.data.steps.goalSteps
+                        val comparisonMessage = it.data.steps.comparisonMessage
                         val todayStepsData = it.data.steps.todayCumulativeSteps?.takeIf { it.isNotEmpty() }?.let { data ->
                             data.map { it.cumulativeSteps.toFloat() }.toFloatArray()
                         } ?: FloatArray(24) { 0f }.also {
@@ -1508,7 +1510,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     averageStepsTv.text = averageStepCount.toString()
                                     yesterday_steps_count.text = averageStepCount.toString()
                                     goalStepsTv.text = goalStepCount.toString()
-                                    stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
+                                    stepHeading.text = markdownToBold(comparisonMessage)
                                 }else{
                                     if(it.data.caloriesBurned.today.toDouble() == 0.0){
                                         val result = hasAnyValueGreaterThanZero(avgHrData)
@@ -1535,7 +1537,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             averageStepsTv.text = averageStepCount.toString()
                                             yesterday_steps_count.text = averageStepCount.toString()
                                             goalStepsTv.text = goalStepCount.toString()
-                                            stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
+                                            stepHeading.text = markdownToBold(comparisonMessage)
                                         }else{
                                             step_forward_icon.visibility = View.INVISIBLE
                                             stepNoDataLayout.visibility = View.VISIBLE
@@ -1564,7 +1566,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         averageStepsTv.text = averageStepCount.toString()
                                         yesterday_steps_count.text = averageStepCount.toString()
                                         goalStepsTv.text = goalStepCount.toString()
-                                        stepHeading.text = markdownToBold(messageForSteps(todayStepCount, averageStepCount, goalStepCount))
+                                        stepHeading.text = markdownToBold(comparisonMessage)
                                     }
                                 }
                             }
