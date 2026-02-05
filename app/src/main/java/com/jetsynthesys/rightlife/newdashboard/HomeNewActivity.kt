@@ -4336,7 +4336,7 @@ class HomeNewActivity : BaseActivity() {
 
 
     private fun showCompactSyncView() {
-        isSyncing.value = true
+       // isSyncing.value = true
         binding.compactSyncIndicator.apply {
             visibility = View.VISIBLE
             alpha = 0f
@@ -4353,7 +4353,7 @@ class HomeNewActivity : BaseActivity() {
 
     private fun onSyncComplete() {
         // 1. Define colors for Success State
-        isSyncing.value = false
+        //isSyncing.value = false
         val colorGreen = ContextCompat.getColor(this, R.color.color_green)
         val colorStateList = ColorStateList.valueOf(colorGreen)
         val colorRed = ContextCompat.getColor(this, R.color.red)

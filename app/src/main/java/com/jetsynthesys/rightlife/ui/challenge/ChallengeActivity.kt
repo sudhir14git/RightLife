@@ -187,12 +187,13 @@ class ChallengeActivity : BaseActivity() {
             AnalyticsEvent.Chl_PageOpen
         )
         binding.scoreCard.tvResync.setOnClickListener {
+            it.disableViewForSeconds()
             fetchHealthDataFromHealthConnect()
         }
 
 // Add this variable at the class level
 
-        isSyncing.observe(this) { syncing ->
+        /*isSyncing.observe(this) { syncing ->
             if (isFinishing || isDestroyed) return@observe
 
             // 1. Update your text view normally
@@ -211,7 +212,7 @@ class ChallengeActivity : BaseActivity() {
                     //hideSyncViewsDirectly()
                 }
             }
-        }
+        }*/
 
     }
 
@@ -1048,6 +1049,7 @@ class ChallengeActivity : BaseActivity() {
 
     fun fetchHealthDataFromHealthConnect() {
         updateResyncTextView(true)
+        showCompactSyncView()
         val availabilityStatus = HealthConnectClient.getSdkStatus(this)
         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
             healthConnectClient = HealthConnectClient.getOrCreate(this)
@@ -1061,6 +1063,7 @@ class ChallengeActivity : BaseActivity() {
                 Toast.LENGTH_LONG
             ).show()
             onSyncComplete()
+            updateResyncTextView(false)
         }
     }
 
@@ -1250,6 +1253,7 @@ class ChallengeActivity : BaseActivity() {
         } finally {
             //hideLoaderSafe()
             onSyncComplete()
+            updateResyncTextView(false)
             val isValidState = sharedPreferenceManager.challengeState in listOf(3)
 
             if (
@@ -2111,7 +2115,7 @@ class ChallengeActivity : BaseActivity() {
     }
 
     private fun showCompactSyncView() {
-        isSyncing.value = true
+        //isSyncing.value = true
         binding.compactSyncIndicator.apply {
             visibility = View.VISIBLE
             alpha = 0f
@@ -2128,7 +2132,7 @@ class ChallengeActivity : BaseActivity() {
 
     private fun onSyncComplete() {
         // 1. Define colors for Success State
-        isSyncing.value = false
+        //isSyncing.value = false
         val colorGreen = ContextCompat.getColor(this, R.color.color_green)
         val colorStateList = ColorStateList.valueOf(colorGreen)
         val colorRed = ContextCompat.getColor(this, R.color.red)

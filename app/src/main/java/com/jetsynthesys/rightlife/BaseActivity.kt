@@ -32,7 +32,7 @@ open class BaseActivity : AppCompatActivity() {
     // Heart pulse animators to manage cancellation
     private var fullHeartAnimator: ObjectAnimator? = null
     var compactHeartAnimator: ObjectAnimator? = null
-    val isSyncing = MutableLiveData<Boolean>(false)
+    //val isSyncing = MutableLiveData<Boolean>(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +82,7 @@ open class BaseActivity : AppCompatActivity() {
 
     private fun showFullSyncView() {
         hideAllSyncViews()
-        isSyncing.value = true
+        //isSyncing.value = true
         baseBinding.fullSyncStatusView.apply {
             visibility = View.VISIBLE
             alpha = 0f
@@ -133,7 +133,7 @@ open class BaseActivity : AppCompatActivity() {
 
     private fun onSyncComplete(isFirstTime: Boolean) {
         // 1. Define colors for Success State
-        isSyncing.value = false
+        //isSyncing.value = false
         val colorGreen = ContextCompat.getColor(this, R.color.color_green)
         val bgSuccess = ContextCompat.getColor(this, R.color.light_green)
         val colorStateList = android.content.res.ColorStateList.valueOf(colorGreen)
