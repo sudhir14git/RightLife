@@ -1,11 +1,14 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -19,6 +22,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -63,6 +68,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAd
 import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
+import com.jetsynthesys.rightlife.databinding.FragmentSleepRightLandingBinding
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -173,6 +179,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var swipeRefreshLayout : SwipeRefreshLayout
     private lateinit var nestedScrollView : NestedScrollView
     private lateinit var rightLifeReportCard : FrameLayout
+    private lateinit var compactSyncIndicator : FrameLayout
+    private lateinit var compactHeartIcon : ImageView
+    private lateinit var compactRotatingArc : ProgressBar
+    private var fullHeartAnimator: ObjectAnimator? = null
+    var compactHeartAnimator: ObjectAnimator? = null
     private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
@@ -199,11 +210,23 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLandingBinding
         get() = FragmentLandingBinding::inflate
 
+    private var _binding: FragmentLandingBinding? = null
+    private val binding get() = _binding!!
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         context?.let {
             appPreference = AppPreference(it)
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentLandingBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -275,6 +298,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         nestedScrollView = view.findViewById(R.id.nestedScrollView)
+        compactSyncIndicator = view.findViewById(R.id.compactSyncIndicator)
+        compactHeartIcon = view.findViewById(R.id.compactHeartIcon)
+        compactRotatingArc = view.findViewById(R.id.compactRotatingArc)
+
+        showCompactSyncView()
 
         swipeRefreshLayout.setOnRefreshListener {
             // Call your API or refresh function
@@ -437,10 +465,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                     healthConnectClient = HealthConnectClient.getOrCreate(it)
                     lifecycleScope.launch {
+                        showCompactSyncView()
                         requestPermissionsAndReadAllData()
                     }
                 } else {
                     Toast.makeText(it, "Please install or update health connect from the Play Store.", Toast.LENGTH_LONG).show()
+                    onSyncComplete()
                 }
             }
         }
@@ -1020,10 +1050,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                             healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
                             lifecycleScope.launch {
+                                showCompactSyncView()
                                 requestPermissionsAndReadAllData()
                             }
                         } else {
                             Toast.makeText(context?.let { it }, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                            onSyncComplete()
                         }
                   //  }
                 } else {
@@ -1036,6 +1068,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         Toast.makeText(context?.let { it }, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
                       //  if (!isRepeat){
                             val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                        showCompactSyncView()
                             if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                                 healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
                                 lifecycleScope.launch {
@@ -1043,6 +1076,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 }
                             } else {
                                 Toast.makeText(context?.let { it }, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                                onSyncComplete()
                             }
                         }
                  //   }
@@ -3134,6 +3168,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     isRepeat = true
                     fetchMoveLandingAfterRefresh(recyclerView, adapter)
                     fetchUserWorkouts()
+                    onSyncComplete()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -3142,6 +3177,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     }
                     isRepeat = true
                     if (isAdded && view != null) dismissLoader(requireView())
+                    onSyncComplete()
                 }
             }
         }
@@ -3490,6 +3526,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     isRepeat = true
                     fetchMoveLandingAfterRefresh(recyclerView, adapter)
                     fetchUserWorkouts()
+                    onSyncComplete()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -3498,9 +3535,102 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     }
                    isRepeat = true
                     if (isAdded && view != null) dismissLoader(requireView())
+                    onSyncComplete()
                 }
             }
         }
+    }
+
+    private fun showCompactSyncView() {
+        // isSyncing.value = true
+        compactSyncIndicator.apply {
+            visibility = View.VISIBLE
+            alpha = 0f
+            scaleX = 0.6f
+            scaleY = 0.6f
+            animate()
+                .alpha(1f).scaleX(1f).scaleY(1f)
+                .setDuration(400)
+                .setInterpolator(OvershootInterpolator(1.5f))
+                .start()
+        }
+        startHeartPulse(compactHeartIcon, false)
+    }
+
+    fun startHeartPulse(target: ImageView, isFull: Boolean) {
+        val animator = ObjectAnimator.ofPropertyValuesHolder(
+            target,
+            PropertyValuesHolder.ofFloat(View.SCALE_X, 1.2f),
+            PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.2f)
+        ).apply {
+            duration = 800
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+            interpolator = AccelerateDecelerateInterpolator()
+        }
+
+        if (isFull) {
+            fullHeartAnimator?.cancel()
+            fullHeartAnimator = animator
+        } else {
+            compactHeartAnimator?.cancel()
+            compactHeartAnimator = animator
+        }
+        animator.start()
+    }
+
+    private fun onSyncComplete() {
+        // 1. Define colors for Success State
+        //isSyncing.value = false
+        val ctx = context ?: return
+        val colorGreen = ContextCompat.getColor(ctx, R.color.color_green)
+        val colorStateList = ColorStateList.valueOf(colorGreen)
+        val colorRed = ContextCompat.getColor(ctx, R.color.red)
+        val colorStateListRed = ColorStateList.valueOf(colorRed)
+
+        // --- Compact View Completion ---
+        compactHeartAnimator?.cancel()
+
+        compactSyncIndicator.apply {
+            visibility = View.VISIBLE
+            alpha = 1f
+            scaleX = 1f
+            scaleY = 1f
+        }
+
+        compactRotatingArc.visibility = View.GONE
+        compactHeartIcon.apply {
+            imageTintList = colorStateList
+            scaleX = 1f
+            scaleY = 1f
+        }
+
+        // 3. Auto-hide with Shrink animation after 2.5 seconds
+        binding.root.postDelayed({
+            if (!isAdded || view == null) return@postDelayed
+
+            compactSyncIndicator.animate()
+                .scaleX(0f)
+                .scaleY(0f)
+                .alpha(0f)
+                .setDuration(400)
+                .withEndAction {
+                    compactSyncIndicator.visibility = View.GONE
+                    compactRotatingArc.visibility = View.VISIBLE
+
+                    compactHeartIcon.apply {
+                        imageTintList = colorStateListRed
+                        scaleX = 0f
+                        scaleY = 0f
+                    }
+                }
+                .start()
+        }, 2500)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun fetchThinkRecomendedData() {
@@ -3727,21 +3857,22 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val ctx = context ?: return@launch
-
+                showCompactSyncView()
                 val availabilityStatus = HealthConnectClient.getSdkStatus(ctx)
                 if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                     healthConnectClient = HealthConnectClient.getOrCreate(ctx)
                     requestPermissionsAndReadAllData()
                 } else {
                     Toast.makeText(ctx,"Please install or update Health Connect", Toast.LENGTH_LONG).show()
+                    onSyncComplete()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 // ❗ STOP refresh ONLY AFTER ALL WORK IS DONE
                 swipeRefreshLayout.isRefreshing = false
+                onSyncComplete()
             }
         }
     }
-
 }
