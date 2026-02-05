@@ -34,9 +34,11 @@ import com.android.billingclient.api.acknowledgePurchase
 import com.android.billingclient.api.consumePurchase
 import com.android.billingclient.api.queryProductDetails
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionCheckoutBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetPaymentStatusResultBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetPlanSelectionBinding
@@ -152,6 +154,21 @@ class SubscriptionCheckoutActivity : BaseActivity(), PurchasesUpdatedListener,
 
         binding.tvChangePlan.setOnClickListener {
             showPlanListBottomSheet()
+        }
+
+        try {
+            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
+                val appConfig =
+                    Gson().fromJson(
+                        sharedPreferenceManager.appConfigJson,
+                        AppConfigResponse::class.java
+                    )
+                binding.layoutRazorPay.visibility =
+                    if (appConfig?.data?.razorpay?.enabled == true) View.VISIBLE else View.GONE
+
+            }
+        } catch (e: Exception) {
+            Log.e("AppConfig", "Failed to parse app config from SharedPreferences", e)
         }
 
         binding.llGooglePlay.setOnClickListener {

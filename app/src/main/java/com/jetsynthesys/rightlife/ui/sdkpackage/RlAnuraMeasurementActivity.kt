@@ -27,7 +27,6 @@ import ai.nuralogix.anurasdk.views.utils.MeasurementUIConfiguration
 import ai.nuralogix.dfx.ChunkPayload
 import ai.nuralogix.dfx.ConstraintResult
 import ai.nuralogix.dfx.ConstraintResult.ConstraintReason
-import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
@@ -40,9 +39,15 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.LiveData
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.healthcam.ReportData
+import com.jetsynthesys.rightlife.ui.sdkpackage.RlAnuraMeasurementActivity.Companion.IMAGE_HEIGHT
+import com.jetsynthesys.rightlife.ui.sdkpackage.RlAnuraMeasurementActivity.Companion.IMAGE_WIDTH
 import org.json.JSONObject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -250,7 +255,7 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
 
         data.putExtra("result", JSONObject(resultString).toString())
         data.putExtra("resultObject", reportData)
-        setResult(Activity.RESULT_OK, data)
+        setResult(RESULT_OK, data)
         finish()
 
     }
@@ -607,11 +612,29 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
      */
     @OptIn(ExperimentalEncodingApi::class)
     private fun getStudyFileByteData(): ByteArray {
-        return Base64.decode(
-            deepAffexExtractionLibraryStudyConfigData,
-            0,
-            deepAffexExtractionLibraryStudyConfigData.length
-        )
+
+        try {
+            // 1. Get the string safely
+            val base64String = deepAffexExtractionLibraryStudyConfigData
+
+            // 2. Check if empty to prevent Bad Base64 crashes
+            if (base64String.isEmpty()) {
+                return ByteArray(0)
+            }
+
+            return Base64.decode(
+                base64String,
+                0,
+                base64String.length
+            )
+
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            return ByteArray(0) // Return empty array on failure
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return ByteArray(0)
+        }
     }
 
     /**
@@ -1142,7 +1165,21 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
          * Setting the layout of the activity
          */
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_anura_measurement)
+
+        val view = findViewById<ConstraintLayout>(R.id.baseLayoutFaceScan)
+
+        ViewCompat.setOnApplyWindowInsetsListener(view) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+            insets
+        }
 
         /**
          * Initialize and setup Anura Core SDK and associated views
@@ -1188,13 +1225,13 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
                 measurementPipeline.close()
                 faceTracker.close()
             } catch (e: Exception) {
-                setResult(Activity.RESULT_OK, Intent())
+                setResult(RESULT_OK, Intent())
                 finish()
                 Log.e(TAG, "Failed on closing MeasurementPipeline: " + e.message)
             }
         }
         dismissAnalyzingAlertDialogIfVisible()
-        setResult(Activity.RESULT_OK, Intent())
+        setResult(RESULT_OK, Intent())
         super.onDestroy()
     }
 }

@@ -617,6 +617,8 @@ class HomeExploreFragment : BaseFragment() {
                         jsonResponse,
                         WellnessApiResponse::class.java
                     )
+                    binding.tvHeaderWellnessplay.text = wellnessApiResponse?.data?.sectionTitle ?: "Your Wellness Playlist"
+                    binding.tvDescWellness.text = wellnessApiResponse?.data?.sectionSubtitle ?: ""
                     wellnessApiResponse?.data?.contentList?.let {
                         runWhenAttached {
                             setupWellnessContent(
@@ -1134,12 +1136,12 @@ class HomeExploreFragment : BaseFragment() {
             binding.viewPager.apply {
                 clipToPadding = false
                 clipChildren = false
-                offscreenPageLimit = 5
+                offscreenPageLimit = 1
                 setPadding(60, 0, 60, 0)
             }
 
             // Set offscreen page limit and page margin
-            binding.viewPager.offscreenPageLimit = 5 // Load adjacent pages
+            binding.viewPager.offscreenPageLimit = 1 // Load adjacent pages
             binding.viewPager.clipToPadding = false
             binding.viewPager.clipChildren = false
             binding.viewPager.setPageTransformer { page, position ->
@@ -1346,107 +1348,99 @@ class HomeExploreFragment : BaseFragment() {
     }
 
     private fun setupRLEditContent(response: RightLifeEditResponse?) {
-        if (response == null || response.data == null) return
+        // 1. Safe Unwrapping: Return early if data is invalid
+        val data = response?.data
+        val topList = data?.topList
 
-        val topList = response.data.topList
-        if (topList == null || topList.isEmpty()) {
+        if (topList.isNullOrEmpty()) {
             binding.rlRightlifeEdit.visibility = View.GONE
             return
-        } else {
-            binding.rlRightlifeEdit.visibility = View.VISIBLE
         }
 
-        if (topList.size > 0) {
-            val item0 = topList[0]
-            binding.tvRledtContTitle1.text = item0.title
+        // 2. Use 'with' to avoid repeating 'binding.'
+        with(binding) {
+            rlRightlifeEdit.visibility = View.VISIBLE
+            tvHeaderHealth.text = data.sectionTitle ?: "The RightLife Edit"
+            tvDescriptionHealth.text =
+                data.sectionSubtitle ?: "Discover curated content to help you thrive."
 
-            if (item0.artist != null && !item0.artist.isEmpty()) {
-                val artist = item0.artist[0]
-                binding.nameeditor.text = (if (artist.firstName != null) artist.firstName else "") +
-                        " " +
-                        (if (artist.lastName != null) artist.lastName else "")
+            // --- BIND ITEM 0 (HERO ITEM) ---
+            val item0 = topList.getOrNull(0)
+            if (item0 != null) {
+                tvRledtContTitle1.text = item0.title
+
+                val artist = item0.artist?.firstOrNull()
+                nameeditor.text = "${artist?.firstName.orEmpty()} ${artist?.lastName.orEmpty()}"
+
+                count.text = item0.viewCount.toString()
+
+                // Specific Hero Logic for Play/Read Icon
+                val typeIcon = if (item0.contentType.equals("VIDEO", ignoreCase = true)) {
+                    R.drawable.ic_playrledit
+                } else {
+                    R.drawable.read
+                }
+                imgContenttypeRledit.setImageResource(typeIcon)
+
+                // Load Hero Image
+                if (item0.thumbnail != null) {
+                    Glide.with(root.context)
+                        .load(ApiClient.CDN_URL_QA + item0.thumbnail.url)
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
+                        .into(imgRledit)
+                }
+                setcontenttypeIcon(itemTextRledit, imgIconviewRledit, item0.contentType)
             }
 
-            binding.count.text = item0.viewCount.toString()
+            // --- LOCAL HELPER FOR ITEMS 1 & 2 ---
+            fun bindSmallItem(
+                index: Int,
+                container: View,
+                titleTv: TextView,
+                nameTv: TextView,
+                countTv: TextView,
+                imgView: ImageView,
+                typeTv: TextView,
+                typeIconView: ImageView
+            ) {
+                val item = topList.getOrNull(index)
 
-            if ("VIDEO".equals(item0.contentType, ignoreCase = true)) {
-                binding.imgContenttypeRledit.setImageResource(R.drawable.ic_playrledit)
-            } else {
-                binding.imgContenttypeRledit.setImageResource(R.drawable.read)
+                if (item == null) {
+                    container.visibility = View.GONE
+                    return
+                }
+
+                container.visibility = View.VISIBLE
+                titleTv.text = item.title
+
+                val artist = item.artist?.firstOrNull()
+                nameTv.text = "${artist?.firstName.orEmpty()} ${artist?.lastName.orEmpty()}"
+
+                countTv.text = item.viewCount.toString()
+
+                if (item.thumbnail != null) {
+                    Glide.with(root.context)
+                        .load(ApiClient.CDN_URL_QA + item.thumbnail.url)
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
+                        .transform(CenterCrop(), RoundedCorners(25))
+                        .into(imgView)
+                }
+                setcontenttypeIcon(typeTv, typeIconView, item.contentType)
             }
 
-            if (item0.thumbnail != null) {
-                Glide.with(requireActivity())
-                    .load(ApiClient.CDN_URL_QA + item0.thumbnail.url)
-                    .placeholder(R.drawable.rl_placeholder)
-                    .error(R.drawable.rl_placeholder)
-                    .into(binding.imgRledit)
-            }
-            setcontenttypeIcon(binding.itemTextRledit, binding.imgIconviewRledit, item0.contentType)
-        } else {
-            binding.rlRightlifeEdit.visibility = View.GONE
-        }
-
-        if (topList.size > 1) {
-            val item1 = topList[1]
-            binding.tvRledtContTitle2.text = item1.title
-
-            if (item1.artist != null && item1.artist.isNotEmpty()) {
-                val artist = item1.artist[0]
-                binding.nameeditor1.text =
-                    (if (artist.firstName != null) artist.firstName else "") +
-                            " " +
-                            (if (artist.lastName != null) artist.lastName else "")
-            }
-
-            binding.count1.text = item1.viewCount.toString()
-
-            if (item1.thumbnail != null) {
-                Glide.with(requireActivity())
-                    .load(ApiClient.CDN_URL_QA + item1.thumbnail.url)
-                    .placeholder(R.drawable.rl_placeholder)
-                    .error(R.drawable.rl_placeholder)
-                    .transform(CenterCrop(), RoundedCorners(25))
-                    .into(binding.imgRledit1)
-            }
-            setcontenttypeIcon(
-                binding.itemTextRledit1,
-                binding.imgIconviewRledit1,
-                item1.contentType
+            // --- BIND ITEM 1 ---
+            bindSmallItem(
+                1, relativeRledit2, tvRledtContTitle2, nameeditor1, count1,
+                imgRledit1, itemTextRledit1, imgIconviewRledit1
             )
-        } else {
-            binding.relativeRledit2.visibility = View.GONE
-        }
 
-        if (topList.size > 2) {
-            val item2 = topList[2]
-            binding.tvRledtContTitle3.text = item2.title
-
-            if (item2.artist != null && !item2.artist.isEmpty()) {
-                val artist = item2.artist[0]
-                binding.nameeditor2.text =
-                    (if (artist.firstName != null) artist.firstName else "") +
-                            " " +
-                            (if (artist.lastName != null) artist.lastName else "")
-            }
-
-            binding.count2.text = item2.viewCount.toString()
-
-            if (item2.thumbnail != null) {
-                Glide.with(requireActivity())
-                    .load(ApiClient.CDN_URL_QA + item2.thumbnail.url)
-                    .placeholder(R.drawable.rl_placeholder)
-                    .error(R.drawable.rl_placeholder)
-                    .transform(CenterCrop(), RoundedCorners(25))
-                    .into(binding.imgRledit2)
-            }
-            setcontenttypeIcon(
-                binding.itemTextRledit2,
-                binding.imgIconviewRledit2,
-                item2.contentType
+            // --- BIND ITEM 2 ---
+            bindSmallItem(
+                2, relativeRledit3, tvRledtContTitle3, nameeditor2, count2,
+                imgRledit2, itemTextRledit2, imgIconviewRledit2
             )
-        } else {
-            binding.relativeRledit3.visibility = View.GONE
         }
     }
 
@@ -1479,68 +1473,43 @@ class HomeExploreFragment : BaseFragment() {
     }
 
 
-    private fun setupWellnessContent(contentList: List<ContentWellness>) {
-        if (contentList.isEmpty()) return
-
-        binding.rlWellnessMain.visibility = View.VISIBLE
-        // Bind data for item 1
-        if (contentList.isNotEmpty()) {
-            bindContentToView(
-                contentList[0],
-                binding.tv1Header,
-                binding.tv1,
-                binding.img1,
-                binding.tv1Viewcount,
-                binding.img5,
-                binding.imgtagTv1
-            )
-        } else {
-            binding.relativeWellness1.visibility = View.GONE
+    private fun setupWellnessContent(contentList: List<ContentWellness>?) {
+        // 1. Guard Clause: Hide main layout if list is null or empty
+        if (contentList.isNullOrEmpty()) {
+            binding.rlWellnessMain.visibility = View.GONE
+            return
         }
 
-        // Bind data for item 2
-        if (contentList.size > 1) {
-            bindContentToView(
-                contentList[1],
-                binding.tv2Header,
-                binding.tv2,
-                binding.img2,
-                binding.tv2Viewcount,
-                binding.img6,
-                binding.imgtagTv2
-            )
-        } else {
-            binding.relativeWellness2.visibility = View.GONE
-        }
+        with(binding) {
+            rlWellnessMain.visibility = View.VISIBLE
 
-        // Bind data for item 3
-        if (contentList.size > 2) {
-            bindContentToView(
-                contentList[2],
-                binding.tv3Header,
-                binding.tv3,
-                binding.img3,
-                binding.tv3Viewcount,
-                binding.img7,
-                binding.imgtagTv3
-            )
-        } else {
-            binding.relativeWellness3.visibility = View.GONE
-        }
+            // 2. Local Helper Function to remove repeated code
+            // This handles: Checking if item exists -> Binding it OR Hiding the view
+            fun bindSlot(
+                index: Int,
+                container: View,
+                headerTv: TextView,
+                descTv: TextView,
+                mainImg: ImageView,
+                countTv: TextView,
+                iconImg: ImageView,
+                tagView: ImageView // Using View generic type as exact type of 'imgtagTv' is unsure
+            ) {
+                val item = contentList.getOrNull(index)
+                if (item != null) {
+                    container.visibility = View.VISIBLE
+                    // Call your existing binding logic
+                    bindContentToView(item, headerTv, descTv, mainImg, countTv, iconImg, tagView)
+                } else {
+                    container.visibility = View.GONE
+                }
+            }
 
-        // Bind data for item 4
-        if (contentList.size > 3) {
-            bindContentToView(
-                contentList[3],
-                binding.tv4Header,
-                binding.tv4,
-                binding.img4,
-                binding.tv4Viewcount,
-                binding.img8,
-                binding.imgtagTv4
-            )
-        } else {
-            binding.relativeWellness4.visibility = View.GONE
+            // 3. Bind the 4 slots cleanly
+            bindSlot(0, relativeWellness1, tv1Header, tv1, img1, tv1Viewcount, img5, imgtagTv1)
+            bindSlot(1, relativeWellness2, tv2Header, tv2, img2, tv2Viewcount, img6, imgtagTv2)
+            bindSlot(2, relativeWellness3, tv3Header, tv3, img3, tv3Viewcount, img7, imgtagTv3)
+            bindSlot(3, relativeWellness4, tv4Header, tv4, img4, tv4Viewcount, img8, imgtagTv4)
         }
     }
 
@@ -1551,25 +1520,40 @@ class HomeExploreFragment : BaseFragment() {
         category: TextView,
         thumbnail: ImageView,
         viewcount: TextView,
-        imgcontenttype: ImageView,
+        imgcontenttype: ImageView, // This was unused before!
         imgtag: ImageView
     ) {
-        // Set title in the header TextView
+        // 1. Set Text Data
         header.text = content.title
-        viewcount.text = "" + content.viewCount
-        // Set categoryName in the category TextView
+        viewcount.text = content.viewCount.toString() // Better than "" + ...
         category.text = content.categoryName
 
-        // Load thumbnail using Glide
-        if (!requireActivity().isFinishing && !requireActivity().isDestroyed) {
-            Glide.with(requireActivity())
-                .load(ApiClient.CDN_URL_QA + content.thumbnail.url) // URL of the thumbnail
+        // 2. Set Module Color
+        setModuleColor(imgtag, content.moduleId)
+
+        // 3. Set Content Type Icon (Play vs Read)
+        // Assuming standard logic: VIDEO = Play icon, anything else = Read icon
+        if (content.contentType.equals("VIDEO", ignoreCase = true)) {
+            imgcontenttype.setImageResource(R.drawable.ic_playrledit)
+        } else {
+            imgcontenttype.setImageResource(R.drawable.read)
+        }
+
+        // 4. Safe Image Loading
+        // Use 'thumbnail.context' -> safer than requireActivity() in helper functions
+        val imageUrl = content.thumbnail?.url
+
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(thumbnail.context)
+                .load(ApiClient.CDN_URL_QA + imageUrl)
                 .placeholder(R.drawable.rl_placeholder)
                 .error(R.drawable.rl_placeholder)
-                .transform(RoundedCorners(25)) // Optional error image
+                .transform(RoundedCorners(25))
                 .into(thumbnail)
+        } else {
+            // Explicitly set placeholder if url is missing so recycled views don't show old images
+            thumbnail.setImageResource(R.drawable.rl_placeholder)
         }
-        setModuleColor(imgtag, content.moduleId)
     }
 
     private fun setModuleColor(imgtag: ImageView, moduleId: String) {

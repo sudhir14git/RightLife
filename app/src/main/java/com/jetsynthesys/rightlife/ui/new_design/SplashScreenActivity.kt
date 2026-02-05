@@ -16,6 +16,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity.Companion.EXTRA_DEEP_LINK_TARGET
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -31,6 +32,7 @@ class SplashScreenActivity : BaseActivity() {
     private var appConfig: AppConfigResponse? = null
     private var configCallDone: Boolean = false
     private var isNextActivityStarted = false
+    private var deepLink = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,9 @@ class SplashScreenActivity : BaseActivity() {
         rlview1 = findViewById(R.id.rlview1)
         imgview2 = findViewById(R.id.imgview2)
         fetchAppConfig()
+
+        deepLink = extractDeepLinkFromIntent(intent) ?: ""
+
         try {
             if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
                 isNextActivityStarted = true
@@ -60,6 +65,23 @@ class SplashScreenActivity : BaseActivity() {
         logCurrentFCMToken()
     }
 
+    private fun extractDeepLinkFromIntent(intent: Intent?): String? {
+        if (intent == null) return null
+
+        // 1) If notification click opened via ACTION_VIEW / deep link URI
+
+        intent.dataString?.let { if (it.isNotBlank()) return it }
+
+        val extras = intent.extras ?: return null
+        // 2) Direct key from your own notification builder / backend
+        extras.getString("deep_link")?.let { if (it.isNotBlank()) return it }
+
+        // 3) Firebase Console / notification payload often prefixes keys like this
+        extras.getString("gcm.notification.deep_link")?.let { if (it.isNotBlank()) return it }
+        extras.getString("gcm.n.deep_link")?.let { if (it.isNotBlank()) return it }
+        return null
+    }
+
     private fun fetchAppConfig() {
         // apiService is available from BaseActivity in your project (as you already use elsewhere)
         val call = apiService.getAppConfig()
@@ -73,7 +95,7 @@ class SplashScreenActivity : BaseActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     try {
-                        val json = response.body()!!.string()
+                        val json = response.body()?.string() ?: ""
                         appConfig =
                             com.google.gson.Gson().fromJson(json, AppConfigResponse::class.java)
 
@@ -123,7 +145,7 @@ class SplashScreenActivity : BaseActivity() {
     private fun logCurrentFCMToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val token = task.result
+                task.result
                 //Log.d("FCM_TOKEN", "Current token: $token")
                 //Log.d("FCM_TOKEN", "Token length: ${token?.length}")
             } else {
@@ -206,6 +228,7 @@ class SplashScreenActivity : BaseActivity() {
 
                 if (loggedInUser?.isOnboardingComplete == true) {
                     val intent = Intent(this, HomeNewActivity::class.java)
+                    intent.putExtra(EXTRA_DEEP_LINK_TARGET, removeBaseUrl(deepLink))
                     startActivity(intent)
                 } else {
                     if (!sharedPreferenceManager.createUserName) {
@@ -243,5 +266,12 @@ class SplashScreenActivity : BaseActivity() {
 
         animateViews()
     }
+
+    fun removeBaseUrl(url: String): String {
+        return url
+            .replace("https://qa.rightlife.com", "")
+            .replace("https://app.rightlife.com", "")
+    }
+
 
 }

@@ -3726,10 +3726,8 @@ class SleepRestoChartView(
     ) {
         timelineSegments.clear()
         if (data.isEmpty()) return
-
         val overallStart = dateFormat.parse(sleepStartTime)?.time ?: return
         val overallEnd = dateFormat.parse(sleepEndTime)?.time ?: return
-
         // Parse & sort stage data
         val parsedData = data.mapNotNull {
             try {
@@ -3740,26 +3738,21 @@ class SleepRestoChartView(
                 null
             }
         }.sortedBy { it.first }
-
         var currentTime = overallStart
 
         // Build timeline with gaps
         parsedData.forEach { (start, end, stage) ->
-
             // gap before stage
             if (currentTime < start) {
                 timelineSegments.add(
                     TimelineSegment(currentTime, start, null, null)
                 )
             }
-
             val position = getPositionForRecordType(stage!!)
             val color = getColorForRecordType(stage)
-
             timelineSegments.add(
                 TimelineSegment(start, end, position, color)
             )
-
             currentTime = end
         }
 
@@ -3769,7 +3762,6 @@ class SleepRestoChartView(
                 TimelineSegment(currentTime, overallEnd, null, null)
             )
         }
-
         invalidate()
     }
 
@@ -3778,28 +3770,21 @@ class SleepRestoChartView(
 
         val w = width.toFloat()
         val h = height.toFloat()
-
         canvas.drawColor(Color.parseColor("#F5F9FF"))
 
         if (timelineSegments.isEmpty()) return
-
         val barHeight = h * 0.35f
         val cornerRadius = barHeight / 4
         val verticalGap = h * 0.05f
-
         val totalDuration =
             timelineSegments.last().endTime - timelineSegments.first().startTime
-
         val totalSpacing = segmentSpacing * (timelineSegments.size - 1)
         val availableWidth = w - totalSpacing
-
         var currentX = 0f
-
         timelineSegments.forEach { segment ->
             val duration = segment.endTime - segment.startTime
             val segmentWidth =
                 (duration.toFloat() / totalDuration) * availableWidth
-
             if (segment.position != null && segment.color != null) {
                 paint.color = segment.color
 
@@ -3807,10 +3792,8 @@ class SleepRestoChartView(
                     Position1.UPPER -> h * 0.1f
                     Position1.LOWER -> h * 0.1f + barHeight + verticalGap
                 }
-
                 val bottom = top + barHeight
                 val right = currentX + segmentWidth
-
                 canvas.drawRoundRect(
                     RectF(currentX, top, right, bottom),
                     cornerRadius,
@@ -3818,18 +3801,14 @@ class SleepRestoChartView(
                     paint
                 )
             }
-
             currentX += segmentWidth + segmentSpacing
         }
-
         // ---- RULER ----
         val rulerY = h * 0.95f
         val tickHeight = 10f
         val tickSpacing = w / 12f
-
         paint.color = Color.BLACK
         paint.strokeWidth = 2f
-
         for (i in 0..12) {
             val x = i * tickSpacing
             canvas.drawLine(
@@ -3858,7 +3837,6 @@ class SleepRestoChartView(
         }
     }
 }
-
 
 enum class Position1 {
     UPPER, LOWER

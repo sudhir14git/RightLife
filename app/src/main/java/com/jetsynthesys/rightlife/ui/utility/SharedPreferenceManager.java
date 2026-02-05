@@ -773,5 +773,15 @@ public class SharedPreferenceManager {
     public String getChallengeParticipatedDate() {
         return sharedPreferences.getString(SharedPreferenceConstants.CHALLENGE_PARTICIPATED_DATE, "");
     }
+
+    public Boolean isNewUser() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.NEW_USER, true);
+    }
+
+    public void setNewUser(boolean isNewUser) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.NEW_USER, isNewUser);
+        editor.apply();
+    }
 }
 

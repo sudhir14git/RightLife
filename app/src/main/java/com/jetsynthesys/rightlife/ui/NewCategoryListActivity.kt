@@ -47,7 +47,7 @@ class NewCategoryListActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewCategorylistBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         selectedCategoryId = intent.getStringExtra("Categorytype") ?: ""
         selectedModuleId = intent.getStringExtra("moduleId") ?: ""
@@ -82,7 +82,7 @@ class NewCategoryListActivity : BaseActivity() {
                                 "Removed From Saved Items"
                             }
                             showCustomToast(msg, item.isBookmarked)
-                            adapter.notifyItemChanged(position)
+                            runOnUiThread { adapter.notifyItemChanged(position) }
                         } else {
                             Toast.makeText(this, "Something went wrong!!", Toast.LENGTH_SHORT)
                                 .show()
@@ -131,6 +131,7 @@ class NewCategoryListActivity : BaseActivity() {
                     // Use the position as needed
                     if (position != -1) {
                         contentDetails.clear()
+                        runOnUiThread { adapter.notifyDataSetChanged() }
                         skip = 0
                         if (position == 0) {
                             selectedCategoryId = ""
@@ -398,6 +399,7 @@ class NewCategoryListActivity : BaseActivity() {
         selectedText = selectedString
         skip = 0
         contentDetails.clear()
+        runOnUiThread { adapter.notifyDataSetChanged() }
         selectedContentType = if (selectedString.equals("All", ignoreCase = true))
             selectedString.lowercase()
         else
@@ -467,8 +469,7 @@ class NewCategoryListActivity : BaseActivity() {
         else -> module
     }
 
-    override fun onResume()
-    {
+    override fun onResume() {
         super.onResume()
         fetchContent(skip, selectedContentType, selectedCategoryId)
     }

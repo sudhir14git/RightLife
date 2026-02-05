@@ -67,7 +67,7 @@ class ArticlesDetailActivity : BaseActivity() {
         setChildContentView(R.layout.activity_articledetail)
 
         binding = ActivityArticledetailBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         startTime = System.currentTimeMillis()
 
         binding.iconArrowArticle.setOnClickListener { v: View? ->
@@ -95,39 +95,39 @@ class ArticlesDetailActivity : BaseActivity() {
         binding.icSaveArticle.setOnClickListener {
             binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active)
             // Call Save article api
-            if (articleDetailsResponse!!.data.bookmarked) {
+            if (articleDetailsResponse?.data?.bookmarked == true) {
                 binding.icSaveArticle.setImageResource(R.drawable.ic_save_article)
-                articleDetailsResponse!!.data.bookmarked = false
+                articleDetailsResponse?.data?.bookmarked = false
                 postArticleBookMark(
-                    articleDetailsResponse!!.data.id,
+                    articleDetailsResponse?.data?.id,
                     false,
-                    articleDetailsResponse!!.data.contentType
+                    articleDetailsResponse?.data?.contentType
                 )
             } else {
                 binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active)
-                articleDetailsResponse!!.data.bookmarked = true
+                articleDetailsResponse?.data?.bookmarked = true
                 postArticleBookMark(
-                    articleDetailsResponse!!.data.id,
+                    articleDetailsResponse?.data?.id,
                     true,
-                    articleDetailsResponse!!.data.contentType
+                    articleDetailsResponse?.data?.contentType
                 )
             }
         }
 
         binding.imageLikeArticle.setOnClickListener { v: View? ->
-            v!!.shortVibrate(100)
+            v?.shortVibrate(100)
             binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
             val currentCount = this.currentCount
-            if (articleDetailsResponse!!.data.isLike) {
+            if (articleDetailsResponse?.data?.isLike == true) {
                 binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
-                articleDetailsResponse!!.data.isLike = false
-                postArticleLike(articleDetailsResponse!!.data.id, false)
+                articleDetailsResponse?.data?.isLike = false
+                postArticleLike(articleDetailsResponse?.data?.id, false)
                 val newCount = currentCount - 1
                 binding.txtLikeCount.text = getLikeText(newCount)
             } else {
                 binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
-                articleDetailsResponse!!.data.isLike = true
-                postArticleLike(articleDetailsResponse!!.data.id, true)
+                articleDetailsResponse?.data?.isLike = true
+                postArticleLike(articleDetailsResponse?.data?.id, true)
                 val newCount = currentCount + 1
                 binding.txtLikeCount.text = getLikeText(newCount)
             }
@@ -184,20 +184,15 @@ class ArticlesDetailActivity : BaseActivity() {
                 response: Response<JsonElement?>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    val articleResponse: JsonElement = response.body()!!
-                    Log.d("API Response", "Article response: $articleResponse")
+                    val articleResponse: JsonElement? = response.body()
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
 
                     articleDetailsResponse =
                         gson.fromJson(jsonResponse, ArticleDetailsResponse::class.java)
 
-                    Log.d(
-                        "API Response body",
-                        "Article Title" + articleDetailsResponse!!.data.title
-                    )
-                    if (articleDetailsResponse != null && articleDetailsResponse!!.data != null) {
-                        handleArticleResponseData(articleDetailsResponse!!)
+                    if (articleDetailsResponse != null && articleDetailsResponse?.data != null) {
+                        handleArticleResponseData(articleDetailsResponse)
                     }
                     binding.scrollviewarticle.visibility = View.VISIBLE
                 } else {
@@ -218,109 +213,127 @@ class ArticlesDetailActivity : BaseActivity() {
         logArticleOpenEvent(this@ArticlesDetailActivity, articleDetailsResponse, contentId)
     }
 
-    private fun handleArticleResponseData(articleDetailsResponse: ArticleDetailsResponse) {
-        binding.tvHeaderArticle.text = articleDetailsResponse.data.title
-        if (!articleDetailsResponse.data.artist.isEmpty()) {
-            val artist = articleDetailsResponse.data.artist[0]
-            binding.tvAuthorName.text = String.format("%s %s", artist.firstName, artist.lastName)
-            binding.tvAuthorName.setOnClickListener {
-                val intent = Intent(this, ArticlesDetailActivity::class.java)
-                intent.putExtra("ArtistId", artist.id)
-                startActivity(intent)
+    private fun handleArticleResponseData(response: ArticleDetailsResponse?) {
+        // 1. Guard Clause: Safely exit if data is null to prevent crashes later
+        val data = response?.data ?: return
+
+        // 2. Use 'with(binding)' to avoid repeating 'binding.'
+        with(binding) {
+            tvHeaderArticle.text = data.title
+
+            // Date & Category
+            txtArticleDate.text = DateTimeUtils.convertAPIDateMonthFormat(data.createdAt)
+            txtCategoryArticle.text = data.categoryName
+
+            // Module Color
+            setModuleColor(imageTag, data.moduleId)
+
+            // Read Time
+            txtReadtime.text = "${data.readingTime} min read"
+
+            // 3. Artist Logic (Safe Unwrapping)
+            val artist = data.artist?.firstOrNull()
+            if (artist != null) {
+                tvAuthorName.text = "${artist.firstName} ${artist.lastName}"
+                tvAuthorName.setOnClickListener {
+                    startActivity(
+                        Intent(this@ArticlesDetailActivity, ArticlesDetailActivity::class.java)
+                            .putExtra("ArtistId", artist.id)
+                    )
+                }
+
+                if (!isFinishing && !isDestroyed) {
+                    Glide.with(this@ArticlesDetailActivity)
+                        .load(ApiClient.CDN_URL_QA + artist.profilePicture)
+                        .transform(RoundedCorners(25))
+                        .placeholder(R.drawable.rl_profile)
+                        .error(R.drawable.rl_profile)
+                        .into(authorImage)
+                }
             }
 
-            if (!this.isFinishing && !this.isDestroyed) Glide.with(this)
-                .load(ApiClient.CDN_URL_QA + artist.profilePicture)
-                .transform(RoundedCorners(25))
-                .placeholder(R.drawable.rl_profile)
-                .error(R.drawable.rl_profile)
-                .into(binding.authorImage)
-        }
-        binding.txtArticleDate.text = DateTimeUtils.convertAPIDateMonthFormat(
-            articleDetailsResponse.data.createdAt
-        )
-        binding.txtCategoryArticle.text =
-            articleDetailsResponse.data.categoryName //getTags().get(0).getName());
-        setModuleColor(binding.imageTag, articleDetailsResponse.data.moduleId)
-        binding.txtReadtime.text = articleDetailsResponse.data.readingTime + " min read"
-        if (!isFinishing && !isDestroyed) {
-            Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.data.url)
-                .transform(RoundedCorners(1))
-                .placeholder(R.drawable.rl_placeholder)
-                .error(R.drawable.rl_placeholder)
-                .into(binding.articleImageMain)
-        }
-        HandleArticleListView(articleDetailsResponse.data.article)
-        if (articleDetailsResponse.data.tableOfContents != null) {
-            binding.llInthisarticle.visibility = View.VISIBLE
-            handleInThisArticle(articleDetailsResponse.data.tableOfContents)
-        }
-        // handle save icon
-        if (articleDetailsResponse.data.bookmarked) {
-            binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active)
-        } else {
-            binding.icSaveArticle.setImageResource(R.drawable.ic_save_article)
-        }
+            // 4. Main Article Image
+            if (!isFinishing && !isDestroyed) {
+                Glide.with(this@ArticlesDetailActivity)
+                    .load(ApiClient.CDN_URL_QA + data.url)
+                    .transform(RoundedCorners(1))
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(articleImageMain)
+            }
 
-        if (articleDetailsResponse.data.isLike) {
-            binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
-        } else {
-            binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
-        }
-        if (articleDetailsResponse.data.likeCount != null) {
-            binding.txtLikeCount.text = getLikeText(articleDetailsResponse.data.likeCount)
-        }
+            // List View
+            HandleArticleListView(data.article)
 
-        val spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(
-                articleDetailsResponse.data.summary,
-                Html.FROM_HTML_MODE_LEGACY
+            // Table of Contents
+            if (!data.tableOfContents.isNullOrEmpty()) {
+                llInthisarticle.visibility = View.VISIBLE
+                handleInThisArticle(data.tableOfContents)
+            } else {
+                llInthisarticle.visibility = View.GONE
+            }
+
+            // 5. Simplified Icon Logic
+            val saveIcon = if (data.bookmarked == true) R.drawable.ic_save_article_active else R.drawable.ic_save_article
+            icSaveArticle.setImageResource(saveIcon)
+
+            val likeIcon = if (data.isLike == true) R.drawable.like_article_active else R.drawable.like_article_inactive
+            imageLikeArticle.setImageResource(likeIcon)
+
+            data.likeCount?.let {
+                txtLikeCount.text = getLikeText(it)
+            }
+
+            // HTML Summary
+            txtKeytakeawayDesc.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(data.summary, Html.FROM_HTML_MODE_LEGACY)
+            } else {
+                Html.fromHtml(data.summary)
+            }
+
+            // 6. Tracking (Crash Safe now because 'data' is guaranteed non-null)
+            val episodeTrackRequest = EpisodeTrackRequest(
+                sharedPreferenceManager.userId,
+                data.moduleId,
+                data.id,
+                "1.0",
+                "1.0",
+                "TEXT"
             )
-        } else {
-            Html.fromHtml(articleDetailsResponse.data.summary)
+            trackEpisodeOrContent(this@ArticlesDetailActivity, episodeTrackRequest)
         }
-
-        binding.txtKeytakeawayDesc.text = spanned
-
-        // article consumed
-        val episodeTrackRequest = EpisodeTrackRequest(
-            sharedPreferenceManager.userId, articleDetailsResponse.data.moduleId,
-            articleDetailsResponse.data.id, "1.0", "1.0", "TEXT"
-        )
-        trackEpisodeOrContent(this, episodeTrackRequest)
     }
 
-    private fun handleInThisArticle(tocItems: MutableList<String?>) {
+    private fun handleInThisArticle(tocItems: List<String?>?) {
+        // 1. fast exit if list is empty
+        if (tocItems.isNullOrEmpty()) return
+
         val builder = SpannableStringBuilder()
 
-        for (i in tocItems.indices) {
-            val item = tocItems[i]
+        tocItems.forEachIndexed { index, item ->
+            // 2. Skip null strings safely
+            val text = item ?: return@forEachIndexed
 
             // Add bullet point
             builder.append("• ")
 
-            // Remember start position of the item text
             val itemStart = builder.length
-
-            // Add the item text
-            builder.append(item)
+            builder.append(text)
             val itemEnd = builder.length
 
-            // Create and apply ClickableSpan
-            val position = i
-            val clickableSpan: ClickableSpan = object : ClickableSpan() {
-                override fun onClick(p0: View) {
-                    val targetView = binding.recyclerViewArticle.layoutManager!!
-                        .findViewByPosition(position)
-                    if (targetView != null) {
-                        binding.scrollviewarticle.smoothScrollTo(0, targetView.top)
-                    }
+            // Create ClickableSpan
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    // 3. CORRECT SCROLLING:
+                    // Use smoothScrollToPosition on the RecyclerView directly.
+                    // This works even if the item is currently off-screen.
+                    binding.recyclerViewArticle.smoothScrollToPosition(index)
                 }
 
                 override fun updateDrawState(ds: TextPaint) {
                     super.updateDrawState(ds)
                     ds.color = ContextCompat.getColor(
-                        this@ArticlesDetailActivity,
+                        this@ArticlesDetailActivity, // Ensure this context is correct
                         R.color.color_in_this_article
                     )
                     ds.isUnderlineText = false
@@ -330,7 +343,7 @@ class ArticlesDetailActivity : BaseActivity() {
             builder.setSpan(clickableSpan, itemStart, itemEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
             // Add spacing (newlines) except after the last item
-            if (i < tocItems.size - 1) {
+            if (index < tocItems.lastIndex) {
                 builder.append("\n\n")
             }
         }
@@ -349,7 +362,7 @@ class ArticlesDetailActivity : BaseActivity() {
         //binding.bottomcardview.setVisibility(View.VISIBLE);
     }
 
-    fun setModuleColor(imgTag: ImageView?, moduleId: String) {
+    fun setModuleColor(imgTag: ImageView?, moduleId: String?) {
         if (moduleId.equals("EAT_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.eatright)
             binding.imageTag.imageTintList = colorStateList
@@ -368,21 +381,21 @@ class ArticlesDetailActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         if (player != null) { // Check if player is initialized
-            player!!.play() // Resume playback when the activity is resumed
+            player?.play() // Resume playback when the activity is resumed
         }
     }
 
     override fun onPause() {
         super.onPause()
         if (player != null) {
-            player!!.pause() // Pause playback when the activity is paused
+            player?.pause() // Pause playback when the activity is paused
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (player != null) {
-            player!!.release() // Release the player resources
+            player?.release() // Release the player resources
             player = null // Important: Set player to null to avoid memory leaks
         }
         // Log the event article finished
@@ -400,7 +413,7 @@ class ArticlesDetailActivity : BaseActivity() {
                 response: Response<ResponseBody?>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    val articleLikeResponse: ResponseBody = response.body()!!
+                    val articleLikeResponse: ResponseBody? = response.body()
                     Log.d("API Response", "Article response: $articleLikeResponse")
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
@@ -415,8 +428,8 @@ class ArticlesDetailActivity : BaseActivity() {
         })
     }
 
-    private fun postArticleBookMark(contentId: String, isBookmark: Boolean, contentType: String) {
-        val request = ArticleBookmarkRequest(contentId, isBookmark, "", contentType)
+    private fun postArticleBookMark(contentId: String?, isBookmark: Boolean, contentType: String?) {
+        val request = ArticleBookmarkRequest(contentId?:"", isBookmark, "", contentType?:"")
         // Make the API call
         val call =
             apiService.ArticleBookmarkRequest(sharedPreferenceManager.accessToken, request)
@@ -426,7 +439,7 @@ class ArticlesDetailActivity : BaseActivity() {
                 response: Response<ResponseBody?>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    val articleLikeResponse: ResponseBody = response.body()!!
+                    val articleLikeResponse: ResponseBody? = response.body()
                     Log.d("API Response", "Article Bookmark response: $articleLikeResponse")
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
@@ -469,7 +482,7 @@ class ArticlesDetailActivity : BaseActivity() {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
                     try {
-                        val jsonString = response.body()!!.string()
+                        val jsonString = response.body()?.string()
                         val gson = Gson()
                         val responseObj = gson.fromJson(
                             jsonString,

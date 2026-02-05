@@ -325,6 +325,125 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/selectDateMealTypeTitleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/layout_quantity_selector"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:weightSum="2"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Date"
+                        android:textSize="10sp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="25dp"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/text_color_kcal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Meal"
+                        android:textSize="10sp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="25dp"
+                        android:textColor="@color/text_color_kcal"
+                        android:layout_marginTop="15dp" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/selectDateMealTypeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/selectDateMealTypeTitleLayout"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:weightSum="2"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/datePickerLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/white_meal_date_bg"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvSelectedDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="13 Feb 2025"
+                            android:textSize="13sp"
+                            android:layout_weight="0.9"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="7dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textColor="@color/black_no_meals" />
+
+                        <ImageView
+                            android:id="@+id/ivDatePicker"
+                            android:layout_width="18dp"
+                            android:layout_height="20dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_weight="0.1"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/updown_icon" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/white_meal_date_bg"
+                        android:orientation="horizontal">
+
+                        <Spinner
+                            android:id="@+id/spinnerMealType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:textSize="13sp"
+                            android:layout_weight="0.9"
+                            android:background="@color/white"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="7dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textColor="@color/black_no_meals"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Breakfast"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:layout_weight="0.9"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="15dp"
+                            android:textColor="@color/black_no_meals" />
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="20dp"
+                            android:layout_weight="0.1"
+                            android:layout_marginEnd="2dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/updown_icon" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/layout_macro_list"
                     android:layout_width="match_parent"
@@ -334,7 +453,7 @@
                     android:layout_marginEnd="10dp"
                     android:paddingBottom="10dp"
                     android:background="@drawable/white_meal_date_bg"
-                    app:layout_constraintTop_toBottomOf="@+id/layout_quantity_selector"
+                    app:layout_constraintTop_toBottomOf="@+id/selectDateMealTypeLayout"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 

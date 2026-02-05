@@ -38,6 +38,27 @@
             android:gravity="center"
             android:orientation="horizontal">
 
+            <FrameLayout
+                android:id="@+id/compactSyncIndicator"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/compactRotatingArc"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/rotating_gradient_ring" />
+                <ImageView
+                    android:id="@+id/compactHeartIcon"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/heart" />
+            </FrameLayout>
+
             <ImageView
                 android:id="@+id/imgStreakSmall"
                 android:layout_width="wrap_content"

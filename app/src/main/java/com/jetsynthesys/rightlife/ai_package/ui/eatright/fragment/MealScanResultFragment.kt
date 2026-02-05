@@ -76,6 +76,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -990,7 +991,9 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         activity?.runOnUiThread { showLoader(requireView()) }
 
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        //val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        val nowInstant = Instant.now()
+        val currentDateUtc = nowInstant.getMealLogDate(4)//currentDateTime.format(formatter)
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
@@ -1025,9 +1028,9 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                        // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                         val moduleName = arguments?.getString("ModuleName").toString()
                         if (moduleName.contentEquals("EatRight")) {
-                            val fragment = HomeBottomTabFragment()
+                            val fragment = YourMealLogsFragment()
                             val args = Bundle()
-                            args.putString("ModuleName", "EatRight")
+                            args.putString("ModuleName", "EatRightLandingWithoutPopup")
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flFragment, fragment, "landing")
@@ -1088,6 +1091,40 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     act.runOnUiThread { dismissLoader(requireView()) }
                 }
             })
+        }
+    }
+
+    fun Instant.getMealLogDate(rolloverHour: Int = 4): String {
+        val zone = ZoneId.systemDefault()
+        val effectiveDate = this.effectiveDateForApi(rolloverHour, zone)
+        return effectiveDate
+            .atZone(zone)
+            .toLocalDate()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    }
+    private fun Instant.effectiveDateForApi(
+        rolloverHour: Int,
+        zone: ZoneId
+    ): Instant {
+        val now = Instant.now()
+        val thisDate = this.atZone(zone).toLocalDate()
+        val today = now.atZone(zone).toLocalDate()
+        // ✅ Only apply rollover if THIS date is today
+        if (thisDate != today) {
+            return thisDate.atStartOfDay(zone).toInstant()
+        }
+        val currentHour = now.atZone(zone).hour
+        return if (currentHour < rolloverHour) {
+            // before rollover → yesterday
+            today
+                .minusDays(1)
+                .atStartOfDay(zone)
+                .toInstant()
+        } else {
+            // after rollover → today
+            today
+                .atStartOfDay(zone)
+                .toInstant()
         }
     }
 

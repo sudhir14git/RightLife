@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
@@ -86,6 +87,9 @@ class CalciumFragment : BaseFragment<FragmentSugarBinding>() {
     private lateinit var percentageTv : TextView
     private lateinit var totalPercentageTv : TextView
     private lateinit var percentageIc : TextView
+
+    private lateinit var percentageIcon : ImageView
+    private lateinit var totalPercentageUp : ImageView
     private lateinit var sugar_description_heading : TextView
     private lateinit var sugar_description_text : TextView
     private lateinit var layoutLineChart: FrameLayout
@@ -125,6 +129,8 @@ class CalciumFragment : BaseFragment<FragmentSugarBinding>() {
         averageBurnCalorie = view.findViewById(R.id.average_number)
         averageHeading = view.findViewById(R.id.averageHeading)
         percentageIc = view.findViewById(R.id.percentageIc)
+        percentageIcon = view.findViewById(R.id.percentage_icon)
+        totalPercentageUp = view.findViewById(R.id.totalPercentageUp)
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
@@ -872,15 +878,44 @@ class CalciumFragment : BaseFragment<FragmentSugarBinding>() {
         activity?.runOnUiThread {
             averageBurnCalorie.text = activeCaloriesResponse.current_avg_calcium.toInt().toString()
             totalCalorie.text = activeCaloriesResponse.total_calcium.toInt().toString()
-            if (activeCaloriesResponse.progressSign.contentEquals("plus")){
-                percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+            if (activeCaloriesResponse.progressSign == "plus") {
+                percentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 totalPercentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
-                // percentageIc.setImageResource(R.drawable.ic_up)
-            }else if (activeCaloriesResponse.progressSign.contentEquals("minus")){
-                percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                percentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.green_text)
+                )
+                totalPercentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.green_text)
+                )
+                percentageIcon.setImageResource(R.drawable.ic_up)
+                totalPercentageUp.setImageResource(R.drawable.ic_up)
+                percentageIcon.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                    )
+                totalPercentageUp.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                    )
+            } else if (activeCaloriesResponse.progressSign == "minus") {
+                percentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 totalPercentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
-                // percentageIc.setImageResource(R.drawable.ic_down)
-            }else{
+                percentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.step_today)
+                )
+                totalPercentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.step_today)
+                )
+                percentageIcon.setImageResource(R.drawable.ic_down)
+                totalPercentageUp.setImageResource(R.drawable.ic_down)
+                percentageIcon.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.step_today)
+                    )
+                totalPercentageUp.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.step_today)
+                    )
             }
         }
     }
