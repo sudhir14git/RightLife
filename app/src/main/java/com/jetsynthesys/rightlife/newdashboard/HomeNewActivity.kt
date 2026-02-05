@@ -2275,21 +2275,6 @@ class HomeNewActivity : BaseActivity() {
             Log.e("HealthSync", "Fatal error", e)
         } finally {
             //hideLoaderSafe()
-            if (sharedPreferenceManager.isNewUser) {
-                updateSync(isLoading = false, isCompleted = true)
-                sharedPreferenceManager.isNewUser = false
-            } else {
-                onSyncComplete()
-            }
-            val isValidState = sharedPreferenceManager.challengeState in listOf(3)
-
-            if (
-                isValidState &&
-                sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
-                DashboardChecklistManager.checklistStatus
-            ) {
-                getDailyTasks(DateHelper.getTodayDate())
-            }
         }
     }
 
@@ -2661,6 +2646,21 @@ class HomeNewActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
 //                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
 //                        .saveMoveRightSyncTime(Instant.now().toString())
+                    if (sharedPreferenceManager.isNewUser) {
+                        updateSync(isLoading = false, isCompleted = true)
+                        sharedPreferenceManager.isNewUser = false
+                    } else {
+                        onSyncComplete()
+                    }
+                    val isValidState = sharedPreferenceManager.challengeState in listOf(3)
+
+                    if (
+                        isValidState &&
+                        sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
+                        DashboardChecklistManager.checklistStatus
+                    ) {
+                        getDailyTasks(DateHelper.getTodayDate())
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -3020,6 +3020,21 @@ class HomeNewActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
 //                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
 //                        .saveMoveRightSyncTime(Instant.now().toString())
+                    if (sharedPreferenceManager.isNewUser) {
+                        updateSync(isLoading = false, isCompleted = true)
+                        sharedPreferenceManager.isNewUser = false
+                    } else {
+                        onSyncComplete()
+                    }
+                    val isValidState = sharedPreferenceManager.challengeState in listOf(3)
+
+                    if (
+                        isValidState &&
+                        sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
+                        DashboardChecklistManager.checklistStatus
+                    ) {
+                        getDailyTasks(DateHelper.getTodayDate())
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
