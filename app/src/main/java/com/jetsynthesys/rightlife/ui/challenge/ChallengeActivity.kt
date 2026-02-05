@@ -1,7 +1,10 @@
 package com.jetsynthesys.rightlife.ui.challenge
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -34,10 +37,12 @@ import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.SyncManager
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
 import com.jetsynthesys.rightlife.ai_package.model.BodyFatPercentage
@@ -82,6 +87,7 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
@@ -128,8 +134,15 @@ class ChallengeActivity : BaseActivity() {
     private var respiratoryRateRecord: List<RespiratoryRateRecord>? = null
     private lateinit var healthConnectClient: HealthConnectClient
     private lateinit var permissionManager: PermissionManager
+
     // Add this variable at the class level
-    private var wasSyncing = false
+    private var syncStatus = false
+    private val syncReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            onSyncComplete()
+            updateResyncTextView(false)
+        }
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private val allReadPermissions = setOf(
@@ -155,6 +168,12 @@ class ChallengeActivity : BaseActivity() {
         binding = ActivityChallengeBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
 
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(
+                syncReceiver,
+                IntentFilter(SyncManager.ACTION_SYNC_COMPLETED)
+            )
+
         binding.btnBack.setOnClickListener {
             finish()
         }
@@ -167,6 +186,8 @@ class ChallengeActivity : BaseActivity() {
         setupListenerForTasks()
         setupLogListeners()
         setupShareListeners()
+
+        syncStatus = intent.getBooleanExtra("SYNC_STATUS", false)
 
 
         binding.llStreak.setOnClickListener {
@@ -191,29 +212,17 @@ class ChallengeActivity : BaseActivity() {
             fetchHealthDataFromHealthConnect()
         }
 
-// Add this variable at the class level
+        if (syncStatus) {
+            showCompactSyncView()
+            updateResyncTextView(syncStatus)
+        }
 
-        /*isSyncing.observe(this) { syncing ->
-            if (isFinishing || isDestroyed) return@observe
+    }
 
-            // 1. Update your text view normally
-            updateResyncTextView(syncing)
-
-            if (syncing) {
-                wasSyncing = true
-                showCompactSyncView()
-            } else {
-                // 2. ONLY call complete if we were actually syncing before
-                if (wasSyncing) {
-                    onSyncComplete()
-                    wasSyncing = false // Reset the flag
-                } else {
-                    // Ensure views are hidden if we just started the app and no sync is happening
-                    //hideSyncViewsDirectly()
-                }
-            }
-        }*/
-
+    override fun onStop() {
+        super.onStop()
+        LocalBroadcastManager.getInstance(this)
+            .unregisterReceiver(syncReceiver)
     }
 
     override fun onResume() {
@@ -574,7 +583,7 @@ class ChallengeActivity : BaseActivity() {
             })
     }
 
-    private fun getDailyScore(date: String) {
+    private fun getDailyScore(date: String, isFirstTimeDailyAPICall: Boolean = true) {
         AppLoader.show(this)
         apiService.dailyScore(sharedPreferenceManager.accessToken, date)
             .enqueue(object : Callback<ResponseBody> {
@@ -644,6 +653,10 @@ class ChallengeActivity : BaseActivity() {
                     } else {
                         showCustomToast("Something went wrong!", false)
                     }
+                    if (!isFirstTimeDailyAPICall) {
+                        onSyncComplete()
+                        updateResyncTextView(false)
+                    }
                 }
 
                 override fun onFailure(
@@ -651,12 +664,16 @@ class ChallengeActivity : BaseActivity() {
                 ) {
                     AppLoader.hide(this@ChallengeActivity)
                     handleNoInternetView(t)
+                    if (!isFirstTimeDailyAPICall) {
+                        onSyncComplete()
+                        updateResyncTextView(false)
+                    }
                 }
 
             })
     }
 
-    private fun getDailyTasks(date: String) {
+    private fun getDailyTasks(date: String, isFirstTimeDailyAPICall: Boolean = true) {
         AppLoader.show(this)
         apiService.dailyTask(sharedPreferenceManager.accessToken, date)
             .enqueue(object : Callback<ResponseBody> {
@@ -854,6 +871,10 @@ class ChallengeActivity : BaseActivity() {
                 ) {
                     AppLoader.hide(this@ChallengeActivity)
                     handleNoInternetView(t)
+                    if (!isFirstTimeDailyAPICall) {
+                        onSyncComplete()
+                        updateResyncTextView(false)
+                    }
                 }
 
             })
@@ -1252,17 +1273,6 @@ class ChallengeActivity : BaseActivity() {
             Log.e("HealthSync", "Fatal error", e)
         } finally {
             //hideLoaderSafe()
-            onSyncComplete()
-            updateResyncTextView(false)
-            val isValidState = sharedPreferenceManager.challengeState in listOf(3)
-
-            if (
-                isValidState &&
-                sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
-                DashboardChecklistManager.checklistStatus
-            ) {
-                getDailyTasks(DateHelper.getTodayDate())
-            }
         }
     }
 
@@ -1634,6 +1644,22 @@ class ChallengeActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
 //                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
 //                        .saveMoveRightSyncTime(Instant.now().toString())
+                    val isValidState = sharedPreferenceManager.challengeState in listOf(3)
+                    if (
+                        isValidState &&
+                        sharedPreferenceManager.challengeParticipatedDate.isNotEmpty()
+                    ) {
+                        lifecycleScope.launch {
+                            delay(2000)
+                            getDailyTasks(
+                                selectedDate?.dateString ?: DateHelper.getTodayDate(),
+                                false
+                            )
+                        }
+                    } else {
+                        onSyncComplete()
+                        updateResyncTextView(false)
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -1642,6 +1668,8 @@ class ChallengeActivity : BaseActivity() {
                         "Exception: ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
+                    onSyncComplete()
+                    updateResyncTextView(false)
                 }
             }
         }
@@ -1993,6 +2021,24 @@ class ChallengeActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
 //                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
 //                        .saveMoveRightSyncTime(Instant.now().toString())
+                    onSyncComplete()
+                    updateResyncTextView(false)
+                    val isValidState = sharedPreferenceManager.challengeState in listOf(3)
+
+                    if (
+                        isValidState &&
+                        sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
+                        DashboardChecklistManager.checklistStatus
+                    ) {
+                        lifecycleScope.launch {
+                            delay(2000)
+                            getDailyTasks(
+                                selectedDate?.dateString ?: DateHelper.getTodayDate(),
+                                false
+                            )
+                        }
+
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -2001,6 +2047,8 @@ class ChallengeActivity : BaseActivity() {
                         "Exception: ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
+                    onSyncComplete()
+                    updateResyncTextView(false)
                 }
             }
         }
@@ -2177,6 +2225,7 @@ class ChallengeActivity : BaseActivity() {
     }
 
     private fun updateResyncTextView(isSyncing: Boolean) {
+        binding.scoreCard.tvResync.isEnabled = !isSyncing
         val tvResync = binding.scoreCard.tvResync
 
         // Prevent updating detached view
@@ -2197,7 +2246,6 @@ class ChallengeActivity : BaseActivity() {
             ColorStateList.valueOf(ContextCompat.getColor(this, color))
         tvResync.background = ContextCompat.getDrawable(this, background)
     }
-
 
 
 }
