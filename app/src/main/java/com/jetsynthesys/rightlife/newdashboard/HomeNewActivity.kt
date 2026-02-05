@@ -4425,6 +4425,7 @@ class HomeNewActivity : BaseActivity() {
         if (sharedPreferenceManager.isNewUser) {
             syncStatus = false
             updateSync(isLoading = false, isCompleted = true)
+            sharedPreferenceManager.isNewUser = false
         }
         else {
             onSyncComplete()
