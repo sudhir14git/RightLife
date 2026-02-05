@@ -23,6 +23,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -71,6 +72,7 @@ import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.MainApplication
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.SyncManager
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
 import com.jetsynthesys.rightlife.ai_package.model.BodyFatPercentage
@@ -252,6 +254,7 @@ class HomeNewActivity : BaseActivity() {
     private var isChecklistLoaded = false
 
     private var checklistCount = 0
+    private var syncStatus = false
 
     private fun isInitialDataReadyFor(target: String): Boolean {
         // For simple navigation, no need to wait
@@ -558,7 +561,8 @@ class HomeNewActivity : BaseActivity() {
                     sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
                     DashboardChecklistManager.checklistStatus
                 ) {
-                    startActivity(Intent(this, ChallengeActivity::class.java))
+                    startActivity(Intent(this, ChallengeActivity::class.java)
+                        .putExtra("SYNC_STATUS",syncStatus))
                 }
 
             }
@@ -726,11 +730,6 @@ class HomeNewActivity : BaseActivity() {
 
         binding = ActivityHomeNewBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
-        this.let {
-            if (HealthConnectClient.getSdkStatus(it) == HealthConnectClient.SDK_AVAILABLE) {
-                healthConnectClient = HealthConnectClient.getOrCreate(it)
-            }
-        }
 
         // Load default fragment only on first launch
         val openMyHealth = intent.getBooleanExtra("OPEN_MY_HEALTH", false)
@@ -1293,6 +1292,13 @@ class HomeNewActivity : BaseActivity() {
         getDashboardChecklist()
         getSubscriptionList()
         //getSubscriptionProducts(binding.tvStriketroughPrice);
+
+        this.let {
+            if (HealthConnectClient.getSdkStatus(it) == HealthConnectClient.SDK_AVAILABLE) {
+                healthConnectClient = HealthConnectClient.getOrCreate(it)
+                fetchHealthDataFromHealthConnect()
+            }
+        }
     }
 
     private fun enableNotificationServer() {
@@ -2062,6 +2068,14 @@ class HomeNewActivity : BaseActivity() {
     }
 
     fun fetchHealthDataFromHealthConnect() {
+        updateResyncTextView(true)
+        if (sharedPreferenceManager.isNewUser) {
+            updateSync(isLoading = true)
+            syncStatus = true
+        }
+        else {
+            showCompactSyncView()
+        }
         val availabilityStatus = HealthConnectClient.getSdkStatus(this)
         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
             healthConnectClient = HealthConnectClient.getOrCreate(this)
@@ -2074,6 +2088,7 @@ class HomeNewActivity : BaseActivity() {
                 "Please install or update health connect from the Play Store.",
                 Toast.LENGTH_LONG
             ).show()
+            onSyncCompleteActions()
         }
     }
 
@@ -2149,6 +2164,7 @@ class HomeNewActivity : BaseActivity() {
                 lastSyncInstant != null -> {
                     if (lastSyncInstant.isAfter(todayStart)) todayStart else lastSyncInstant
                 }
+
                 else -> defaultStart
             }
             val endTime = now
@@ -2632,6 +2648,19 @@ class HomeNewActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
 //                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
 //                        .saveMoveRightSyncTime(Instant.now().toString())
+                    onSyncCompleteActions()
+                    val isValidState = sharedPreferenceManager.challengeState in listOf(3)
+
+                    if (
+                        isValidState &&
+                        sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
+                        DashboardChecklistManager.checklistStatus
+                    ) {
+                        lifecycleScope.launch {
+                            delay(2000)
+                            getDailyTasks(DateHelper.getTodayDate())
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -2640,6 +2669,7 @@ class HomeNewActivity : BaseActivity() {
                         "Exception: ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
+                    onSyncCompleteActions()
                 }
             }
         }
@@ -2991,6 +3021,19 @@ class HomeNewActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
 //                    SharedPreferenceManager.getInstance(this@HomeNewActivity)
 //                        .saveMoveRightSyncTime(Instant.now().toString())
+                    onSyncCompleteActions()
+                    val isValidState = sharedPreferenceManager.challengeState in listOf(3)
+
+                    if (
+                        isValidState &&
+                        sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
+                        DashboardChecklistManager.checklistStatus
+                    ) {
+                        lifecycleScope.launch {
+                            delay(2000)
+                            getDailyTasks(DateHelper.getTodayDate())
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -2999,6 +3042,7 @@ class HomeNewActivity : BaseActivity() {
                         "Exception: ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
+                    onSyncCompleteActions()
                 }
             }
         }
@@ -4008,6 +4052,7 @@ class HomeNewActivity : BaseActivity() {
         // Hide all layouts first to avoid overlapping UI
         hideChallengeLayout()
 
+
         val dateRange = getChallengeDateRange(
             dates.challengeStartDate,
             dates.challengeEndDate
@@ -4091,6 +4136,8 @@ class HomeNewActivity : BaseActivity() {
                     }
                 } else {
                     //Show Score Card
+                    binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+                        View.VISIBLE
                     getDailyTasks(DateHelper.getTodayDate())
                 }
             }
@@ -4187,8 +4234,15 @@ class HomeNewActivity : BaseActivity() {
         }
 
         //Challenge Daily Score
+        binding.layoutChallengeDailyScore.dailyScoreChallengeCard.visibility =
+            View.VISIBLE
+        binding.layoutChallengeDailyScore.tvResync.setOnClickListener {
+            it.disableViewForSeconds()
+            fetchHealthDataFromHealthConnect()
+        }
         binding.layoutChallengeDailyScore.imgForwardChallenge.setOnClickListener {
-            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java))
+            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java)
+                .putExtra("SYNC_STATUS",syncStatus))
 
             AnalyticsLogger.logEvent(
                 this@HomeNewActivity,
@@ -4200,7 +4254,8 @@ class HomeNewActivity : BaseActivity() {
         //challenge completed
         binding.layoutChallengeCompleted.imgScoreChallenge.setOnClickListener {
             // start Challenge Activity here
-            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java))
+            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java)
+                .putExtra("SYNC_STATUS",syncStatus))
         }
         binding.layoutChallengeCompleted.btnExplorePlans.setOnClickListener {
             startActivity(
@@ -4213,13 +4268,13 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun getDailyTasks(date: String) {
-        AppLoader.show(this)
+        // AppLoader.show(this)
         apiService.dailyTask(sharedPreferenceManager.accessToken, date)
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(
                     call: Call<ResponseBody?>, response: Response<ResponseBody?>
                 ) {
-                    AppLoader.hide(this@HomeNewActivity)
+                    //AppLoader.hide(this@HomeNewActivity)
 
                     getDailyScore(date)
                 }
@@ -4227,7 +4282,7 @@ class HomeNewActivity : BaseActivity() {
                 override fun onFailure(
                     call: Call<ResponseBody?>, t: Throwable
                 ) {
-                    AppLoader.hide(this@HomeNewActivity)
+                    // AppLoader.hide(this@HomeNewActivity)
                     handleNoInternetView(t)
                 }
 
@@ -4235,13 +4290,13 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun getDailyScore(date: String) {
-        AppLoader.show(this)
+        //  AppLoader.show(this)
         apiService.dailyScore(sharedPreferenceManager.accessToken, date)
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(
                     call: Call<ResponseBody?>, response: Response<ResponseBody?>
                 ) {
-                    AppLoader.hide(this@HomeNewActivity)
+                    //AppLoader.hide(this@HomeNewActivity)
                     if (response.isSuccessful && response.body() != null) {
                         val gson = Gson()
                         val jsonResponse = response.body()?.string()
@@ -4274,7 +4329,7 @@ class HomeNewActivity : BaseActivity() {
                 override fun onFailure(
                     call: Call<ResponseBody?>, t: Throwable
                 ) {
-                    AppLoader.hide(this@HomeNewActivity)
+                    // AppLoader.hide(this@HomeNewActivity)
                     handleNoInternetView(t)
                 }
 
@@ -4301,5 +4356,104 @@ class HomeNewActivity : BaseActivity() {
                 !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
     }
 
+
+    private fun showCompactSyncView() {
+        // isSyncing.value = true
+        syncStatus = true
+        binding.compactSyncIndicator.apply {
+            visibility = View.VISIBLE
+            alpha = 0f
+            scaleX = 0.6f
+            scaleY = 0.6f
+            animate()
+                .alpha(1f).scaleX(1f).scaleY(1f)
+                .setDuration(400)
+                .setInterpolator(OvershootInterpolator(1.5f))
+                .start()
+        }
+        startHeartPulse(binding.compactHeartIcon, false)
+    }
+
+    private fun onSyncComplete() {
+        // 1. Define colors for Success State
+        //isSyncing.value = false
+        syncStatus = false
+        val colorGreen = ContextCompat.getColor(this, R.color.color_green)
+        val colorStateList = ColorStateList.valueOf(colorGreen)
+        val colorRed = ContextCompat.getColor(this, R.color.red)
+        val colorStateListRed = ColorStateList.valueOf(colorRed)
+
+
+        // --- Compact View Completion ---
+        compactHeartAnimator?.cancel()
+
+        binding.compactSyncIndicator.apply {
+            visibility = View.VISIBLE
+            alpha = 1f
+            scaleX = 1f
+            scaleY = 1f
+        }
+
+        binding.compactRotatingArc.visibility = View.GONE
+        binding.compactHeartIcon.apply {
+            imageTintList = colorStateList
+            scaleX = 1f
+            scaleY = 1f
+        }
+
+        // 3. Auto-hide with Shrink animation after 2.5 seconds
+        binding.root.postDelayed({
+            binding.compactSyncIndicator.animate()
+                .scaleX(0f)
+                .scaleY(0f)
+                .alpha(0f)
+                .setDuration(400)
+                .withEndAction {
+                    binding.compactSyncIndicator.visibility = View.GONE
+                    binding.compactRotatingArc.visibility = View.VISIBLE
+                    binding.compactHeartIcon.apply {
+                        imageTintList = colorStateListRed
+                        scaleX = 0f
+                        scaleY = 0f
+                    }
+                }
+                .start()
+        }, 2500)
+    }
+
+    private fun onSyncCompleteActions(){
+        if (sharedPreferenceManager.isNewUser) {
+            syncStatus = false
+            updateSync(isLoading = false, isCompleted = true)
+        }
+        else {
+            onSyncComplete()
+        }
+        updateResyncTextView(false)
+        SyncManager.completeHealthSync(this)
+    }
+
+    private fun updateResyncTextView(isSyncing: Boolean) {
+        binding.layoutChallengeDailyScore.tvResync.isEnabled = !isSyncing
+        val tvResync = binding.layoutChallengeDailyScore.tvResync
+
+        // Prevent updating detached view
+        if (!tvResync.isAttachedToWindow) return
+
+        val color = if (isSyncing)
+            R.color.gray_past_price
+        else
+            R.color.red
+
+        val background = if (isSyncing)
+            R.drawable.rounded_corner_article_gray
+        else
+            R.drawable.rounded_red_border
+
+        tvResync.setTextColor(ContextCompat.getColor(this, color))
+        tvResync.compoundDrawableTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(this, color))
+        tvResync.background = ContextCompat.getDrawable(this, background)
+    }
 
 }
