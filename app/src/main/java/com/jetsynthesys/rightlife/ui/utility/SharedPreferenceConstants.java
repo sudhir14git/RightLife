@@ -96,6 +96,8 @@ public class SharedPreferenceConstants {
     public static final String FORCE_UPDATE_MESSAGE = "force_update_message";
     public static final String APP_CONFIG_RESPONSE = "app_config_response";
 
+    public static final String NEW_USER = "NEW_USER";
+
 }
 
 

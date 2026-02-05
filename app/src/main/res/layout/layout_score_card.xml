@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="350dp"
     android:layout_marginTop="16dp"
-    android:visibility="gone">
+    android:visibility="visible">
 
     <com.jetsynthesys.rightlife.ui.GlowGradientCardView
         android:id="@+id/gradientBorder"
@@ -41,6 +41,21 @@
                 android:textColor="@color/menuselected"
                 android:textSize="14sp" />
 
+            <TextView
+                android:id="@+id/tvResync"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:text="Resync"
+                android:textSize="12sp"
+                android:layout_toStartOf="@id/imgInfo"
+                android:gravity="center"
+                android:textColor="@color/red"
+                android:paddingHorizontal="8dp"
+                android:layout_marginEnd="10dp"
+                android:drawableTint="@color/red"
+                android:drawableLeft="@drawable/baseline_sync_24"
+                android:background="@drawable/rounded_red_border"/>
+
             <ImageView
                 android:id="@+id/imgInfo"
                 android:layout_width="wrap_content"
@@ -63,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/dmsans_bold"
-                android:text="16"
+                android:text="13"
                 android:textColor="@color/txt_color_header"
                 android:textSize="38sp" />
 
