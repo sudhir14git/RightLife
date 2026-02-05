@@ -2069,7 +2069,6 @@ class HomeNewActivity : BaseActivity() {
             updateSync(isLoading = true)
         else {
             showCompactSyncView()
-            isSyncing.value = false
         }
         val availabilityStatus = HealthConnectClient.getSdkStatus(this)
         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
@@ -2087,7 +2086,6 @@ class HomeNewActivity : BaseActivity() {
                 updateSync(isLoading = false, isCompleted = true)
             else {
                 onSyncComplete()
-                isSyncing.value = false
             }
         }
     }
@@ -2282,7 +2280,6 @@ class HomeNewActivity : BaseActivity() {
                 sharedPreferenceManager.isNewUser = false
             } else {
                 onSyncComplete()
-                isSyncing.value = false
             }
             val isValidState = sharedPreferenceManager.challengeState in listOf(3)
 
@@ -4358,7 +4355,9 @@ class HomeNewActivity : BaseActivity() {
         // 1. Define colors for Success State
         isSyncing.value = false
         val colorGreen = ContextCompat.getColor(this, R.color.color_green)
-        ColorStateList.valueOf(colorGreen)
+        val colorStateList = ColorStateList.valueOf(colorGreen)
+        val colorRed = ContextCompat.getColor(this, R.color.red)
+        val colorStateListRed = ColorStateList.valueOf(colorRed)
 
 
         // --- Compact View Completion ---
@@ -4371,12 +4370,12 @@ class HomeNewActivity : BaseActivity() {
             scaleY = 1f
         }
 
-        /*binding.compactRotatingArc.visibility = View.GONE
+        binding.compactRotatingArc.visibility = View.GONE
         binding.compactHeartIcon.apply {
             imageTintList = colorStateList
             scaleX = 1f
             scaleY = 1f
-        }*/
+        }
 
         // 3. Auto-hide with Shrink animation after 2.5 seconds
         binding.root.postDelayed({
@@ -4388,6 +4387,11 @@ class HomeNewActivity : BaseActivity() {
                 .withEndAction {
                     binding.compactSyncIndicator.visibility = View.GONE
                     binding.compactRotatingArc.visibility = View.VISIBLE
+                    binding.compactHeartIcon.apply {
+                        imageTintList = colorStateListRed
+                        scaleX = 0f
+                        scaleY = 0f
+                    }
                 }
                 .start()
         }, 2500)
