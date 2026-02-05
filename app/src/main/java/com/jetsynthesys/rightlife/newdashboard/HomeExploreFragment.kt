@@ -47,6 +47,8 @@ import com.jetsynthesys.rightlife.ui.TestAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditFromActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.FeatureFlags
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity
@@ -617,7 +619,8 @@ class HomeExploreFragment : BaseFragment() {
                         jsonResponse,
                         WellnessApiResponse::class.java
                     )
-                    binding.tvHeaderWellnessplay.text = wellnessApiResponse?.data?.sectionTitle ?: "Your Wellness Playlist"
+                    binding.tvHeaderWellnessplay.text =
+                        wellnessApiResponse?.data?.sectionTitle ?: "Your Wellness Playlist"
                     binding.tvDescWellness.text = wellnessApiResponse?.data?.sectionSubtitle ?: ""
                     wellnessApiResponse?.data?.contentList?.let {
                         runWhenAttached {
@@ -1223,6 +1226,10 @@ class HomeExploreFragment : BaseFragment() {
                 startActivity(Intent(requireContext(), ArticlesDetailActivity::class.java).apply {
                     putExtra("contentId", contentId)
                 })
+                AnalyticsLogger.logEvent(
+                    requireActivity(),
+                    AnalyticsEvent.Home_PromBan_Art_Tap
+                )
             }
 
             contentType.equals("VIDEO", ignoreCase = true) || contentType.equals(
@@ -1232,6 +1239,17 @@ class HomeExploreFragment : BaseFragment() {
                 startActivity(Intent(requireContext(), ContentDetailsActivity::class.java).apply {
                     putExtra("contentId", contentId)
                 })
+
+                if (contentType.equals("VIDEO", ignoreCase = true))
+                    AnalyticsLogger.logEvent(
+                        requireActivity(),
+                        AnalyticsEvent.Home_PromBan_Vid_Tap
+                    )
+                else
+                    AnalyticsLogger.logEvent(
+                        requireActivity(),
+                        AnalyticsEvent.Home_PromBan_Audio_Tap
+                    )
             }
 
             contentType.equals("SERIES", ignoreCase = true) -> {

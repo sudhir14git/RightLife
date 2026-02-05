@@ -48,6 +48,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.healthcam.ReportData
 import com.jetsynthesys.rightlife.ui.sdkpackage.RlAnuraMeasurementActivity.Companion.IMAGE_HEIGHT
 import com.jetsynthesys.rightlife.ui.sdkpackage.RlAnuraMeasurementActivity.Companion.IMAGE_WIDTH
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import org.json.JSONObject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -154,6 +156,10 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
      * results will be displayed in a simple list in a new activity
      */
     private fun handleMeasurementResultsComplete(results: MeasurementResults) {
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.FaceScan_Success
+        )
         /**
          * Hide the "Analyzing..." loading indicator
          */
@@ -824,6 +830,10 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
      */
     private fun handleMeasurementError(error: AnuraError) = runOnUiThread {
         Log.d(TAG, "handleMeasurementError:$error")
+        AnalyticsLogger.logEvent(
+            this,
+            AnalyticsEvent.FaceScan_Failed
+        )
         when (error) {
             AnuraError.Network.LICENSE_EXPIRED -> {
                 Toast.makeText(

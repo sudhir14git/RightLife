@@ -703,6 +703,14 @@ class ImageSliderActivity : BaseActivity() {
             }
         }
 
+        AnalyticsLogger.logEvent(AnalyticsEvent.Login_DiffNo_PopUp,
+            mapOf(AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USERNAME to sharedPreferenceManager.userName,
+                AnalyticsParam.PLATFORM_TYPE to "Android",
+                AnalyticsParam.LOGIN_TYPE to "Google",
+                AnalyticsParam.DEVICE_NAME to "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}".trim(),
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()))
+
         bottomSheetDialog.show()
     }
 
