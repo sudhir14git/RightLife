@@ -42,7 +42,6 @@ import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryRespon
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutRecord
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesWeeklyListAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SelectMealTypeBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentYourActivityBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
