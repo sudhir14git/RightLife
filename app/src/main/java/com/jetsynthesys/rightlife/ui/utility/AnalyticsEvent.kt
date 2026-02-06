@@ -350,4 +350,13 @@ object AnalyticsEvent {
     const val MR_WorkoutAnalysis_PageOpen = "MR_WorkoutAnalysis_PageOpen"
     const val SR_SleepStages_PageOpen = "SR_SleepStages_PageOpen"
     const val SR_SleepPerformance_PageOpen = "SR_SleepPerformance_PageOpen"
+    //2A
+    const val Onboarding_PrivacyPolicyPage_Open = "Onboarding_PrivacyPolicyPage_Open"
+    const val Login_DiffNo_PopUp = "Login_DiffNo_PopUp"
+    const val Home_PromBan_Art_Tap = "Home_PromBan_Art_Tap"
+    const val Home_PromBan_Vid_Tap = "Home_PromBan_Vid_Tap"
+    const val Home_PromBan_Audio_Tap = "Home_PromBan_Audio_Tap"
+    const val FaceScan_Failed = "FaceScan_Failed"
+    const val FaceScan_Success = "FaceScan_Success"
+
 }

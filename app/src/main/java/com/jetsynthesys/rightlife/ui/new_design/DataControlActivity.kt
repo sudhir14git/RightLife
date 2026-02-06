@@ -180,6 +180,12 @@ class DataControlActivity : BaseActivity() {
                                 PrivacyPolicyActivity::class.java
                             )
                             startActivity(intent)
+                            AnalyticsLogger.logEvent(
+                                AnalyticsEvent.Onboarding_PrivacyPolicyPage_Open,
+                                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                                    AnalyticsParam.PLATFORM_TYPE to "Android",
+                                    AnalyticsParam.DEVICE_NAME to "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}".trim())
+                            )
                         }
 
                         "https://example.com/terms" -> {
