@@ -252,7 +252,7 @@
             android:layout_marginBottom="36dp"
             android:backgroundTint="@color/border_green"
             android:fontFamily="@font/dmsans_bold"
-            android:text="Confirm"
+            android:text="Continue"
             android:textColor="@color/white"
             android:textSize="@dimen/textsize_large" />
 

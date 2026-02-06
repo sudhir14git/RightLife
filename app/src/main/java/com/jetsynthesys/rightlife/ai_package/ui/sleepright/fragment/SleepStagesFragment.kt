@@ -32,6 +32,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.Awa
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.CoreProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.DeepprogressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.RemProgressBar
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -157,6 +159,12 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
                     }
                 }
             })
+
+        context?.let { it1 ->
+            AnalyticsLogger.logEvent(
+                it1, AnalyticsEvent.SR_SleepStages_PageOpen
+            )
+        }
     }
 
     fun convertTo12HourZoneFormat(input: String): String {

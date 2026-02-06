@@ -605,7 +605,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                             else -> Triple(emptyList(), emptyList(), emptyList())
                         }
                         withContext(Dispatchers.Main) {
-                            weight_description_heading.text = data.heading
+                            weight_description_heading.text = markdownToBold(data.heading)
                             weight_description_text.text = markdownToBold(data.description)
 
                             if (data.lastWeightLog != null){

@@ -45,6 +45,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import androidx.core.view.isVisible
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.RecipesSearchViewModel
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 
 class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
@@ -396,6 +398,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         }
 
         getRecipesList()  // this will handle tab restore on success
+
+        context?.let { it1 ->
+            AnalyticsLogger.logEvent(
+                it1, AnalyticsEvent.ER_ReceipeListingPage_Open
+            )
+        }
     }
 
     // Helper: set selected look
@@ -505,6 +513,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 if (isContentSelected) {
                     circleText?.setBackgroundResource(R.drawable.green_circle_background)
                     circleText?.visibility = View.VISIBLE
+                    tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.border_green))
                 } else {
                     circleText?.visibility = View.GONE
                 }

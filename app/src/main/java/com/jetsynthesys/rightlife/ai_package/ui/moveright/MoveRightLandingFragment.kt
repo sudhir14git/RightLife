@@ -350,6 +350,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     it1, AnalyticsEvent.MR_Report_PageOpen
                 )
             }
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MR_CalBalanceCard_Arrow_Tap
+                )
+            }
             val fragment = CalorieBalance()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.flFragment, fragment, "CalorieBalance")
@@ -360,6 +365,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             context?.let { it1 ->
                 AnalyticsLogger.logEvent(
                     it1, AnalyticsEvent.MR_Report_PageOpen
+                )
+            }
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MR_CalBalanceCard_Arrow_Tap
                 )
             }
             val fragment = CalorieBalance()

@@ -259,6 +259,11 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
 //            permissionManager.checkAndRequestPermissions()
         }
         imageGallery.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.ER_MealLog_UploadImage
+                )
+            }
             openGallery()
         }
         // Handle tab clicks manually

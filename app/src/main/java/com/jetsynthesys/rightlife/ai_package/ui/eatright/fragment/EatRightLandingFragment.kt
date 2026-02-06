@@ -399,7 +399,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         macroIc.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_REPORT_PAGE_OPEN)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_MacrosCard_Arrow_Tap)
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MacrosTabFragment()
                 val args = Bundle()
@@ -412,6 +412,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         microsLayoutBtn.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.ER_Micros_Tap)
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MicrosTabFragment()
                 val args = Bundle()

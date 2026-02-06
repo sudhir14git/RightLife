@@ -41,7 +41,7 @@
                 android:layout_marginStart="10dp"
                 android:textSize="20sp"
                 android:textColor="@color/meal_log_title"
-                android:fontFamily="@font/dmsans_bold"
+                android:fontFamily="@font/merriweather_bold"
                 android:text="Macros" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

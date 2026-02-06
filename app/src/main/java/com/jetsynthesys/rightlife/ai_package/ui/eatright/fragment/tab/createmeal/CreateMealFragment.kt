@@ -46,6 +46,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DeleteLogDishB
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.databinding.FragmentCreateMealBinding
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -197,6 +199,11 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
                 if (mealId != "null" && mealId != null){
                     updateMealsSave(dishLists)
                 }else{
+                    context?.let { it1 ->
+                        AnalyticsLogger.logEvent(
+                            it1, AnalyticsEvent.ER_CreateMeal_Save
+                        )
+                    }
                     createMealsSave(dishLists)
                 }
             }

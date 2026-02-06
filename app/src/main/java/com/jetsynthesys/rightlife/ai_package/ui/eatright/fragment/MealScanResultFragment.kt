@@ -323,6 +323,15 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         backButton.setOnClickListener {
             if (moduleName.contentEquals("EatRight")) {
                 requireActivity().supportFragmentManager.beginTransaction().apply {
+                    val mealSearchFragment = SnapMealFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", "EatRight")
+                    mealSearchFragment.arguments = args
+                    replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                    addToBackStack(null)
+                    commit()
+                }
+                requireActivity().supportFragmentManager.beginTransaction().apply {
                     val snapMealFragment = HomeBottomTabFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
@@ -1070,6 +1079,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                                 ctx,
                                 AnalyticsEvent.MEAL_SCAN_COMPLETE,
                                 mapOf(AnalyticsParam.MEAL_SCAN_COMPLETE to true)
+                            )
+
+                            AnalyticsLogger.logEvent(
+                                ctx,
+                                AnalyticsEvent.MealSnap_Success,
+                                mapOf(AnalyticsParam.MealSnap_Success to true)
                             )
                            // startActivity(Intent(context, HomeNewActivity::class.java))
                             act.finish()

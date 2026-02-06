@@ -37,7 +37,7 @@
             android:layout_marginStart="10dp"
             android:textSize="20sp"
             android:textColor="@color/meal_log_title"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:text="Weight Tracker" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -448,7 +448,7 @@
                 android:textSize="16dp"
                 android:visibility="visible"
                 android:fontFamily="@font/dmsans_regular"
-                android:layout_marginTop="8dp"
+
                 android:text=""
                 app:layout_constraintTop_toBottomOf="@+id/weight_description_heading"
                 app:layout_constraintStart_toStartOf="parent"

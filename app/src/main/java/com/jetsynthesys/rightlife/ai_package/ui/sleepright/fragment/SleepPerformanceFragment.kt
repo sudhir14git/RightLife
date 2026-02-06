@@ -53,6 +53,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MindfullChartRenderer
 import com.jetsynthesys.rightlife.ai_package.utils.BadgeLimitLineRenderer
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -208,6 +210,12 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 addToBackStack(null)
                 commit()
             }
+        }
+
+        context?.let { it1 ->
+            AnalyticsLogger.logEvent(
+                it1, AnalyticsEvent.SR_SleepPerformance_PageOpen
+            )
         }
     }
 
