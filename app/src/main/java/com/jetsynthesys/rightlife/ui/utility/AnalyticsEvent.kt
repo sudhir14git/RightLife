@@ -335,4 +335,14 @@ object AnalyticsEvent {
     const val Chl_BT_AllBonus_Claim = "Chl_BT_AllBonus_Claim"
 
     const val Chl_Leaderboard_Open = "Chl_Leaderboard_Open"
+
+    //2A
+    const val Onboarding_PrivacyPolicyPage_Open = "Onboarding_PrivacyPolicyPage_Open"
+    const val Login_DiffNo_PopUp = "Login_DiffNo_PopUp"
+    const val Home_PromBan_Art_Tap = "Home_PromBan_Art_Tap"
+    const val Home_PromBan_Vid_Tap = "Home_PromBan_Vid_Tap"
+    const val Home_PromBan_Audio_Tap = "Home_PromBan_Audio_Tap"
+    const val FaceScan_Failed = "FaceScan_Failed"
+    const val FaceScan_Success = "FaceScan_Success"
+
 }
