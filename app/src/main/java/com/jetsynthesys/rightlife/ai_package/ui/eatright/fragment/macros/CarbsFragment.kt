@@ -359,7 +359,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,
                             activeCaloriesResponse: ConsumedCarbsResponse) {
         val dataSet = BarDataSet(entries, "")
-        selectHeartRateLayout.visibility = View.INVISIBLE
+        selectHeartRateLayout.visibility = View.GONE
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
@@ -500,7 +500,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
             }
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
-                selectHeartRateLayout.visibility = View.INVISIBLE
+                selectHeartRateLayout.visibility = View.GONE
             }
         })
         barChart.animateY(1000)

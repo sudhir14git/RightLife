@@ -26,6 +26,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.Ligh
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.RestingProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.StripedProgressBar
 import com.jetsynthesys.rightlife.databinding.FragmentWorkoutAnalyticsBinding
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.ZoneId
@@ -534,6 +536,12 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             val yourHeartRateZonesInfoBottomSheet = YourHeartRateZonesInfoBottomSheet()
             yourHeartRateZonesInfoBottomSheet.isCancelable = true
             parentFragment.let { yourHeartRateZonesInfoBottomSheet.show(childFragmentManager, "YourHeartRateZonesInfoBottomSheet") }
+        }
+
+        context?.let { it1 ->
+            AnalyticsLogger.logEvent(
+                it1, AnalyticsEvent.MR_WorkoutAnalysis_PageOpen
+            )
         }
     }
 

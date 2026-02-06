@@ -15,6 +15,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.jetsynthesys.rightlife.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 
 class MealSaveQuitBottomSheet : BottomSheetDialogFragment() {
 
@@ -60,6 +62,11 @@ class MealSaveQuitBottomSheet : BottomSheetDialogFragment() {
         }
 
         yesBtn.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.ER_MealLog_Quit_Confirm
+                )
+            }
             listener?.onMealSaveQuit("")
             dismiss()
         }

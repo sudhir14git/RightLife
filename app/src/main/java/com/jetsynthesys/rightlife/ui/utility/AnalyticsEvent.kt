@@ -335,4 +335,19 @@ object AnalyticsEvent {
     const val Chl_BT_AllBonus_Claim = "Chl_BT_AllBonus_Claim"
 
     const val Chl_Leaderboard_Open = "Chl_Leaderboard_Open"
+
+    const val RL_AI_Report_WhatBetter_Open = "RL_AI_Report_WhatBetter_Open"
+    const val ER_MacrosCard_Arrow_Tap = "ER_MacrosCard_Arrow_Tap"
+    const val ER_Micros_Tap = "ER_Micros_Tap"
+    const val ER_ReceipeListingPage_Open = "ER_ReceipeListingPage_Open"
+    const val MealSnap_Success = "MealSnap_Success"
+    const val ER_MealLog_UploadImage = "ER_MealLog_UploadImage"
+    const val ER_MealLog_Quit_Confirm = "ER_MealLog_Quit_Confirm"
+    const val ER_CreateMeal_Save = "ER_CreateMeal_Save"
+    const val ER_CreateReceipe_Save = "ER_CreateReceipe_Save"
+    const val MR_CalBalanceCard_Arrow_Tap = "MR_CalBalanceCard_Arrow_Tap"
+    const val MR_Steps_SetGoal_SetTarget = "MR_Steps_SetGoal_SetTarget"
+    const val MR_WorkoutAnalysis_PageOpen = "MR_WorkoutAnalysis_PageOpen"
+    const val SR_SleepStages_PageOpen = "SR_SleepStages_PageOpen"
+    const val SR_SleepPerformance_PageOpen = "SR_SleepPerformance_PageOpen"
 }

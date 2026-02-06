@@ -17,6 +17,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragme
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.StepFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSetYourStepGoalBinding
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.StepIntake
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,6 +70,11 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
 
         // Set Target Button Click Listener
         setTargetButton.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MR_Steps_SetGoal_SetTarget
+                )
+            }
             setStepsGoal(currentGoal)
         }
 

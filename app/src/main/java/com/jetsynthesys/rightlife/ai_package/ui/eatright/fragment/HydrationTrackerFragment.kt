@@ -3,6 +3,8 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -368,8 +370,8 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                                     glassWithWaterView.setImageResource(R.drawable.glass_image_0)
                                 }
                             }
-                            hydration_description_heading.text = data.heading
-                            hydration_description_text.text =data.description
+                            hydration_description_heading.text = markdownToBold(data.heading)
+                            hydration_description_text.text = markdownToBold(data.description)
                             if (data.waterIntakeTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()
@@ -1094,6 +1096,13 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    fun markdownToBold(text: String): Spanned {
+        val htmlText = text
+            .replace("\n", "<br>")
+            .replace(Regex("\\*\\*(.*?)\\*\\*"), "<b>$1</b>")
+        return Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)
     }
 }
 

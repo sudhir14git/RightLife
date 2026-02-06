@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:text="Today"
             android:textSize="22sp"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:textColor="@color/meal_log_title"
             android:layout_marginBottom="3dp"
             app:layout_constraintStart_toStartOf="parent"
