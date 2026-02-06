@@ -47,8 +47,14 @@ data class AppConfigResponse(
     )
 
     data class Maintenance(
-        val enabled: Boolean? = null,
-        val message: String? = null
+        val ios: MaintenanceInfo,
+
+        val android: MaintenanceInfo
+    )
+
+    data class MaintenanceInfo(
+        val enabled: Boolean,
+        val message: String
     )
 
     data class Razorpay(

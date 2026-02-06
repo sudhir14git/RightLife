@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -412,6 +413,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             displayedValues = years
             value = value1
             wheelItemCount = 7
+            typeface =
+                ResourcesCompat.getFont(this@HealthCamBasicDetailsNewActivity, R.font.dmsans_regular)
         }
 
         selectedAge = if (selectedAgeFromUi.isNotEmpty())
