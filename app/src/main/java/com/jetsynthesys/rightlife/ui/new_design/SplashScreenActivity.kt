@@ -3,18 +3,27 @@ package com.jetsynthesys.rightlife.ui.new_design
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.VideoView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.messaging.FirebaseMessaging
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
+import com.jetsynthesys.rightlife.databinding.BottomsheetMaintenanceBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity.Companion.EXTRA_DEEP_LINK_TARGET
 import com.jetsynthesys.rightlife.showCustomToast
@@ -44,15 +53,22 @@ class SplashScreenActivity : BaseActivity() {
 
         deepLink = extractDeepLinkFromIntent(intent) ?: ""
 
-        try {
+        /*try {
             if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
-                isNextActivityStarted = true
-                startNextActivity()
+                appConfig =
+                    com.google.gson.Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
+                val maintenance = appConfig?.data?.maintenance?.android
+                if (maintenance?.enabled == true) {
+                    //showMaintenanceBottomSheet(maintenance.message)
+                } else {
+                    isNextActivityStarted = true
+                    startNextActivity()
+                }
             }
         } catch (e: Exception) {
             showCustomToast("Please check your internet connection and try again !!", false)
         }
-
+*/
         // Need this Dark Mode selection logic for next phase
         /*val appMode = sharedPreferenceManager.appMode
         if (appMode.equals("System", ignoreCase = true)) {
@@ -101,15 +117,20 @@ class SplashScreenActivity : BaseActivity() {
 
                         // OPTIONAL: store raw json if you want (only if you already have a pref method)
                         sharedPreferenceManager.saveAppConfigJson(json)
-                        appConfig?.data?.forceUpdate?.let { fu ->
-                            sharedPreferenceManager.saveForceUpdateConfig(
-                                fu.enabled == true,
-                                fu.minAndroidVersion ?: "",
-                                fu.updateAndroidUrl ?: "",
-                                fu.message ?: ""
-                            )
-                            if (!isNextActivityStarted)
-                                startNextActivity()
+                        val maintenance = appConfig?.data?.maintenance?.android
+                        if (maintenance?.enabled == true) {
+                            showMaintenanceBottomSheet(maintenance.message)
+                         } else {
+                            appConfig?.data?.forceUpdate?.let { fu ->
+                                sharedPreferenceManager.saveForceUpdateConfig(
+                                    fu.enabled == true,
+                                    fu.minAndroidVersion ?: "",
+                                    fu.updateAndroidUrl ?: "",
+                                    fu.message ?: ""
+                                )
+                                if (!isNextActivityStarted)
+                                    startNextActivity()
+                            }
                         }
                     } catch (e: Exception) {
                         appConfig = null
@@ -271,6 +292,46 @@ class SplashScreenActivity : BaseActivity() {
         return url
             .replace("https://qa.rightlife.com", "")
             .replace("https://app.rightlife.com", "")
+    }
+
+    private fun showMaintenanceBottomSheet(message: String) {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        // Inflate the BottomSheet layout
+        val binding = BottomsheetMaintenanceBinding.inflate(LayoutInflater.from(this))
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
+
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        bottomSheetDialog.show()
+
+        binding.ivDialogClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        binding.tvDescription.text = message
+
+        binding.btnOkay.setOnClickListener {
+            finishAffinity()
+        }
     }
 
 
