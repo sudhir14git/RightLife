@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -321,6 +322,7 @@ class BreathworkPracticeActivity : BaseActivity() {
             }
 
             override fun onFinish() {
+                Log.d("Umesh","OnFinish Called")
                 binding.sessionTimer.text = "00:00"
             }
         }.start()
@@ -330,6 +332,7 @@ class BreathworkPracticeActivity : BaseActivity() {
         val minutes = (millisUntilFinished / 1000) / 60
         val seconds = (millisUntilFinished / 1000) % 60
         binding.sessionTimer.text = String.format("%02d:%02d", minutes, seconds)
+        Log.d("Umesh","updateSessionTimer = ${String.format("%02d:%02d", minutes, seconds)}")
     }
 
     private fun startBreathingCycle() {
