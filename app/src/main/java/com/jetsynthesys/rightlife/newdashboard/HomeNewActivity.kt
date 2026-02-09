@@ -178,6 +178,7 @@ class HomeNewActivity : BaseActivity() {
 
     private var checklistCount = 0
     private var syncStatus = false
+    private var isFirstTime = true
 
     private fun isInitialDataReadyFor(target: DeepLinkTarget): Boolean {
         // For simple navigation, no need to wait
@@ -442,8 +443,16 @@ class HomeNewActivity : BaseActivity() {
 
             DeepLinkTarget.CHALLENGE_HOME -> {
                 val isValidState = sharedPreferenceManager.challengeState in listOf(3, 4)
-                if (isValidState && sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus) {
-                    startActivity(Intent(this, ChallengeActivity::class.java).putExtra("SYNC_STATUS", syncStatus))
+
+                if (
+                    isValidState &&
+                    sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() &&
+                    DashboardChecklistManager.checklistStatus
+                ) {
+                    startActivity(
+                        Intent(this, ChallengeActivity::class.java)
+                            .putExtra("SYNC_STATUS", syncStatus)
+                    )
                 }
             }
 
@@ -1063,6 +1072,8 @@ class HomeNewActivity : BaseActivity() {
             }
             MainApplication.isFreshLaunch = false
         }
+
+        fetchHealthDataFromHealthConnect()
     }
 
     private fun checkPermission(): Boolean {
@@ -1123,10 +1134,19 @@ class HomeNewActivity : BaseActivity() {
         //getSubscriptionProducts(binding.tvStriketroughPrice);
 
         this.let {
-            if (HealthConnectClient.getSdkStatus(it) == HealthConnectClient.SDK_AVAILABLE) {
-                healthConnectClient = HealthConnectClient.getOrCreate(it)
-                fetchHealthDataFromHealthConnect()
+            if (!isFirstTime) {
+                if (HealthConnectClient.getSdkStatus(it) == HealthConnectClient.SDK_AVAILABLE) {
+                    healthConnectClient = HealthConnectClient.getOrCreate(it)
+                    lifecycleScope.launch {
+                        val granted =
+                            healthConnectClient.permissionController.getGrantedPermissions()
+                        if (allReadPermissions.all { it in granted }) {
+                            fetchAllHealthData()
+                        }
+                    }
+                }
             }
+            isFirstTime = false
         }
     }
 
@@ -1896,14 +1916,6 @@ class HomeNewActivity : BaseActivity() {
     }
 
     fun fetchHealthDataFromHealthConnect() {
-        updateResyncTextView(true)
-        if (sharedPreferenceManager.isNewUser) {
-            updateSync(isLoading = true)
-            syncStatus = true
-        }
-        else {
-            showCompactSyncView()
-        }
         val availabilityStatus = HealthConnectClient.getSdkStatus(this)
         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
             healthConnectClient = HealthConnectClient.getOrCreate(this)
@@ -1954,12 +1966,18 @@ class HomeNewActivity : BaseActivity() {
                 } else {
                     withContext(Dispatchers.Main) {
                     }
-                    fetchAllHealthData()
                 }
             }
         }
 
     private suspend fun fetchAllHealthData() {
+        updateResyncTextView(true)
+        if (sharedPreferenceManager.isNewUser) {
+            updateSync(isLoading = true)
+            syncStatus = true
+        } else {
+            showCompactSyncView()
+        }
         try {
             val ctx = this@HomeNewActivity ?: return
             val client = healthConnectClient
@@ -4069,8 +4087,10 @@ class HomeNewActivity : BaseActivity() {
             fetchHealthDataFromHealthConnect()
         }
         binding.layoutChallengeDailyScore.imgForwardChallenge.setOnClickListener {
-            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java)
-                .putExtra("SYNC_STATUS",syncStatus))
+            startActivity(
+                Intent(this@HomeNewActivity, ChallengeActivity::class.java)
+                    .putExtra("SYNC_STATUS", syncStatus)
+            )
 
             AnalyticsLogger.logEvent(
                 this@HomeNewActivity,
@@ -4082,8 +4102,10 @@ class HomeNewActivity : BaseActivity() {
         //challenge completed
         binding.layoutChallengeCompleted.imgScoreChallenge.setOnClickListener {
             // start Challenge Activity here
-            startActivity(Intent(this@HomeNewActivity, ChallengeActivity::class.java)
-                .putExtra("SYNC_STATUS",syncStatus))
+            startActivity(
+                Intent(this@HomeNewActivity, ChallengeActivity::class.java)
+                    .putExtra("SYNC_STATUS", syncStatus)
+            )
         }
         binding.layoutChallengeCompleted.btnExplorePlans.setOnClickListener {
             startActivity(
@@ -4249,13 +4271,12 @@ class HomeNewActivity : BaseActivity() {
         }, 2500)
     }
 
-    private fun onSyncCompleteActions(){
+    private fun onSyncCompleteActions() {
         if (sharedPreferenceManager.isNewUser) {
             syncStatus = false
             updateSync(isLoading = false, isCompleted = true)
             sharedPreferenceManager.isNewUser = false
-        }
-        else {
+        } else {
             onSyncComplete()
         }
         updateResyncTextView(false)
