@@ -23,6 +23,7 @@
         android:layout_marginTop="-16dp"
         android:fontFamily="@font/merriweather_bold"
         android:layout_gravity="center_horizontal"
+        android:gravity="center"
         android:text="App Under\nMaintenance"
         android:textColor="@color/black"
         android:textSize="22sp" />
