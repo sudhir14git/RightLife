@@ -1,13 +1,17 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.R.color.transparent
+import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -26,6 +30,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
     private var snapMealLog : String = ""
     private var homeTab : String = ""
     private var selectedMealDate : String = ""
+    private var currentToast: Toast? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +82,9 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
                         if (item.food_name.contentEquals(snapRecipeName)) {
                             recipeDetailsLocalListModel.data.remove(item)
                             dismiss()
-                            Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
+                            val ctx = context ?: return@setOnClickListener
+                            showCustomToast(ctx, "Dish Removed")
+                          //  Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
                             val fragment = MealScanResultFragment()
                             val args = Bundle()
                             args.putString("ModuleName", arguments?.getString("ModuleName").toString())
@@ -110,6 +117,36 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
         layoutCancel.setOnClickListener {
             dismiss()
         }
+    }
+
+    private fun showCustomToast(context: Context, message: String?) {
+        // Cancel any old toast
+        currentToast?.cancel()
+        val inflater = LayoutInflater.from(context)
+        val toastLayout = if (message.equals("Please add atleast one dish to log the meal.")){
+            inflater.inflate(R.layout.custom_toast_ai_sleep, null)
+        }else{
+            inflater.inflate(R.layout.custom_toast_ai_sleep, null)
+        }
+
+        val textView = toastLayout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+        // ✅ Wrap layout inside FrameLayout to apply margins
+        val container = FrameLayout(context)
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        val marginInPx = (20 * context.resources.displayMetrics.density).toInt()
+        params.setMargins(marginInPx, 0, marginInPx, 0)
+        toastLayout.layoutParams = params
+        container.addView(toastLayout)
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = container
+        toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 100)
+        currentToast = toast
+        toast.show()
     }
 
     companion object {
