@@ -340,7 +340,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
 
                         serves_text.text = "${data.default_serving.value.toString() + " "  + data.default_serving.type.toString()}"
                         tvMealName.text = data.recipe.toString()
-                        time_text.text = data.active_cooking_time_min.toString()
+                        time_text.text = data.active_cooking_time_min.toString() + " mins"
                         calorie_value.text = "${data.calories_kcal?.toInt().toString()} Kcal"
                         carbs_value.text = "${data.protein_g?.toInt()} g"
                         protein_value.text = "${data.carbs_g?.toInt()} g"
