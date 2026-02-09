@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ui.deeplink
 
 enum class DeepLinkTarget(val slug: String) {
     HOME("home"),
-    MY_HEALTH("my-health"),
     MEAL_LOG("meal_log"),
     PROFILE("profile"),
     CATEGORY_LIST("categorylist"),

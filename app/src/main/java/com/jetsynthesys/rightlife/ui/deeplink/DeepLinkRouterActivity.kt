@@ -36,6 +36,11 @@ class DeepLinkRouterActivity : BaseActivity() {
 
         if (target != null) {
             nextIntent.putExtra(DeepLinkTarget.EXTRA_DEEP_LINK_TARGET, target)
+
+            // Backwards compatibility for Health Dashboard
+            if (target == DeepLinkTarget.MY_HEALTH) {
+                nextIntent.putExtra("OPEN_MY_HEALTH", true)
+            }
         }
         // 2. Handle special cases or legacy dynamic paths (Article/Audio/Video)
         else {

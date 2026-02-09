@@ -230,6 +230,7 @@ class HomeNewActivity : BaseActivity() {
         }
 
         // ✅ Data ready – now actually act
+        // Since 'target' is now an Enum, we check against the Enum constants directly
         when (target) {
             DeepLinkTarget.HOME -> {
                 supportFragmentManager.beginTransaction()
@@ -333,6 +334,24 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
 
+            DeepLinkTarget.SNAP_MEAL_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "SnapMealTypeEat")
+                    })
+                }
+            }
+
+            DeepLinkTarget.FOOD_LOG_DEEP -> {
+                if (checkTrailEndedAndShowDialog()) {
+                    startActivity(Intent(this, MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "MealLogTypeEat")
+                    })
+                }
+            }
+
             DeepLinkTarget.SLEEP_LOG_DEEP -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -425,12 +444,7 @@ class HomeNewActivity : BaseActivity() {
             DeepLinkTarget.CHALLENGE_HOME -> {
                 val isValidState = sharedPreferenceManager.challengeState in listOf(3, 4)
                 if (isValidState && sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus) {
-                    startActivity(
-                        Intent(
-                            this,
-                            ChallengeActivity::class.java
-                        ).putExtra("SYNC_STATUS", syncStatus)
-                    )
+                    startActivity(Intent(this, ChallengeActivity::class.java).putExtra("SYNC_STATUS", syncStatus))
                 }
             }
 
