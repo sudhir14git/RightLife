@@ -62,6 +62,7 @@
         app:layout_constraintTop_toBottomOf="@id/header_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -387,6 +388,7 @@
                 android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"
                 android:text="Active Calories refer to the energy you burn through movement and physical activity. Unlike Basal Metabolic Rate (BMR), which accounts for the calories your body uses at rest, Active Calories are the additional calories expended during activities like exercise, walking, and other forms of movement.
 The more intense your activity, the higher your Active Burn. Factors such as workout type, duration, and heart rate influence the number of Active Calories burned.
 While wearable devices are popular for estimating calorie burn, [studies have shown](https://lifehacker.com/you-cant-trust-your-fitness-tracker-on-calorie-burn#:~:text=What studies say about fitness,overestimated 39%25 of the time.) that they may not always provide accurate measurements. For instance, research indicates that these devices can have varying degrees of accuracy when measuring energy expenditure.

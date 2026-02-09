@@ -899,7 +899,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
                     frequentlyAddDishBottomSheetLayout.visibility = View.GONE
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
-                    args.putString("ModuleName", moduleName)
+                    args.putString("ModuleName", "EatRightLandingWithoutPopup")
                     args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {

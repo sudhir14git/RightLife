@@ -227,9 +227,9 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
 
         closeIcon.setOnClickListener {
             dismiss()
-            if(afterRatingLayout.isVisible){
+//            if(afterRatingLayout.isVisible){
                 listener?.onSnapMealRating(1.0, isSave)
-            }
+//            }
         }
 
         layoutSubmit.setOnClickListener {

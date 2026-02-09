@@ -60,6 +60,7 @@
         app:layout_constraintTop_toBottomOf="@id/header_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -350,13 +351,13 @@
                 android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"
                 android:text="Heart Rate Variability (HRV) measures the variation in time between each heartbeat. Unlike your average heart rate, which counts beats per minute, HRV looks at the subtle changes in timing between beats—controlled by your autonomic nervous system.
 HRV is one of the most powerful indicators of overall health, resilience, and recovery. A higher HRV generally reflects better adaptability, cardiovascular efficiency, and nervous system balance, while a lower HRV may signal stress, fatigue, or inadequate recovery.
 At RightLife, HRV is a cornerstone metric, forming the basis for other key insights. By analyzing HRV trends, we help you understand how well your body is managing stress, how effectively you’re recovering from workouts, and when to push or pull back on intensity. Tracking HRV over time allows you to make smarter decisions about your fitness, recovery, and overall well-being."
                 app:layout_constraintTop_toBottomOf="@+id/heartRateDescriptionHeading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
