@@ -2,7 +2,7 @@ package com.jetsynthesys.rightlife.ui.deeplink
 
 enum class DeepLinkTarget(val slug: String) {
     HOME("home"),
-    MY_HEALTH("my_health"),
+    MY_HEALTH("my-health"),
     MEAL_LOG("meal_log"),
     PROFILE("profile"),
     CATEGORY_LIST("categorylist"),
@@ -15,14 +15,12 @@ enum class DeepLinkTarget(val slug: String) {
     SLEEP_EXPLORE("sleepright-explore"),
     MOVE_EXPLORE("moveright-explore"),
     MOVE_HOME("moveright-home"),
-    WORKOUT_LOG_DEEP("workoutlog-deep"),
+    WORKOUT_LOG_DEEP("workoutlog"),
     EAT_HOME("eatright-home"),
     SLEEP_HOME("sleepright-home"),
-    WEIGHT_LOG_DEEP("weight-log-deep"),
-    WATER_LOG_DEEP("water-log-deep"),
-    SNAP_MEAL_DEEP("snap-meal-deep"),
-    FOOD_LOG_DEEP("food-log-deep"),
-    SLEEP_LOG_DEEP("sleep-log-deep"),
+    WEIGHT_LOG_DEEP("weight-log"),
+    WATER_LOG_DEEP("water-log"),
+    SLEEP_LOG_DEEP("sleep-log"),
     THINK_HOME("thinkright-home"),
 
     // Quick Links
