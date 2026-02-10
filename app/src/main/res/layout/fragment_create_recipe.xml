@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/meal_log_background"
     android:id="@+id/layout_main">
@@ -10,9 +11,9 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="90dp"
+        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/layout_continue"
+        app:layout_constraintBottom_toTopOf="@id/bottom_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -378,6 +379,16 @@
     </androidx.core.widget.NestedScrollView>
 
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/bottom_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/layout_continue"
         android:layout_width="300dp"
         android:layout_height="60dp"
@@ -391,7 +402,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginTop="30sp"
         android:gravity="center"
-        android:layout_marginBottom="30dp">
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:id="@+id/tv_continue"
@@ -418,7 +429,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:gravity="center"
-        android:layout_marginBottom="30dp">
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:id="@+id/tv_save_recipe"
@@ -432,6 +443,8 @@
             android:textColor="@color/white"
             android:fontFamily="@font/dmsans_bold"
             android:text="Save Food/Recipe"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

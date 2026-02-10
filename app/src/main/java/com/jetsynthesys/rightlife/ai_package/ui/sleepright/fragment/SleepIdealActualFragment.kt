@@ -619,8 +619,12 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                 sleepCard.visibility = View.VISIBLE
                                 sleep_ideal_card_new.visibility = View.VISIBLE
                                 sleepNoCard.visibility = View.GONE
-                                percentage_text.text = "${response.body()!!.data?.progress_detail?.actual_sleep?.progress_percentage?.toInt().toString()}% of past week"
-                                percentage_text_average.text = "${response.body()!!.data?.progress_detail?.needed_sleep?.progress_percentage?.toInt().toString()}% of past week"
+                                var labelText = "week"
+                                if (period != "weekly"){
+                                    labelText = "month"
+                                }
+                                percentage_text.text = "${response.body()!!.data?.progress_detail?.actual_sleep?.progress_percentage?.toInt().toString()}% of past "  + labelText
+                                percentage_text_average.text = "${response.body()!!.data?.progress_detail?.needed_sleep?.progress_percentage?.toInt().toString()}% of past "  + labelText
                                 if (response.body()!!.data?.progress_detail?.actual_sleep?.progress_sign == "plus") {
                                     percentage_text.setTextColor(
                                         ContextCompat.getColor(requireContext(), R.color.green_text)

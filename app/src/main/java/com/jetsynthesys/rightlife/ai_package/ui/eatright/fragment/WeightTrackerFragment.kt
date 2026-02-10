@@ -1128,7 +1128,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                     }
                 }
             }
-            setLastAverageValue(data, "% Past Week")
+            setLastAverageValue(data, "% Past Month")
             // Create entries for the chart
             val entries = weightMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
             Triple(entries, weeklyLabels, labels)

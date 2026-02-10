@@ -336,7 +336,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                         performTitle.visibility = View.VISIBLE
                         performSubtitle.visibility = View.VISIBLE
                         performMessage.visibility = View.VISIBLE
-                        setSleepRightPerformanceData(sleepPerformanceResponse.sleepPerformanceAllData)
+                        setSleepRightPerformanceData(sleepPerformanceResponse.sleepPerformanceAllData, period)
                     }else{
                         lytPerformNoCard.visibility = View.VISIBLE
                         lytPerformCard.visibility = View.GONE
@@ -361,7 +361,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         })
     }
 
-    private fun setSleepRightPerformanceData(sleepPerformanceResponse: SleepPerformanceAllData?) {
+    private fun setSleepRightPerformanceData(
+        sleepPerformanceResponse: SleepPerformanceAllData?,
+        period: String
+    ) {
         tvSleepAverage.setText(""+sleepPerformanceResponse?.sleepPerformanceAverage?.roundToDecimals(2)+"%")
         performTitle.setText(sleepPerformanceResponse?.sleepInsightDetail?.title)
         performSubtitle.setText(sleepPerformanceResponse?.sleepInsightDetail?.subtitle)
@@ -376,16 +379,20 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 setupMonthlyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.startDatetime!!,sleepPerformanceResponse.endDatetime!!)
             }
         }
+        var labelText = "Week"
+        if (period != "weekly"){
+            labelText = "Month"
+        }
         if (sleepPerformanceResponse?.progress_detail?.progress_sign == "plus"){
           //  percentageIcon.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_up)
            // percentageText.visibility = View.VISIBLE
-            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
+            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past " + labelText
         }else{
         //    percentageIcon.visibility = View.VISIBLE
         //    percentageText.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_down)
-            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
+            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past " + labelText
         }
     }
 

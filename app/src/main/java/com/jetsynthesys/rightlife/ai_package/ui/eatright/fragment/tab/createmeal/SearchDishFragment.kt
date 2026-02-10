@@ -67,6 +67,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var mealId : String = ""
     private var mealName : String = ""
     private var snapImageUrl: String = ""
+    private  var descriptionName: String = ""
     private var snapMyMeal : String = ""
     private lateinit var mealType : String
     private var loadingOverlay : FrameLayout? = null
@@ -112,6 +113,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         homeTab = arguments?.getString("homeTab").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         snapMyMeal = arguments?.getString("snapMyMeal").toString()
+        descriptionName = arguments?.getString("description").toString()
 
         if (searchType.contentEquals("mealScanResult")){
             allDishesRecyclerview.layoutManager = LinearLayoutManager(context)
@@ -151,6 +153,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                         args.putString("mealName", mealName)
                         args.putString("snapMyMeal", snapMyMeal)
                         args.putString("snapImageUrl", snapImageUrl)
+                        args.putString("description", descriptionName)
                         args.putString("mealType", mealType)
                         args.putString("homeTab", homeTab)
                         args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
@@ -191,6 +194,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("snapImageUrl", snapImageUrl)
+                args.putString("description", descriptionName)
                 args.putString("mealType", mealType)
                 args.putString("homeTab", homeTab)
                 args.putString("snapMyMeal", snapMyMeal)
@@ -460,6 +464,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                                 args.putString("mealId", mealId)
                                 args.putString("mealName", mealName)
                                 args.putString("snapImageUrl", snapImageUrl)
+                                args.putString("description", descriptionName)
                                 args.putString("mealType", mealType)
                                 args.putString("homeTab", homeTab)
                                 args.putString("snapMyMeal", snapMyMeal)
@@ -482,6 +487,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                                 args.putString("mealId", mealId)
                                 args.putString("mealName", mealName)
                                 args.putString("snapImageUrl", snapImageUrl)
+                                args.putString("description", descriptionName)
                                 args.putString("mealType", mealType)
                                 args.putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
                                 args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)
@@ -540,6 +546,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                                 args.putString("mealId", mealId)
                                 args.putString("mealName", mealName)
                                 args.putString("snapImageUrl", snapImageUrl)
+                                args.putString("description", descriptionName)
                                 args.putString("mealType", mealType)
                                 args.putString("homeTab", homeTab)
                                 args.putString("snapMyMeal", snapMyMeal)
@@ -562,6 +569,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                                 args.putString("mealId", mealId)
                                 args.putString("mealName", mealName)
                                 args.putString("snapImageUrl", snapImageUrl)
+                                args.putString("description", descriptionName)
                                 args.putString("mealType", mealType)
                                 args.putParcelable("ingredientRecipeDetails", ingredientRecipesDetails)
                                 args.putParcelable("snapDishLocalListModel", recipeDetailsLocalListModel)

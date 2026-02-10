@@ -497,7 +497,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
-        barChart.setExtraOffsets(0f, 0f, 0f, 0f) // Ensure no extra padding
+        barChart.setExtraOffsets(12f, 0f, 0f, 0f) // Ensure no extra padding
 
         val legend = barChart.legend
         legend.isEnabled = true // Enable legend
@@ -542,20 +542,24 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                         selectHeartRateLayout.x = clampedX
                     } else {
                         Log.e("ChartClick", "Index $x out of bounds for labelsDate size ${labelsDate.size}")
-                        selectHeartRateLayout.visibility = View.INVISIBLE
+                        selectHeartRateLayout.visibility = View.GONE
                     }
                 }
             }
 
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
-                selectHeartRateLayout.visibility = View.INVISIBLE
+                selectHeartRateLayout.visibility = View.GONE
                 dottedLine.visibility = View.GONE
             }
         })
 
         barChart.animateY(1000)
         barChart.invalidate()
+        barChart.post {
+            barChart.fitScreen()
+            barChart.invalidate()
+        }
     }
     /** Fetch and update chart with API data */
     private fun fetchStepDetails(period: String) {

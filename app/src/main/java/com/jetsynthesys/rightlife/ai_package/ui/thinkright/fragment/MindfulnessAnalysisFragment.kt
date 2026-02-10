@@ -88,6 +88,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     private lateinit var selectedCalorieTv: TextView
     private lateinit var recyclerView_mindfulness_analysis: RecyclerView
     private lateinit var average: TextView
+    private lateinit var percentageText : TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -119,6 +120,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         selectMindLayout = view.findViewById(R.id.selectCalorieLayout)
         selectedItemDate = view.findViewById(R.id.selectedDate)
         selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
+        percentageText = view.findViewById(R.id.percentage_text)
         radioGroup.check(R.id.rbWeek)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         // Show Week data by default
@@ -197,6 +199,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     val startDate = getOneWeekWindowStart().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    percentageText.text = "0% Past Week"
                     dateRangeText.text = "${getOneWeekWindowStart().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
                     fetchMindfullnessData(startDate,endDate)
                 }
@@ -212,6 +215,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     val startDate = getOneMonthEarlierDate().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    percentageText.text = "0% Past Month"
                     dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
                     fetchMindfullnessData(startDate,endDate)
                 }
@@ -325,7 +329,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         fetchMindfullnessData(startDate.format(formatter1),endDate.format(formatter1))
 
         /*val entries = mutableListOf<BarEntry>()
-        for (i in 0..5) {
+        for (i in 0..5) {F
             entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
         }
 

@@ -81,6 +81,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private var mealId : String = ""
     private var mealName : String = ""
     private var snapImageUrl: String = ""
+    private  var descriptionName: String = ""
     private var mealType : String = ""
     private var snapMealLog : String = ""
     private var snapMyMeal : String = ""
@@ -135,6 +136,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         snapMyMeal = arguments?.getString("snapMyMeal").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
         homeTab = arguments?.getString("homeTab").toString()
+        descriptionName = arguments?.getString("description").toString()
         view.findViewById<ImageView>(R.id.ivMealDropdown).visibility = View.GONE
 //        if (mealQuantitys != "null"){
 //            if (mealQuantitys.toDouble() > 0.0){
@@ -260,6 +262,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                     args.putString("mealId", mealId)
                     args.putString("mealName", mealName)
                     args.putString("snapImageUrl", snapImageUrl)
+                    args.putString("description", descriptionName)
                     args.putString("mealType", mealType)
                     args.putString("snapMealLog", snapMealLog)
                     args.putString("searchType", searchType)
@@ -305,6 +308,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("snapImageUrl", snapImageUrl)
+                args.putString("description", descriptionName)
                 args.putString("mealType", mealType)
                 args.putString("snapMealLog", snapMealLog)
                 args.putString("snapMyMeal", snapMyMeal)
@@ -491,6 +495,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         args.putString("mealId", mealId)
                         args.putString("mealName", mealName)
                         args.putString("snapImageUrl", snapImageUrl)
+                        args.putString("description", descriptionName)
                         args.putString("mealType", mealType)
                         args.putString("snapMealLog", snapMealLog)
                         args.putString("homeTab", homeTab)
@@ -593,6 +598,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         args.putString("mealId", mealId)
                                         args.putString("mealName", mealName)
                                         args.putString("snapImageUrl", snapImageUrl)
+                                        args.putString("description", descriptionName)
                                         args.putString("mealType", mealType)
                                         args.putString("snapMealLog", snapMealLog)
                                         args.putString("homeTab", homeTab)
