@@ -829,7 +829,7 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
             }
         }
         val updateMealRequest = SaveDishLogRequest(
-            date = selectedMealDate,
+            date = tvSelectedDate.text.toString(),
             meal_type = formatMealType(selectedMealType),
             recipes = recipes,
             ingredients = ingredients
