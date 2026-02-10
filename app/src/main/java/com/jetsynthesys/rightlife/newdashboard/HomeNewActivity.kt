@@ -27,7 +27,6 @@ import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
@@ -229,7 +228,6 @@ class HomeNewActivity : BaseActivity() {
         }
 
         // ✅ Data ready – now actually act
-        // Since 'target' is now an Enum, we check against the Enum constants directly
         when (target) {
             DeepLinkTarget.HOME -> {
                 supportFragmentManager.beginTransaction()
@@ -333,24 +331,6 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
 
-            DeepLinkTarget.SNAP_MEAL_DEEP -> {
-                if (checkTrailEndedAndShowDialog()) {
-                    startActivity(Intent(this, MainAIActivity::class.java).apply {
-                        putExtra("ModuleName", "EatRight")
-                        putExtra("BottomSeatName", "SnapMealTypeEat")
-                    })
-                }
-            }
-
-            DeepLinkTarget.FOOD_LOG_DEEP -> {
-                if (checkTrailEndedAndShowDialog()) {
-                    startActivity(Intent(this, MainAIActivity::class.java).apply {
-                        putExtra("ModuleName", "EatRight")
-                        putExtra("BottomSeatName", "MealLogTypeEat")
-                    })
-                }
-            }
-
             DeepLinkTarget.SLEEP_LOG_DEEP -> {
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(this, MainAIActivity::class.java).apply {
@@ -443,7 +423,12 @@ class HomeNewActivity : BaseActivity() {
             DeepLinkTarget.CHALLENGE_HOME -> {
                 val isValidState = sharedPreferenceManager.challengeState in listOf(3, 4)
                 if (isValidState && sharedPreferenceManager.challengeParticipatedDate.isNotEmpty() && DashboardChecklistManager.checklistStatus) {
-                    startActivity(Intent(this, ChallengeActivity::class.java).putExtra("SYNC_STATUS", syncStatus))
+                    startActivity(
+                        Intent(
+                            this,
+                            ChallengeActivity::class.java
+                        ).putExtra("SYNC_STATUS", syncStatus)
+                    )
                 }
             }
 
@@ -3556,11 +3541,6 @@ class HomeNewActivity : BaseActivity() {
     fun callJumpBackIn() {
         startActivity(Intent(this, JumpInBackActivity::class.java))
     }
-    /* fun callExploreModuleClick(){
-         val intent = Intent(this, NewCategoryListActivity::class.java)
-             intent.putExtra("moduleId",)
-             startActivity(intent)
-     }*/
 
     private fun logAndOpenMeal(snapId: String) {
         AnalyticsLogger.logEvent(
@@ -3735,80 +3715,6 @@ class HomeNewActivity : BaseActivity() {
         })
     }
 
-// Query subscription products
-    /*private fun getSubscriptionProducts(priceTextView: TextView) {
-        // 1. Safety check for BillingClient readiness
-        if (!billingClient.isReady) {
-            Log.e("Billing", "BillingClient is not ready yet.")
-            return
-        }
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val productList = listOf(
-                    QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("test_sub_yearly")
-                        .setProductType(BillingClient.ProductType.SUBS)
-                        .build()
-                )
-
-                val params = QueryProductDetailsParams.newBuilder()
-                    .setProductList(productList)
-                    .build()
-
-                // 2. Query the products
-                val subsResult = billingClient.queryProductDetails(params)
-                val billingResult = subsResult.billingResult
-                val productDetailsList = subsResult.productDetailsList
-
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
-
-                    if (productDetailsList.isEmpty()) {
-                        Log.w("Billing", "No products found. Check Console ID.")
-                        return@launch
-                    }
-
-                    for (productDetails in productDetailsList) {
-                        // 3. Extract the Offer Details (Base plans and offers)
-                        val offerDetails = productDetails.subscriptionOfferDetails
-
-                        if (!offerDetails.isNullOrEmpty()) {
-                            // For a simple setup, we take the first available offer/base plan
-                            val subOffer = offerDetails[0]
-
-                            // 4. Extract Pricing Phases (where the formatted price lives)
-                            val pricingPhases = subOffer.pricingPhases.pricingPhaseList
-
-                            if (pricingPhases.isNotEmpty()) {
-                                // formattedPrice will be "₹7.00" based on your JSON
-                                val price = pricingPhases[0].formattedPrice
-
-                                Log.d("Billing", "Success! Found price: $price")
-
-                                // 5. Update UI on the Main Thread
-                                withContext(Dispatchers.Main) {
-                                    priceTextView.text = price
-                                }
-                            }
-                        } else {
-                            Log.e(
-                                "Billing",
-                                "No subscription offer details found for this product."
-                            )
-                        }
-                    }
-                } else {
-                    Log.e(
-                        "Billing",
-                        "Error: ${billingResult.debugMessage} Code: ${billingResult.responseCode}"
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e("Billing", "Exception during query: ${e.message}")
-            }
-        }
-    }*/
-
     private fun joinChallenge() {
         AppLoader.show(this)
         apiService.postChallengeStart(sharedPreferenceManager.accessToken)
@@ -3879,7 +3785,6 @@ class HomeNewActivity : BaseActivity() {
 
         // Hide all layouts first to avoid overlapping UI
         hideChallengeLayout()
-
 
         val dateRange = getChallengeDateRange(
             dates.challengeStartDate,
