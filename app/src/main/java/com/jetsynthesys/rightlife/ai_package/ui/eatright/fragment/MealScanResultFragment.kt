@@ -91,7 +91,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private lateinit var macroItemRecyclerView: RecyclerView
     private lateinit var microItemRecyclerView: RecyclerView
     private lateinit var frequentlyLoggedRecyclerView: RecyclerView
-    private var currentPhotoPath: String = ""
     private lateinit var descriptionName: String
     private lateinit var foodNameEdit: EditText
     private var currentPhotoPathsecound: Uri? = null
@@ -206,8 +205,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         } else {
             arguments?.getParcelable("foodDataResponses")
         }
-
-        currentPhotoPath = arguments?.get("ImagePath").toString()
 
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -326,20 +323,25 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     val mealSearchFragment = SnapMealFragment()
                     val args = Bundle()
                     args.putString("ModuleName", "EatRight")
+                    args.putString("snapImageUrl", snapImageUrl)
+                    args.putString("description", descriptionName)
+                    args.putString("homeTab", homeTab)
+                    args.putString("mealType", mealType)
+                    args.putString("selectedMealDate", selectedMealDate)
                     mealSearchFragment.arguments = args
                     replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
                     addToBackStack(null)
                     commit()
                 }
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    val snapMealFragment = HomeBottomTabFragment()
-                    val args = Bundle()
-                    args.putString("ModuleName", moduleName)
-                    snapMealFragment.arguments = args
-                    replace(R.id.flFragment, snapMealFragment, "Steps")
-                    addToBackStack(null)
-                    commit()
-                }
+//                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                    val snapMealFragment = HomeBottomTabFragment()
+//                    val args = Bundle()
+//                    args.putString("ModuleName", moduleName)
+//                    snapMealFragment.arguments = args
+//                    replace(R.id.flFragment, snapMealFragment, "Steps")
+//                    addToBackStack(null)
+//                    commit()
+//                }
             } else if (snapMealLog.equals("snapMealLog")) {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
@@ -373,15 +375,20 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() { if (moduleName.contentEquals("EatRight")) {
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    val snapMealFragment = HomeBottomTabFragment()
-                    val args = Bundle()
-                    args.putString("ModuleName", moduleName)
-                    snapMealFragment.arguments = args
-                    replace(R.id.flFragment, snapMealFragment, "Steps")
-                    addToBackStack(null)
-                    commit()
-                }
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val mealSearchFragment = SnapMealFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", "EatRight")
+                        args.putString("snapImageUrl", snapImageUrl)
+                        args.putString("description", descriptionName)
+                        args.putString("homeTab", homeTab)
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        mealSearchFragment.arguments = args
+                        replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                        addToBackStack(null)
+                        commit()
+                    }
             } else if (snapMealLog.equals("snapMealLog")) {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
@@ -431,6 +438,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("mealId", mealId)
             args.putString("mealName", foodNameEdit.text.toString())
             args.putString("snapImageUrl", snapImageUrl)
+            args.putString("description", descriptionName)
             args.putString("mealType", mealType)
             args.putString("homeTab", homeTab)
             args.putString("snapMyMeal", snapMyMeal)
@@ -773,6 +781,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("mealId", mealId)
             args.putString("mealName", foodNameEdit.text.toString())
             args.putString("snapImageUrl", snapImageUrl)
+            args.putString("description", descriptionName)
             args.putString("ModuleName", moduleName)
             args.putString("searchType", "MealScanResult")
             args.putString("mealType", mealType)
@@ -803,6 +812,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         args.putString("mealId", mealId)
         args.putString("mealName", foodNameEdit.text.toString())
         args.putString("snapImageUrl", snapImageUrl)
+        args.putString("description", descriptionName)
         args.putString("mealType", mealType)
         args.putString("homeTab", homeTab)
         args.putString("selectedMealDate", selectedMealDate)
@@ -831,7 +841,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                         .error(R.drawable.ic_view_meal_place)
                         .into(imageFood)
                 } catch (e: Exception) {
-                    Log.e("ImageLoad", "Error loading image from file path: $currentPhotoPath", e)
+                    Log.e("ImageLoad", "Error loading image from file path", e)
                 }
             }
             // Set food name

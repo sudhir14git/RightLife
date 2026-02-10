@@ -26,6 +26,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
     private var mealId : String = ""
     private var mealName : String = ""
     private var snapImageUrl: String = ""
+    private  var descriptionName: String = ""
     private var mealType : String = ""
     private var snapMealLog : String = ""
     private var homeTab : String = ""
@@ -62,6 +63,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
         snapMealLog = arguments?.getString("snapMealLog").toString()
         homeTab = arguments?.getString("homeTab").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
+        descriptionName = arguments?.getString("description").toString()
         val imagePathString = arguments?.getString("ImagePathsecound")
         if (imagePathString != null){
             currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
@@ -91,6 +93,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
                             args.putString("mealId", mealId)
                             args.putString("mealName", mealName)
                             args.putString("snapImageUrl", snapImageUrl)
+                            args.putString("description", descriptionName)
                             args.putString("mealType", mealType)
                             args.putString("snapMealLog", snapMealLog)
                             args.putString("homeTab", homeTab)

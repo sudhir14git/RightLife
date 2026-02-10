@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -204,6 +205,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
         }
 
         continueLayout.setOnClickListener {
+            hideKeyboard()   // ✅ CLOSE KEYBOARD
             addMealNameLayout.visibility = View.GONE
             continueLayout.visibility = View.GONE
             addedMealListLayout.visibility = View.VISIBLE
@@ -622,6 +624,12 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
+                as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
     override fun onMealSaveQuit(mealData: String) {

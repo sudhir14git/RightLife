@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -8,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -212,6 +214,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
         }
 
         continueLayout.setOnClickListener {
+            hideKeyboard()   // ✅ CLOSE KEYBOARD
             addRecipeNameLayout.visibility = View.GONE
             continueLayout.visibility = View.GONE
             addedRecipeListLayout.visibility = View.VISIBLE
@@ -700,5 +703,11 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
             addToBackStack("landing")
             commit()
         }
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
+                as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 }

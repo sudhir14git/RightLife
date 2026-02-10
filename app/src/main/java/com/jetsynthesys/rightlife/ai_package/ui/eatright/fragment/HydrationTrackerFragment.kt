@@ -839,7 +839,7 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                     }
                 }
             }
-            setLastAverageValue(data, "% Past Week")
+            setLastAverageValue(data, "% Past Month")
             // Create entries for the chart
             val entries = waterMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
             Triple(entries, weeklyLabels, labelsDate)
