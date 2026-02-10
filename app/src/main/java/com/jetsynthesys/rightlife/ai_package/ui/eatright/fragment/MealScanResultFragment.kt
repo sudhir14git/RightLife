@@ -1305,6 +1305,8 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         val formattedDate = currentDateTime.format(formatter)
         val updateMealRequest = UpdateSnapMealLogRequest(
             meal_name = foodNameEdit.text.toString(),
+            date = tvSelectedDate.text.toString(),
+            meal_type = selectedMealType,
             meal_log = snapRecipeList
         )
         val call = ApiClient.apiServiceFastApiV2.updateSnapLogMeal(userId, mealId, updateMealRequest)

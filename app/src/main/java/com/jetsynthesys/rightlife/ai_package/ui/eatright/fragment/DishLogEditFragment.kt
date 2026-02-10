@@ -152,8 +152,8 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         addToTheMealLayout.isEnabled = false
         addToTheMealLayout.alpha = 0.5f
 
-//        selectDateMealTypeTitleLayout.visibility = View.VISIBLE
-//        selectDateMealTypeLayout.visibility = View.VISIBLE
+        selectDateMealTypeTitleLayout.visibility = View.VISIBLE
+        selectDateMealTypeLayout.visibility = View.VISIBLE
 
         moduleName = arguments?.getString("ModuleName").toString()
         mealId = arguments?.getString("mealId").toString()
@@ -180,7 +180,6 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formatFullDate = DateTimeFormatter.ofPattern("d MMMM yyyy")
-        tvSelectedDate.text = currentDateTime.format(formatFullDate)
         val items = arrayOf("Breakfast", "Morning Snack", "Lunch", "Evening Snacks", "Dinner")
         // Create Adapter
         val adapter =
@@ -218,6 +217,14 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
             override fun onNothingSelected(parent: AdapterView<*>) {
                 //  selectedText.text = "No selection"
             }
+        }
+
+        if (selectedMealDate.equals("") || selectedMealDate.equals("null")){
+            tvSelectedDate.text = currentDateTime.format(formatFullDate)
+        }else{
+            val currentDateTime = selectedMealDate
+            val formatFullDate = DateTimeFormatter.ofPattern("d MMMM yyyy")
+            tvSelectedDate.text = currentDateTime.format(formatFullDate)
         }
 
         view.findViewById<LinearLayoutCompat>(R.id.datePickerLayout).setOnClickListener {
@@ -441,7 +448,7 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
         )
         val today = System.currentTimeMillis()
         // 🚫 Disable past dates
-        datePicker.datePicker.minDate = today
+        //datePicker.datePicker.minDate = today
         // 🚫 Disable future dates
         datePicker.datePicker.maxDate = today
         datePicker.show()
@@ -822,7 +829,8 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
             }
         }
         val updateMealRequest = SaveDishLogRequest(
-            meal_type = mealType ?: "dd",
+            date = selectedMealDate,
+            meal_type = formatMealType(selectedMealType),
             recipes = recipes,
             ingredients = ingredients
         )
@@ -838,7 +846,6 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
                     val mealData = response.body()?.message
                     Toast.makeText(context, mealData, Toast.LENGTH_SHORT).show()
   //                  Toast.makeText(activity, "Changes Save", Toast.LENGTH_SHORT).show()
-
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
@@ -877,5 +884,16 @@ class DishLogEditFragment : BaseFragment<FragmentDishBinding>() {
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    private fun formatMealType(input: String): String {
+        return when (input.lowercase()) {
+            "breakfast" -> "breakfast"
+            "morning snack" -> "morning_snack"
+            "lunch" -> "lunch"
+            "evening snacks" -> "evening_snack"
+            "dinner" -> "dinner"
+            else -> input.lowercase().replace(" ", "_")
+        }
     }
 }
