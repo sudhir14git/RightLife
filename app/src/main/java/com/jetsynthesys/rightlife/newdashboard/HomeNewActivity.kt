@@ -68,6 +68,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
+import com.jetsynthesys.rightlife.HealthConnectConstants
 import com.jetsynthesys.rightlife.MainApplication
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
@@ -511,27 +512,6 @@ class HomeNewActivity : BaseActivity() {
     private var oxygenSaturationRecord: List<OxygenSaturationRecord>? = null
     private var respiratoryRateRecord: List<RespiratoryRateRecord>? = null
     private lateinit var healthConnectClient: HealthConnectClient
-
-    private lateinit var permissionManager: PermissionManager
-
-    @SuppressLint("ClickableViewAccessibility")
-    private val allReadPermissions = setOf(
-        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
-        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
-        HealthPermission.getReadPermission(BasalMetabolicRateRecord::class),
-        HealthPermission.getReadPermission(DistanceRecord::class),
-        HealthPermission.getReadPermission(StepsRecord::class),
-        HealthPermission.getReadPermission(HeartRateRecord::class),
-        HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class),
-        HealthPermission.getReadPermission(RestingHeartRateRecord::class),
-        HealthPermission.getReadPermission(RespiratoryRateRecord::class),
-        HealthPermission.getReadPermission(OxygenSaturationRecord::class),
-        HealthPermission.getReadPermission(BloodPressureRecord::class),
-        HealthPermission.getReadPermission(WeightRecord::class),
-        HealthPermission.getReadPermission(BodyFatRecord::class),
-        HealthPermission.getReadPermission(SleepSessionRecord::class),
-        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
-    )
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -1117,7 +1097,7 @@ class HomeNewActivity : BaseActivity() {
                     lifecycleScope.launch {
                         val granted =
                             healthConnectClient.permissionController.getGrantedPermissions()
-                        if (allReadPermissions.all { it in granted }) {
+                        if (HealthConnectConstants.allReadPermissions.all { it in granted }) {
                             fetchAllHealthData()
                         }
                     }
@@ -1912,10 +1892,10 @@ class HomeNewActivity : BaseActivity() {
     private suspend fun requestPermissionsAndReadAllData() {
         try {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
-            if (allReadPermissions.all { it in granted }) {
+            if (HealthConnectConstants.allReadPermissions.all { it in granted }) {
                 fetchAllHealthData()
             } else {
-                requestPermissionsLauncher.launch(allReadPermissions)
+                requestPermissionsLauncher.launch(HealthConnectConstants.allReadPermissions)
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
@@ -1931,7 +1911,7 @@ class HomeNewActivity : BaseActivity() {
     private val requestPermissionsLauncher =
         registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
             lifecycleScope.launch {
-                if (granted.containsAll(allReadPermissions)) {
+                if (granted.containsAll(HealthConnectConstants.allReadPermissions)) {
                     fetchAllHealthData()
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
