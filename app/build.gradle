@@ -121,6 +121,7 @@ android {
 
             // App icon
             manifestPlaceholders["appIcon"] = "@drawable/logo_rightlife_blue_qa"
+            manifestPlaceholders["appIconCircular"] = "@drawable/circular_logo_blue"
 
         }
 
@@ -137,6 +138,7 @@ android {
 
             // App icon
             manifestPlaceholders["appIcon"] = "@drawable/logo_rightlife"
+            manifestPlaceholders["appIconCircular"] = "@drawable/circular_logo"
 
         }
     }
