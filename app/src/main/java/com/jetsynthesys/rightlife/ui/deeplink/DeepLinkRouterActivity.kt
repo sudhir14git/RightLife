@@ -103,6 +103,15 @@ class DeepLinkRouterActivity : BaseActivity() {
 
                 )
             }
+
+            //sleepsound
+            path == "/sleep-sound/playlist" -> {
+                intent.putExtra(
+                    HomeNewActivity.EXTRA_DEEP_LINK_TARGET,
+                    HomeNewActivity.TARGET_SLEEP_SOUND_PLAYLIST
+
+                )
+            }
             //Affirmation
             path == "/affirmation" -> {
                 intent.putExtra(

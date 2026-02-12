@@ -166,8 +166,9 @@ class ProfileSettingsActivity : BaseActivity() {
     private fun setUserData() {
         val user = sharedPreferenceManager.userProfile.userdata
         var name = user.firstName
-        if (!user.lastName.isNullOrEmpty())
-            name = name.plus(" ${user.lastName}")
+        // commenting following code as per RAD-7412
+        /*if (!user.lastName.isNullOrEmpty())
+            name = name.plus(" ${user.lastName}")*/
         binding.userName.text = name
         if (user.profilePicture.isNullOrEmpty()) {
             /*if (user.firstName.isNotEmpty())

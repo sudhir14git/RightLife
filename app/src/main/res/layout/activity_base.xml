@@ -1,25 +1,105 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/baseLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <!-- No Internet View (Top) -->
-    <TextView
-        android:id="@+id/noInternetView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp"
-        android:text="No Internet Connection!!\nPlease check your internet connection and try again"
-        android:textSize="16sp"
-        android:textColor="@color/red"
-        android:gravity="center"
-        android:visibility="gone" />
-
-    <!-- Child Activities will load here -->
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-</LinearLayout>
+        android:layout_height="match_parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/fullSyncStatusView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/light_pink"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <FrameLayout
+                android:layout_width="36dp"
+                android:layout_height="36dp">
+                <ProgressBar
+                    android:id="@+id/fullRotatingArc"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/rotating_gradient_ring" />
+                <ImageView
+                    android:id="@+id/fullHeartIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/heart" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/syncTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Syncing Health Data"
+                    android:textColor="#000000"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/syncSubTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="This may take a moment…"
+                    android:textColor="#808080"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <FrameLayout
+        android:id="@+id/compactSyncIndicator"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/compactRotatingArc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/rotating_gradient_ring" />
+        <ImageView
+            android:id="@+id/compactHeartIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center"
+            android:src="@drawable/heart" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/noInternetView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#DD000000"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="No Internet Connection!!\nPlease check your connection."
+        android:textColor="@android:color/white"
+        android:visibility="gone" />
+
+</FrameLayout>

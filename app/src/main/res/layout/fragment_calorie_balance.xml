@@ -70,6 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/gradient_color_background_workout">
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/calorie_balance_layout"
                 android:layout_width="match_parent"
@@ -331,6 +332,7 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </androidx.cardview.widget.CardView>
+
                     <com.jetsynthesys.rightlife.ai_package.ui.moveright.DottedLineView
                         android:id="@+id/dottedLineView"
                         android:layout_width="match_parent"
@@ -339,6 +341,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         android:visibility="gone" />
+
                     <View
                         android:id="@+id/dottedLineView1"
                         android:layout_width="3dp"
@@ -347,6 +350,7 @@
                         android:visibility="gone"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
+
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/heartRateChart"
                         android:layout_width="match_parent"
@@ -381,6 +385,24 @@
 
             </androidx.cardview.widget.CardView>
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/calorie_balance_layoutTitle"
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:elevation="4dp"
+            android:background="@color/white"
+            app:cardCornerRadius="10dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
             <TextView
                 android:id="@+id/heartRateDescriptionHeading"
                 android:layout_width="339dp"
@@ -392,7 +414,7 @@
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 android:textSize="18sp"
-                app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -407,6 +429,9 @@
                 app:layout_constraintTop_toBottomOf="@+id/heartRateDescriptionHeading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

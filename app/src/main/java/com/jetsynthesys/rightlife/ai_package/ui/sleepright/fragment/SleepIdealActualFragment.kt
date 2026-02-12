@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -67,6 +68,9 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private lateinit var btnPrevious: ImageView
     private lateinit var btnNext: ImageView
+
+    private lateinit var percentageIcon : ImageView
+    private lateinit var totalPercentageUp : ImageView
     private lateinit var dateRangeText: TextView
     private lateinit var percentage_text_average: TextView
     private lateinit var percentage_text: TextView
@@ -111,6 +115,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         tvIdealTitle = view.findViewById(R.id.ideal_title)
         tvIdealMessage = view.findViewById(R.id.ideal_message)
         ideal_extra_text = view.findViewById(R.id.ideal_extra_text)
+        percentageIcon = view.findViewById(R.id.percentage_icon)
+        totalPercentageUp = view.findViewById(R.id.percentage_icon_average)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -613,8 +619,47 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                 sleepCard.visibility = View.VISIBLE
                                 sleep_ideal_card_new.visibility = View.VISIBLE
                                 sleepNoCard.visibility = View.GONE
-                                percentage_text.text = "${response.body()!!.data?.progress_detail?.actual_sleep?.progress_percentage?.toInt().toString()}% of past week"
-                                percentage_text_average.text = "${response.body()!!.data?.progress_detail?.needed_sleep?.progress_percentage?.toInt().toString()}% of past week"
+                                var labelText = "week"
+                                if (period != "weekly"){
+                                    labelText = "month"
+                                }
+                                percentage_text.text = "${response.body()!!.data?.progress_detail?.actual_sleep?.progress_percentage?.toInt().toString()}% of past "  + labelText
+                                percentage_text_average.text = "${response.body()!!.data?.progress_detail?.needed_sleep?.progress_percentage?.toInt().toString()}% of past "  + labelText
+                                if (response.body()!!.data?.progress_detail?.actual_sleep?.progress_sign == "plus") {
+                                    percentage_text.setTextColor(
+                                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                                    )
+                                    percentage_text_average.setTextColor(
+                                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                                    )
+                                    percentageIcon.setImageResource(R.drawable.ic_up)
+                                    totalPercentageUp.setImageResource(R.drawable.ic_up)
+                                    percentageIcon.imageTintList =
+                                        ColorStateList.valueOf(
+                                            ContextCompat.getColor(requireContext(), R.color.green_text)
+                                        )
+                                    totalPercentageUp.imageTintList =
+                                        ColorStateList.valueOf(
+                                            ContextCompat.getColor(requireContext(), R.color.green_text)
+                                        )
+                                } else if (response.body()!!.data?.progress_detail?.actual_sleep?.progress_sign == "minus") {
+                                    percentage_text.setTextColor(
+                                        ContextCompat.getColor(requireContext(), R.color.step_today)
+                                    )
+                                    percentage_text_average.setTextColor(
+                                        ContextCompat.getColor(requireContext(), R.color.step_today)
+                                    )
+                                    percentageIcon.setImageResource(R.drawable.ic_down)
+                                    totalPercentageUp.setImageResource(R.drawable.ic_down)
+                                    percentageIcon.imageTintList =
+                                        ColorStateList.valueOf(
+                                            ContextCompat.getColor(requireContext(), R.color.step_today)
+                                        )
+                                    totalPercentageUp.imageTintList =
+                                        ColorStateList.valueOf(
+                                            ContextCompat.getColor(requireContext(), R.color.step_today)
+                                        )
+                                }
                                 setSleepRightData(period,endDate)
                             }else{
                                 sleepCard.visibility = View.GONE

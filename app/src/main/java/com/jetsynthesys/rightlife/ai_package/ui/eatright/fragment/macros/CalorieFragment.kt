@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -93,6 +94,8 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     private lateinit var totalPercentageTv : TextView
     private lateinit var percentageIc: TextView
     private lateinit var totalCalorie : TextView
+    private lateinit var percentageIcon : ImageView
+    private lateinit var totalPercentageUp : ImageView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var averageGoalLayout : LinearLayoutCompat
@@ -128,6 +131,8 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         averageBurnCalorie = view.findViewById(R.id.average_number)
         averageHeading = view.findViewById(R.id.averageHeading)
         percentageIc = view.findViewById(R.id.percentageIc)
+        percentageIcon = view.findViewById(R.id.percentage_icon)
+        totalPercentageUp = view.findViewById(R.id.totalPercentageUp)
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
@@ -154,7 +159,6 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
                 }
             }
-
             when (checkedId) {
                 R.id.rbWeek -> fetchActiveCalories("last_weekly")
                 R.id.rbMonth -> fetchActiveCalories("last_monthly")
@@ -283,7 +287,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     }
 
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,  activeCaloriesResponse: ConsumedCaloriesResponse) {
-        selectHeartRateLayout.visibility = View.VISIBLE
+        selectHeartRateLayout.visibility = View.GONE
         val dataSet = BarDataSet(entries, "")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
@@ -432,7 +436,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
             }
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
-                selectHeartRateLayout.visibility = View.INVISIBLE
+                selectHeartRateLayout.visibility = View.GONE
             }
         })
         barChart.animateY(1000)
@@ -875,11 +879,41 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
             if (activeCaloriesResponse.progressSign == "plus") {
                 percentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 totalPercentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
-                // percentageIc.setImageResource(R.drawable.ic_up)
+                percentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.green_text)
+                )
+                totalPercentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.green_text)
+                )
+                percentageIcon.setImageResource(R.drawable.ic_up)
+                totalPercentageUp.setImageResource(R.drawable.ic_up)
+                percentageIcon.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                    )
+                totalPercentageUp.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                    )
             } else if (activeCaloriesResponse.progressSign == "minus") {
                 percentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 totalPercentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
-                // percentageIc.setImageResource(R.drawable.ic_down)
+                percentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.step_today)
+                )
+                totalPercentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.step_today)
+                )
+                percentageIcon.setImageResource(R.drawable.ic_down)
+                totalPercentageUp.setImageResource(R.drawable.ic_down)
+                percentageIcon.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.step_today)
+                    )
+                totalPercentageUp.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.step_today)
+                    )
             }
         }
     }

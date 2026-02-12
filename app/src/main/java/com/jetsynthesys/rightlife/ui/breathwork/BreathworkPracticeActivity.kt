@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -74,9 +75,10 @@ class BreathworkPracticeActivity : BaseActivity() {
         val sessionCount = intent.getIntExtra("sessionCount", 3)
         totalSets = sessionCount
         isHapticFeedBack = intent.getBooleanExtra("HAPTIC_FEEDBACK", false)
-        inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
-        exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
-        holdTime = breathingData?.breathHoldTime?.toLong()!! * 1000
+        // Safely convert to Long, defaulting to 0L if null, then multiply
+        inhaleTime = (breathingData?.breathInhaleTime?.toLong() ?: 0L) * 1000
+        exhaleTime = (breathingData?.breathExhaleTime?.toLong() ?: 0L) * 1000
+        holdTime = (breathingData?.breathHoldTime?.toLong() ?: 0L) * 1000
 
         // Initialize sound cues
         initializeSoundCues()
@@ -336,8 +338,8 @@ class BreathworkPracticeActivity : BaseActivity() {
             AnalyticsLogger.logEvent(
                 this,
                 AnalyticsEvent.BREATHING_SESSION_STARTED, mapOf(
-                    AnalyticsParam.BREATHING_TYPE_ID to breathingData?.id!!,
-                    AnalyticsParam.BREATHING_SESSION_DURATION to breathingData?.duration!!
+                    AnalyticsParam.BREATHING_TYPE_ID to (breathingData?.id?:""),
+                    AnalyticsParam.BREATHING_SESSION_DURATION to (breathingData?.duration?:0)
                 )
             )
             //binding.setIndicator.text = "Set ${currentSet/4}/${totalSets/4}"
@@ -356,7 +358,7 @@ class BreathworkPracticeActivity : BaseActivity() {
             AnalyticsLogger.logEvent(
                 this,
                 AnalyticsEvent.BREATHING_SESSION_COMPLETED, mapOf(
-                    AnalyticsParam.BREATHING_TYPE_ID to breathingData?.id!!,
+                    AnalyticsParam.BREATHING_TYPE_ID to (breathingData?.id?:""),
                     AnalyticsParam.BREATHING_SESSION_DURATION to System.currentTimeMillis() - startTime
                 )
             )

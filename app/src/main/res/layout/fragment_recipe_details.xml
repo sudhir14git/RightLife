@@ -67,7 +67,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         android:text="Poha"
                         android:textSize="24sp"
-                        android:fontFamily="@font/dmsans_bold"
+                        android:fontFamily="@font/merriweather_bold"
                         android:textColor="@color/black_no_meals"
                         />
 
@@ -260,7 +260,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             android:textSize="16sp"
-                            android:fontFamily="@font/dmsans_bold"
+                            android:fontFamily="@font/merriweather_bold"
                             android:textColor="@color/black_no_meals"
                             android:text="Nutritional Information" />
 

@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -109,7 +110,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // Set background
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
 
@@ -169,7 +169,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
 
         // Update heading to reflect steps
         averageHeading.text = "Average"
-
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
         fetchStepDetails("last_weekly")
@@ -185,7 +184,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
                 }
             }
-
             when (checkedId) {
                 R.id.rbWeek -> fetchStepDetails("last_weekly")
                 R.id.rbMonth -> fetchStepDetails("last_monthly")
@@ -499,7 +497,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
-        barChart.setExtraOffsets(0f, 0f, 0f, 0f) // Ensure no extra padding
+        barChart.setExtraOffsets(12f, 0f, 0f, 0f) // Ensure no extra padding
 
         val legend = barChart.legend
         legend.isEnabled = true // Enable legend
@@ -544,20 +542,24 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                         selectHeartRateLayout.x = clampedX
                     } else {
                         Log.e("ChartClick", "Index $x out of bounds for labelsDate size ${labelsDate.size}")
-                        selectHeartRateLayout.visibility = View.INVISIBLE
+                        selectHeartRateLayout.visibility = View.GONE
                     }
                 }
             }
 
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
-                selectHeartRateLayout.visibility = View.INVISIBLE
+                selectHeartRateLayout.visibility = View.GONE
                 dottedLine.visibility = View.GONE
             }
         })
 
         barChart.animateY(1000)
         barChart.invalidate()
+        barChart.post {
+            barChart.fitScreen()
+            barChart.invalidate()
+        }
     }
     /** Fetch and update chart with API data */
     private fun fetchStepDetails(period: String) {
@@ -568,7 +570,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                         showLoader(requireView())
                     }
                 }
-
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -599,20 +600,17 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
-
                 val response = ApiClient.apiServiceFastApi.getStepsDetail(
                     userId = userId,
                     period = period,
                     date = selectedDate
                 )
-
                 if (response.isSuccessful) {
                     if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
-
                     val stepTrackerResponse = response.body()
                     if (stepTrackerResponse?.statusCode == 200 && stepTrackerResponse.data.isNotEmpty()) {
                         val stepData = stepTrackerResponse.data[0]
@@ -632,26 +630,19 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                                 }
                                 updateChart(entries, labels, labelsDate, stepData)
                             }
-
                             // Update stats
                             setStepStats(stepData, period)
-
                             // Heading
                             heart_rate_description_heading.text = stepData.heading
-
                             // Description + Comparison Message (Yahi change kiya hai)
                             val description = stepData.description
                             val comparisonMessage = stepData.comparison.comparisonMessage
-
                             val fullText = if (comparisonMessage.isNotBlank()) {
                                 "$comparisonMessage"
                             } else {
                                 description
                             }
-
                             // Beautiful formatting: comparison message bold + green
-
-
                             description_progressbar_layout.text = fullText
                         }
                     } else {
@@ -705,7 +696,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         val labels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
         val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
-
         // Initialize 7 days with 0 steps
         repeat(7) {
             val dateStr = dateFormat.format(calendar.time)
@@ -716,13 +706,11 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             labelsDate.add(dateLabel)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-
         // Aggregate steps by day using record_details
         stepData.recordDetails.forEach { record ->
             val dayKey = record.date
             stepMap[dayKey] = record.totalStepsCountPerDay.toFloat()
         }
-
         val entries = stepMap.entries.mapIndexed { index, entry -> BarEntry(index.toFloat(), entry.value) }
         return Triple(entries, labels, labelsDate)
     }
@@ -940,7 +928,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             // Set average steps
             averageBurnCalorie.visibility = View.VISIBLE
             averageBurnCalorie.text = stepData.totalStepsAvg.toInt().toString()
-
             // Set comparison percentage
             val currentAverage = stepData.comparison.currentAverageStepsPerDay
             val previousAverage = stepData.comparison.previousAverageStepsPerDay
@@ -952,22 +939,41 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 else -> "%"
             }
             if (percentage > 0) {
-                percentageTv.text = "+$percentage$periodLabel"
-                percentageIc.setImageResource(R.drawable.ic_up)
-            } else if (percentage < 0) {
                 percentageTv.text = "$percentage$periodLabel"
+                percentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.green_text)
+                )
+                percentageIc.setImageResource(R.drawable.ic_up)
+                percentageIc.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                    )
+            } else if (percentage < 0) {
+                val display = kotlin.math.abs(percentage).toString()
+                percentageTv.text = "$display$periodLabel"
+                percentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.step_today)
+                )
                 percentageIc.setImageResource(R.drawable.ic_down)
+                percentageIc.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.step_today)
+                    )
             } else {
                 percentageTv.text = "0$periodLabel"
+                percentageTv.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.green_text)
+                )
                 percentageIc.setImageResource(R.drawable.ic_up)
+                percentageIc.imageTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.green_text)
+                    )
             }
             perDayStepAverage.text = stepData.comparison.currentAverageStepsPerDay.toInt().toString()
             valuePreviousWeek.text = stepData.comparison.previousAverageStepsPerDay.toInt().toString()
-
             val currentPercentage = (stepData.comparison.currentAverageStepsPerDay.toFloat() / stepData.stepsGoal.toFloat()).coerceIn(0f, 1f)
-
             val previousPercentage = (stepData.comparison.previousAverageStepsPerDay.toFloat() / stepData.stepsGoal.toFloat()).coerceIn(0f, 1f)
-
             customProgressBarFatBurn.progress = currentPercentage
             customProgressPreviousWeek.progress = previousPercentage
         }

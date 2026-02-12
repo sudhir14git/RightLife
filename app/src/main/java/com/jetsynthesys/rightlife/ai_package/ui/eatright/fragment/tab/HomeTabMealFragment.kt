@@ -7,8 +7,6 @@ import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import java.time.LocalDate
@@ -38,12 +36,9 @@ import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.request.CreateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.IngredientLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.MealIngredient
 import com.jetsynthesys.rightlife.ai_package.model.request.MealLogItem
-import com.jetsynthesys.rightlife.ai_package.model.request.MealRecipe
 import com.jetsynthesys.rightlife.ai_package.model.request.RecipeLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
@@ -264,6 +259,11 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
 //            permissionManager.checkAndRequestPermissions()
         }
         imageGallery.setOnClickListener {
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.ER_MealLog_UploadImage
+                )
+            }
             openGallery()
         }
         // Handle tab clicks manually
@@ -899,7 +899,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
                     frequentlyAddDishBottomSheetLayout.visibility = View.GONE
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
-                    args.putString("ModuleName", moduleName)
+                    args.putString("ModuleName", "EatRightLandingWithoutPopup")
                     args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -1019,6 +1019,17 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>(), MealSave
             })
         }
     }
+
+//    fun LocalDateTime.dayWith4AmBoundary(): LocalDate {
+//        return if (this.toLocalTime().isBefore(LocalTime.of(4, 0))) {
+//            this.toLocalDate().minusDays(1)
+//        } else {
+//            this.toLocalDate()
+//        }
+//    }
+//
+//    val dateTime = LocalDateTime.of(2026, 1, 30, 1, 30) // 1:30 AM
+//    val logicalDay = dateTime.dayWith4AmBoundary()
 
     private fun showCustomToast(context: Context, message: String?) {
         // Cancel any old toast

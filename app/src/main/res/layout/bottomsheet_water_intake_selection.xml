@@ -82,7 +82,7 @@
                 android:text="ml"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:textColor="@color/black_no_meals"
+                android:textColor="@color/on_track_color"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="15dp" />
 
@@ -205,11 +205,11 @@
 
                 <ImageView
                     android:id="@+id/ivGoalIndicator"
-                    android:layout_width="115dp"
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:src="@drawable/goal_image_dotted"
                     android:layout_alignTop="@id/progressBarContainer"
-                    android:layout_alignStart="@id/progressBarContainer"
+
                     android:layout_marginTop="130dp"
                     android:scaleType="fitXY" />
 
@@ -219,18 +219,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|top"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="2dp"
                 android:layout_marginTop="120dp"
+                android:layout_marginEnd="5dp"
                 android:orientation="vertical">
 
-                <TextView
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="3000ml"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textColor="@color/black_no_meals"
-                    android:textSize="16sp"
-                    />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3000"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/black_no_meals"
+                        android:textSize="16sp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ml"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/on_track_color"
+                        android:textSize="9sp"
+                        />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -238,7 +255,7 @@
                     android:text="Water Intake Goal"
                     android:textColor="@color/black_no_meals"
                     android:fontFamily="@font/dmsans_regular"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -263,7 +280,7 @@
             android:layout_height="45dp"
             android:layout_marginHorizontal="36dp"
             android:layout_marginTop="7dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="20dp"
             android:backgroundTint="@color/border_green"
             android:fontFamily="@font/dmsans_bold"
             android:text="Confirm"

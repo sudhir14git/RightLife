@@ -66,8 +66,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
@@ -466,7 +468,9 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
           /* weightIntake.text = weightValue
            weightIntakeUnit.text = weightUnit*/
            val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-           val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+          // val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+           val nowInstant = Instant.now()
+           val currentDate = nowInstant.getMealLogDate(4)
            val request = WeightIntakeRequest(
                userId = userId,
                source = "android",
@@ -601,7 +605,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                             else -> Triple(emptyList(), emptyList(), emptyList())
                         }
                         withContext(Dispatchers.Main) {
-                            weight_description_heading.text = data.heading
+                            weight_description_heading.text = markdownToBold(data.heading)
                             weight_description_text.text = markdownToBold(data.description)
 
                             if (data.lastWeightLog != null){
@@ -704,6 +708,40 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
             setDrawGridBackground(false)
             setDrawBorders(false)
             setNoDataText("Loading data...")
+        }
+    }
+
+    fun Instant.getMealLogDate(rolloverHour: Int = 4): String {
+        val zone = ZoneId.systemDefault()
+        val effectiveDate = this.effectiveDateForApi(rolloverHour, zone)
+        return effectiveDate
+            .atZone(zone)
+            .toLocalDate()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    }
+    private fun Instant.effectiveDateForApi(
+        rolloverHour: Int,
+        zone: ZoneId
+    ): Instant {
+        val now = Instant.now()
+        val thisDate = this.atZone(zone).toLocalDate()
+        val today = now.atZone(zone).toLocalDate()
+        // ✅ Only apply rollover if THIS date is today
+        if (thisDate != today) {
+            return thisDate.atStartOfDay(zone).toInstant()
+        }
+        val currentHour = now.atZone(zone).hour
+        return if (currentHour < rolloverHour) {
+            // before rollover → yesterday
+            today
+                .minusDays(1)
+                .atStartOfDay(zone)
+                .toInstant()
+        } else {
+            // after rollover → today
+            today
+                .atStartOfDay(zone)
+                .toInstant()
         }
     }
 
@@ -1090,7 +1128,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                     }
                 }
             }
-            setLastAverageValue(data, "% Past Week")
+            setLastAverageValue(data, "% Past Month")
             // Create entries for the chart
             val entries = weightMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
             Triple(entries, weeklyLabels, labels)

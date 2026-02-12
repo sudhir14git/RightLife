@@ -42,6 +42,7 @@ import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.BottomsheetSwitchAccountBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
@@ -236,7 +237,23 @@ class ImageSliderActivity : BaseActivity() {
             startActivity(Intent(this, MobileLoginActivity::class.java))
         }
 
+        try {
+            if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
+                val appConfig =
+                    Gson().fromJson(
+                        sharedPreferenceManager.appConfigJson,
+                        AppConfigResponse::class.java
+                    )
+                btnMobile.visibility =
+                    if (appConfig?.data?.signInWithMobile == true) View.VISIBLE else View.GONE
 
+                btnGoogle.visibility =
+                    if (appConfig?.data?.signInWithEmail == true) View.VISIBLE else View.GONE
+
+            }
+        } catch (e: Exception) {
+            Log.e("AppConfig", "Failed to parse app config from SharedPreferences", e)
+        }
     }
 
     override fun onResume() {
@@ -685,6 +702,14 @@ class ImageSliderActivity : BaseActivity() {
                 }
             }
         }
+
+        AnalyticsLogger.logEvent(AnalyticsEvent.Login_DiffNo_PopUp,
+            mapOf(AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USERNAME to sharedPreferenceManager.userName,
+                AnalyticsParam.PLATFORM_TYPE to "Android",
+                AnalyticsParam.LOGIN_TYPE to "Google",
+                AnalyticsParam.DEVICE_NAME to "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}".trim(),
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()))
 
         bottomSheetDialog.show()
     }

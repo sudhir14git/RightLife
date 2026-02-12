@@ -3,19 +3,29 @@ package com.jetsynthesys.rightlife.ui.new_design
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.VideoView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.messaging.FirebaseMessaging
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.appconfig.AppConfigResponse
+import com.jetsynthesys.rightlife.databinding.BottomsheetMaintenanceBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity.Companion.EXTRA_DEEP_LINK_TARGET
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -31,6 +41,7 @@ class SplashScreenActivity : BaseActivity() {
     private var appConfig: AppConfigResponse? = null
     private var configCallDone: Boolean = false
     private var isNextActivityStarted = false
+    private var deepLink = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,15 +50,25 @@ class SplashScreenActivity : BaseActivity() {
         rlview1 = findViewById(R.id.rlview1)
         imgview2 = findViewById(R.id.imgview2)
         fetchAppConfig()
-        try {
+
+        deepLink = extractDeepLinkFromIntent(intent) ?: ""
+
+        /*try {
             if (!sharedPreferenceManager.appConfigJson.isNullOrBlank()) {
-                isNextActivityStarted = true
-                startNextActivity()
+                appConfig =
+                    com.google.gson.Gson().fromJson(sharedPreferenceManager.appConfigJson, AppConfigResponse::class.java)
+                val maintenance = appConfig?.data?.maintenance?.android
+                if (maintenance?.enabled == true) {
+                    //showMaintenanceBottomSheet(maintenance.message)
+                } else {
+                    isNextActivityStarted = true
+                    startNextActivity()
+                }
             }
         } catch (e: Exception) {
             showCustomToast("Please check your internet connection and try again !!", false)
         }
-
+*/
         // Need this Dark Mode selection logic for next phase
         /*val appMode = sharedPreferenceManager.appMode
         if (appMode.equals("System", ignoreCase = true)) {
@@ -58,6 +79,23 @@ class SplashScreenActivity : BaseActivity() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }*/
         logCurrentFCMToken()
+    }
+
+    private fun extractDeepLinkFromIntent(intent: Intent?): String? {
+        if (intent == null) return null
+
+        // 1) If notification click opened via ACTION_VIEW / deep link URI
+
+        intent.dataString?.let { if (it.isNotBlank()) return it }
+
+        val extras = intent.extras ?: return null
+        // 2) Direct key from your own notification builder / backend
+        extras.getString("deep_link")?.let { if (it.isNotBlank()) return it }
+
+        // 3) Firebase Console / notification payload often prefixes keys like this
+        extras.getString("gcm.notification.deep_link")?.let { if (it.isNotBlank()) return it }
+        extras.getString("gcm.n.deep_link")?.let { if (it.isNotBlank()) return it }
+        return null
     }
 
     private fun fetchAppConfig() {
@@ -73,21 +111,26 @@ class SplashScreenActivity : BaseActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     try {
-                        val json = response.body()!!.string()
+                        val json = response.body()?.string() ?: ""
                         appConfig =
                             com.google.gson.Gson().fromJson(json, AppConfigResponse::class.java)
 
                         // OPTIONAL: store raw json if you want (only if you already have a pref method)
                         sharedPreferenceManager.saveAppConfigJson(json)
-                        appConfig?.data?.forceUpdate?.let { fu ->
-                            sharedPreferenceManager.saveForceUpdateConfig(
-                                fu.enabled == true,
-                                fu.minAndroidVersion ?: "",
-                                fu.updateAndroidUrl ?: "",
-                                fu.message ?: ""
-                            )
-                            if (!isNextActivityStarted)
-                                startNextActivity()
+                        val maintenance = appConfig?.data?.maintenance?.android
+                        if (maintenance?.enabled == true) {
+                            showMaintenanceBottomSheet(maintenance.message)
+                         } else {
+                            appConfig?.data?.forceUpdate?.let { fu ->
+                                sharedPreferenceManager.saveForceUpdateConfig(
+                                    fu.enabled == true,
+                                    fu.minAndroidVersion ?: "",
+                                    fu.updateAndroidUrl ?: "",
+                                    fu.message ?: ""
+                                )
+                                if (!isNextActivityStarted)
+                                    startNextActivity()
+                            }
                         }
                     } catch (e: Exception) {
                         appConfig = null
@@ -123,7 +166,7 @@ class SplashScreenActivity : BaseActivity() {
     private fun logCurrentFCMToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val token = task.result
+                task.result
                 //Log.d("FCM_TOKEN", "Current token: $token")
                 //Log.d("FCM_TOKEN", "Token length: ${token?.length}")
             } else {
@@ -206,6 +249,7 @@ class SplashScreenActivity : BaseActivity() {
 
                 if (loggedInUser?.isOnboardingComplete == true) {
                     val intent = Intent(this, HomeNewActivity::class.java)
+                    intent.putExtra(EXTRA_DEEP_LINK_TARGET, removeBaseUrl(deepLink))
                     startActivity(intent)
                 } else {
                     if (!sharedPreferenceManager.createUserName) {
@@ -243,5 +287,52 @@ class SplashScreenActivity : BaseActivity() {
 
         animateViews()
     }
+
+    fun removeBaseUrl(url: String): String {
+        return url
+            .replace("https://qa.rightlife.com", "")
+            .replace("https://app.rightlife.com", "")
+    }
+
+    private fun showMaintenanceBottomSheet(message: String) {
+        val bottomSheetDialog = BottomSheetDialog(this)
+        // Inflate the BottomSheet layout
+        val binding = BottomsheetMaintenanceBinding.inflate(LayoutInflater.from(this))
+        val bottomSheetView = binding.root
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        bottomSheetDialog.setCancelable(false)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
+
+        // ✅ Set dim background manually for safety
+        bottomSheetDialog.window?.let { window ->
+            val layoutParams = window.attributes
+            layoutParams.dimAmount = 0.7f // 0.0 to 1.0
+            window.attributes = layoutParams
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        bottomSheetDialog.show()
+
+        binding.ivDialogClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        binding.tvDescription.text = message
+
+        binding.btnOkay.setOnClickListener {
+            finishAffinity()
+        }
+    }
+
 
 }

@@ -59,7 +59,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/llCountDown"
+                    android:layout_toStartOf="@+id/llTopEnd"
                     android:layout_toEndOf="@id/relative_profileImage"
                     android:orientation="vertical">
 
@@ -87,6 +87,34 @@
                         android:textColor="@color/txt_color_header"
                         android:textSize="@dimen/textsize_medium" />
                 </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/llTopEnd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true">
+                <FrameLayout
+                    android:id="@+id/compactSyncIndicator"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="10dp"
+                    android:visibility="gone">
+
+                    <ProgressBar
+                        android:id="@+id/compactRotatingArc"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:indeterminate="true"
+                        android:indeterminateDrawable="@drawable/rotating_gradient_ring" />
+                    <ImageView
+                        android:id="@+id/compactHeartIcon"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/heart" />
+                </FrameLayout>
+
 
                 <LinearLayout
                     android:id="@+id/llCountDown"
@@ -215,6 +243,8 @@
                         android:text="Upgrade To Continue"
                         android:textColor="@color/txt_color_header"
                         android:textSize="8sp" />
+
+                </LinearLayout>
 
                 </LinearLayout>
 

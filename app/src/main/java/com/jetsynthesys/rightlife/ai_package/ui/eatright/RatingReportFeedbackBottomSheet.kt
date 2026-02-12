@@ -21,6 +21,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
@@ -212,6 +213,7 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
             isRating = true
             layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
             layoutSubmit.isEnabled = true
+            ratingNew = rating.toInt()
             if (rating > 3){
                 tvTitles.text = "What did we get right ?"
                 tvRateDescriptions.text = "Your insights help us understand what’s working so we can keep doing more of it."
@@ -227,8 +229,23 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
         }
 
         layoutSubmit.setOnClickListener {
-            ratingLayout.visibility = View.GONE
-            afterRatingLayout.visibility = View.VISIBLE
+            if (ratingNew > 3){
+                ratingLayout.visibility = View.GONE
+                afterRatingLayout.visibility = View.GONE
+                successLayout.visibility = View.VISIBLE
+                view.postDelayed({
+                    listener?.onReportFeedbackRating(1.0, isSave)
+                }, 1000) // 5000ms = 5 seconds
+            }else{
+                ratingLayout.visibility = View.GONE
+                afterRatingLayout.visibility = View.VISIBLE
+                val ctx = context ?: return@setOnClickListener
+                context?.let { it1 ->
+                    AnalyticsLogger.logEvent(
+                        it1, AnalyticsEvent.RL_AI_Report_WhatBetter_Open
+                    )
+                }
+            }
             //dismiss()
             val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
         }

@@ -55,6 +55,28 @@
             android:layout_marginEnd="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/setting_icon" />
+        <FrameLayout
+            android:id="@+id/compactSyncIndicator"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/compactRotatingArc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/rotating_gradient_ring" />
+            <ImageView
+                android:id="@+id/compactHeartIcon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center"
+                android:src="@drawable/heart" />
+        </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -568,6 +590,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
                                 android:layout_marginEnd="10dp"
+                                android:layout_marginTop="-10dp"
                                 app:layout_constraintTop_toBottomOf="@+id/vertical_line_green"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent">
@@ -575,6 +598,7 @@
                                 <ProgressBar
                                     android:id="@+id/progressBar"
                                     style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_marginTop="10dp"
                                     android:layout_width="0dp"
                                     android:layout_height="22dp"
                                     android:progressDrawable="@drawable/progress_bar"
@@ -595,6 +619,7 @@
                                     android:id="@+id/circleIndicator"
                                     android:layout_width="16dp"
                                     android:layout_height="20dp"
+                                    android:layout_marginStart="-6dp"
                                     android:background="@drawable/white_circle_indicator_background"
                                     app:layout_constraintTop_toTopOf="@id/progressBar"
                                     app:layout_constraintBottom_toBottomOf="@id/progressBar"
@@ -610,11 +635,12 @@
                                 <View
                                     android:id="@+id/transparentOverlay"
                                     android:layout_width="0dp"
-                                    android:layout_height="32dp"
+                                    android:layout_height="35dp"
                                     android:background="@drawable/border_black"
                                     app:layout_constraintTop_toTopOf="@id/progressBar"
                                     app:layout_constraintBottom_toBottomOf="@id/progressBar"
-                                    app:layout_constraintStart_toStartOf="parent" />
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    />
 
                                 <ImageView
                                     android:id="@+id/imageViewBelowOverlay"
@@ -632,7 +658,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Weight Loss Zone"
-                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:textColor="@color/text_color_kcal"
                                     android:textSize="8sp"
                                     app:layout_constraintTop_toBottomOf="@id/imageViewBelowOverlay"
                                     app:layout_constraintStart_toStartOf="@id/transparentOverlay"

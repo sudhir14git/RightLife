@@ -61,6 +61,7 @@
         app:layout_constraintTop_toBottomOf="@id/header_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -350,13 +351,13 @@
                 android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"
                 android:text="Average Heart Rate (AHR) represents the mean number of heartbeats per minute over a specific period, whether during rest, daily activity, or exercise. Unlike Resting Heart Rate (RHR) or maximum heart rate, AHR provides a broader view of how your heart is working throughout the day.
 AHR can vary based on factors like activity level, fitness, hydration, and stress. A consistently lower AHR during daily activities often signals improved cardiovascular efficiency, while a higher AHR may indicate stress, dehydration, or insufficient recovery.
 At RightLife, AHR helps you interpret how your heart responds not just to workouts but to your entire lifestyle—including stress levels, sleep quality, and overall movement patterns. A sudden increase in AHR might suggest fatigue, illness, or higher stress, while a gradual decline over time can reflect improved fitness and heart efficiency. By tracking AHR trends, you can better understand how your daily habits impact your long-term heart health."
                 app:layout_constraintTop_toBottomOf="@+id/heartRateDescriptionHeading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

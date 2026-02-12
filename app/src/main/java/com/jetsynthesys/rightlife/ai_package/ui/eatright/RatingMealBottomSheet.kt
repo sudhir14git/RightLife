@@ -215,7 +215,7 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
             layoutSubmit.setBackgroundResource(R.drawable.add_cart_button_background)
             layoutSubmit.isEnabled = true
            // Toast.makeText(context, "You rated $rating stars", Toast.LENGTH_SHORT).show()
-            //ratingValue = rating
+            ratingValue = rating.toInt()
             if (rating > 3){
                 tvTitles.text = "What did we get right ?"
                 tvRateDescriptions.text = "Your insights help us understand what’s working so we can keep doing more of it."
@@ -227,14 +227,12 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
 
         closeIcon.setOnClickListener {
             dismiss()
-            if(afterRatingLayout.isVisible){
+//            if(afterRatingLayout.isVisible){
                 listener?.onSnapMealRating(1.0, isSave)
-            }
+//            }
         }
 
         layoutSubmit.setOnClickListener {
-            ratingLayout.visibility = View.GONE
-            afterRatingLayout.visibility = View.VISIBLE
             context?.let { it1 ->
                 AnalyticsLogger.logEvent(
                     it1, AnalyticsEvent.MEALSNAP_RATING_SUBMIT,
@@ -243,6 +241,18 @@ class RatingMealBottomSheet : BottomSheetDialogFragment() {
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     )
                 )
+            }
+            if (ratingValue > 3){
+                ratingLayout.visibility = View.GONE
+                afterRatingLayout.visibility = View.GONE
+                successLayout.visibility = View.VISIBLE
+                view.postDelayed({
+                    listener?.onSnapMealRating(1.0, isSave)
+                }, 1000) // 5000ms = 5 seconds
+
+            }else{
+                ratingLayout.visibility = View.GONE
+                afterRatingLayout.visibility = View.VISIBLE
             }
           //  successLayout.visibility = View.VISIBLE
             //dismiss()

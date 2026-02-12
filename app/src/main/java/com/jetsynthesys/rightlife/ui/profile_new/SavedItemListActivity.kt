@@ -40,7 +40,7 @@ class SavedItemListActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySavedItemListBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         binding.rlSelectedCategory.setOnClickListener {
             showCustomPopup(it)

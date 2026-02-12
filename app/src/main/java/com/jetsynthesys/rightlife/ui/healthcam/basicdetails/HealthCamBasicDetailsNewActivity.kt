@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -193,65 +194,36 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 val heightWithUnit = height.split(" ")
                 val weightWithUnit = weight.split(" ")
 
-                for (question in responseObj!!.questionData.questionList) {
+                // Safely iterate only if list is not null
+                responseObj?.questionData?.questionList?.forEach { questionObj ->
+
                     val answer = AnswerFaceScan()
-                    answer.question = question.question
-                    when (question.question) {
-                        "first_name" -> answer.answer = name
-                        "height" -> answer.answer = heightWithUnit[0].toDouble()
-                        "weight" -> answer.answer = weightWithUnit[0].toDouble()
-                        "age" -> answer.answer = age
-                        "gender" -> answer.answer = gender
-                        "smoking" -> {
-                            var selectedSmoke = "0"
-                            for (sm in smokeOptions) {
-                                if (sm.optionText == smoke) {
-                                    selectedSmoke = sm.optionPosition
-                                }
-                            }
-                            answer.answer = selectedSmoke
-                        }
+                    answer.question = questionObj.question
 
-                        "bloodpressuremedication" -> {
-                            var selectedBP = "0"
-                            for (bp in bpMedicationOptions) {
-                                if (bp.optionText == bpMedication) {
-                                    selectedBP = bp.optionPosition
-                                }
-                            }
-                            answer.answer = selectedBP
-                        }
+                    // Assign the answer based on the question type
+                    answer.answer = when (questionObj.question) {
+                        "first_name" -> name
 
-                        "diabetes" -> {
-                            var selectedDiabetic = "0"
-                            for (dia in diabeticsOptions) {
-                                if (dia.optionText == diabetic) {
-                                    selectedDiabetic = dia.optionPosition
-                                }
-                            }
-                            answer.answer = selectedDiabetic
-                        }
+                        // Safe conversion: Defaults to 0.0 if empty or invalid
+                        "height" -> heightWithUnit.getOrNull(0)?.toDoubleOrNull() ?: 0.0
+                        "weight" -> weightWithUnit.getOrNull(0)?.toDoubleOrNull() ?: 0.0
 
-                        /*"height_unit" -> {
-                            var selectedHeightUnit = 0
-                            for (heightUnit in heightUnits) {
-                                if (heightUnit.optionText == heightUnit) {
-                                    selectedHeightUnit = heightUnit.optionPosition.toInt()
-                                }
-                            }
-                            answer.answer = selectedHeightUnit
-                        }
+                        "age" -> age
+                        "gender" -> gender
 
-                        "weight_unit" -> {
-                            var selectedWeightUnit = 0
-                            for (weightUnit in weightUnits) {
-                                if (weightUnit.optionText == weightUnit) {
-                                    selectedWeightUnit = weightUnit.optionPosition.toInt()
-                                }
-                            }
-                            answer.answer = selectedWeightUnit
-                        }*/
+                        // Optimized lookups: Find the matching option or default to "0"
+                        "smoking" ->
+                            smokeOptions.find { it.optionText == smoke }?.optionPosition ?: "0"
+
+                        "bloodpressuremedication" ->
+                            bpMedicationOptions.find { it.optionText == bpMedication }?.optionPosition ?: "0"
+
+                        "diabetes" ->
+                            diabeticsOptions.find { it.optionText == diabetic }?.optionPosition ?: "0"
+
+                        else -> "" // Default for unknown keys
                     }
+
                     answerFaceScans.add(answer)
                 }
 
@@ -260,16 +232,6 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     heightWithUnit[0]
                 else
                     CommonAPICall.convertFeetInchToCmWithIndex(height).cmIndex.toString()
-
-
-                /*      val weightInKg =
-                          if (weightWithUnit[1].equals(
-                                  "kgs",
-                                  ignoreCase = true
-                              )
-                          ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
-                              weightWithUnit[0]
-                          )*/
 
                 val unit = listOfNotNull(
                     weightWithUnit.getOrNull(1),
@@ -451,6 +413,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             displayedValues = years
             value = value1
             wheelItemCount = 7
+            typeface =
+                ResourcesCompat.getFont(this@HealthCamBasicDetailsNewActivity, R.font.dmsans_regular)
         }
 
         selectedAge = if (selectedAgeFromUi.isNotEmpty())
@@ -595,77 +559,69 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
     private fun setData() {
         val userdata = sharedPreferenceManager.userProfile.userdata ?: return
-        for (question in responseObj!!.questionData.questionList) {
-            when (question.question) {
-                "first_name" -> {
-                    if (userdata.firstName != null) binding.edtName.setText(userdata.firstName)
-                }
+        // 1. Safe iteration: Only runs if response and list are not null
+        responseObj?.questionData?.questionList?.forEach { question ->
 
-                "height" -> {
-                    if (userdata.height != null)
-                        if (userdata.heightUnit == "FT_AND_INCHES") {
-                            val height = userdata.height.toString().split(".")
-                            binding.edtHeight.setText("${height[0]} ft ${height[1]} in")
-                        } else {
-                            binding.edtHeight.setText("${userdata.height} cm")
+            with(binding) {
+                when (question.question) {
+                    "first_name" -> {
+                        // Only set if not null
+                        userdata.firstName?.let { edtName.setText(it) }
+                    }
+
+                    "height" -> {
+                        if (userdata.height != null) {
+                            if (userdata.heightUnit == "FT_AND_INCHES") {
+                                // 2. Safe Split: Prevents IndexOutOfBoundsException
+                                val parts = userdata.height.toString().split(".")
+                                val feet = parts.getOrNull(0) ?: "0"
+                                val inches = parts.getOrNull(1) ?: "0"
+                                edtHeight.setText("$feet ft $inches in")
+                            } else {
+                                edtHeight.setText("${userdata.height} cm")
+                            }
                         }
-                }
-
-                "weight" -> {
-                    if (userdata.weight != null) {
-                        binding.edtWeight.setText(
-                            "${userdata.weight} ${
-                                userdata.weightUnit.lowercase(
-                                    Locale.getDefault()
-                                )
-                            }"
-                        )
                     }
-                }
 
-
-                /*   "age" -> {
-                       binding.edtAge.setText(userdata.age.toString() + " years")
-                   }
-
-                   "gender" -> {
-                       genderOptions.addAll(question.options)
-                       if (userdata.gender == "M" || userdata.gender.equals(
-                               "Male",
-                               ignoreCase = true
-                           )
-                       ) binding.edtGender.setText("Male")
-                       else binding.edtGender.setText("Female")
-                   }*/
-                "age" -> {
-                    // Check if age is NOT null and NOT zero before setting
-                    if (userdata.age != null && userdata.age != 0) {
-                        binding.edtAge.setText(userdata.age.toString() + " years")
-                    } else {
-                        binding.edtAge.setText("") // Set empty if null or zero
+                    "weight" -> {
+                        if (userdata.weight != null) {
+                            val unit = userdata.weightUnit?.lowercase(Locale.getDefault()) ?: ""
+                            edtWeight.setText("${userdata.weight} $unit")
+                        }
                     }
-                }
 
-                "gender" -> {
-                    genderOptions.addAll(question.options)
-                    val genderText = when (userdata.gender?.uppercase(Locale.getDefault())) {
-                        "M", "MALE" -> "Male"
-                        "F", "FEMALE" -> "Female"
-                        else -> "" // Set to empty string if the value is null or neither Male nor Female
+                    "age" -> {
+                        // Check if age is non-null AND greater than 0
+                        if ((userdata.age ?: 0) > 0) {
+                            edtAge.setText("${userdata.age} years")
+                        } else {
+                            edtAge.setText("")
+                        }
                     }
-                    binding.edtGender.setText(genderText)
-                }
 
-                "smoking" -> {
-                    smokeOptions.addAll(question.options)
-                }
+                    "gender" -> {
+                        // Safe add to list
+                        question.options?.let { genderOptions.addAll(it) }
 
-                "bloodpressuremedication" -> {
-                    bpMedicationOptions.addAll(question.options)
-                }
+                        val genderText = when (userdata.gender?.uppercase(Locale.getDefault())) {
+                            "M", "MALE" -> "Male"
+                            "F", "FEMALE" -> "Female"
+                            else -> ""
+                        }
+                        edtGender.setText(genderText)
+                    }
 
-                "diabetes" -> {
-                    diabeticsOptions.addAll(question.options)
+                    "smoking" -> {
+                        question.options?.let { smokeOptions.addAll(it) }
+                    }
+
+                    "bloodpressuremedication" -> {
+                        question.options?.let { bpMedicationOptions.addAll(it) }
+                    }
+
+                    "diabetes" -> {
+                        question.options?.let { diabeticsOptions.addAll(it) }
+                    }
                 }
             }
         }

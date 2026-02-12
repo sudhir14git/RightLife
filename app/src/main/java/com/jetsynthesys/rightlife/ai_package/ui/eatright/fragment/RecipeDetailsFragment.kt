@@ -340,7 +340,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
 
                         serves_text.text = "${data.default_serving.value.toString() + " "  + data.default_serving.type.toString()}"
                         tvMealName.text = data.recipe.toString()
-                        time_text.text = data.active_cooking_time_min.toString()
+                        time_text.text = data.active_cooking_time_min.toString() + " mins"
                         calorie_value.text = "${data.calories_kcal?.toInt().toString()} Kcal"
                         carbs_value.text = "${data.protein_g?.toInt()} g"
                         protein_value.text = "${data.carbs_g?.toInt()} g"
@@ -358,6 +358,11 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                             vegImage.setImageResource(R.drawable.non_veg_new)
                             vegTv.text = "Non-Veg"
                             Log.d("RecipeDetails", "Non-Veg indicator set")
+                        } else if (foodTypeResult == "Veg & Vegan") {
+                            vegImage.visibility = View.VISIBLE
+                            vegImage.setImageResource(R.drawable.veg_new)
+                            vegTv.text = "Veg & Vegan"
+                            Log.d("RecipeDetails", "Veg & Vegan")
                         } else {
                             vegImage.visibility = View.INVISIBLE
                             Log.d("RecipeDetails", "No Veg/Non-Veg indicator (other category)")
@@ -427,24 +432,53 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         })
     }
 
+//    fun getFoodType(category: String?): String {
+//        if (category.isNullOrBlank()) return ""
+//        val cat = category.lowercase()
+//        // Check non-veg first (most specific)
+//        val isNonVeg = cat.contains("non-vegetarian")
+//                || cat.contains("chicken")
+//                || cat.contains("fish")
+//                || cat.contains("meat")
+//                || cat.contains("egg")
+//                || cat.contains("mutton")
+//        // Check veg only AFTER excluding non-veg
+//        val isVeg = !isNonVeg && (cat.contains("vegetarian") || cat.contains("vegan"))
+//        return when {
+//            isNonVeg -> "Non-Veg"
+//            isVeg -> "Veg"
+//            else -> ""
+//        }
+//    }
+
     fun getFoodType(category: String?): String {
-        if (category.isNullOrBlank()) return ""
-        val cat = category.lowercase()
-        // Check non-veg first (most specific)
-        val isNonVeg = cat.contains("non-vegetarian")
-                || cat.contains("chicken")
-                || cat.contains("fish")
-                || cat.contains("meat")
-                || cat.contains("egg")
-                || cat.contains("mutton")
-        // Check veg only AFTER excluding non-veg
-        val isVeg = !isNonVeg && (cat.contains("vegetarian") || cat.contains("vegan"))
-        return when {
-            isNonVeg -> "Non-Veg"
-            isVeg -> "Veg"
-            else -> ""
+        val cat = category
+            ?.trim()
+            ?.lowercase()
+            ?: return ""
+        if (cat.isEmpty()) return ""
+        // Highest priority: Vegan
+        if (cat.contains("vegan")) {
+            return "Veg & Vegan"
         }
+        // Next priority: Non-Veg
+        val isNonVeg =
+            cat.contains("non-vegetarian") ||
+                    cat.contains("chicken") ||
+                    cat.contains("fish") ||
+                    cat.contains("meat") ||
+                    cat.contains("egg") ||
+                    cat.contains("mutton")
+        if (isNonVeg) {
+            return "Non-Veg"
+        }
+        // Veg (only if not non-veg and not vegan)
+        if (cat.contains("vegetarian")) {
+            return "Veg"
+        }
+        return ""
     }
+
 
     private fun onMacroNutrientsItemClick(macroNutrientsModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
 

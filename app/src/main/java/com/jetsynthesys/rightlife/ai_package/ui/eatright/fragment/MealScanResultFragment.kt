@@ -76,6 +76,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -90,7 +91,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private lateinit var macroItemRecyclerView: RecyclerView
     private lateinit var microItemRecyclerView: RecyclerView
     private lateinit var frequentlyLoggedRecyclerView: RecyclerView
-    private var currentPhotoPath: String = ""
     private lateinit var descriptionName: String
     private lateinit var foodNameEdit: EditText
     private var currentPhotoPathsecound: Uri? = null
@@ -206,8 +206,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             arguments?.getParcelable("foodDataResponses")
         }
 
-        currentPhotoPath = arguments?.get("ImagePath").toString()
-
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formatFullDate = DateTimeFormatter.ofPattern("d MMMM yyyy")
@@ -322,14 +320,28 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         backButton.setOnClickListener {
             if (moduleName.contentEquals("EatRight")) {
                 requireActivity().supportFragmentManager.beginTransaction().apply {
-                    val snapMealFragment = HomeBottomTabFragment()
+                    val mealSearchFragment = SnapMealFragment()
                     val args = Bundle()
-                    args.putString("ModuleName", moduleName)
-                    snapMealFragment.arguments = args
-                    replace(R.id.flFragment, snapMealFragment, "Steps")
+                    args.putString("ModuleName", "EatRight")
+                    args.putString("snapImageUrl", snapImageUrl)
+                    args.putString("description", descriptionName)
+                    args.putString("homeTab", homeTab)
+                    args.putString("mealType", mealType)
+                    args.putString("selectedMealDate", selectedMealDate)
+                    mealSearchFragment.arguments = args
+                    replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
                     addToBackStack(null)
                     commit()
                 }
+//                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                    val snapMealFragment = HomeBottomTabFragment()
+//                    val args = Bundle()
+//                    args.putString("ModuleName", moduleName)
+//                    snapMealFragment.arguments = args
+//                    replace(R.id.flFragment, snapMealFragment, "Steps")
+//                    addToBackStack(null)
+//                    commit()
+//                }
             } else if (snapMealLog.equals("snapMealLog")) {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
@@ -363,15 +375,20 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() { if (moduleName.contentEquals("EatRight")) {
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    val snapMealFragment = HomeBottomTabFragment()
-                    val args = Bundle()
-                    args.putString("ModuleName", moduleName)
-                    snapMealFragment.arguments = args
-                    replace(R.id.flFragment, snapMealFragment, "Steps")
-                    addToBackStack(null)
-                    commit()
-                }
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val mealSearchFragment = SnapMealFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", "EatRight")
+                        args.putString("snapImageUrl", snapImageUrl)
+                        args.putString("description", descriptionName)
+                        args.putString("homeTab", homeTab)
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        mealSearchFragment.arguments = args
+                        replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                        addToBackStack(null)
+                        commit()
+                    }
             } else if (snapMealLog.equals("snapMealLog")) {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
@@ -421,6 +438,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("mealId", mealId)
             args.putString("mealName", foodNameEdit.text.toString())
             args.putString("snapImageUrl", snapImageUrl)
+            args.putString("description", descriptionName)
             args.putString("mealType", mealType)
             args.putString("homeTab", homeTab)
             args.putString("snapMyMeal", snapMyMeal)
@@ -763,6 +781,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("mealId", mealId)
             args.putString("mealName", foodNameEdit.text.toString())
             args.putString("snapImageUrl", snapImageUrl)
+            args.putString("description", descriptionName)
             args.putString("ModuleName", moduleName)
             args.putString("searchType", "MealScanResult")
             args.putString("mealType", mealType)
@@ -793,6 +812,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         args.putString("mealId", mealId)
         args.putString("mealName", foodNameEdit.text.toString())
         args.putString("snapImageUrl", snapImageUrl)
+        args.putString("description", descriptionName)
         args.putString("mealType", mealType)
         args.putString("homeTab", homeTab)
         args.putString("selectedMealDate", selectedMealDate)
@@ -821,7 +841,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                         .error(R.drawable.ic_view_meal_place)
                         .into(imageFood)
                 } catch (e: Exception) {
-                    Log.e("ImageLoad", "Error loading image from file path: $currentPhotoPath", e)
+                    Log.e("ImageLoad", "Error loading image from file path", e)
                 }
             }
             // Set food name
@@ -990,7 +1010,9 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         activity?.runOnUiThread { showLoader(requireView()) }
 
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        //val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        val nowInstant = Instant.now()
+        val currentDateUtc = nowInstant.getMealLogDate(4)//currentDateTime.format(formatter)
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
@@ -1025,9 +1047,9 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                        // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                         val moduleName = arguments?.getString("ModuleName").toString()
                         if (moduleName.contentEquals("EatRight")) {
-                            val fragment = HomeBottomTabFragment()
+                            val fragment = YourMealLogsFragment()
                             val args = Bundle()
-                            args.putString("ModuleName", "EatRight")
+                            args.putString("ModuleName", "EatRightLandingWithoutPopup")
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flFragment, fragment, "landing")
@@ -1068,6 +1090,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                                 AnalyticsEvent.MEAL_SCAN_COMPLETE,
                                 mapOf(AnalyticsParam.MEAL_SCAN_COMPLETE to true)
                             )
+
+                            AnalyticsLogger.logEvent(
+                                ctx,
+                                AnalyticsEvent.MealSnap_Success,
+                                mapOf(AnalyticsParam.MealSnap_Success to true)
+                            )
                            // startActivity(Intent(context, HomeNewActivity::class.java))
                             act.finish()
                         }
@@ -1088,6 +1116,40 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     act.runOnUiThread { dismissLoader(requireView()) }
                 }
             })
+        }
+    }
+
+    fun Instant.getMealLogDate(rolloverHour: Int = 4): String {
+        val zone = ZoneId.systemDefault()
+        val effectiveDate = this.effectiveDateForApi(rolloverHour, zone)
+        return effectiveDate
+            .atZone(zone)
+            .toLocalDate()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    }
+    private fun Instant.effectiveDateForApi(
+        rolloverHour: Int,
+        zone: ZoneId
+    ): Instant {
+        val now = Instant.now()
+        val thisDate = this.atZone(zone).toLocalDate()
+        val today = now.atZone(zone).toLocalDate()
+        // ✅ Only apply rollover if THIS date is today
+        if (thisDate != today) {
+            return thisDate.atStartOfDay(zone).toInstant()
+        }
+        val currentHour = now.atZone(zone).hour
+        return if (currentHour < rolloverHour) {
+            // before rollover → yesterday
+            today
+                .minusDays(1)
+                .atStartOfDay(zone)
+                .toInstant()
+        } else {
+            // after rollover → today
+            today
+                .atStartOfDay(zone)
+                .toInstant()
         }
     }
 

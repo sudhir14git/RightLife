@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -24,28 +25,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateMealRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.MealIngredient
 import com.jetsynthesys.rightlife.ai_package.model.request.MealLog
-import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealRecipe
-import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientRecipeDetails
-import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.MealSaveQuitBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.MealSaveQuitBottomSheet.OnMealSaveQuitListener
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.DishListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DeleteDishBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DeleteLogDishBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.databinding.FragmentCreateMealBinding
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -69,6 +62,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
     private lateinit var addMealNameLayout : LinearLayoutCompat
     private lateinit var continueLayout : LinearLayoutCompat
     private lateinit var addedNameTv : TextView
+    private lateinit var tvCount : TextView
     private var dishLists : ArrayList<IngredientRecipeDetails> = ArrayList()
     private  var recipeDetailsLocalListModel : RecipeDetailsLocalListModel? = null
     private var mealId : String = ""
@@ -104,6 +98,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
         btnAddLayout = view.findViewById(R.id.layout_btnAdd)
         addedNameTv = view.findViewById(R.id.addedNameTv)
         backButton = view.findViewById(R.id.back_button)
+        tvCount = view.findViewById<TextView>(R.id.tvCount)
 //        editDeleteDinner = view.findViewById(R.id.btn_edit_delete_dinner)
 //        layoutMain = view.findViewById(R.id.layout_main)
 //        layoutDelete = view.findViewById(R.id.layout_delete)
@@ -135,6 +130,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
 
         etAddName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
+                val count = s?.length ?: 0
+                tvCount.text = "$count /20 Ch"
                 if (s!!.length > 0){
                     continueLayout.isEnabled = true
                     continueLayout.setBackgroundResource(R.drawable.green_meal_bg)
@@ -197,12 +194,18 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
                 if (mealId != "null" && mealId != null){
                     updateMealsSave(dishLists)
                 }else{
+                    context?.let { it1 ->
+                        AnalyticsLogger.logEvent(
+                            it1, AnalyticsEvent.ER_CreateMeal_Save
+                        )
+                    }
                     createMealsSave(dishLists)
                 }
             }
         }
 
         continueLayout.setOnClickListener {
+            hideKeyboard()   // ✅ CLOSE KEYBOARD
             addMealNameLayout.visibility = View.GONE
             continueLayout.visibility = View.GONE
             addedMealListLayout.visibility = View.VISIBLE
@@ -621,6 +624,12 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>(), MealSaveQu
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
+                as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
     override fun onMealSaveQuit(mealData: String) {

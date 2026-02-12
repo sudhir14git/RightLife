@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -8,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -15,6 +17,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -40,6 +45,8 @@ import java.time.format.DateTimeFormatter
 import androidx.core.view.isGone
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.MealSaveQuitBottomSheet
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 
 class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSaveQuitBottomSheet.OnMealSaveQuitListener {
 
@@ -66,6 +73,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
     private lateinit var mealType : String
+    private lateinit var layoutMain : ConstraintLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRecipeBinding
         get() = FragmentCreateRecipeBinding::inflate
@@ -80,9 +88,10 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        layoutMain = view.findViewById(R.id.layout_main)
+        continueLayout = view.findViewById(R.id.layout_continue)
         addRecipeNameLayout = view.findViewById(R.id.layout_add_recipe_name)
         etAddName = view.findViewById(R.id.et_add_name)
-        continueLayout = view.findViewById(R.id.layout_continue)
         tvContinue = view.findViewById(R.id.tv_continue)
         addedIngredientsRecyclerview = view.findViewById(R.id.recyclerview_added_ingredients_item)
         layoutNoIngredients = view.findViewById(R.id.layout_noIngredients)
@@ -106,6 +115,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
         mealType = arguments?.getString("mealType").toString()
         val updateMyRecipe = arguments?.getString("updateMyRecipe").toString()
+
 
         if (updateMyRecipe != "null"){
             getMyRecipesDetails(recipeId)
@@ -193,12 +203,18 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
                 if (recipeId != "null"){
                     updateRecipe(ingredientLists)
                 }else{
+                    context?.let { it1 ->
+                        AnalyticsLogger.logEvent(
+                            it1, AnalyticsEvent.ER_CreateReceipe_Save
+                        )
+                    }
                 createRecipe(ingredientLists)
                }
             }
         }
 
         continueLayout.setOnClickListener {
+            hideKeyboard()   // ✅ CLOSE KEYBOARD
             addRecipeNameLayout.visibility = View.GONE
             continueLayout.visibility = View.GONE
             addedRecipeListLayout.visibility = View.VISIBLE
@@ -687,5 +703,11 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>(), MealSa
             addToBackStack("landing")
             commit()
         }
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE)
+                as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 }

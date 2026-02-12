@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
@@ -176,6 +177,8 @@ class AgeSelectionFragment : Fragment() {
         numberPicker.displayedValues = years
         numberPicker.value = 15
         numberPicker.wheelItemCount = 7
+        numberPicker.typeface =
+            ResourcesCompat.getFont(requireContext(), R.font.dmsans_regular)
 
         selectedAge = years[14]
 

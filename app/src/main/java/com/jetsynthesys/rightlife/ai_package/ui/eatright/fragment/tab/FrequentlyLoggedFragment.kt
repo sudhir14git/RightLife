@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -21,7 +20,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LogMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
@@ -33,9 +31,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipesRespo
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DishToLogFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapDishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.DishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeDetailsLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList

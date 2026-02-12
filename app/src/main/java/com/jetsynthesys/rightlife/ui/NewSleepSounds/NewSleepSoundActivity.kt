@@ -102,7 +102,7 @@ class NewSleepSoundActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback { handleBackPressed() }
         setupCategoryRecyclerView()
         //fetchCategories()
-        //getUserCreatedPlaylist()
+        getUserCreatedPlaylist()
         //getNewReleases()
 
         // Register for result
@@ -163,7 +163,6 @@ class NewSleepSoundActivity : BaseActivity() {
         binding.layoutVerticalCategoryList.visibility = View.GONE
         binding.llMusicHome.visibility = View.VISIBLE
         binding.layouthorizontalMusicList.visibility = View.VISIBLE
-        binding.recyclerViewHorizontalList.visibility = View.VISIBLE
         binding.recyclerViewVerticalList.visibility = View.GONE
         //getUserCreatedPlaylist()
         setupCategoryRecyclerView()
@@ -206,6 +205,7 @@ class NewSleepSoundActivity : BaseActivity() {
 
 
     private fun fetchCategories() {
+        binding.llNoData.visibility = View.GONE
         Utils.showLoader(this)
         val call = apiService.getSleepCategories(sharedPreferenceManager.accessToken)
 
@@ -553,7 +553,7 @@ class NewSleepSoundActivity : BaseActivity() {
                             categoryList.removeAt(0)*/
                         categoryAdapter.notifyDataSetChanged()
                         binding.llNoData.visibility =
-                            if (selectedCategoryForTitle == null || selectedCategoryForTitle?.title == "Your Playlist") View.VISIBLE
+                            if (selectedCategoryForTitle?.title == "Your Playlist") View.VISIBLE
                             else View.GONE
                         binding.llMusicHome.visibility = View.GONE
                         binding.layouthorizontalMusicList.visibility = View.GONE

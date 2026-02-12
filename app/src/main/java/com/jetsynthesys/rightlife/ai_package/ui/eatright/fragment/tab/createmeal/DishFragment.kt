@@ -544,7 +544,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                                         dishLists.get(index)
                                         recipeDetailsLocalListModel = RecipeDetailsLocalListModel(dishLists)
 
-                                        showCustomToast(requireContext(), "Update To Meal")
+                                        showCustomToast(requireContext(), "Dish Updated")
                                        // Toast.makeText(activity, "Changes Save", Toast.LENGTH_SHORT).show()
                                         val fragment = CreateMealFragment()
                                         val args = Bundle()
@@ -588,10 +588,10 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
     }
 
     private fun setDishData(snapRecipeData: IngredientRecipeDetails, isEdit: Boolean) {
-        if (searchType.contentEquals("createRecipe")){
-            addToTheMealTV.text = "Add To The Recipe"
-        }else{
+        if (searchType.contentEquals("SearchDish")){
             addToTheMealTV.text = "Add To The Meal"
+        }else{
+            addToTheMealTV.text = "Update dish"
             val capitalized = snapRecipeData.recipe.toString().replaceFirstChar { it.uppercase() }
             tvMealName.text = capitalized
             var imageUrl : String? = ""

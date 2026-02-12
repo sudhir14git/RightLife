@@ -67,7 +67,7 @@ class ContentDetailsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityContentDetailsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         contentId = intent.getStringExtra("contentId").toString()
         startTime = System.currentTimeMillis()
         //API Call

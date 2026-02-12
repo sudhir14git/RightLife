@@ -39,6 +39,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
@@ -674,6 +675,8 @@ class ProfileNewActivity : BaseActivity() {
             displayedValues = years
             value = value1
             wheelItemCount = 7
+            typeface =
+                ResourcesCompat.getFont(this@ProfileNewActivity, R.font.dmsans_regular)
         }
 
         var selectedAge =
