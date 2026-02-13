@@ -1122,7 +1122,7 @@ class ProfileNewActivity : BaseActivity() {
         val weight = binding.tvWeight.text.toString()
         val gender = binding.tvGender.text.toString()
         val bodyFat = binding.tvBodyFat.text.toString()?.replace("%", "")?.trim() ?: ""
-        if (firstName.isEmpty() || lastName.isEmpty() || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty() || bodyFat.isEmpty()) {
+        if (firstName.isEmpty() || age.isEmpty() || gender.isEmpty() || height.isEmpty() || weight.isEmpty() || bodyFat.isEmpty()) {
             showCustomToast("Please fill all required fields before proceeding.")
         } else if (!validateUsername(firstName)) {
             showCustomToast("Please enter valid First Name")
